@@ -1,0 +1,9 @@
+{
+  "entries": [],
+  "inherits": [
+    { "path": "/Users/manvenpratapsingh/.gemini/config/skills" }
+  ],
+  "include": [
+    "claude-d3js-skill"
+  ]
+}

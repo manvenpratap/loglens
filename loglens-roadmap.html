@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LogLens — Enterprise Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --ink:     #0c0e12;
+  --ink-2:   #13161c;
+  --ink-3:   #1c2029;
+  --plate:   #242832;
+  --plate-2: #2d3241;
+  --rail:    #363c4e;
+  --mute:    #5a6278;
+  --ghost:   #8892a4;
+  --silver:  #c4cada;
+  --white:   #eef0f4;
+
+  --amber:   #f59e0b;
+  --amber-d: #d97706;
+  --amber-l: #fcd34d;
+  --amber-g: rgba(245,158,11,.10);
+
+  --blue:    #3b82f6;
+  --blue-l:  #93c5fd;
+  --blue-g:  rgba(59,130,246,.10);
+
+  --violet:  #8b5cf6;
+  --violet-l:#c4b5fd;
+  --violet-g:rgba(139,92,246,.10);
+
+  --green:   #10b981;
+  --green-l: #6ee7b7;
+  --green-g: rgba(16,185,129,.10);
+
+  --rose:    #f43f5e;
+  --rose-l:  #fda4af;
+  --rose-g:  rgba(244,63,94,.10);
+
+  --cyan:    #06b6d4;
+  --cyan-l:  #67e8f9;
+  --cyan-g:  rgba(6,182,212,.10);
+
+  --orange:  #f97316;
+  --orange-g:rgba(249,115,22,.10);
+
+  --ui:   'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ui);
+  background: var(--ink);
+  color: var(--silver);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ink-2); }
+::-webkit-scrollbar-thumb { background: var(--rail); border-radius: 3px; }
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.page { max-width: 1160px; margin: 0 auto; padding: 0 28px 100px; }
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  padding: 72px 0 56px;
+  position: relative;
+  border-bottom: 1px solid var(--rail);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(ellipse, rgba(245,158,11,.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--amber); background: var(--amber-g);
+  border: 1px solid rgba(245,158,11,.25);
+  padding: 4px 12px; border-radius: 99px;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before { content: '//'; opacity: .5; }
+.hero-title {
+  font-size: clamp(36px, 5.5vw, 60px);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  line-height: 1.08;
+  color: var(--white);
+  max-width: 780px;
+  margin-bottom: 20px;
+}
+.hero-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--amber), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 17px; color: var(--ghost);
+  max-width: 640px; line-height: 1.7; margin-bottom: 36px;
+}
+.hero-meta {
+  display: flex; gap: 32px; flex-wrap: wrap;
+}
+.hero-stat { display: flex; flex-direction: column; gap: 2px; }
+.hero-stat-val {
+  font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--amber);
+}
+.hero-stat-lbl { font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+
+/* ═══════════════════════════════════════════
+   SECTION HEADINGS
+═══════════════════════════════════════════ */
+.sec {
+  margin-top: 72px;
+}
+.sec-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 10px;
+}
+.sec-title {
+  font-size: 26px; font-weight: 800; color: var(--white);
+  letter-spacing: -.02em; margin-bottom: 8px;
+}
+.sec-sub { font-size: 14px; color: var(--ghost); max-width: 580px; line-height: 1.7; }
+
+/* ═══════════════════════════════════════════
+   PHASE TIMELINE (horizontal ribbon)
+═══════════════════════════════════════════ */
+.timeline-wrap {
+  margin-top: 40px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.timeline {
+  display: flex;
+  min-width: 860px;
+  position: relative;
+  gap: 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--amber), var(--violet), var(--cyan));
+  opacity: .35;
+}
+.tl-phase {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; padding-top: 56px;
+}
+.tl-node {
+  position: absolute; top: 18px;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 3px solid var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; font-family: var(--mono);
+  z-index: 2;
+}
+.tl-tag {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 2px 9px; border-radius: 99px; margin-bottom: 6px;
+  letter-spacing: .06em;
+}
+.tl-name {
+  font-size: 13px; font-weight: 700; color: var(--white);
+  text-align: center; margin-bottom: 3px;
+}
+.tl-period {
+  font-size: 10px; color: var(--mute);
+  font-family: var(--mono); text-align: center;
+}
+
+/* Phase colors */
+.ph1 .tl-node { background: var(--green);   border-color: var(--ink); }
+.ph1 .tl-tag  { background: var(--green-g);  color: var(--green);  border: 1px solid rgba(16,185,129,.3); }
+.ph2 .tl-node { background: var(--blue);    border-color: var(--ink); }
+.ph2 .tl-tag  { background: var(--blue-g);   color: var(--blue);   border: 1px solid rgba(59,130,246,.3); }
+.ph3 .tl-node { background: var(--amber);   border-color: var(--ink); }
+.ph3 .tl-tag  { background: var(--amber-g);  color: var(--amber);  border: 1px solid rgba(245,158,11,.3); }
+.ph4 .tl-node { background: var(--violet);  border-color: var(--ink); }
+.ph4 .tl-tag  { background: var(--violet-g); color: var(--violet); border: 1px solid rgba(139,92,246,.3); }
+.ph5 .tl-node { background: var(--rose);    border-color: var(--ink); }
+.ph5 .tl-tag  { background: var(--rose-g);   color: var(--rose);   border: 1px solid rgba(244,63,94,.3); }
+
+/* ═══════════════════════════════════════════
+   PHASE BLOCKS
+═══════════════════════════════════════════ */
+.phase-block {
+  margin-top: 56px;
+  border: 1px solid var(--rail);
+  border-radius: 14px; overflow: hidden;
+  background: var(--ink-2);
+}
+.phase-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 16px;
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--rail);
+  position: relative; overflow: hidden;
+}
+.phase-header::before {
+  content: ''; position: absolute;
+  inset: 0; opacity: .04;
+  background: linear-gradient(135deg, currentColor 0%, transparent 60%);
+}
+.phase-num {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  padding: 4px 10px; border-radius: 6px; letter-spacing: .06em;
+}
+.phase-title-wrap { }
+.phase-title {
+  font-size: 20px; font-weight: 800; color: var(--white);
+  letter-spacing: -.02em; margin-bottom: 2px;
+}
+.phase-period {
+  font-family: var(--mono); font-size: 11px; color: var(--mute);
+}
+.phase-badge {
+  font-size: 11px; font-weight: 600; padding: 4px 12px;
+  border-radius: 99px; white-space: nowrap;
+}
+
+/* Phase accent colors for headers */
+.p1 { --ph: var(--green);   --ph-g: var(--green-g);   color: var(--green);   }
+.p2 { --ph: var(--blue);    --ph-g: var(--blue-g);    color: var(--blue);    }
+.p3 { --ph: var(--amber);   --ph-g: var(--amber-g);   color: var(--amber);   }
+.p4 { --ph: var(--violet);  --ph-g: var(--violet-g);  color: var(--violet);  }
+.p5 { --ph: var(--rose);    --ph-g: var(--rose-g);    color: var(--rose);    }
+
+.phase-header.p1 { background: linear-gradient(135deg, rgba(16,185,129,.06), transparent); }
+.phase-header.p2 { background: linear-gradient(135deg, rgba(59,130,246,.06),  transparent); }
+.phase-header.p3 { background: linear-gradient(135deg, rgba(245,158,11,.06),  transparent); }
+.phase-header.p4 { background: linear-gradient(135deg, rgba(139,92,246,.06),  transparent); }
+.phase-header.p5 { background: linear-gradient(135deg, rgba(244,63,94,.06),   transparent); }
+
+.phase-num.p1 { background: var(--green-g);  color: var(--green);  border: 1px solid rgba(16,185,129,.25); }
+.phase-num.p2 { background: var(--blue-g);   color: var(--blue);   border: 1px solid rgba(59,130,246,.25); }
+.phase-num.p3 { background: var(--amber-g);  color: var(--amber);  border: 1px solid rgba(245,158,11,.25); }
+.phase-num.p4 { background: var(--violet-g); color: var(--violet); border: 1px solid rgba(139,92,246,.25); }
+.phase-num.p5 { background: var(--rose-g);   color: var(--rose);   border: 1px solid rgba(244,63,94,.25); }
+
+.phase-badge.p1 { background: var(--green-g);  color: var(--green);  border: 1px solid rgba(16,185,129,.25); }
+.phase-badge.p2 { background: var(--blue-g);   color: var(--blue);   border: 1px solid rgba(59,130,246,.25); }
+.phase-badge.p3 { background: var(--amber-g);  color: var(--amber);  border: 1px solid rgba(245,158,11,.25); }
+.phase-badge.p4 { background: var(--violet-g); color: var(--violet); border: 1px solid rgba(139,92,246,.25); }
+.phase-badge.p5 { background: var(--rose-g);   color: var(--rose);   border: 1px solid rgba(244,63,94,.25); }
+
+/* Phase body: feature columns */
+.phase-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0;
+}
+.feat-group {
+  padding: 22px 24px;
+  border-right: 1px solid var(--rail);
+  border-bottom: 1px solid var(--rail);
+}
+.feat-group:last-child { border-right: none; }
+.feat-group-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--ghost);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.feat-group-title .ico { font-size: 13px; }
+.feat-list { display: flex; flex-direction: column; gap: 9px; }
+.feat-item {
+  display: flex; gap: 9px; align-items: flex-start;
+}
+.feat-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 6px;
+}
+.feat-text { font-size: 13px; color: var(--silver); line-height: 1.45; }
+.feat-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 3px; margin-left: 4px;
+  text-transform: uppercase; letter-spacing: .05em; vertical-align: middle;
+}
+.tag-new    { background: rgba(16,185,129,.15);  color: var(--green); }
+.tag-perf   { background: rgba(6,182,212,.15);   color: var(--cyan); }
+.tag-ux     { background: rgba(245,158,11,.15);  color: var(--amber); }
+.tag-arch   { background: rgba(139,92,246,.15);  color: var(--violet); }
+.tag-ent    { background: rgba(244,63,94,.15);   color: var(--rose); }
+.tag-int    { background: rgba(59,130,246,.15);  color: var(--blue); }
+
+.feat-dot.p1 { background: var(--green); }
+.feat-dot.p2 { background: var(--blue); }
+.feat-dot.p3 { background: var(--amber); }
+.feat-dot.p4 { background: var(--violet); }
+.feat-dot.p5 { background: var(--rose); }
+
+/* Phase footer: value prop */
+.phase-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--rail);
+  background: rgba(0,0,0,.18);
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13px; color: var(--ghost);
+}
+.phase-footer strong { color: var(--silver); }
+.phase-footer::before {
+  content: '→';
+  font-family: var(--mono); color: var(--mute); flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   ARCHITECTURE EVOLUTION
+═══════════════════════════════════════════ */
+.arch-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 1px solid var(--rail);
+  border-radius: 12px; overflow: hidden;
+}
+.arch-col {
+  padding: 20px 16px;
+  border-right: 1px solid var(--rail);
+}
+.arch-col:last-child { border-right: none; }
+.arch-col-hdr {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--rail);
+}
+.arch-row { margin-bottom: 8px; }
+.arch-layer-name {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--mute); margin-bottom: 3px; font-weight: 600;
+}
+.arch-chip {
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  padding: 4px 8px; border-radius: 5px; display: inline-block;
+  line-height: 1.3;
+}
+.ac-1 { background: var(--green-g);  color: var(--green-l);  border: 1px solid rgba(16,185,129,.2); }
+.ac-2 { background: var(--blue-g);   color: var(--blue-l);   border: 1px solid rgba(59,130,246,.2); }
+.ac-3 { background: var(--amber-g);  color: var(--amber-l);  border: 1px solid rgba(245,158,11,.2); }
+.ac-4 { background: var(--violet-g); color: var(--violet-l); border: 1px solid rgba(139,92,246,.2); }
+.ac-5 { background: var(--rose-g);   color: var(--rose-l);   border: 1px solid rgba(244,63,94,.2); }
+
+/* ═══════════════════════════════════════════
+   FEATURE PRIORITY MATRIX
+═══════════════════════════════════════════ */
+.matrix {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  background: var(--rail);
+  border: 1px solid var(--rail);
+  border-radius: 12px; overflow: hidden;
+  height: 380px;
+}
+.matrix-cell {
+  background: var(--ink-2);
+  padding: 20px; position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.matrix-cell-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--mute);
+}
+.matrix-axis-x {
+  position: absolute; bottom: 10px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px; color: var(--mute); text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.matrix-axis-y {
+  position: absolute; top: 50%; left: 8px;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 9px; color: var(--mute); text-transform: uppercase;
+  letter-spacing: .08em; white-space: nowrap;
+}
+.m-dots { display: flex; flex-wrap: wrap; gap: 5px; }
+.m-dot {
+  font-size: 11px; padding: 3px 9px; border-radius: 4px;
+  font-weight: 500; cursor: default;
+}
+
+/* ═══════════════════════════════════════════
+   COMPETITIVE LANDSCAPE
+═══════════════════════════════════════════ */
+.comp-table {
+  width: 100%; margin-top: 28px;
+  border-collapse: collapse;
+  border: 1px solid var(--rail);
+  border-radius: 10px; overflow: hidden;
+  font-size: 13px;
+}
+.comp-table th {
+  background: var(--ink-3); color: var(--ghost);
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--rail);
+}
+.comp-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rail);
+  vertical-align: top;
+}
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table tr:nth-child(even) td { background: rgba(255,255,255,.018); }
+.comp-name { font-weight: 600; color: var(--white); margin-bottom: 2px; }
+.comp-type { font-size: 10px; color: var(--mute); font-family: var(--mono); }
+.check  { color: var(--green);  font-size: 13px; }
+.cross  { color: var(--mute);   font-size: 13px; }
+.partial{ color: var(--amber);  font-size: 13px; }
+.comp-ll { background: rgba(245,158,11,.05); }
+.comp-ll td:first-child { border-left: 3px solid var(--amber); }
+
+/* ═══════════════════════════════════════════
+   TECH RADAR
+═══════════════════════════════════════════ */
+.radar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--rail);
+  border: 1px solid var(--rail);
+  border-radius: 12px; overflow: hidden;
+  margin-top: 28px;
+}
+.radar-quadrant { background: var(--ink-2); padding: 20px; }
+.radar-q-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--rail);
+}
+.radar-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  margin-bottom: 8px;
+}
+.radar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.radar-item-text { font-size: 12px; line-height: 1.4; }
+.radar-item-sub { font-size: 10px; color: var(--mute); margin-top: 1px; }
+.r-adopt  { background: var(--green); }
+.r-trial  { background: var(--blue); }
+.r-assess { background: var(--amber); }
+.r-hold   { background: var(--mute); }
+
+/* ═══════════════════════════════════════════
+   KPI TARGETS
+═══════════════════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 28px;
+}
+.kpi-card {
+  background: var(--ink-2);
+  border: 1px solid var(--rail);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.kpi-phase {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; margin-bottom: 8px;
+}
+.kpi-val {
+  font-family: var(--mono); font-size: 26px; font-weight: 800;
+  line-height: 1; margin-bottom: 4px;
+}
+.kpi-lbl { font-size: 12px; color: var(--ghost); }
+.kpi-bar {
+  height: 3px; border-radius: 2px;
+  background: var(--rail); margin-top: 12px; overflow: hidden;
+}
+.kpi-fill { height: 100%; border-radius: 2px; }
+
+/* ═══════════════════════════════════════════
+   GUIDING PRINCIPLES
+═══════════════════════════════════════════ */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+.principle {
+  background: var(--ink-2);
+  border: 1px solid var(--rail);
+  border-radius: 10px; padding: 20px;
+  position: relative; overflow: hidden;
+}
+.principle::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.principle.pr1::before { background: var(--green); }
+.principle.pr2::before { background: var(--blue); }
+.principle.pr3::before { background: var(--amber); }
+.principle.pr4::before { background: var(--violet); }
+.principle.pr5::before { background: var(--cyan); }
+.principle.pr6::before { background: var(--rose); }
+.pr-icon { font-size: 22px; margin-bottom: 10px; }
+.pr-title { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+.pr-body { font-size: 12px; color: var(--ghost); line-height: 1.6; }
+
+/* ═══════════════════════════════════════════
+   MONETIZATION LADDER
+═══════════════════════════════════════════ */
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+.tier {
+  background: var(--ink-2);
+  border: 1px solid var(--rail);
+  border-radius: 12px; padding: 24px;
+  position: relative;
+}
+.tier.featured {
+  border-color: var(--amber);
+  background: linear-gradient(180deg, rgba(245,158,11,.06) 0%, var(--ink-2) 60%);
+}
+.tier-badge {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 700; padding: 3px 12px; border-radius: 99px;
+  background: var(--amber); color: var(--ink); white-space: nowrap;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.tier-name { font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--mute); margin-bottom: 6px; }
+.tier-price {
+  font-family: var(--mono); font-size: 28px; font-weight: 800; color: var(--white);
+  margin-bottom: 4px; letter-spacing: -.02em;
+}
+.tier-price span { font-size: 14px; color: var(--mute); font-weight: 400; }
+.tier-desc { font-size: 12px; color: var(--ghost); margin-bottom: 18px; line-height: 1.5; }
+.tier-feats { display: flex; flex-direction: column; gap: 8px; }
+.tier-feat { font-size: 12px; color: var(--silver); display: flex; gap: 7px; }
+.tier-feat::before { content: '✓'; color: var(--green); flex-shrink: 0; font-weight: 700; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.footer {
+  margin-top: 80px; padding-top: 32px;
+  border-top: 1px solid var(--rail);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 800; font-size: 16px; color: var(--white);
+}
+.footer-logo-ico {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--amber), var(--amber-d));
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.footer-logo .acc { color: var(--amber); }
+.footer-meta { font-size: 12px; color: var(--mute); }
+.footer-version {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--amber-g); color: var(--amber);
+  border: 1px solid rgba(245,158,11,.25); padding: 3px 10px; border-radius: 99px;
+}
+
+/* ═══════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════ */
+.divider {
+  height: 1px; background: var(--rail); margin: 8px 0;
+}
+.inline-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 3px; vertical-align: middle;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.note-box {
+  background: var(--amber-g); border: 1px solid rgba(245,158,11,.25);
+  border-radius: 8px; padding: 14px 18px; margin-top: 20px;
+  font-size: 13px; color: var(--silver); line-height: 1.6;
+  display: flex; gap: 12px;
+}
+.note-box::before { content: '💡'; flex-shrink: 0; }
+
+@media (max-width: 760px) {
+  .arch-grid, .radar-grid { grid-template-columns: 1fr 1fr; }
+  .tiers { grid-template-columns: 1fr; }
+  .matrix { grid-template-columns: 1fr; height: auto; }
+  .phase-body { grid-template-columns: 1fr; }
+  .comp-table { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-eyebrow">LogLens Product Roadmap</div>
+  <h1 class="hero-title">From zero-dependency<br/>tool to <em>enterprise platform</em></h1>
+  <p class="hero-sub">
+    A five-phase evolution plan — hardening the core, adding intelligence, enabling collaboration, integrating ecosystems, and shipping as a platform — without ever sacrificing the offline-first, privacy-by-default philosophy that makes LogLens unique.
+  </p>
+  <div class="hero-meta">
+    <div class="hero-stat"><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Phases</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">24mo</div><div class="hero-stat-lbl">Timeline</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">60+</div><div class="hero-stat-lbl">Features</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-lbl">Distribution Tiers</div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE TIMELINE RIBBON
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Overview</div>
+  <h2 class="sec-title">Phase Timeline</h2>
+  <p class="sec-sub">Each phase ships independently usable value — no big-bang rewrites, no feature freezes.</p>
+
+  <div class="timeline-wrap">
+    <div class="timeline">
+      <div class="tl-phase ph1">
+        <div class="tl-node">01</div>
+        <div class="tl-tag">v2.x</div>
+        <div class="tl-name">Foundation</div>
+        <div class="tl-period">Now → Month 3</div>
+      </div>
+      <div class="tl-phase ph2">
+        <div class="tl-node">02</div>
+        <div class="tl-tag">v3.0</div>
+        <div class="tl-name">Intelligence</div>
+        <div class="tl-period">Month 3 → 6</div>
+      </div>
+      <div class="tl-phase ph3">
+        <div class="tl-node">03</div>
+        <div class="tl-tag">v4.0</div>
+        <div class="tl-name">Collaboration</div>
+        <div class="tl-period">Month 6 → 12</div>
+      </div>
+      <div class="tl-phase ph4">
+        <div class="tl-node">04</div>
+        <div class="tl-tag">v5.0</div>
+        <div class="tl-name">Integration</div>
+        <div class="tl-period">Month 12 → 18</div>
+      </div>
+      <div class="tl-phase ph5">
+        <div class="tl-node">05</div>
+        <div class="tl-tag">v6.0</div>
+        <div class="tl-name">Platform</div>
+        <div class="tl-period">Month 18 → 24</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 1 — FOUNDATION
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Phase 01 · Now → Month 3</div>
+  <h2 class="sec-title">Foundation Hardening</h2>
+  <p class="sec-sub">Productionise the single-file core: performance headroom for real enterprise logs, session persistence, and the export surface teams actually need.</p>
+
+  <div class="phase-block">
+    <div class="phase-header p1">
+      <div class="phase-num p1">v2.x</div>
+      <div class="phase-title-wrap">
+        <div class="phase-title">Foundation Hardening</div>
+        <div class="phase-period">Now → Month 3 · Single HTML file remains the primary artifact</div>
+      </div>
+      <div class="phase-badge p1">In Progress</div>
+    </div>
+    <div class="phase-body">
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">⚡</span> Performance</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Virtual scroll tree — render 50k+ nodes without DOM thrashing <span class="feat-tag tag-perf">perf</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Streaming chunk size auto-tuning based on file size and browser memory hint</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">IndexedDB result cache — reload tab without re-parsing <span class="feat-tag tag-perf">perf</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Native gzip/zstd decompression for <code style="font-family:var(--mono);font-size:11px;color:var(--amber);">.log.gz</code> files via DecompressionStream</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📁</span> File Handling</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Multi-file session — merge logs from N nodes into a single unified timeline <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Drag-and-drop log files onto any surface (Gantt, tree, control bar)</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">File System Access API directory watcher — auto-reload when file changes on disk</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📤</span> Export Surface</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Self-contained HTML report — Gantt + tree embedded, shareable by email <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">CSV export of all parsed events with duration, thread, timestamps</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">SVG / PNG export of the Gantt waterfall chart</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">JSON export of the full parsed event tree (interoperable with other tools)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">⚙</span> Config & Rules</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Rule test suite — batch test all rules against a sample line set before saving</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Config versioning — embedded changelog in JSON, diff view in UI</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Import / export individual rules as shareable JSON snippets</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Rule ordering UI — drag-and-drop priority (first-match-wins engine)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🎨</span> UX Polish</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Pin / bookmark events — annotate specific tree nodes with sticky notes <span class="feat-tag tag-ux">ux</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Right-click context menu on tree nodes (copy raw line, focus, filter thread)</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Keyboard-driven navigation — j/k traversal, / to search tree</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p1"></div>
+            <div class="feat-text">Saved parse sessions — re-open last N sessions without re-selecting files</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="phase-footer">
+      <strong>Target milestone:</strong> handles 500 MB logs in under 10 seconds on a mid-range laptop; teams can share reports without installing anything.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 2 — INTELLIGENCE
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Phase 02 · Month 3–6</div>
+  <h2 class="sec-title">Intelligence Layer</h2>
+  <p class="sec-sub">Transform raw parse output into engineering insight — latency percentiles, anomaly signals, trace correlation, and a smarter timeline that reveals what the raw tree cannot.</p>
+
+  <div class="phase-block">
+    <div class="phase-header p2">
+      <div class="phase-num p2">v3.0</div>
+      <div class="phase-title-wrap">
+        <div class="phase-title">Intelligence Layer</div>
+        <div class="phase-period">Month 3 → 6 · Modular JS (ES Modules), no build step required</div>
+      </div>
+      <div class="phase-badge p2">Planned</div>
+    </div>
+    <div class="phase-body">
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📊</span> Statistical Engine</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Per-rule latency distribution — P50 / P95 / P99 / max across all matching events <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Histogram panel — duration buckets visualised as a micro bar chart per rule</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Multi-session comparison — parse two log files and diff P95 latencies side by side</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Trend split — first-half vs second-half of log duration drift indicator</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🚨</span> Anomaly Detection</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Statistical outlier flagging — events &gt; 2σ from per-rule mean highlighted in red <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Quiet-period detection — sustained absence of expected events (heartbeat gaps)</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Error cascade analysis — automatically surface the first ERROR before each slow block</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Configurable SLA thresholds per rule — flag any block exceeding the target</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🔗</span> Correlation Engine</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Trace ID linking — extract correlation IDs and stitch events across threads into one logical trace <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Transaction dependency graph — interactive node-link diagram showing call order</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Session ID grouping — partition timeline by user session / request ID automatically</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🧠</span> Pattern Intelligence</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Unparsed line analyser — cluster unmatched lines by edit distance, suggest new rule candidates</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Frequency heatmap — most/least common rule matches across time buckets</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Coverage meter — % of log lines matched; warns on low coverage configs</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🗺</span> Enhanced Timeline</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Swimlane view — all threads rendered as parallel horizontal lanes with synchronized X-axis <span class="feat-tag tag-ux">ux</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Zoom and pan on Gantt — mouse-wheel zoom with pinch support on touch</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Critical path highlighting — auto-trace the longest chain of dependent blocks</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p2"></div>
+            <div class="feat-text">Mini-map navigator — scrollable thumbnail of full timeline for large result sets</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="phase-footer">
+      <strong>Target milestone:</strong> a developer can open any log file, identify the top-3 latency culprits with statistical confidence, and navigate cross-thread traces — in under 60 seconds.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 3 — COLLABORATION
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Phase 03 · Month 6–12</div>
+  <h2 class="sec-title">Collaboration & Sharing</h2>
+  <p class="sec-sub">Move LogLens from a solo tool to a team asset — shared rule registries, structured reports that reach management, and a Git-native config workflow developers already know.</p>
+
+  <div class="phase-block">
+    <div class="phase-header p3">
+      <div class="phase-num p3">v4.0</div>
+      <div class="phase-title-wrap">
+        <div class="phase-title">Collaboration & Sharing</div>
+        <div class="phase-period">Month 6 → 12 · Optional lightweight Node.js companion server for team features</div>
+      </div>
+      <div class="phase-badge p3">Roadmap</div>
+    </div>
+    <div class="phase-body">
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📦</span> Rule Registry</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Community rule packs — import from URL; curated packs for Spring Boot, Hibernate, Kafka, AWS SDK, Tomcat <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Organisation registry — internal pack server with versioned rule bundles</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Pack compatibility matrix — rules tagged with framework version ranges</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Rule review workflow — propose → review → approve flow for shared packs</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📝</span> Annotations</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Sticky notes on tree nodes — free-text annotations saved to session JSON <span class="feat-tag tag-ux">ux</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Custom event labels / tags — colour-coded markers overlaid on the Gantt</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Named analysis sessions — save the full parse state (trees + annotations) to a .lls session file</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📋</span> Report Generation</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">PDF report generator — executive summary + technical details, Gantt embedded as SVG <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Interactive HTML report — standalone shareable file; no LogLens needed to view</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Report templates — executive, developer deep-dive, SLA breach, incident post-mortem</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">SLA breach report — automatically highlights every transaction exceeding target</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🔄</span> Git Config Sync</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Config stored in team Git repo — LogLens reads from a well-known path <span class="feat-tag tag-arch">arch</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Branch-based rule isolation — dev / staging / prod configs per branch</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Config diff viewer — see what changed between two rule JSON versions</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p3"></div>
+            <div class="feat-text">Pre-commit hook — validate rule JSON schema and run rule self-tests</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="phase-footer">
+      <strong>Target milestone:</strong> a team lead can share a post-mortem PDF with annotated traces from the incident log within 10 minutes of the incident being resolved.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 4 — INTEGRATION
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Phase 04 · Month 12–18</div>
+  <h2 class="sec-title">Ecosystem Integration</h2>
+  <p class="sec-sub">Connect LogLens to the infrastructure already running in the organisation — live streams, observability backends, and ticketing systems — while remaining deployable as a single file for air-gapped environments.</p>
+
+  <div class="phase-block">
+    <div class="phase-header p4">
+      <div class="phase-num p4">v5.0</div>
+      <div class="phase-title-wrap">
+        <div class="phase-title">Ecosystem Integration</div>
+        <div class="phase-period">Month 12 → 18 · Connector plugin model; each connector is an optional JS module</div>
+      </div>
+      <div class="phase-badge p4">Roadmap</div>
+    </div>
+    <div class="phase-body">
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">📡</span> Live Log Streams</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">WebSocket log tail — connect to any WS endpoint; parse events in real-time as they arrive <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Server-Sent Events consumer — subscribe to log SSE streams from app servers</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Real-time sliding Gantt — last-N-minutes window, auto-scrolling with live events</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Alert triggers — rule + threshold → browser notification + optional webhook push</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🔌</span> Observability Backends</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Elasticsearch / OpenSearch — query, retrieve, and parse logs via the Search API <span class="feat-tag tag-int">int</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Grafana Loki — LogQL query → parse result → render in LogLens timeline</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">AWS CloudWatch Logs — direct Insights query with credential passthrough</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Splunk HEC — push parsed event JSON to a Splunk HTTP Event Collector</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Azure Monitor Logs — KQL query via App Insights REST API</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🎫</span> Ticketing & ITSM</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">JIRA issue creation — right-click any anomaly → create a pre-populated JIRA ticket with Gantt screenshot attached <span class="feat-tag tag-int">int</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">ServiceNow incident correlation — link parsed log sessions to active incidents by CI</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">PagerDuty alert enrichment — attach LogLens analysis links to active PD incidents</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Teams / Slack digest — post a summary card on threshold breach or parse completion</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🔁</span> API Surface</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">REST API — headless parse endpoint: POST log file + config → JSON tree; runs in a Deno / Bun worker <span class="feat-tag tag-arch">arch</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">CI/CD integration — GitHub Action / Jenkins plugin wrapping the REST API</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">Webhook outbound — push parsed events to any HTTP endpoint on rule match</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p4"></div>
+            <div class="feat-text">OpenAPI spec — generated from rule schema; auto-documented client SDKs</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="phase-footer">
+      <strong>Target milestone:</strong> LogLens connects to the org's observability stack in &lt;15 minutes; a critical JIRA ticket with supporting log trace is raised without leaving the browser.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PHASE 5 — PLATFORM
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Phase 05 · Month 18–24</div>
+  <h2 class="sec-title">Platform & Ecosystem</h2>
+  <p class="sec-sub">Ship LogLens as a first-class platform: a native desktop app, a CLI for pipelines, a plugin SDK for custom extensions, and an enterprise edition with access control and audit capability.</p>
+
+  <div class="phase-block">
+    <div class="phase-header p5">
+      <div class="phase-num p5">v6.0</div>
+      <div class="phase-title-wrap">
+        <div class="phase-title">Platform & Ecosystem</div>
+        <div class="phase-period">Month 18 → 24 · Tauri shell (Rust + WebView2); WASM parser core; plugin sandbox</div>
+      </div>
+      <div class="phase-badge p5">Vision</div>
+    </div>
+    <div class="phase-body">
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🖥</span> Desktop App</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Tauri-based native app (Rust + WebView) — Windows / macOS / Linux; single &lt;10 MB binary <span class="feat-tag tag-arch">arch</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Native file associations — <code style="font-family:var(--mono);font-size:11px;color:var(--amber);">.log</code> opens in LogLens by double-click</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">System tray agent — live monitoring badge; click to jump to latest anomaly</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Auto-update channel — stable / beta rings with in-app update prompt</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">SQLite local store (via WASM) — full text search across all parsed sessions <span class="feat-tag tag-perf">perf</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">⌨</span> CLI Tool</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text"><code style="font-family:var(--mono);font-size:11px;color:var(--amber);">loglens parse --config rules.json app.log</code> — headless parse, outputs JSON <span class="feat-tag tag-new">new</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text"><code style="font-family:var(--mono);font-size:11px;color:var(--amber);">loglens report --format pdf --template exec</code> — generate report from CLI</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Exit code on threshold breach — integrate into CI gates; fail build on P99 regression</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Docker image — <code style="font-family:var(--mono);font-size:11px;color:var(--amber);">docker run loglens/cli</code> for containerised pipelines</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🧩</span> Plugin SDK</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Plugin API — JS / WASM modules: custom renderers, exporters, analysers, rule generators <span class="feat-tag tag-arch">arch</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Official plugin store — curated, signed extensions with usage metrics</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Plugin sandbox — CSP-enforced iframe isolation; no plugin can exfiltrate log data</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Example plugins: OpenTelemetry trace renderer, JVM GC log parser, Nginx access log parser</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🏢</span> Enterprise Edition</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">SSO / SAML 2.0 integration for the optional team server <span class="feat-tag tag-ent">ent</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Role-based access control — rule packs, reports, and connectors scoped by role</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Audit logging — every config change, parse session, and export recorded with actor + timestamp</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Air-gap deployment — full offline mode; zero telemetry; on-prem pack registry</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Volume licensing + SLA — priority support tier, roadmap influence, dedicated Slack channel</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-group">
+        <div class="feat-group-title"><span class="ico">🦀</span> Core Rewrite</div>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Rust-compiled WASM parser — 10–20× throughput vs JS; sub-second parse for 1 GB logs <span class="feat-tag tag-perf">perf</span></div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">SIMD-accelerated regex matching (via Hyperscan compiled to WASM)</div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot p5"></div>
+            <div class="feat-text">Incremental re-parse — only re-process lines changed since last parse (file-diff cache)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="phase-footer">
+      <strong>Target milestone:</strong> LogLens ships as a signed desktop binary on the platform's official package managers (winget, Homebrew, apt) with 1-command install.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     ARCHITECTURE EVOLUTION
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Architecture</div>
+  <h2 class="sec-title">Stack Evolution by Phase</h2>
+  <p class="sec-sub">Every layer evolves deliberately — nothing is replaced before its replacement is proven superior in production.</p>
+
+  <div class="arch-grid">
+    <div class="arch-col">
+      <div class="arch-col-hdr" style="color:var(--green);">v2.x — Foundation</div>
+      <div class="arch-row"><div class="arch-layer-name">Parser</div><div class="arch-chip ac-1">JS Web Worker</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Storage</div><div class="arch-chip ac-1">File System API + IndexedDB</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Rendering</div><div class="arch-chip ac-1">innerHTML / DOM</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Config</div><div class="arch-chip ac-1">JSON file (FS API)</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Distribution</div><div class="arch-chip ac-1">Single .html file</div></div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-col-hdr" style="color:var(--blue);">v3.0 — Intelligence</div>
+      <div class="arch-row"><div class="arch-layer-name">Parser</div><div class="arch-chip ac-2">JS Worker + stats engine</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Storage</div><div class="arch-chip ac-2">IndexedDB sessions</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Rendering</div><div class="arch-chip ac-2">ES Modules + Canvas 2D</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Config</div><div class="arch-chip ac-2">JSON + version hash</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Distribution</div><div class="arch-chip ac-2">ES module bundle (no build)</div></div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-col-hdr" style="color:var(--amber);">v4.0 — Collaboration</div>
+      <div class="arch-row"><div class="arch-layer-name">Parser</div><div class="arch-chip ac-3">Shared Worker (multi-tab)</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Storage</div><div class="arch-chip ac-3">IndexedDB + .lls session files</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Rendering</div><div class="arch-chip ac-3">Canvas 2D Gantt + virtual list</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Config</div><div class="arch-chip ac-3">Git repo + pack registry URL</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Distribution</div><div class="arch-chip ac-3">HTML + optional Node server</div></div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-col-hdr" style="color:var(--violet);">v5.0 — Integration</div>
+      <div class="arch-row"><div class="arch-layer-name">Parser</div><div class="arch-chip ac-4">Worker + streaming SSE adapter</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Storage</div><div class="arch-chip ac-4">IndexedDB + connector caches</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Rendering</div><div class="arch-chip ac-4">Canvas 2D + plugin renderers</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Config</div><div class="arch-chip ac-4">Registry API + Git sync</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Distribution</div><div class="arch-chip ac-4">Deno REST API + Docker</div></div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-col-hdr" style="color:var(--rose);">v6.0 — Platform</div>
+      <div class="arch-row"><div class="arch-layer-name">Parser</div><div class="arch-chip ac-5">Rust/WASM core (Hyperscan)</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Storage</div><div class="arch-chip ac-5">SQLite WASM + full-text index</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Rendering</div><div class="arch-chip ac-5">Canvas 2D + plugin sandbox</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Config</div><div class="arch-chip ac-5">Signed registry + RBAC</div></div>
+      <div class="arch-row"><div class="arch-layer-name">Distribution</div><div class="arch-chip ac-5">Tauri desktop + CLI + npm</div></div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    The single-file HTML build is always maintained alongside every phase — it is LogLens's fastest-adopting distribution channel and the zero-infrastructure proof point for enterprise evaluations. No phase eliminates it.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     TECHNOLOGY RADAR
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Technology Decisions</div>
+  <h2 class="sec-title">Technology Radar</h2>
+  <p class="sec-sub">What to adopt now, what to trial, what to assess, and what to avoid — specific to the LogLens architecture.</p>
+
+  <div class="radar-grid">
+    <div class="radar-quadrant">
+      <div class="radar-q-title" style="color:var(--green);">● Adopt</div>
+      <div class="radar-item">
+        <div class="radar-dot r-adopt"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">File System Access API</div>
+          <div class="radar-item-sub">Live config write-back; already in v2</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-adopt"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Web Workers (Blob URL)</div>
+          <div class="radar-item-sub">Zero-install parallel parsing; proven</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-adopt"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Regex 'd' flag (indices)</div>
+          <div class="radar-item-sub">Group-position highlighting; Baseline 2023</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-adopt"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">IndexedDB (session cache)</div>
+          <div class="radar-item-sub">Persistent result store; widely supported</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-adopt"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Canvas 2D (Gantt)</div>
+          <div class="radar-item-sub">Replace innerHTML bars; enables zoom/pan</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="radar-quadrant">
+      <div class="radar-q-title" style="color:var(--blue);">● Trial</div>
+      <div class="radar-item">
+        <div class="radar-dot r-trial"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">DecompressionStream API</div>
+          <div class="radar-item-sub">Native gzip / zstd; Phase 1 trial</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-trial"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Shared Workers</div>
+          <div class="radar-item-sub">Multi-tab parse state; Phase 3 candidate</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-trial"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Tauri v2 (Rust + WebView)</div>
+          <div class="radar-item-sub">Desktop wrapper; Phase 5 build target</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-trial"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">ES Module CDN imports</div>
+          <div class="radar-item-sub">d3 / visx for advanced charts; no bundler</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="radar-quadrant">
+      <div class="radar-q-title" style="color:var(--amber);">● Assess</div>
+      <div class="radar-item">
+        <div class="radar-dot r-assess"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">WebAssembly (Rust parser)</div>
+          <div class="radar-item-sub">10× perf; assess build toolchain cost first</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-assess"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">SQLite WASM (wa-sqlite)</div>
+          <div class="radar-item-sub">Full-text session search; Phase 5 assess</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-assess"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">WebGPU (compute shaders)</div>
+          <div class="radar-item-sub">Regex on GPU; experimental; watch browser support</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-assess"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--silver);">Service Worker offline cache</div>
+          <div class="radar-item-sub">PWA packaging; assess UX trade-offs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="radar-quadrant">
+      <div class="radar-q-title" style="color:var(--mute);">● Hold</div>
+      <div class="radar-item">
+        <div class="radar-dot r-hold"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--ghost);">React / Vue / Angular</div>
+          <div class="radar-item-sub">Zero-dep constraint; adds build complexity</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-hold"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--ghost);">Electron</div>
+          <div class="radar-item-sub">100–200 MB binary; Tauri is the superior choice</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-hold"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--ghost);">Cloud storage sync</div>
+          <div class="radar-item-sub">Breaks privacy-first guarantee; avoid until opt-in story is airtight</div>
+        </div>
+      </div>
+      <div class="radar-item">
+        <div class="radar-dot r-hold"></div>
+        <div>
+          <div class="radar-item-text" style="color:var(--ghost);">npm publishing (Phase 1)</div>
+          <div class="radar-item-sub">Premature; wait until ES module refactor in Phase 3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     COMPETITIVE LANDSCAPE
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Positioning</div>
+  <h2 class="sec-title">Competitive Landscape</h2>
+  <p class="sec-sub">LogLens occupies a unique intersection: metadata-driven rule intelligence, zero infrastructure, and hard privacy guarantees — none of the established tools deliver all three.</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th style="width:160px;">Tool</th>
+        <th>Offline / Local</th>
+        <th>Rule-driven parsing</th>
+        <th>Zero install</th>
+        <th>Gantt timeline</th>
+        <th>Open config format</th>
+        <th>Cost model</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="comp-ll">
+        <td><div class="comp-name">LogLens</div><div class="comp-type">This tool</div></td>
+        <td><span class="check">✓</span> 100% local</td>
+        <td><span class="check">✓</span> Metadata-driven JSON</td>
+        <td><span class="check">✓</span> Single HTML file</td>
+        <td><span class="check">✓</span> Native Gantt + hotspot</td>
+        <td><span class="check">✓</span> Plain JSON, Git-friendly</td>
+        <td>Free / Enterprise tier</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">Splunk</div><div class="comp-type">Enterprise SIEM</div></td>
+        <td><span class="partial">~</span> On-prem option</td>
+        <td><span class="check">✓</span> SPL queries</td>
+        <td><span class="cross">✗</span> Heavy infra required</td>
+        <td><span class="partial">~</span> Via dashboards</td>
+        <td><span class="cross">✗</span> Proprietary</td>
+        <td>$$$$ / GB ingestion</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">ELK Stack</div><div class="comp-type">Open source</div></td>
+        <td><span class="partial">~</span> Self-hosted only</td>
+        <td><span class="check">✓</span> Logstash pipelines</td>
+        <td><span class="cross">✗</span> 3-service deployment</td>
+        <td><span class="cross">✗</span> Not built-in</td>
+        <td><span class="partial">~</span> YAML pipelines</td>
+        <td>Free / Elastic Cloud $$$</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">Datadog</div><div class="comp-type">SaaS APM</div></td>
+        <td><span class="cross">✗</span> Cloud-only</td>
+        <td><span class="check">✓</span> Grok parsers</td>
+        <td><span class="cross">✗</span> Agent + SaaS required</td>
+        <td><span class="partial">~</span> Trace waterfall</td>
+        <td><span class="cross">✗</span> Platform-locked</td>
+        <td>$$$$ / host/mo</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">Grafana Loki</div><div class="comp-type">OSS log aggregation</div></td>
+        <td><span class="partial">~</span> Self-hosted</td>
+        <td><span class="partial">~</span> LogQL labels</td>
+        <td><span class="cross">✗</span> Infra required</td>
+        <td><span class="cross">✗</span> No Gantt</td>
+        <td><span class="check">✓</span> Open source</td>
+        <td>Free / Grafana Cloud $</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">glogg / LogViewPro</div><div class="comp-type">Desktop log viewers</div></td>
+        <td><span class="check">✓</span> Desktop app</td>
+        <td><span class="cross">✗</span> Regex grep only</td>
+        <td><span class="cross">✗</span> Install required</td>
+        <td><span class="cross">✗</span> No timeline</td>
+        <td><span class="cross">✗</span> No config format</td>
+        <td>Free / one-time</td>
+      </tr>
+      <tr>
+        <td><div class="comp-name">Jaeger / Zipkin</div><div class="comp-type">Distributed tracing</div></td>
+        <td><span class="cross">✗</span> Requires instrumentation</td>
+        <td><span class="cross">✗</span> Code changes needed</td>
+        <td><span class="cross">✗</span> Agent + backend</td>
+        <td><span class="check">✓</span> Trace waterfall</td>
+        <td><span class="cross">✗</span> SDK-dependent</td>
+        <td>Free (infra cost)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note-box">
+    LogLens's defensible moat: it is the only tool that can parse an unknown log format from a legacy system in production — with zero server setup, zero code changes, and zero data leaving the analyst's machine — in under 5 minutes. That is the story every phase must protect.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FEATURE / EFFORT MATRIX
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Prioritisation</div>
+  <h2 class="sec-title">Impact vs Effort Matrix</h2>
+  <p class="sec-sub">Where to focus engineering time for maximum return at each phase of the roadmap.</p>
+
+  <div class="matrix">
+    <div class="matrix-cell" style="border-bottom:1px solid var(--rail);border-right:1px solid var(--rail);">
+      <div class="matrix-cell-label" style="color:var(--green);">↑ High Impact · Low Effort — Do First</div>
+      <div class="m-dots">
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">gzip support</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">Virtual scroll tree</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">HTML report export</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">IndexedDB cache</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">SLA threshold flags</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">P95 per rule</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">Multi-file merge</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">Canvas 2D Gantt</div>
+        <div class="m-dot" style="background:var(--green-g);color:var(--green-l);border:1px solid rgba(16,185,129,.25);">Rule pack import</div>
+      </div>
+    </div>
+    <div class="matrix-cell" style="border-bottom:1px solid var(--rail);">
+      <div class="matrix-cell-label" style="color:var(--amber);">↑ High Impact · High Effort — Plan &amp; Phase</div>
+      <div class="m-dots">
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Rust/WASM parser</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Swimlane timeline</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Trace ID linking</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Tauri desktop app</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">PDF report gen</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">ELK connector</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Plugin SDK</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">Git config sync</div>
+        <div class="m-dot" style="background:var(--amber-g);color:var(--amber-l);border:1px solid rgba(245,158,11,.25);">CLI tool</div>
+      </div>
+    </div>
+    <div class="matrix-cell" style="border-right:1px solid var(--rail);">
+      <div class="matrix-cell-label" style="color:var(--blue);">↓ Low Impact · Low Effort — Fill-in</div>
+      <div class="m-dots">
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">More icon presets</div>
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">Print stylesheet</div>
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">Regex syntax hints</div>
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">Extra theme variants</div>
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">Font size setting</div>
+        <div class="m-dot" style="background:var(--blue-g);color:var(--blue-l);border:1px solid rgba(59,130,246,.25);">CSV paste in wizard</div>
+      </div>
+    </div>
+    <div class="matrix-cell">
+      <div class="matrix-cell-label" style="color:var(--mute);">↓ Low Impact · High Effort — Reconsider</div>
+      <div class="m-dots">
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">Mobile-first UI</div>
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">Log ingestion SaaS</div>
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">ML anomaly model</div>
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">Real-time multi-user edit</div>
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">Electron wrapper</div>
+        <div class="m-dot" style="background:var(--plate);color:var(--ghost);border:1px solid var(--rail);">Custom query language</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     SUCCESS KPIs PER PHASE
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Success Metrics</div>
+  <h2 class="sec-title">KPI Targets by Phase</h2>
+  <p class="sec-sub">Concrete, measurable goals — not vanity metrics. Each target is achievable given the phase's scope.</p>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--green);">Phase 1 · Foundation</div>
+      <div class="kpi-val" style="color:var(--green);">500 MB</div>
+      <div class="kpi-lbl">Max log size parsed in &lt;10 s on mid-range laptop</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:70%;background:var(--green);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--green);">Phase 1 · Foundation</div>
+      <div class="kpi-val" style="color:var(--green);">&lt;5 min</div>
+      <div class="kpi-lbl">Time from Log4j XML import to first parsed event</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:80%;background:var(--green);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--blue);">Phase 2 · Intelligence</div>
+      <div class="kpi-val" style="color:var(--blue);">P95</div>
+      <div class="kpi-lbl">Latency percentile per rule visible without any extra config</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:55%;background:var(--blue);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--blue);">Phase 2 · Intelligence</div>
+      <div class="kpi-val" style="color:var(--blue);">&lt;60 s</div>
+      <div class="kpi-lbl">Time to identify top-3 latency culprits in an unfamiliar log</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:50%;background:var(--blue);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--amber);">Phase 3 · Collaboration</div>
+      <div class="kpi-val" style="color:var(--amber);">10 min</div>
+      <div class="kpi-lbl">Post-mortem PDF ready from incident log to email</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:35%;background:var(--amber);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--amber);">Phase 3 · Collaboration</div>
+      <div class="kpi-val" style="color:var(--amber);">20+</div>
+      <div class="kpi-lbl">Curated community rule packs available at launch</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:30%;background:var(--amber);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--violet);">Phase 4 · Integration</div>
+      <div class="kpi-val" style="color:var(--violet);">15 min</div>
+      <div class="kpi-lbl">Connect to Elasticsearch / Loki and parse first result</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:25%;background:var(--violet);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--rose);">Phase 5 · Platform</div>
+      <div class="kpi-val" style="color:var(--rose);">1 GB</div>
+      <div class="kpi-lbl">Log size parseable in &lt;5 s with WASM core</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:15%;background:var(--rose);"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--rose);">Phase 5 · Platform</div>
+      <div class="kpi-val" style="color:var(--rose);">&lt;10 MB</div>
+      <div class="kpi-lbl">Signed desktop binary size (Tauri)</div>
+      <div class="kpi-bar"><div class="kpi-fill" style="width:15%;background:var(--rose);"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     GUIDING PRINCIPLES
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Design Principles</div>
+  <h2 class="sec-title">Six Principles That Must Survive Every Phase</h2>
+  <p class="sec-sub">These are the constraints that differentiate LogLens — violate one and it becomes a worse version of an existing tool.</p>
+
+  <div class="principles">
+    <div class="principle pr1">
+      <div class="pr-icon">🔒</div>
+      <div class="pr-title">Privacy by Default</div>
+      <div class="pr-body">Log data never leaves the analyst's machine unless the analyst explicitly chooses a connector. Every new feature must pass a privacy review before shipping — including telemetry, update checks, and error reporting. Opt-in only, always.</div>
+    </div>
+    <div class="principle pr2">
+      <div class="pr-icon">⚡</div>
+      <div class="pr-title">Zero Mandatory Infrastructure</div>
+      <div class="pr-body">The single-file HTML build must remain fully functional forever. Collaboration and integration features are layered on top — never a prerequisite. A user behind a corporate proxy with no npm access must have the same core experience.</div>
+    </div>
+    <div class="principle pr3">
+      <div class="pr-icon">🧩</div>
+      <div class="pr-title">Metadata Over Magic</div>
+      <div class="pr-body">Every behaviour in the tool is driven by the rule configuration, not hidden heuristics. If the tool does something, the user must be able to trace it back to a specific rule or setting. No invisible AI black-boxes producing unexplained results.</div>
+    </div>
+    <div class="principle pr4">
+      <div class="pr-icon">📐</div>
+      <div class="pr-title">Format Agnosticism</div>
+      <div class="pr-body">LogLens must never hard-code a log format, framework, or vendor. Spring Boot, Tomcat, Node.js, Python, mainframe — all are first-class citizens through the rule engine. The Log4j importer is a convenience, not a prerequisite.</div>
+    </div>
+    <div class="principle pr5">
+      <div class="pr-icon">🚀</div>
+      <div class="pr-title">Time-to-First-Insight Under 5 Minutes</div>
+      <div class="pr-body">From opening LogLens to seeing the first meaningful parsed event must take less than 5 minutes for a new user on an unfamiliar log. Every UX decision — wizard, token builder, Log4j import, sample log — is evaluated against this constraint.</div>
+    </div>
+    <div class="principle pr6">
+      <div class="pr-icon">📦</div>
+      <div class="pr-title">Open Config Format</div>
+      <div class="pr-body">The rule JSON format must remain a plain, human-readable, Git-committable document that can be edited in any text editor without LogLens. Lock-in through an opaque binary format is a non-starter — it is the antithesis of the tool's value proposition.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     MONETISATION
+════════════════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-label">Business Model</div>
+  <h2 class="sec-title">Monetisation Ladder</h2>
+  <p class="sec-sub">Open-core model — the individual tool is always free and fully capable. Revenue comes from team features, integrations, and enterprise guarantees that don't compromise the core.</p>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-name">Community</div>
+      <div class="tier-price">Free <span>forever</span></div>
+      <div class="tier-desc">The full single-file HTML tool. No account, no sign-up, no data collection.</div>
+      <div class="tier-feats">
+        <div class="tier-feat">Full rule engine &amp; Log4j import</div>
+        <div class="tier-feat">Gantt waterfall + hotspot analysis</div>
+        <div class="tier-feat">Dark / light theme, keyboard navigation</div>
+        <div class="tier-feat">HTML / CSV / JSON / SVG export</div>
+        <div class="tier-feat">Community rule packs (read)</div>
+        <div class="tier-feat">WASM parser (Phase 5)</div>
+      </div>
+    </div>
+    <div class="tier featured">
+      <div class="tier-badge">Most Popular</div>
+      <div class="tier-name">Team</div>
+      <div class="tier-price">$12 <span>/ seat / mo</span></div>
+      <div class="tier-desc">Lightweight Node.js server unlocks collaboration without any cloud dependency.</div>
+      <div class="tier-feats">
+        <div class="tier-feat">Everything in Community</div>
+        <div class="tier-feat">Named analysis sessions + annotations</div>
+        <div class="tier-feat">PDF &amp; interactive HTML reports</div>
+        <div class="tier-feat">Organisation rule registry</div>
+        <div class="tier-feat">Git config sync + pre-commit hook</div>
+        <div class="tier-feat">JIRA / Slack / Teams integration</div>
+        <div class="tier-feat">Multi-file sessions + swimlane view</div>
+        <div class="tier-feat">Statistical comparison (diff sessions)</div>
+      </div>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-price">Custom <span>pricing</span></div>
+      <div class="tier-desc">On-prem deployment, compliance guarantees, SLA support, and roadmap influence.</div>
+      <div class="tier-feats">
+        <div class="tier-feat">Everything in Team</div>
+        <div class="tier-feat">SSO / SAML 2.0 integration</div>
+        <div class="tier-feat">Role-based access control</div>
+        <div class="tier-feat">Full audit log (immutable)</div>
+        <div class="tier-feat">Air-gap / on-prem deployment</div>
+        <div class="tier-feat">Elasticsearch / Loki / CloudWatch connectors</div>
+        <div class="tier-feat">Priority support SLA (&lt;4 h response)</div>
+        <div class="tier-feat">Roadmap influence + dedicated Slack</div>
+        <div class="tier-feat">Custom rule pack development</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════ -->
+<div class="footer">
+  <div class="footer-logo">
+    <div class="footer-logo-ico">🔍</div>
+    Log<span class="acc">Lens</span>
+  </div>
+  <div class="footer-meta">Enterprise Roadmap · 24-month plan · Offline-first · Privacy-by-default</div>
+  <div class="footer-version">v2 → v6 · 2025–2027</div>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
