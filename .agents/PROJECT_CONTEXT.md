@@ -8,6 +8,7 @@
   - **Pass 2 (Restructure)**: Grouped all helper functions into a centralized `UTILS` namespace, bound global shortcuts, and standardized DOM selections to use the `$()` helper. Decoupled statistical computation structures in `STATS` and `ANOMALY` from HTML rendering.
   - **Pass 3 (Documentation)**: Added JSDoc header contracts and descriptions for every core system module (`S`, `CFG`, `VER`, `WATCH`, `GIT`, `DS`, `WM`, `TR`, `GR`, `SWIMLANE`, `STATS`, `ANOMALY`, `UI`, `EXP`, `IDB`, `PLUGINS`).
   - **Pass 4 (Verification)**: Confirmed Node.js script compilation passes cleanly and CLI parsing test suite executes successfully with zero regressions.
+  - **Pass 5 (Top Bar Command Center)**: Restructured the header, bumped the display version to `v6.1`, integrated a global search/filter bar in the center that filters all timeline and tree elements in real-time, wired interactive badge click-through paths (e.g. click File to select, click Config to view sidebar), and added dynamic outlier/SLA breach alarm indicators.
 
 ---
 
