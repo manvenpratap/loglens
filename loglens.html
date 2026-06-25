@@ -1341,11 +1341,14 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
 <header class="hdr">
   <div class="logo">
     <div class="logo-ico"><span class="ico ico-xl" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></div>
-    <span>Log<span class="acc">Lens</span> <span style="font-size:11px;font-weight:400;color:var(--t3)">v4</span></span>
+    <span>Log<span class="acc">Lens</span> <span style="font-size:11px;font-weight:400;color:var(--t3)">v6.1</span></span>
   </div>
   <div class="hsep"></div>
   <span class="hsub">Metadata-Driven Log Analyzer</span>
+  <input class="inp" id="hdr-search" placeholder="🔍 Filter events (ID, rule, payload...)" style="width:340px; font-size:11px; padding:6px 12px; margin-left:24px; border-radius:6px; background:var(--bg-1); border:1px solid var(--bdr); color:var(--t1);" />
   <div class="hr">
+    <span class="badge b-red hidden" id="hdr-sla" style="cursor:pointer;" title="SLA Breaches. Click to view stats.">⚠️ 0 SLA</span>
+    <span class="badge b-amber hidden" id="hdr-outliers" style="cursor:pointer;" title="Outliers. Click to view stats.">🔍 0 Outliers</span>
     <span class="badge b-gray" id="hdr-fs">FS API</span>
     <span class="badge b-gray" id="hdr-cfg">No Config</span>
     <span class="badge b-gray" id="hdr-file">No File</span>
@@ -3286,6 +3289,35 @@ const UI={
 
   render(trees,threads,stats){
     S.trees=trees;S.threads=threads;S.stats=stats;
+    if (S.logFile) {
+      $('hdr-file').textContent = S.logFile.name.slice(0, 16) + (S.logFile.name.length > 16 ? '...' : '');
+      $('hdr-file').className = 'badge b-green';
+      $('hdr-file').title = `${S.logFile.name} (${fmtB(S.logFile.size)})`;
+    } else {
+      $('hdr-file').textContent = 'No File';
+      $('hdr-file').className = 'badge b-gray';
+      $('hdr-file').title = 'No File';
+    }
+
+    const slaEl = $('hdr-sla');
+    if (slaEl) {
+      if (S.slaBreachCount > 0) {
+        slaEl.textContent = `⚠️ ${S.slaBreachCount} SLA`;
+        slaEl.classList.remove('hidden');
+      } else {
+        slaEl.classList.add('hidden');
+      }
+    }
+    const outEl = $('hdr-outliers');
+    if (outEl) {
+      if (S.outlierCount > 0) {
+        outEl.textContent = `🔍 ${S.outlierCount} Outliers`;
+        outEl.classList.remove('hidden');
+      } else {
+        outEl.classList.add('hidden');
+      }
+    }
+
     $('thr-dl').innerHTML=threads.map(t=>`<option value="${esc(t)}">`).join('');
     const fi=$('thr-in').value.trim();
     S.activeThr=fi&&threads.includes(fi)?fi:(threads[0]||null);
@@ -3337,13 +3369,21 @@ const UI={
     r.style.padding = '14px';
     [...r.children].filter(el=>el.id!=='stats-bar').forEach(el=>el.remove());
     let tree=S.trees[S.activeThr]||[];HS.ann(tree,null);
-    if(S.activeTraceId){
+    const q = (S.searchQuery || '').trim().toLowerCase();
+    if(q || S.activeTraceId){
       const filter = (nodes) => {
         const res = [];
         for (const n of nodes) {
-          const m = n.correlationId && n.correlationId.toLowerCase().includes(S.activeTraceId.toLowerCase());
+          const matchTrace = !S.activeTraceId || (n.correlationId && n.correlationId.toLowerCase().includes(S.activeTraceId.toLowerCase()));
+          const matchQuery = !q || (
+            (n.correlationId && n.correlationId.toLowerCase().includes(q)) ||
+            (n.elementName && n.elementName.toLowerCase().includes(q)) ||
+            (n.ruleName && n.ruleName.toLowerCase().includes(q)) ||
+            (n.payload && n.payload.toLowerCase().includes(q)) ||
+            (n.rawLine && n.rawLine.toLowerCase().includes(q))
+          );
           const sub = filter(n.events || []);
-          if (m || sub.length > 0) {
+          if ((matchTrace && matchQuery) || sub.length > 0) {
             res.push({...n, events: sub});
           }
         }
@@ -7229,6 +7269,37 @@ const LANDSCAPE3D = {
    ================================================================ */
 RXB.init();
 WIZ.init();
+
+// Wire up top bar interactive elements
+$('hdr-search').addEventListener('input', e => {
+  S.searchQuery = e.target.value;
+  UI.rv();
+});
+
+$('hdr-cfg').style.cursor = 'pointer';
+$('hdr-cfg').addEventListener('click', () => {
+  if (S.sbCollapsed) SB.toggle();
+  document.querySelectorAll('.stab').forEach(t => {
+    const act = t.dataset.panel === 'p-cfg';
+    t.classList.toggle('active', act);
+  });
+  document.querySelectorAll('.sp').forEach(p => {
+    p.classList.toggle('active', p.id === 'p-cfg');
+  });
+});
+
+$('hdr-file').style.cursor = 'pointer';
+$('hdr-file').addEventListener('click', () => {
+  $('btn-sel').click();
+});
+
+$('hdr-sla').addEventListener('click', () => {
+  UI.svm('stats');
+});
+
+$('hdr-outliers').addEventListener('click', () => {
+  UI.svm('stats');
+});
 
 // Load JIRA & DS settings from localStorage
 $('jira-url').value = localStorage.getItem('ll-jira-url') || '';
