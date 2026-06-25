@@ -35,3 +35,7 @@
 - Canvas 2D for interactive charts (performance); SVG for exports (quality).
 - All Graphify code goes in `§JS-22 GRAPHIFY ENGINE` in `loglens.html`.
 - If D3 fails to load (offline), fall back gracefully and toast a warning.
+
+## Git Version Control Rule
+- **ALWAYS** perform a `git add`, `git commit` (with a descriptive message), and `git push` command after every major change or milestone is successfully finished and verified.
+

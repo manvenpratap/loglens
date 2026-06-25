@@ -1113,6 +1113,30 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   outline: 2px dashed rgba(255,69,58,.7) !important;
   box-shadow: 0 0 5px rgba(255,69,58,.3);
 }
+.g-bar.g-critical {
+  outline: 2px solid var(--amber) !important;
+  box-shadow: 0 0 8px rgba(255,149,0,.5),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.tree-row {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--bg-0);
+  transition: background .13s var(--ease-out);
+  border-left: 2px solid transparent;
+}
+.tree-row:hover {
+  background: var(--glass) !important;
+  border-left-color: var(--bdr-h);
+}
+.tree-row.kb-focus {
+  background: var(--amber-g) !important;
+  outline: 1px solid var(--amber) !important;
+  outline-offset: -1px;
+}
+.tchev.expanded {
+  transform: rotate(90deg);
+  color: var(--amber) !important;
+}
 .stats-row:hover {
   background: var(--glass) !important;
 }
@@ -1415,6 +1439,16 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
         </div>
         <button class="btn btn-sm btn-p" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
       </div>
+      <div class="div"></div>
+      <div class="sh" id="hdr-unparsed" style="cursor:pointer;" onclick="$('p-unparsed-body').classList.toggle('hidden')">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> Unparsed Analyzer <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
+      </div>
+      <div id="p-unparsed-body" class="fcol gap1 hidden" style="margin-top:4px;">
+        <button class="btn btn-sm" id="btn-analyze-unparsed" style="font-size:11px;padding:4px 8px;">🔍 Analyze Unparsed Lines</button>
+        <div id="unparsed-results" style="margin-top:8px; font-size:11px; color:var(--t3); display:flex; flex-direction:column; gap:6px;">
+          No analysis run yet. Parse a log first.
+        </div>
+      </div>
     </div>
 
     <!-- SETTINGS -->
@@ -1445,18 +1479,35 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
           <select class="inp" id="ds-type" style="font-size:11px;padding:4px 6px;">
             <option value="loki">Grafana Loki</option>
             <option value="elastic">Elasticsearch</option>
+            <option value="aws">AWS CloudWatch Logs Insights</option>
           </select>
         </div>
         <div class="f">
           <div class="fl" style="font-size:10px;">Base Endpoint URL</div>
           <input class="inp" id="ds-url" placeholder="http://localhost:3100" style="font-size:11px;padding:4px 6px;" value="http://localhost:3100"/>
         </div>
-        <div class="f">
+        <div class="f" id="ds-auth-wrap">
           <div class="fl" style="font-size:10px;">Auth Header <span class="cm">(optional, e.g. Bearer token)</span></div>
           <input class="inp" id="ds-auth" placeholder="Bearer ..." style="font-size:11px;padding:4px 6px;"/>
         </div>
+        <div class="f hidden" id="ds-aws-region-wrap">
+          <div class="fl" style="font-size:10px;">AWS Region</div>
+          <input class="inp" id="ds-aws-region" placeholder="us-east-1" style="font-size:11px;padding:4px 6px;" value="us-east-1"/>
+        </div>
+        <div class="f hidden" id="ds-aws-key-wrap">
+          <div class="fl" style="font-size:10px;">AWS Access Key ID</div>
+          <input class="inp" id="ds-aws-key" placeholder="AKIA..." style="font-size:11px;padding:4px 6px;"/>
+        </div>
+        <div class="f hidden" id="ds-aws-secret-wrap">
+          <div class="fl" style="font-size:10px;">AWS Secret Access Key</div>
+          <input class="inp" type="password" id="ds-aws-secret" placeholder="Secret Key" style="font-size:11px;padding:4px 6px;"/>
+        </div>
+        <div class="f hidden" id="ds-aws-group-wrap">
+          <div class="fl" style="font-size:10px;">AWS Log Group Name</div>
+          <input class="inp" id="ds-aws-group" placeholder="/aws/lambda/my-function" style="font-size:11px;padding:4px 6px;"/>
+        </div>
         <div class="f">
-          <div class="fl" style="font-size:10px;">Query <span class="cm">(Loki LogQL / ES Lucene)</span></div>
+          <div class="fl" id="ds-query-lbl" style="font-size:10px;">Query <span class="cm">(Loki LogQL / ES Lucene)</span></div>
           <input class="inp" id="ds-query" placeholder='{app="my-app"}' style="font-size:11px;padding:4px 6px;" value='{app="my-app"}'/>
         </div>
         <div class="flex gap1 mt1">
@@ -1477,6 +1528,37 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
           <div class="fl" style="font-size:10px;">JIRA Webhook URL</div>
           <input class="inp" id="jira-webhook" placeholder="https://company.atlassian.net/rest/api/2/issue..." style="font-size:11px;padding:4px 6px;"/>
           <div class="fh" style="font-size:9px;">Webhook URL to POST JSON ticket data.</div>
+        </div>
+      </div>
+      <div class="div" style="margin: 12px 0;"></div>
+      <div class="sh" id="hdr-watch" style="cursor:pointer;" onclick="$('p-watch-body').classList.toggle('hidden')">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Directory Watcher <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
+      </div>
+      <div id="p-watch-body" class="fcol gap1 hidden" style="margin-top:6px;">
+        <div class="f">
+          <button class="btn btn-sm wf" id="btn-watch-dir"><span class="ico" aria-hidden="true">📁</span> Watch Folder</button>
+          <div id="watch-dir-name" style="font-size:10px; color:var(--t3); margin-top:4px; word-break:break-all;">No folder watched</div>
+        </div>
+        <div class="f" style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+          <input type="checkbox" id="watch-auto-reload" style="cursor:pointer;"/>
+          <label for="watch-auto-reload" style="font-size:10px; color:var(--t2); cursor:pointer; user-select:none;">Auto-reload log on modification</label>
+        </div>
+      </div>
+      <div class="div" style="margin: 12px 0;"></div>
+      <div class="sh" id="hdr-git" style="cursor:pointer;" onclick="$('p-git-body').classList.toggle('hidden')">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span> Git Configuration Sync <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
+      </div>
+      <div id="p-git-body" class="fcol gap1 hidden" style="margin-top:6px;">
+        <div class="f">
+          <div class="fl" style="font-size:10px;">Git Raw URL</div>
+          <input class="inp" id="git-url" placeholder="https://raw.githubusercontent.com/.../rules.json" style="font-size:11px;padding:4px 6px;"/>
+        </div>
+        <div class="f">
+          <div class="fl" style="font-size:10px;">Auth Token <span class="cm">(optional, e.g. GitHub PAT)</span></div>
+          <input class="inp" type="password" id="git-token" placeholder="ghp_..." style="font-size:11px;padding:4px 6px;"/>
+        </div>
+        <div class="flex gap1 mt1">
+          <button class="btn btn-bl btn-sm wf" id="btn-git-sync"><span class="ico" aria-hidden="true">🔄</span> Sync Config</button>
         </div>
       </div>
       <div class="div" style="margin: 12px 0;"></div>
@@ -1592,6 +1674,7 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
     <div class="vt" data-v="tree"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
     <div class="vt" data-v="stats"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
     <div class="vt" data-v="graph"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
+    <div class="vt" data-v="3d"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
     <input class="inp" id="trace-filter" placeholder="Trace ID Filter" style="width:130px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:4px;display:none;"/>
     <div class="vt-gap"></div>
     <div class="vt-chips" id="vt-chips"></div>
@@ -1860,12 +1943,39 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
 /* ================================================================
    §JS-1 APPLICATION STATE
    ================================================================ */
+/**
+ * @namespace S
+ * @description Global application state store holding active config, logs, thread states, views, and execution stats.
+ * @property {FileSystemFileHandle|null} cfgHandle - Live file handle for config synchronization.
+ * @property {Object|null} cfg - Currently loaded log parsing configuration.
+ * @property {boolean} fsOk - Support indicator for showOpenFilePicker API.
+ * @property {File|null} logFile - Active log file object.
+ * @property {string[]} threads - List of thread IDs discovered during parsing.
+ * @property {Object} trees - Event node trees binned by thread ID.
+ * @property {string|null} activeThr - Active thread ID displayed in timeline/tree views.
+ * @property {Worker|null} worker - Instance of background Web Worker parser.
+ * @property {string|null} wUrl - Blob URL of active worker code.
+ * @property {number} parseStart - High-precision performance start timestamp of active parse.
+ * @property {string} viewMode - Active visual layout panel ('split' | 'gantt' | 'tree' | 'stats' | 'graph' | '3d').
+ * @property {string} modalMode - Keyword wizard builder input mode ('guided' | 'advanced').
+ * @property {boolean} sbCollapsed - Sidebar state tracker.
+ * @property {string[]} wizKw - Keyword tags binned inside guided wizard builder.
+ * @property {Object[]} ljAppenders - Deserialized Log4j Appender configurations.
+ * @property {string} _wizRx - Temporarily compiled wizard regex patterns.
+ * @property {Object} _wizCm - Wizard capture mapping parameters.
+ * @property {boolean} swimlaneMode - Swimlane multi-thread Canvas rendering toggle.
+ * @property {string|null} activeTraceId - Highlighted/filtered Trace ID transaction string.
+ * @property {number} outlierCount - Number of statistically anomalies detected in the current run.
+ * @property {number} slaBreachCount - Number of events breaching SLA thresholds.
+ * @property {Object} annotations - Sticky-notes map binned by event node ID.
+ * @property {Object|null} stats - Processing performance statistics of the current log session.
+ */
 const S={
   cfgHandle:null,cfg:null,
   fsOk:typeof window.showOpenFilePicker==='function',
   logFile:null,threads:[],trees:{},activeThr:null,
   worker:null,wUrl:null,parseStart:0,
-  viewMode:'split',       // 'split'|'gantt'|'tree'|'stats'|'graph'
+  viewMode:'split',       // 'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
   modalMode:'guided',     // 'guided'|'advanced'
   sbCollapsed:false,
   wizKw:[],               // keyword chips
@@ -1943,7 +2053,7 @@ function pl(line,tf,stacks,trees,all){
   for(const r of RULES){
     const m=r._rx.exec(line);if(!m)continue;
     const c=caps(m,r.captureMapping);const thr=(c.thread||'default').trim();
-    all.add(thr);if(tf&&thr!==tf)return;
+    all.add(thr);if(tf&&thr!==tf)return true;
     const ts=c.timestamp?pts(c.timestamp):gts(line);
     if(!stacks[thr])stacks[thr]=[];if(!trees[thr])trees[thr]=[];
     const stk=stacks[thr],tr=trees[thr];
@@ -1959,31 +2069,74 @@ function pl(line,tf,stacks,trees,all){
       case'push':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);stk.push(nd);break;
       case'pop':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}break;
       case'inline':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);break;
-    }return;
+    }return true;
   }
+  return false;
 }
-function run(file,cfg,tf,scan){
-  compile(cfg);const C=512*1024,SC=200*1024;
+function run(files,cfg,tf,scan){
+  compile(cfg);
+  const isArray = Array.isArray(files);
+  const fileList = isArray ? files : [files];
   const rd=new FileReaderSync(),stacks={},trees={},all=new Set();
-  let buf='',off=0,n=0;
-  while(off<file.size){
-    if(scan&&off>=SC)break;
-    const sl=file.slice(off,Math.min(off+C,file.size));const t=rd.readAsText(sl);
-    const pts2=(buf+t).split('\n');buf=pts2.pop();
-    for(const l of pts2){const tr=l.trim();if(tr){pl(tr,tf,stacks,trees,all);n++;}}
-    off+=C;const tot=scan?SC:file.size;
-    self.postMessage({type:'progress',percent:Math.min(99,Math.round(off/tot*100)),linesProcessed:n});
+  let totalProcessed = 0, matchedLines = 0, unparsedSample = [];
+  
+  for (let fileIdx = 0; fileIdx < fileList.length; fileIdx++) {
+    const file = fileList[fileIdx];
+    let C = 512 * 1024;
+    if (file.size > 100 * 1024 * 1024) {
+      const mem = (self.navigator && self.navigator.deviceMemory) || 4;
+      C = mem >= 8 ? 2048 * 1024 : 1024 * 1024;
+    }
+    const SC = 200 * 1024;
+    let buf='',off=0,n=0;
+    while(off<file.size){
+      if(scan&&off>=SC)break;
+      const sl=file.slice(off,Math.min(off+C,file.size));const t=rd.readAsText(sl);
+      const pts2=(buf+t).split('\n');buf=pts2.pop();
+      for(const l of pts2){
+        const tr=l.trim();
+        if(tr){
+          if(pl(tr,tf,stacks,trees,all)) {
+            matchedLines++;
+          } else {
+            if(unparsedSample.length < 1000) unparsedSample.push(tr);
+          }
+          n++;
+        }
+      }
+      off+=C;
+      const fileFraction = off / file.size;
+      const percent = isArray
+        ? Math.round(((fileIdx + fileFraction) / fileList.length) * 100)
+        : Math.min(99, Math.round(fileFraction * 100));
+      self.postMessage({type:'progress',percent,linesProcessed:totalProcessed+n});
+    }
+    if(buf&&buf.trim()){
+      const tr=buf.trim();
+      if(pl(tr,tf,stacks,trees,all)) {
+        matchedLines++;
+      } else {
+        if(unparsedSample.length < 1000) unparsedSample.push(tr);
+      }
+      n++;
+    }
+    for(const s of Object.values(stacks))s.length=0;
+    totalProcessed += n;
+    if(scan)break;
   }
-  if(buf&&buf.trim()){pl(buf.trim(),tf,stacks,trees,all);n++;}
-  for(const s of Object.values(stacks))s.length=0;
-  return{trees,threads:[...all].sort(),linesProcessed:n};
+  for(const [thr, tree] of Object.entries(trees)){
+    tree.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  }
+  const totalSize = fileList.reduce((s,f)=>s+f.size, 0);
+  return {trees,threads:[...all].sort(),stats:{fileSize:totalSize,linesProcessed:totalProcessed,matchedLines,unparsedSample}};
 }
 self.onmessage=function(e){
-  const{type,file,config,threadFilter}=e.data;
+  const{type,file,files,config,threadFilter}=e.data;
+  const target = files || file;
   try{
-    if(type==='scan'){const{threads}=run(file,config,'',true);self.postMessage({type:'scan_done',threads});}
-    else{const{trees,threads,linesProcessed}=run(file,config,threadFilter||'',false);
-      self.postMessage({type:'done',trees,threads,stats:{fileSize:file.size,linesProcessed}});}
+    if(type==='scan'){const{threads}=run(target,config,'',true);self.postMessage({type:'scan_done',threads});}
+    else{const{trees,threads,stats}=run(target,config,threadFilter||'',false);
+      self.postMessage({type:'done',trees,threads,stats});}
   }catch(err){self.postMessage({type:'error',message:err.message});}
 };
 `;
@@ -1991,38 +2144,83 @@ self.onmessage=function(e){
 /* ================================================================
    §JS-4 UTILITIES
    ================================================================ */
-const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
-  .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-const fmtB=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':b<1073741824?(b/1048576).toFixed(1)+' MB':(b/1073741824).toFixed(2)+' GB';
-const fmtMs=ms=>ms==null||isNaN(ms)?'—':ms<1?ms.toFixed(2)+'ms':ms<1000?ms.toFixed(1)+'ms':ms<60000?(ms/1000).toFixed(3)+'s':(ms/60000).toFixed(2)+'min';
-const gid=()=>'r_'+Math.random().toString(36).slice(2,9);
-const scol=c=>/^#[0-9a-fA-F]{3,8}$/.test(String(c).trim())?String(c).trim():'#8b949e';
-const escRx=s=>s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,'\\$&');
-const $=id=>document.getElementById(id);
-const cnt=ns=>(ns||[]).reduce((n,nd)=>n+1+cnt(nd.events),0);
-const mEnd=ns=>{let m=0;for(const n of(ns||[])){const t=n.endTimestamp??n.timestamp??0;if(t>m)m=t;const c=mEnd(n.events||[]);if(c>m)m=c;}return m;};
-const ibg=c=>{const l=document.documentElement.dataset.theme==='light';return c+(l?'30':'1e');};
+const UTILS={
+  esc(s){
+    return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  },
+  fmtB(b){
+    return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':b<1073741824?(b/1048576).toFixed(1)+' MB':(b/1073741824).toFixed(2)+' GB';
+  },
+  fmtMs(ms){
+    return ms==null||isNaN(ms)?'—':ms<1?ms.toFixed(2)+'ms':ms<1000?ms.toFixed(1)+'ms':ms<60000?(ms/1000).toFixed(3)+'s':(ms/60000).toFixed(2)+'min';
+  },
+  gid(){
+    return 'r_'+Math.random().toString(36).slice(2,9);
+  },
+  scol(c){
+    return /^#[0-9a-fA-F]{3,8}$/.test(String(c).trim())?String(c).trim():'#8b949e';
+  },
+  escRx(s){
+    return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,'\\$&');
+  },
+  $(id){
+    return document.getElementById(id);
+  },
+  cnt(ns){
+    return (ns||[]).reduce((n,nd)=>n+1+UTILS.cnt(nd.events),0);
+  },
+  mEnd(ns){
+    let m=0;
+    for(const n of(ns||[])){
+      const t=n.endTimestamp??n.timestamp??0;
+      if(t>m)m=t;
+      const c=UTILS.mEnd(n.events||[]);
+      if(c>m)m=c;
+    }
+    return m;
+  },
+  ibg(c){
+    const l=document.documentElement.dataset.theme==='light';
+    return c+(l?'30':'1e');
+  },
+  renderMarkdown(md) {
+    if (!md) return '';
+    let h = UTILS.esc(md)
+      .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+      .replace(/^##\s+(.*)$/gm, '<h4 class="ann-h4">$1</h4>')
+      .replace(/^#\s+(.*)$/gm, '<h3 class="ann-h3">$1</h3>')
+      .replace(/^-\s+(.*)$/gm, '• $1')
+      .replace(/\n/g, '<br>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code class="mono-inline">$1</code>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="ann-link">$1</a>');
+    return h;
+  },
+  toast(msg,type='info',d=3200){
+    const el=document.createElement('div');
+    el.className='toast t-'+(type==='success'?'ok':type==='error'?'er':type==='warn'?'wa':'in');
+    el.textContent=msg;
+    const container = UTILS.$('toast-r');
+    if (container) container.appendChild(el);
+    setTimeout(()=>el.remove(),d);
+  }
+};
 
-function renderMarkdown(md) {
-  if (!md) return '';
-  let h = esc(md)
-    .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-    .replace(/^##\s+(.*)$/gm, '<h4 class="ann-h4">$1</h4>')
-    .replace(/^#\s+(.*)$/gm, '<h3 class="ann-h3">$1</h3>')
-    .replace(/^-\s+(.*)$/gm, '• $1')
-    .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code class="mono-inline">$1</code>')
-    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="ann-link">$1</a>');
-  return h;
-}
-
-function toast(msg,type='info',d=3200){
-  const el=document.createElement('div');
-  el.className='toast t-'+(type==='success'?'ok':type==='error'?'er':type==='warn'?'wa':'in');
-  el.textContent=msg;$('toast-r').appendChild(el);setTimeout(()=>el.remove(),d);
-}
+const esc=UTILS.esc;
+const fmtB=UTILS.fmtB;
+const fmtMs=UTILS.fmtMs;
+const gid=UTILS.gid;
+const scol=UTILS.scol;
+const escRx=UTILS.escRx;
+const $=UTILS.$;
+window.$=UTILS.$;
+const cnt=UTILS.cnt;
+const mEnd=UTILS.mEnd;
+const ibg=UTILS.ibg;
+const renderMarkdown=UTILS.renderMarkdown;
+const toast=UTILS.toast;
 
 /* ================================================================
    §JS-5 THEME MANAGER
@@ -2450,6 +2648,10 @@ const HS={
 /* ================================================================
    §JS-12 CONFIG MANAGER
    ================================================================ */
+/**
+ * @namespace CFG
+ * @description Manages configuration files, including importing, saving to IndexedDB or local files, rendering settings panel, and mapping configuration rules.
+ */
 const CFG={
   load(c){
     S.cfg=c;this.rl();this.sgs();
@@ -2494,14 +2696,18 @@ const CFG={
   },
   up(rule){
     if(!S.cfg)return;
+    const isNew=!S.cfg.elementRules.some(r=>r.id===rule.id);
     const i=S.cfg.elementRules.findIndex(r=>r.id===rule.id);
     if(i>=0)S.cfg.elementRules[i]=rule;else S.cfg.elementRules.push(rule);
     this.pers();this.rl();
+    VER.bump((isNew ? 'Added rule: ' : 'Rule saved: ')+(rule.name||''));
   },
   del(idx){
     if(!S.cfg)return;const r=S.cfg.elementRules[idx];
     if(!r||!confirm(`Delete rule "${r.name}"?`))return;
-    S.cfg.elementRules.splice(idx,1);this.pers();this.rl();toast('Rule deleted.','info');
+    S.cfg.elementRules.splice(idx,1);this.pers();this.rl();
+    VER.bump('Deleted rule: '+r.name);
+    toast('Rule deleted.','info');
   },
   async pers(){
     if(!S.cfg)return;const json=JSON.stringify(S.cfg,null,2);
@@ -2551,9 +2757,154 @@ const FS={
   },
 };
 
+/**
+ * @namespace WATCH
+ * @description Monitors a selected local directory handle using File System Access API polling for log modifications.
+ */
+const WATCH = {
+  _interval: null,
+  
+  async chooseDir() {
+    try {
+      if (!window.showDirectoryPicker) {
+        return toast('Directory Picker API not supported in this browser.', 'error');
+      }
+      const handle = await window.showDirectoryPicker();
+      S.watchedDirHandle = handle;
+      $('watch-dir-name').textContent = `Watching: ${handle.name}`;
+      
+      S.watchMeta = {};
+      if (S.logFile) {
+        S.watchMeta[S.logFile.name] = { size: S.logFile.size, mtime: S.logFile.lastModified };
+      }
+      
+      this.start();
+      toast(`Watching directory "${handle.name}"`, 'success');
+    } catch (e) {
+      if (e.name !== 'AbortError') toast('Directory select failed: ' + e.message, 'error');
+    }
+  },
+  
+  start() {
+    this.stop();
+    this._interval = setInterval(() => this.poll(), 2000);
+  },
+  
+  stop() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  },
+  
+  async poll() {
+    if (!S.watchedDirHandle) return;
+    if (!S.lastParsedFile) return;
+    
+    const fileNames = S.lastParsedFile.name.split(', ').map(n => n.trim());
+    let changed = false;
+    
+    for (const name of fileNames) {
+      try {
+        const fileHandle = await S.watchedDirHandle.getFileHandle(name);
+        const fileObj = await fileHandle.getFile();
+        
+        if (!S.watchMeta) S.watchMeta = {};
+        const meta = S.watchMeta[name];
+        
+        if (!meta) {
+          S.watchMeta[name] = { size: fileObj.size, mtime: fileObj.lastModified };
+        } else if (meta.size !== fileObj.size || meta.mtime !== fileObj.lastModified) {
+          S.watchMeta[name] = { size: fileObj.size, mtime: fileObj.lastModified };
+          changed = true;
+        }
+      } catch (e) {
+        // File might not exist or be locked
+      }
+    }
+    
+    if (changed) {
+      const auto = $('watch-auto-reload').checked;
+      if (auto) {
+        toast('Watched log file modified. Auto-reloading...', 'info');
+        try {
+          const files = [];
+          for (const name of fileNames) {
+            const fileHandle = await S.watchedDirHandle.getFileHandle(name);
+            const fileObj = await fileHandle.getFile();
+            files.push(fileObj);
+          }
+          
+          if (files.length === 1) {
+            S.logFile = files[0];
+            MF.files = [];
+          } else {
+            MF.files = files;
+            S.logFile = files[0];
+          }
+          
+          $('btn-parse').click();
+        } catch (err) {
+          console.error('[Watch Auto-Reload]', err);
+          toast('Auto-reload failed: ' + err.message, 'error');
+        }
+      } else {
+        toast('Watched log file was modified. Click "Parse" to reload.', 'warn');
+      }
+    }
+  }
+};
+
+/**
+ * @namespace GIT
+ * @description Synchronizes configuration files from remote Git repository raw URLs.
+ */
+const GIT = {
+  async sync() {
+    const url = $('git-url').value.trim();
+    const token = $('git-token').value.trim();
+    if (!url) return toast('Please enter a Git Raw URL.', 'warn');
+    
+    toast('Syncing configuration from Git...', 'info');
+    $('btn-git-sync').disabled = true;
+    
+    try {
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `token ${token}`;
+      }
+      
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error(`Git fetch failed: ${res.status} ${res.statusText}`);
+      
+      const cfg = await res.json();
+      if (!cfg || typeof cfg !== 'object') throw new Error('Invalid JSON configuration.');
+      
+      S.cfgHandle = null;
+      CFG.load(cfg);
+      
+      $('cfg-dot').className = 'cfg-dot live';
+      $('cfg-txt').textContent = 'Git Synced';
+      $('hdr-cfg').textContent = 'Config (git)';
+      $('hdr-cfg').className = 'badge b-blue';
+      
+      toast('Configuration synced from Git.', 'success');
+    } catch (e) {
+      console.error('[LL]', e);
+      toast('Git Sync failed: ' + e.message, 'error');
+    } finally {
+      $('btn-git-sync').disabled = false;
+    }
+  }
+};
+
 /* ================================================================
    §JS-14 WORKER MANAGER
    ================================================================ */
+/**
+ * @namespace WM
+ * @description Manages the background Web Worker parser instance, handling log parsing queries, file streaming, and thread discovery.
+ */
 const WM={
   _mk(){
     this.kill();
@@ -2570,7 +2921,7 @@ const WM={
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
       };
       w.onerror=e=>{this.kill();rej(e);};
-      w.postMessage({type:'scan',file,config:cfg});
+      w.postMessage({type:'scan',file:Array.isArray(file)?file[0]:file,config:cfg});
     });
   },
   parse(file,cfg,tf){
@@ -2582,7 +2933,8 @@ const WM={
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
       };
       w.onerror=e=>{this.kill();rej(e);};
-      w.postMessage({type:'parse',file,config:cfg,threadFilter:tf});
+      const isArr=Array.isArray(file);
+      w.postMessage({type:'parse',file:isArr?null:file,files:isArr?file:null,config:cfg,threadFilter:tf});
     });
   },
 };
@@ -2590,6 +2942,10 @@ const WM={
 /* ================================================================
    §JS-15 GANTT RENDERER
    ================================================================ */
+/**
+ * @namespace GR
+ * @description Renders a waterfall Gantt chart timeline from structured event trees, mapping node durations, start positions, and self-times.
+ */
 const GR={
   _fl(nodes,d,rs,rd){
     const rows=[];
@@ -2621,6 +2977,7 @@ const GR={
       let barCls = 'g-bar';
       if (n._isOutlier) barCls += ' g-outlier';
       else if (n._isSlaBreach) barCls += ' g-sla-breach';
+      if (n._isCriticalPath) barCls += ' g-critical';
 
       let tooltip = `${esc(n.elementName || n.ruleName)} — ${esc(dur)}`;
       if (n._isOutlier) tooltip += ` [OUTLIER]`;
@@ -2658,7 +3015,48 @@ const GR={
 /* ================================================================
    §JS-16 TREE RENDERER
    ================================================================ */
+/**
+ * @namespace TR
+ * @description Virtual scroll details/summary Tree Renderer which flattens event trees into virtual rows, supporting interactive collapsing, pinning, annotations, search filtering, and context menus.
+ */
 const TR={
+  _container: null,
+  _spacer: null,
+  _content: null,
+  _visibleNodes: [],
+  _activeTree: null,
+  _rowHeight: 32,
+  
+  flatten(nodes, depth = 0, parent = null, flatList = []) {
+    for (const n of (nodes || [])) {
+      n.depth = depth;
+      n.parent = parent;
+      n.hasChildren = n.events && n.events.length > 0;
+      if (n.expanded === undefined) {
+        n.expanded = depth < 1;
+      }
+      flatList.push(n);
+      if (n.events && n.events.length > 0) {
+        this.flatten(n.events, depth + 1, n, flatList);
+      }
+    }
+    return flatList;
+  },
+
+  updateVisible() {
+    const visible = [];
+    const traverse = (nodes) => {
+      for (const n of (nodes || [])) {
+        visible.push(n);
+        if (n.hasChildren && n.expanded) {
+          traverse(n.events);
+        }
+      }
+    };
+    traverse(this._activeTree);
+    this._visibleNodes = visible;
+  },
+
   _nd(n,d){
     const col=scol(n.visualStyle?.accentColor||'#8b949e');
     const ico=esc(n.visualStyle?.icon||'•');
@@ -2676,6 +3074,8 @@ const TR={
     if (n._isSlaBreach) ab += `<span class="badge b-red" style="border: 1px dashed var(--red); background: transparent; color: var(--red); margin-left:4px;">SLA BREACH</span>`;
     if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠️ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
     if (n.correlationId) ab += `<span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>`;
+    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">🤫 GAP: ${esc(fmtMs(n._quietGap))}</span>`;
+    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">🔥 CRITICAL</span>`;
 
     const elB=n.elementName&&n.elementName!==n.ruleName?`<span class="tel" style="color:${col};">${esc(n.elementName)}</span>`:'';
     const payB=n.payload?`<div class="tpy">${esc(n.payload)}</div>`:'';
@@ -2686,22 +3086,195 @@ const TR={
     const ch=kids?`<div class="tch">${n.events.map(c=>this._nd(c,d+1)).join('')}</div>`:'';
     return`<details class="tn" ${d<2?'open':''}><summary class="ts" style="border-left:3px solid ${col};padding-left:6px;">${hd}</summary>${ch}</details>`;
   },
+
   render(tree,el){
-    if(!tree||!tree.length){el.innerHTML='';return;}
-    el.innerHTML=`<div class="tw">
-      <div class="pt"><span>🌳</span> Execution Tree
-        <span class="badge b-gray mla">${tree.length} root node${tree.length!==1?'s':''}</span>
-        <button class="btn btn-g btn-xs" data-a="exp-all" style="margin-left:4px;">Expand All</button>
-        <button class="btn btn-g btn-xs" data-a="col-all">Collapse All</button>
+    this._activeTree = tree;
+    el.style.overflow = 'hidden';
+    el.style.padding = '0';
+    el.style.display = 'flex';
+    el.style.flexDirection = 'column';
+    el.style.height = '100%';
+    
+    this.flatten(tree, 0, null, []);
+    this.updateVisible();
+    
+    el.innerHTML = `
+      <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
+        <div class="pt" style="flex-shrink:0; padding:10px 14px; display:flex; align-items:center;">
+          <span>🌳</span> Execution Tree
+          <span class="badge b-gray mla" id="tree-badge-count">${tree.length} root node${tree.length!==1?'s':''}</span>
+          <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px;">Expand All</button>
+          <button class="btn btn-g btn-xs" id="btn-tree-col">Collapse All</button>
+        </div>
+        <div class="vscroll-container" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
+          <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
+          <div class="vscroll-content" id="tree-content" style="position:absolute; left:0; top:0; right:0; will-change:transform;"></div>
+        </div>
       </div>
-      <div class="tr">${tree.map(n=>this._nd(n,0)).join('')}</div>
-    </div>`;
+    `;
+    
+    this._container = el.querySelector('#tree-vscroll');
+    this._spacer = el.querySelector('#tree-spacer');
+    this._content = el.querySelector('#tree-content');
+    
+    this._container.addEventListener('scroll', () => this.drawVisible());
+    el.querySelector('#btn-tree-exp').addEventListener('click', () => this.expandAll(true));
+    el.querySelector('#btn-tree-col').addEventListener('click', () => this.expandAll(false));
+    
+    this._content.addEventListener('click', (e) => this.handleClick(e));
+    this._content.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
+    
+    this.updateLayout();
   },
+
+  expandAll(expanded) {
+    const setExpanded = (nodes) => {
+      for (const n of (nodes || [])) {
+        n.expanded = expanded;
+        if (n.events && n.events.length > 0) setExpanded(n.events);
+      }
+    };
+    setExpanded(this._activeTree);
+    this.updateVisible();
+    this.updateLayout();
+  },
+
+  updateLayout() {
+    const totalHeight = this._visibleNodes.length * this._rowHeight;
+    this._spacer.style.height = `${totalHeight}px`;
+    
+    const countBadge = $('tree-badge-count');
+    if (countBadge && this._activeTree) {
+      countBadge.textContent = `${this._activeTree.length} root node${this._activeTree.length!==1?'s':''}`;
+    }
+    
+    this.drawVisible();
+  },
+
+  drawVisible() {
+    if (!this._container || !this._content) return;
+    const scrollTop = this._container.scrollTop;
+    const containerHeight = this._container.clientHeight || 500;
+    
+    const startIndex = Math.max(0, Math.floor(scrollTop / this._rowHeight) - 2);
+    const endIndex = Math.min(this._visibleNodes.length, Math.ceil((scrollTop + containerHeight) / this._rowHeight) + 2);
+    
+    const slice = this._visibleNodes.slice(startIndex, endIndex);
+    
+    let html = '';
+    slice.forEach((n, idx) => {
+      const globalIdx = startIndex + idx;
+      html += this.renderRow(n, globalIdx);
+    });
+    
+    this._content.style.transform = `translateY(${startIndex * this._rowHeight}px)`;
+    this._content.innerHTML = html;
+  },
+
+  renderRow(n, idx) {
+    const col = scol(n.visualStyle?.accentColor || '#8b949e');
+    const ico = esc(n.visualStyle?.icon || '•');
+    const kids = n.hasChildren;
+    const dur = n.duration != null ? fmtMs(n.duration) : null;
+    const ts = n.timestamp != null ? new Date(n.timestamp).toISOString().replace('T', ' ').slice(0, 23) : '';
+    const bg = ibg(col);
+    const durB = dur ? `<span class="tdr" style="color:${col};">${esc(dur)}</span>` : '';
+    const hotB = HS.badge(n._hp);
+    const smB = n._sm != null && n.duration != null && n._sm !== n.duration ? `<span class="ts-b">self ${esc(fmtMs(n._sm))}</span>` : '';
+    const tsB = ts ? `<span class="tts">${esc(ts)}</span>` : '';
+    
+    let ab = '';
+    if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
+    if (n._isSlaBreach) ab += `<span class="badge b-red" style="border:1px dashed var(--red); background:transparent; color:var(--red); margin-left:4px;">SLA BREACH</span>`;
+    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠️ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
+    if (n.correlationId) ab += `<span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>`;
+    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">🤫 GAP: ${esc(fmtMs(n._quietGap))}</span>`;
+    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">🔥 CRITICAL</span>`;
+
+    const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
+    const payB = n.payload ? `<span class="tpy" style="margin-left:8px; color:var(--t3);">${esc(n.payload)}</span>` : '';
+    const noteB = (S.annotations && S.annotations[n.id]) ? `<span class="tnt" style="margin-left:8px; color:var(--amber);">📝 ${esc(S.annotations[n.id].slice(0,30))}</span>` : '';
+    
+    const chev = kids ? `<span class="tchev ${n.expanded ? 'expanded' : ''}" style="display:inline-block; transition:transform 0.15s; cursor:pointer; font-size:9px; margin-right:4px; color:var(--t4);">${n.expanded ? '▼' : '▶'}</span>` : '<span style="display:inline-block; width:13px;"></span>';
+    
+    const indent = n.depth * 16;
+    const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
+    
+    return `
+      <div class="tree-row${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px; display:flex; align-items:center; padding-left:${indent}px; border-bottom:1px solid var(--bdr-d); font-size:12px; white-space:nowrap; overflow:hidden; user-select:none; cursor:pointer;">
+        ${chev}
+        <div class="tico" style="background:${bg}; color:${col}; width:16px; height:16px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:10px; margin-right:6px; flex-shrink:0;">${ico}</div>
+        <div class="tbd" style="display:flex; align-items:center; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;">
+          <span class="tnm" style="color:${col}; font-weight:bold; margin-right:6px;">${esc(n.ruleName)}</span>
+          ${elB}
+          ${durB}
+          ${hotB}
+          ${smB}
+          ${tsB}
+          ${ab}
+          ${payB}
+          ${noteB}
+        </div>
+      </div>
+    `;
+  },
+
+  handleClick(e) {
+    const row = e.target.closest('.tree-row');
+    if (!row) return;
+    const idx = parseInt(row.dataset.idx, 10);
+    const n = this._visibleNodes[idx];
+    if (!n) return;
+    
+    if (e.target.classList.contains('tchev')) {
+      n.expanded = !n.expanded;
+      this.updateVisible();
+      this.updateLayout();
+      e.stopPropagation();
+      return;
+    }
+    
+    const traceBadge = e.target.closest('[data-a="trace-click"]');
+    if (traceBadge) {
+      S.activeTraceId = traceBadge.dataset.tc;
+      const tfInput = $('trace-filter');
+      if (tfInput) tfInput.value = S.activeTraceId;
+      UI.rv();
+      e.stopPropagation();
+      return;
+    }
+
+    KBN._idx = idx;
+    this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
+    row.classList.add('kb-focus');
+    
+    if (e.detail === 2) {
+      UI.openAnn(n);
+    }
+  },
+
+  handleContextMenu(e) {
+    const row = e.target.closest('.tree-row');
+    if (!row) return;
+    const idx = parseInt(row.dataset.idx, 10);
+    const n = this._visibleNodes[idx];
+    if (!n) return;
+    
+    KBN._idx = idx;
+    this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
+    row.classList.add('kb-focus');
+    
+    CTX.show(e, n);
+  }
 };
 
 /* ================================================================
    §JS-17 UI CONTROLLER
    ================================================================ */
+/**
+ * @namespace UI
+ * @description Controls the application workspace interface, managing modals, layout panels, progress bars, view-switching, tab selection, resizes, and thread chips.
+ */
 const UI={
   ub(){const can=!!(S.cfg&&S.logFile);$('btn-parse').disabled=!can;$('btn-disc').disabled=!can;},
   prog(p,l,n){
@@ -2732,9 +3305,13 @@ const UI={
     }
     $('trace-filter').style.display = hasCorr ? 'inline-block' : 'none';
 
+    const cov = stats.linesProcessed > 0 && stats.matchedLines != null
+      ? ((stats.matchedLines / stats.linesProcessed) * 100).toFixed(1) + '%'
+      : 'N/A';
     const statsH=`<div class="stats" id="stats-bar">
       <div class="sc"><div class="sv">${esc(fmtB(stats.fileSize))}</div><div class="sl">File Size</div></div>
       <div class="sc"><div class="sv">${(stats.linesProcessed||0).toLocaleString()}</div><div class="sl">Lines</div></div>
+      <div class="sc"><div class="sv">${cov}</div><div class="sl">Coverage</div></div>
       <div class="sc"><div class="sv">${threads.length}</div><div class="sl">Threads</div></div>
       <div class="sc"><div class="sv" id="s-nodes">${cnt(at)}</div><div class="sl">Nodes</div></div>
       <div class="sc"><div class="sv" style="color:var(--red); font-weight:bold;">${S.outlierCount||0}</div><div class="sl">Outliers</div></div>
@@ -2752,7 +3329,12 @@ const UI={
   },
 
   rv(){
+    if (typeof LANDSCAPE3D !== 'undefined' && LANDSCAPE3D.destroy) {
+      LANDSCAPE3D.destroy();
+    }
     const r=$('res');
+    r.style.overflowY = 'auto';
+    r.style.padding = '14px';
     [...r.children].filter(el=>el.id!=='stats-bar').forEach(el=>el.remove());
     let tree=S.trees[S.activeThr]||[];HS.ann(tree,null);
     if(S.activeTraceId){
@@ -2771,6 +3353,7 @@ const UI={
     }
     const vm=S.viewMode;
     if(vm==='split'){
+      r.style.overflowY = 'hidden';
       const w=document.createElement('div');w.className='res-split';w.style.cssText='flex:1;min-height:0;';
       const l=document.createElement('div');l.className='sp-pane';
       const h=document.createElement('div');h.className='sp-hdl';h.id='sp-hdl';
@@ -2781,6 +3364,7 @@ const UI={
     } else if(vm==='gantt'){
       const d=document.createElement('div');
       if(S.swimlaneMode){
+        r.style.overflowY = 'hidden';
         d.style.cssText='flex:1;display:flex;flex-direction:column;';r.appendChild(d);
         SWIMLANE.init(d);
       } else {
@@ -2790,8 +3374,18 @@ const UI={
       const d=document.createElement('div');r.appendChild(d);STATS.render(tree,d);
     } else if(vm==='graph'){
       const d=document.createElement('div');r.appendChild(d);GRAPHIFY.render(S.trees,d);
+    } else if(vm==='3d'){
+      r.style.overflowY = 'hidden';
+      const d=document.createElement('div');
+      d.style.cssText='flex:1;display:flex;flex-direction:column;position:relative;min-height:0;';
+      r.appendChild(d);
+      LANDSCAPE3D.init(tree, d);
     } else {
-      const d=document.createElement('div');r.appendChild(d);TR.render(tree,d);
+      r.style.overflowY = 'hidden';
+      const d=document.createElement('div');
+      d.style.cssText='flex:1;display:flex;flex-direction:column;min-height:0;';
+      r.appendChild(d);
+      TR.render(tree,d);
     }
   },
 
@@ -2985,6 +3579,10 @@ function dlSample(){
 /* ================================================================
    §JS-21 EXPORT ENGINE
    ================================================================ */
+/**
+ * @namespace EXP
+ * @description Export Engine handling structured data generation for CSV logs, JSON event trees, SVG waterfall graphics, and standalone interactive HTML parsing reports.
+ */
 const EXP={
   /* Flatten all tree nodes to a list for CSV */
   _flat(nodes,thr,depth,arr){
@@ -3459,6 +4057,10 @@ const GZ={
 /* ================================================================
    §JS-25 INDEXED-DB CACHE
    ================================================================ */
+/**
+ * @namespace IDB
+ * @description Local cache storage engine utilizing IndexedDB to store, retrieve, and evict parsed session logs using SHA-256 data validation hashes.
+ */
 const IDB={
   _db:null,DB:'ll-cache',STORE:'sessions',MAX:5,
   async open(){
@@ -3471,7 +4073,10 @@ const IDB={
     });
   },
   async _key(file,cfg){
-    const raw=`${file.name}|${file.size}|${file.lastModified}|${JSON.stringify(cfg)}`;
+    const isArr=Array.isArray(file);
+    const files=isArr?file:[file];
+    const fileKeys=files.map(f=>`${f.name}|${f.size}|${f.lastModified}`).join(';');
+    const raw=`${fileKeys}|${JSON.stringify(cfg)}`;
     const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw));
     return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
   },
@@ -3488,7 +4093,7 @@ const IDB={
         all.slice(0,all.length-this.MAX+1).forEach(r=>del.delete(r.key));
       }
       const tx=db.transaction(this.STORE,'readwrite').objectStore(this.STORE);
-      tx.put({key,ts:Date.now(),fileName:file.name,trees,threads,stats});
+      tx.put({key,ts:Date.now(),fileName:Array.isArray(file)?file.map(f=>f.name).join(', '):file.name,trees,threads,stats});
     }catch(e){console.warn('[IDB]',e);}
   },
   async get(file,cfg){
@@ -3600,6 +4205,7 @@ const RO={
         const rules=S.cfg.elementRules;
         const [moved]=rules.splice(from,1);rules.splice(to,0,moved);
         CFG.pers();CFG.rl();
+        VER.bump('Reordered rule: '+moved.name);
         toast(`Moved "${moved.name}" to position ${to+1}.`,'info');
       });
     });
@@ -3682,21 +4288,23 @@ const PIN={
    ================================================================ */
 const KBN={
   _idx:0,
-  _nodes(){
-    return [...document.querySelectorAll('#res summary.ts')];
-  },
   move(dir){
-    const ns=this._nodes();if(!ns.length)return;
-    this._idx=Math.max(0,Math.min(ns.length-1,this._idx+dir));
-    ns.forEach(n=>n.classList.remove('kb-focus'));
-    ns[this._idx].classList.add('kb-focus');
-    ns[this._idx].scrollIntoView({block:'nearest',behavior:'smooth'});
+    if(!TR._visibleNodes||!TR._visibleNodes.length)return;
+    this._idx=Math.max(0,Math.min(TR._visibleNodes.length-1,this._idx+dir));
+    TR.drawVisible();
+    const container=TR._container;
+    if(container){
+      const rowTop=this._idx*TR._rowHeight;
+      const containerHeight=container.clientHeight;
+      const scrollTop=container.scrollTop;
+      if(rowTop<scrollTop){container.scrollTop=rowTop;}
+      else if(rowTop+TR._rowHeight>scrollTop+containerHeight){container.scrollTop=rowTop+TR._rowHeight-containerHeight;}
+    }
   },
   pinFocused(){
-    const ns=this._nodes();const f=ns[this._idx];
-    if(!f)return;
-    // retrieve node data from DOM — use the details element ID if stored
-    toast('Pin from keyboard: right-click the highlighted node instead.','info',2500);
+    if(!TR._visibleNodes||!TR._visibleNodes.length)return;
+    const n=TR._visibleNodes[this._idx];
+    if(n)PIN.toggle(n);
   },
   search(q){
     if(!q)return;
@@ -3713,32 +4321,182 @@ const KBN={
 /* ================================================================
    §JS-31 CONFIG VERSIONING
    ================================================================ */
+/**
+ * @namespace VER
+ * @description Manages configuration versioning, change logging, snapshot recording, and rule diff visualization.
+ */
 const VER={
-  bump(note){
+  bump(note, customRules){
     if(!S.cfg)return;
     if(!S.cfg._meta)S.cfg._meta={version:1,changelog:[]};
     S.cfg._meta.version=(S.cfg._meta.version||0)+1;
     S.cfg._meta.changelog=S.cfg._meta.changelog||[];
-    S.cfg._meta.changelog.unshift({v:S.cfg._meta.version,
-      date:new Date().toISOString().slice(0,10),note:note||'Updated'});
+    const rules = customRules || S.cfg.elementRules || [];
+    const snapshot = JSON.stringify(rules);
+    S.cfg._meta.changelog.unshift({
+      v:S.cfg._meta.version,
+      date:new Date().toISOString().slice(0,10),
+      note:note||'Updated',
+      rulesSnapshot:snapshot
+    });
     if(S.cfg._meta.changelog.length>20)S.cfg._meta.changelog.length=20;
+  },
+  diff(version, snapshotJson) {
+    if (!snapshotJson) return toast('No snapshot rules saved for this version.', 'warn');
+    let oldRules = [];
+    try {
+      oldRules = JSON.parse(snapshotJson);
+    } catch (e) {
+      return toast('Failed to parse historical snapshot: ' + e.message, 'error');
+    }
+    const currentRules = S.cfg.elementRules || [];
+    const allIds = new Set([
+      ...oldRules.map(r => r.id),
+      ...currentRules.map(r => r.id)
+    ]);
+    
+    let diffHtml = '';
+    let addedCount = 0, deletedCount = 0, modifiedCount = 0, unchangedCount = 0;
+    
+    allIds.forEach(id => {
+      const oldR = oldRules.find(r => r.id === id);
+      const newR = currentRules.find(r => r.id === id);
+      
+      if (!oldR && newR) {
+        addedCount++;
+        diffHtml += `
+          <div class="diff-card" style="border:1px solid var(--green); background:rgba(22,163,74,0.06); border-radius:6px; padding:12px; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:bold; color:var(--green); font-size:11px;">➕ Rule Added</span>
+              <span style="font-family:var(--mono); font-size:10px; color:var(--t4);">${esc(id)}</span>
+            </div>
+            <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t1);">${esc(newR.name)}</div>
+            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; word-break:break-all; border:1px solid var(--bdr);">${esc(newR.regexPattern)}</div>
+            <div style="margin-top:6px; font-size:10px; color:var(--t3);">
+              Stack: <span class="badge b-gray">${esc(newR.stackBehavior)}</span> | Icon: ${esc(newR.visualStyle?.icon || '')}
+            </div>
+          </div>
+        `;
+      } else if (oldR && !newR) {
+        deletedCount++;
+        diffHtml += `
+          <div class="diff-card" style="border:1px solid var(--red); background:rgba(220,38,38,0.06); border-radius:6px; padding:12px; margin-bottom:10px; opacity:0.8;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:bold; color:var(--red); font-size:11px; text-decoration:line-through;">➖ Rule Deleted</span>
+              <span style="font-family:var(--mono); font-size:10px; color:var(--t4); text-decoration:line-through;">${esc(id)}</span>
+            </div>
+            <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t3); text-decoration:line-through;">${esc(oldR.name)}</div>
+            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.1); padding:6px; border-radius:4px; word-break:break-all; border:1px solid var(--bdr); text-decoration:line-through; color:var(--t4);">${esc(oldR.regexPattern)}</div>
+          </div>
+        `;
+      } else if (oldR && newR) {
+        const changes = [];
+        if (oldR.name !== newR.name) {
+          changes.push({ prop: 'Name', oldVal: oldR.name, newVal: newR.name });
+        }
+        if (oldR.regexPattern !== newR.regexPattern) {
+          changes.push({ prop: 'Regex Pattern', oldVal: oldR.regexPattern, newVal: newR.regexPattern });
+        }
+        if (oldR.stackBehavior !== newR.stackBehavior) {
+          changes.push({ prop: 'Stack Behavior', oldVal: oldR.stackBehavior, newVal: newR.stackBehavior });
+        }
+        if ((oldR.slaThresholdMs || null) !== (newR.slaThresholdMs || null)) {
+          changes.push({ prop: 'SLA Threshold', oldVal: oldR.slaThresholdMs ? `${oldR.slaThresholdMs}ms` : 'None', newVal: newR.slaThresholdMs ? `${newR.slaThresholdMs}ms` : 'None' });
+        }
+        const oldIcon = oldR.visualStyle?.icon || '';
+        const newIcon = newR.visualStyle?.icon || '';
+        if (oldIcon !== newIcon) {
+          changes.push({ prop: 'Icon', oldVal: oldIcon, newVal: newIcon });
+        }
+        const oldColor = oldR.visualStyle?.accentColor || '';
+        const newColor = newR.visualStyle?.accentColor || '';
+        if (oldColor !== newColor) {
+          changes.push({ prop: 'Color', oldVal: oldColor, newVal: newColor });
+        }
+        const oldMapping = JSON.stringify(oldR.captureMapping);
+        const newMapping = JSON.stringify(newR.captureMapping);
+        if (oldMapping !== newMapping) {
+          changes.push({ prop: 'Capture Mapping', oldVal: oldMapping, newVal: newMapping });
+        }
+        
+        if (changes.length > 0) {
+          modifiedCount++;
+          let changesHtml = '';
+          changes.forEach(c => {
+            changesHtml += `
+              <div style="margin-top:6px; font-size:11px;">
+                <span style="font-weight:bold; color:var(--t2);">${esc(c.prop)}:</span>
+                <div style="display:flex; align-items:center; gap:8px; margin-top:2px; flex-wrap:wrap;">
+                  <span style="background:rgba(220,38,38,0.15); color:var(--red); padding:1px 4px; border-radius:3px; font-family:var(--mono); text-decoration:line-through; word-break:break-all;">${esc(c.oldVal)}</span>
+                  <span style="color:var(--t4);">➔</span>
+                  <span style="background:rgba(22,163,74,0.15); color:var(--green); padding:1px 4px; border-radius:3px; font-family:var(--mono); word-break:break-all;">${esc(c.newVal)}</span>
+                </div>
+              </div>
+            `;
+          });
+          
+          diffHtml += `
+            <div class="diff-card" style="border:1px solid var(--amber); background:rgba(255,149,0,0.04); border-radius:6px; padding:12px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-weight:bold; color:var(--amber); font-size:11px;">📝 Rule Modified</span>
+                <span style="font-family:var(--mono); font-size:10px; color:var(--t4);">${esc(id)}</span>
+              </div>
+              <div style="font-weight:bold; font-size:13px; color:var(--t1);">${esc(newR.name)}</div>
+              ${changesHtml}
+            </div>
+          `;
+        } else {
+          unchangedCount++;
+        }
+      }
+    });
+    
+    if (diffHtml === '') {
+      diffHtml = `<div style="text-align:center; padding:20px; color:var(--t3);">✓ No configuration changes detected. Both versions are identical.</div>`;
+    } else if (unchangedCount > 0) {
+      diffHtml += `<div style="text-align:center; font-size:11px; color:var(--t4); margin-top:10px;">and ${unchangedCount} unchanged rule(s)</div>`;
+    }
+    
+    const modalHtml = `
+      <div class="mm" id="diff-mm" style="z-index:650">
+        <div class="modal" style="width:550px; max-height:85vh; display:flex; flex-direction:column;">
+          <div class="m-hdr" style="flex-shrink:0;">
+            <div class="m-title">🔍 Rule Config Diff: Current vs v${version}</div>
+            <button class="btn btn-g btn-sm" onclick="document.getElementById('diff-mm').remove()">✕</button>
+          </div>
+          <div class="m-body" style="flex:1; overflow-y:auto; padding:16px;">
+            <div style="display:flex; gap:10px; margin-bottom:12px; font-size:11px; justify-content:center;">
+              <span style="background:rgba(22,163,74,0.15); color:var(--green); border:1px solid var(--green); padding:2px 6px; border-radius:4px;">${addedCount} Added</span>
+              <span style="background:rgba(220,38,38,0.15); color:var(--red); border:1px solid var(--red); padding:2px 6px; border-radius:4px;">${deletedCount} Deleted</span>
+              <span style="background:rgba(255,149,0,0.1); color:var(--amber); border:1px solid var(--amber); padding:2px 6px; border-radius:4px;">${modifiedCount} Modified</span>
+            </div>
+            ${diffHtml}
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
   },
   show(){
     if(!S.cfg?._meta?.changelog?.length)return toast('No version history.','info');
     const rows=S.cfg._meta.changelog.map(e=>
-      `<tr><td style="color:var(--amber);font-family:var(--mono);padding:4px 8px;">${esc('v'+e.v)}</td>`+
-      `<td style="color:var(--t3);padding:4px 8px;">${esc(e.date)}</td>`+
-      `<td style="padding:4px 8px;">${esc(e.note)}</td></tr>`).join('');
+      `<tr><td style="color:var(--amber);font-family:var(--mono);padding:6px 8px;">${esc('v'+e.v)}</td>`+
+      `<td style="color:var(--t3);padding:6px 8px;">${esc(e.date)}</td>`+
+      `<td style="padding:6px 8px;">${esc(e.note)}</td>`+
+      `<td style="padding:6px 8px;text-align:right;">` +
+      (e.rulesSnapshot ? `<button class="btn btn-bl btn-xs" onclick="VER.diff(${e.v}, S.cfg._meta.changelog.find(c=>c.v===${e.v}).rulesSnapshot)">🔍 Diff</button>` : `<span style="color:var(--t4);font-size:10px;">No Snapshot</span>`) +
+      `</td></tr>`).join('');
     const html=`<div class="mm" id="ver-mm" style="z-index:600">
-    <div class="modal" style="width:500px">
+    <div class="modal" style="width:580px">
       <div class="m-hdr"><div class="m-title">📋 Config Version History — v${S.cfg._meta.version}</div>
         <button class="btn btn-g btn-sm" onclick="document.getElementById('ver-mm').remove()">✕</button></div>
-      <div class="m-body">
+      <div class="m-body" style="max-height:60vh; overflow-y:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12px;">
           <thead><tr style="color:var(--t4);font-size:10px;text-transform:uppercase;">
             <th style="text-align:left;padding:4px 8px;">Version</th>
             <th style="text-align:left;padding:4px 8px;">Date</th>
-            <th style="text-align:left;padding:4px 8px;">Note</th></tr></thead>
+            <th style="text-align:left;padding:4px 8px;">Note</th>
+            <th style="text-align:right;padding:4px 8px;">Action</th></tr></thead>
           <tbody>${rows}</tbody></table>
       </div></div></div>`;
     document.body.insertAdjacentHTML('beforeend',html);
@@ -3748,6 +4506,10 @@ const VER={
 /* ================================================================
    §JS-32 STATS ENGINE
    ================================================================ */
+/**
+ * @namespace STATS
+ * @description Compute latency percentiles (P50, P95, P99), outlier counts, comparisons against previous sessions, and sparkline latency distributions.
+ */
 const STATS={
   _getDurations(nodes, map) {
     for (const n of (nodes || [])) {
@@ -3841,6 +4603,15 @@ const STATS={
         <span style="font-size:12px; font-weight:bold; color:var(--t2);">🔍 Compare with previous run:</span>
         <select id="comp-session-sel" class="inp" style="width:280px; font-size:12px; padding:4px 8px;">${opts}</select>
         <button id="btn-clear-comp" class="btn btn-g btn-sm hidden">Clear Comparison</button>
+        <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">📊 Show Heatmap</button>
+      </div>
+
+      <div id="heatmap-container" class="hidden" style="margin-bottom:16px; padding:12px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px;">
+        <div style="font-weight:bold; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+          <span>📊 Event Frequency Heatmap (Time vs Rules)</span>
+          <button class="btn btn-xs" id="btn-close-heatmap">✕ Close</button>
+        </div>
+        <div id="heatmap-svg-wrap" style="width:100%; overflow-x:auto;"></div>
       </div>
 
       <div id="comp-results-container" class="hidden" style="margin-bottom:16px;"></div>
@@ -3903,6 +4674,17 @@ const STATS={
         const s = stats[rid];
         if (s) GRAPHIFY.showHistogramModal(s);
       }
+    });
+
+    container.querySelector('#btn-show-heatmap').addEventListener('click', () => {
+      const heatCont = container.querySelector('#heatmap-container');
+      const wrap = container.querySelector('#heatmap-svg-wrap');
+      heatCont.classList.remove('hidden');
+      GRAPHIFY.renderHeatmap(tree, wrap);
+    });
+
+    container.querySelector('#btn-close-heatmap').addEventListener('click', () => {
+      container.querySelector('#heatmap-container').classList.add('hidden');
     });
   },
 
@@ -3977,6 +4759,10 @@ const STATS={
 /* ================================================================
    §JS-33 ANOMALY DETECTION ENGINE
    ================================================================ */
+/**
+ * @namespace ANOMALY
+ * @description Scans parsed event trees for statistical latency outliers (>2σ), SLA breaches, error cascades (nested failure causes), quiet-periods, and critical path nodes.
+ */
 const ANOMALY={
   analyze(trees){
     // 1. Collect durations per rule
@@ -4047,14 +4833,94 @@ const ANOMALY={
     }
 
     for(const tree of Object.values(trees)) mark(tree, null);
+    
+    // Quiet-Period Detection: find large time gaps (>5000ms by default) at root level
+    for (const [thr, tree] of Object.entries(trees)) {
+      for (let i = 0; i < tree.length - 1; i++) {
+        const curr = tree[i];
+        const next = tree[i+1];
+        const end = curr.behavior === 'push' && curr.endTimestamp != null ? curr.endTimestamp : curr.timestamp;
+        const start = next.timestamp;
+        if (end != null && start != null) {
+          const gap = start - end;
+          if (gap > 5000) {
+            curr._isQuietPeriod = true;
+            curr._quietGap = gap;
+          }
+        }
+      }
+    }
+
+    // Critical Path Highlighting: find the longest cumulative path of durations recursively
+    const computeCriticalPath = (nodes) => {
+      let maxSubPath = [];
+      let maxSubDur = 0;
+      for (const n of (nodes || [])) {
+        n._isCriticalPath = false;
+        let subPath = [];
+        let subDur = 0;
+        if (n.events && n.events.length > 0) {
+          const { path: childPath, dur: childDur } = computeCriticalPath(n.events);
+          subPath = childPath;
+          subDur = childDur;
+        }
+        const totalDur = (n.duration || 0) + subDur;
+        const fullPath = [n, ...subPath];
+        if (totalDur > maxSubDur) {
+          maxSubDur = totalDur;
+          maxSubPath = fullPath;
+        }
+      }
+      return { path: maxSubPath, dur: maxSubDur };
+    };
+
+    for (const [thr, tree] of Object.entries(trees)) {
+      const { path: critPath } = computeCriticalPath(tree);
+      critPath.forEach(n => {
+        n._isCriticalPath = true;
+      });
+    }
+
     S.outlierCount = outlierCount;
     S.slaBreachCount = slaBreachCount;
   }
 };
 
 /* ================================================================
+   §JS-33b UNPARSED LINE ANALYZER
+   ================================================================ */
+const UNPARSED = {
+  getSignature(line) {
+    let sig = line.replace(/\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d{3,6})?Z?/g, '*');
+    sig = sig.replace(/\b\d{2}:\d{2}:\d{2}(\.\d{3})?\b/g, '*');
+    sig = sig.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '*');
+    sig = sig.replace(/\b0x[0-9a-fA-F]+\b/g, '*');
+    sig = sig.replace(/\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g, '*');
+    sig = sig.replace(/\b\d+\b/g, '*');
+    sig = sig.replace(/\s+/g, ' ').trim();
+    return sig.length > 120 ? sig.slice(0, 120) + '…' : sig;
+  },
+  
+  cluster(lines) {
+    const counts = {};
+    for (const l of lines) {
+      const sig = this.getSignature(l);
+      counts[sig] = (counts[sig] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .map(([sig, count]) => ({ sig, count }))
+      .sort((a,b) => b.count - a.count)
+      .slice(0, 5);
+  }
+};
+
+/* ================================================================
    §JS-34 GRAPHIFY ENGINE
    ================================================================ */
+/**
+ * @namespace GRAPHIFY
+ * @description Integrates D3.js lazy-loading to render transaction dependency graphs, latency histograms, and multi-session comparison charts.
+ */
 const GRAPHIFY={
   async showHistogramModal(s) {
     const isDark = document.documentElement.dataset.theme === 'dark';
@@ -4078,14 +4944,14 @@ const GRAPHIFY={
     </div>`;
     document.body.insertAdjacentHTML('beforeend', html);
     
-    const container = document.getElementById('large-hist-chart');
+    const container = $('large-hist-chart');
     
     try {
       // Lazy load D3
       const d3 = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
       this.drawLargeHist(d3, s.durations, container, s.color);
       
-      document.getElementById('btn-hist-svg-dl').addEventListener('click', () => {
+      $('btn-hist-svg-dl').addEventListener('click', () => {
         const svgEl = container.querySelector('svg');
         if (!svgEl) return;
         const svgStr = new XMLSerializer().serializeToString(svgEl);
@@ -4254,16 +5120,16 @@ const GRAPHIFY={
       </div>
     </div>`;
 
-    const canvasContainer = document.getElementById('d3-graph-canvas-container');
+    const canvasContainer = $('d3-graph-canvas-container');
 
     try {
       const d3 = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
-      const l = document.getElementById('d3-graph-loading');
+      const l = $('d3-graph-loading');
       if (l) l.remove();
       this.drawForceDirected(d3, data, canvasContainer);
     } catch(err) {
       console.error(err);
-      const l = document.getElementById('d3-graph-loading');
+      const l = $('d3-graph-loading');
       if (l) l.innerHTML = `⚠️ Graphify unavailable offline.`;
       toast('Graphify unavailable offline.', 'warn');
     }
@@ -4356,12 +5222,126 @@ const GRAPHIFY={
       
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
+  },
+
+  async renderHeatmap(tree, containerEl) {
+    let d3;
+    try {
+      d3 = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
+    } catch(err) {
+      toast('Failed to load D3 library (offline?).', 'warn');
+      return;
+    }
+    
+    const flat = [];
+    const flatEvents = (nodes) => {
+      for (const n of (nodes || [])) {
+        if (n.timestamp != null) {
+          flat.push({ name: n.ruleName, ts: n.timestamp });
+        }
+        if (n.events?.length) flatEvents(n.events);
+      }
+    };
+    flatEvents(tree);
+    
+    if (flat.length === 0) {
+      containerEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--t3);">No timed events found to map.</div>';
+      return;
+    }
+    
+    const minTs = d3.min(flat, d => d.ts);
+    const maxTs = d3.max(flat, d => d.ts);
+    const range = maxTs - minTs || 1;
+    
+    const bucketCount = 10;
+    const bucketSize = range / bucketCount;
+    const rules = Array.from(new Set(flat.map(d => d.name)));
+    
+    const grid = [];
+    rules.forEach(ruleName => {
+      for (let b = 0; b < bucketCount; b++) {
+        grid.push({ rule: ruleName, bucket: b, count: 0 });
+      }
+    });
+    
+    flat.forEach(d => {
+      const bIdx = Math.min(bucketCount - 1, Math.floor((d.ts - minTs) / bucketSize));
+      const entry = grid.find(g => g.rule === d.name && g.bucket === bIdx);
+      if (entry) entry.count++;
+    });
+    
+    const margin = { top: 30, right: 30, bottom: 40, left: 140 },
+          width = Math.max(400, containerEl.clientWidth - margin.left - margin.right),
+          height = rules.length * 30;
+          
+    containerEl.innerHTML = '';
+    
+    const svg = d3.select(containerEl)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+      
+    const x = d3.scaleBand()
+      .range([0, width])
+      .domain(d3.range(bucketCount))
+      .padding(0.05);
+      
+    const y = d3.scaleBand()
+      .range([height, 0])
+      .domain(rules)
+      .padding(0.05);
+      
+    const maxCount = d3.max(grid, d => d.count) || 1;
+    const colorScale = d3.scaleSequential()
+      .interpolator(d3.interpolateYlOrRd)
+      .domain([0, maxCount]);
+      
+    svg.selectAll()
+      .data(grid)
+      .enter()
+      .append("rect")
+      .attr("x", d => x(d.bucket))
+      .attr("y", d => y(d.rule))
+      .attr("rx", 3)
+      .attr("ry", 3)
+      .attr("width", x.bandwidth())
+      .attr("height", y.bandwidth())
+      .style("fill", d => d.count === 0 ? "rgba(255,255,255,0.02)" : colorScale(d.count))
+      .style("stroke", "var(--bdr-d)")
+      .style("stroke-width", 0.5)
+      .append("title")
+      .text(d => `${d.rule} in bucket ${d.bucket+1}: ${d.count} event(s)`);
+      
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    const textCol = isDark ? '#e6edf3' : '#1c1917';
+    
+    svg.append("g")
+      .call(d3.axisLeft(y).tickSize(0))
+      .select(".domain").remove();
+      
+    svg.selectAll("text").style("fill", textCol).style("font-family", "var(--mono)").style("font-size", "10px");
+    
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x).tickFormat(i => {
+        const timeOffset = minTs + i * bucketSize;
+        return new Date(timeOffset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }))
+      .select(".domain").remove();
+      
+    svg.selectAll("g text").style("fill", textCol);
   }
 };
 
 /* ================================================================
    §JS-35 SWIMLANE RENDERER
    ================================================================ */
+/**
+ * @namespace SWIMLANE
+ * @description Interactive 2D Canvas-based multi-thread swimlane timeline featuring interactive zoom, pan, hover tooltips, and a synchronizing minimap navigator.
+ */
 const SWIMLANE={
   canvas: null,
   isDrag: false,
@@ -4384,12 +5364,12 @@ const SWIMLANE={
       </div>
     </div>`;
 
-    const canvas = document.getElementById('swimlane-canvas');
+    const canvas = $('swimlane-canvas');
     this.canvas = canvas;
     this.resize(canvas);
     
     // Wire toggle back to normal timeline
-    document.getElementById('btn-swim-toggle').addEventListener('click', () => {
+    $('btn-swim-toggle').addEventListener('click', () => {
       S.swimlaneMode = false;
       UI.rv();
     });
@@ -4449,7 +5429,7 @@ const SWIMLANE={
     this.laneHeight = Math.max(25, Math.min(50, activeHeight / (threads.length || 1)));
 
     const vis = S.visibleEnd - S.visibleStart;
-    const info = document.getElementById('swim-visible-range');
+    const info = $('swim-visible-range');
     if (info) info.textContent = `Visible: ${fmtMs(vis)} (Zoom)`;
 
     ctx.fillStyle = bg1;
@@ -4521,6 +5501,10 @@ const SWIMLANE={
           ctx.setLineDash([2, 2]);
           ctx.strokeRect(drawX, by, drawW, bh);
           ctx.setLineDash([]);
+        } else if (n._isCriticalPath) {
+          ctx.strokeStyle = 'var(--amber)';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(drawX, by, drawW, bh);
         }
 
         ctx.fillRect(drawX, by, drawW, bh);
@@ -4745,7 +5729,7 @@ $('rules-list').addEventListener('click',e=>{
   const btn=e.target.closest('[data-a]');if(!btn)return;
   const i=+btn.dataset.i;
   if(btn.dataset.a==='edit')UI.openM(S.cfg?.elementRules?.[i]);
-  if(btn.dataset.a==='del'){VER.bump('Deleted rule: '+(S.cfg?.elementRules?.[i]?.name||''));CFG.del(i);}
+  if(btn.dataset.a==='del')CFG.del(i);
   if(btn.dataset.a==='share')EXP.exportRule(i);
 });
 $('btn-ar').addEventListener('click',()=>UI.openM(null));
@@ -4761,6 +5745,42 @@ $('fi-lls').addEventListener('change',e=>{EXP.loadSession(e.target.files[0]);e.t
 $('btn-load-pack').addEventListener('click',()=>EXP.loadPack());
 $('pack-registry').addEventListener('change',()=>{if($('pack-registry').value)$('pack-url').value='';});
 $('pack-url').addEventListener('input',()=>{if($('pack-url').value.trim())$('pack-registry').value='';});
+
+// Unparsed Analyzer
+$('btn-analyze-unparsed')?.addEventListener('click', () => {
+  const stats = S.stats;
+  if (!stats || !stats.unparsedSample || stats.unparsedSample.length === 0) {
+    $('unparsed-results').innerHTML = '<div style="color:var(--yellow);">No unparsed lines to analyze. Parse a log file first.</div>';
+    return;
+  }
+  
+  $('unparsed-results').innerHTML = 'Analyzing unparsed log lines...';
+  
+  setTimeout(() => {
+    const clusters = UNPARSED.cluster(stats.unparsedSample);
+    if (clusters.length === 0) {
+      $('unparsed-results').innerHTML = '<div style="color:var(--green);">✓ All log lines successfully parsed! 100% rule coverage.</div>';
+      return;
+    }
+    
+    let html = '<div style="font-weight:bold;margin-bottom:4px;">Top Unparsed Patterns:</div>';
+    clusters.forEach((c, idx) => {
+      const escSig = esc(c.sig);
+      const rawSigForRegex = c.sig.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
+      html += `
+        <div style="background:var(--bg-1); border:1px solid var(--bdr-d); border-radius:4px; padding:6px; margin-bottom:4px;">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--amber); margin-bottom:2px;">
+            <span>Pattern #${idx + 1}</span>
+            <span>${c.count} occurrence${c.count!==1?'s':''}</span>
+          </div>
+          <div style="font-family:var(--mono); word-break:break-all; margin-bottom:4px;">${escSig}</div>
+          <button class="btn btn-xs btn-bl" onclick="CFG.openM('new'); setTimeout(() => { $('e-pat').value='^'+'${rawSigForRegex.replace(/'/g, "\\'")}' }, 100);" style="padding:2px 4px; font-size:9px;">+ Create Rule</button>
+        </div>
+      `;
+    });
+    $('unparsed-results').innerHTML = html;
+  }, 100);
+});
 
 // Annotation Modal
 $('btn-ann-save').addEventListener('click',()=>UI.saveAnn());
@@ -4921,37 +5941,61 @@ $('btn-parse').addEventListener('click',async()=>{
 
   $('btn-parse').disabled=true;$('btn-abort').disabled=false;$('emp')?.classList.add('hidden');
   const tf=$('thr-in').value.trim();
-  // Check IDB cache first
-  const cached=await IDB.get(S.logFile,S.cfg).catch(()=>null);
+  
+  let files = [];
+  if (MF.files && MF.files.length > 0) {
+    files = [...MF.files];
+  } else if (S.logFile) {
+    files = [S.logFile];
+  }
+  
+  if (files.length === 0) {
+    toast('No log file selected.', 'warn');
+    $('btn-parse').disabled = false; $('btn-abort').disabled = true;
+    return;
+  }
+  
+  const cacheTarget = files.length === 1 ? files[0] : files;
+  
+  const cached=await IDB.get(cacheTarget,S.cfg).catch(()=>null);
   if(cached){
-    const useCache=confirm(`Cached results for "${S.logFile.name}" found.\nUse cache? (Cancel to re-parse)`);
+    const dispName = files.length === 1 ? files[0].name : files.map(f=>f.name).join(', ');
+    const useCache=confirm(`Cached results for "${dispName}" found.\nUse cache? (Cancel to re-parse)`);
     if(useCache){
       UI.render(cached.trees,cached.threads,cached.stats);UI.hprog();
       $('btn-parse').disabled=false;$('btn-abort').disabled=true;UI.ub();
       S.lastParsedFile = {
-        name: S.logFile.name,
-        size: S.logFile.size,
-        lastModified: S.logFile.lastModified
+        name: files.length === 1 ? files[0].name : files.map(f=>f.name).join(', '),
+        size: files.reduce((s,f)=>s+f.size,0),
+        lastModified: files[0].lastModified
       };
       toast('Loaded from cache.','info');return;
     }
   }
   try{
-    // Decompress if needed
-    let file=S.logFile;
-    if(GZ.isGzip(file)){UI.prog(0,'Decompressing…',0);file=await GZ.decompress(file);}
-    const{trees,threads,stats}=await WM.parse(file,S.cfg,tf);
+    const processedFiles = [];
+    for(let i=0; i<files.length; i++) {
+      let file = files[i];
+      if(GZ.isGzip(file)){
+        UI.prog(0,`Decompressing ${file.name}…`,0);
+        file=await GZ.decompress(file);
+      }
+      processedFiles.push(file);
+    }
+    
+    const parseTarget = processedFiles.length === 1 ? processedFiles[0] : processedFiles;
+    const{trees,threads,stats}=await WM.parse(parseTarget,S.cfg,tf);
     ANOMALY.analyze(trees);
     UI.render(trees,threads,stats);UI.hprog();
     PIN.clear();
     const tot=Object.values(trees).reduce((s,t)=>s+cnt(t),0);
     toast(`Parse complete — ${tot.toLocaleString()} nodes across ${threads.length} thread(s).`,'success');
-    IDB.save(S.logFile,S.cfg,trees,threads,stats).catch(()=>{});
+    IDB.save(cacheTarget,S.cfg,trees,threads,stats).catch(()=>{});
     
     S.lastParsedFile = {
-      name: S.logFile.name,
-      size: S.logFile.size,
-      lastModified: S.logFile.lastModified
+      name: files.length === 1 ? files[0].name : files.map(f=>f.name).join(', '),
+      size: files.reduce((s,f)=>s+f.size,0),
+      lastModified: files[0].lastModified
     };
     $('btn-exp-menu').disabled=false;
   }catch(e){UI.hprog();toast('Parse error: '+e.message,'error');}
@@ -5065,6 +6109,7 @@ document.addEventListener('keydown',e=>{
     if(e.key==='3'){e.preventDefault();UI.svm('split');}
     if(e.key==='4'){e.preventDefault();UI.svm('stats');}
     if(e.key==='5'){e.preventDefault();UI.svm('graph');}
+    if(e.key==='6'){e.preventDefault();UI.svm('3d');}
     if((e.key==='['||e.key===']')&&S.threads.length>1){
       e.preventDefault();
       const c=S.threads.indexOf(S.activeThr);
@@ -5280,19 +6325,196 @@ const STREAM = {
   }
 };
 
+/**
+ * @namespace DS
+ * @description Datasource client managing queries and log ingestion from Loki, Elasticsearch, and AWS CloudWatch Logs (using pure JS SigV4 signatures).
+ */
 const DS = {
+  async _hmac256(key, data) {
+    const enc = new TextEncoder();
+    let cryptoKey;
+    if (typeof key === 'string') {
+      cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(key),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+    } else {
+      cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        key,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+    }
+    const encData = typeof data === 'string' ? enc.encode(data) : data;
+    const sig = await crypto.subtle.sign('HMAC', cryptoKey, encData);
+    return new Uint8Array(sig);
+  },
+
+  async _sha256Hex(str) {
+    const enc = new TextEncoder();
+    const hash = await crypto.subtle.digest('SHA-256', enc.encode(str));
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+  },
+
+  async _getSigningKey(secretKey, dateStr, region, service) {
+    const kDate = await this._hmac256("AWS4" + secretKey, dateStr);
+    const kRegion = await this._hmac256(kDate, region);
+    const kService = await this._hmac256(kRegion, service);
+    const kSigning = await this._hmac256(kService, "aws4_request");
+    return kSigning;
+  },
+
+  async _signAwsHeaders(endpoint, target, payload, region, keyId, secretKey) {
+    const service = 'logs';
+    const url = new URL(endpoint);
+    const host = url.host;
+    
+    // AWS Date format: YYYYMMDDTHHMMSSZ (no dashes, colons, or fractional seconds)
+    const amzDate = new Date().toISOString().replace(/[:-]/g, '').split('.')[0] + 'Z';
+    const dateStamp = amzDate.slice(0, 8);
+    
+    const headers = {
+      'content-type': 'application/x-amz-json-1.1',
+      'host': host,
+      'x-amz-date': amzDate,
+      'x-amz-target': target
+    };
+    
+    const canonicalUri = '/';
+    const canonicalQuery = '';
+    
+    const headerKeys = Object.keys(headers).sort();
+    const canonicalHeaders = headerKeys.map(k => `${k}:${headers[k]}\n`).join('');
+    const signedHeaders = headerKeys.join(';');
+    
+    const payloadHash = await this._sha256Hex(payload);
+    
+    const canonicalRequest = [
+      'POST',
+      canonicalUri,
+      canonicalQuery,
+      canonicalHeaders,
+      signedHeaders,
+      payloadHash
+    ].join('\n');
+    
+    const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+    const canonicalRequestHash = await this._sha256Hex(canonicalRequest);
+    
+    const stringToSign = [
+      'AWS4-HMAC-SHA256',
+      amzDate,
+      credentialScope,
+      canonicalRequestHash
+    ].join('\n');
+    
+    const signingKey = await this._getSigningKey(secretKey, dateStamp, region, service);
+    const signatureBytes = await this._hmac256(signingKey, stringToSign);
+    const signature = Array.from(signatureBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    const authorization = `AWS4-HMAC-SHA256 Credential=${keyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+    
+    return {
+      'Content-Type': 'application/x-amz-json-1.1',
+      'X-Amz-Date': amzDate,
+      'X-Amz-Target': target,
+      'Authorization': authorization
+    };
+  },
+
+  async _fetchCloudWatch(region, keyId, secretKey, logGroup, queryStr, endpoint) {
+    const actualHost = `logs.${region}.amazonaws.com`;
+    const targetUrl = (endpoint && endpoint.includes('://')) ? endpoint : `https://${actualHost}/`;
+    
+    const endTime = Math.floor(Date.now() / 1000);
+    const startTime = endTime - (3 * 3600); // Default to last 3 hours
+    
+    const startBody = JSON.stringify({
+      logGroupName: logGroup,
+      startTime: startTime,
+      endTime: endTime,
+      queryString: queryStr,
+      limit: 1000
+    });
+    
+    toast('Starting CloudWatch Insights query...', 'info');
+    const startHeaders = await this._signAwsHeaders(targetUrl, 'Logs_20140328.StartQuery', startBody, region, keyId, secretKey);
+    
+    let res = await fetch(targetUrl, {
+      method: 'POST',
+      headers: startHeaders,
+      body: startBody
+    });
+    
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`AWS StartQuery failed: ${res.status} - ${errText}`);
+    }
+    
+    const startData = await res.json();
+    const queryId = startData.queryId;
+    if (!queryId) throw new Error('Failed to retrieve queryId from AWS.');
+    
+    toast(`Query started (ID: ${queryId.slice(0, 8)}...). Polling results...`, 'info');
+    
+    const pollBody = JSON.stringify({ queryId });
+    const maxPolls = 30;
+    let pollCount = 0;
+    
+    while (pollCount < maxPolls) {
+      await new Promise(r => setTimeout(r, 1500));
+      const pollHeaders = await this._signAwsHeaders(targetUrl, 'Logs_20140328.GetQueryResults', pollBody, region, keyId, secretKey);
+      
+      const pollRes = await fetch(targetUrl, {
+        method: 'POST',
+        headers: pollHeaders,
+        body: pollBody
+      });
+      
+      if (!pollRes.ok) {
+        const errText = await pollRes.text();
+        throw new Error(`AWS GetQueryResults failed: ${pollRes.status} - ${errText}`);
+      }
+      
+      const pollData = await pollRes.json();
+      const status = pollData.status;
+      
+      if (status === 'Complete') {
+        const results = pollData.results || [];
+        const timeFieldRow = results.map(row => {
+          const tf = row.find(f => f.field === '@timestamp');
+          const mf = row.find(f => f.field === '@message') || row.find(f => f.field === 'message') || row[0];
+          return {
+            timestamp: tf ? tf.value : '',
+            message: mf ? mf.value : ''
+          };
+        });
+        
+        timeFieldRow.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+        return timeFieldRow.map(r => r.message);
+      } else if (status === 'Failed' || status === 'Cancelled') {
+        throw new Error(`AWS query ended with status: ${status}`);
+      }
+      
+      pollCount++;
+    }
+    
+    throw new Error('CloudWatch Insights query timed out after 45 seconds.');
+  },
+
   async fetchLogs() {
     const type = $('ds-type').value;
     const url = $('ds-url').value.trim();
-    const auth = $('ds-auth').value.trim();
     const query = $('ds-query').value.trim();
     
-    if (!url) return toast('Please enter a base URL.', 'warn');
+    if (type !== 'aws' && !url) return toast('Please enter a base URL.', 'warn');
     if (!query) return toast('Please enter a query.', 'warn');
     if (!S.cfg) return toast('Please connect or create a configuration first.', 'warn');
-    
-    const headers = { 'Content-Type': 'application/json' };
-    if (auth) headers['Authorization'] = auth;
     
     toast('Fetching logs...', 'info');
     $('btn-ds-fetch').disabled = true;
@@ -5302,6 +6524,9 @@ const DS = {
       let lines = [];
       
       if (type === 'loki') {
+        const auth = $('ds-auth').value.trim();
+        const headers = { 'Content-Type': 'application/json' };
+        if (auth) headers['Authorization'] = auth;
         const queryUrl = `${url.replace(/\/$/, '')}/loki/api/v1/query_range?query=${encodeURIComponent(query)}&limit=2000`;
         const res = await fetch(queryUrl, { headers });
         if (!res.ok) throw new Error(`Loki error ${res.status}: ${res.statusText}`);
@@ -5318,6 +6543,9 @@ const DS = {
           lines = allVals.map(v => v[1]);
         }
       } else if (type === 'elastic') {
+        const auth = $('ds-auth').value.trim();
+        const headers = { 'Content-Type': 'application/json' };
+        if (auth) headers['Authorization'] = auth;
         const searchUrl = `${url.replace(/\/$/, '')}/_search`;
         const body = {
           query: { query_string: { query } },
@@ -5339,6 +6567,17 @@ const DS = {
             lines.push(msg);
           });
         }
+      } else if (type === 'aws') {
+        const awsRegion = $('ds-aws-region').value.trim();
+        const awsKey = $('ds-aws-key').value.trim();
+        const awsSecret = $('ds-aws-secret').value.trim();
+        const awsGroup = $('ds-aws-group').value.trim();
+        
+        if (!awsRegion || !awsKey || !awsSecret || !awsGroup) {
+          throw new Error('Please fill in Region, Key ID, Secret Key, and Log Group Name.');
+        }
+        
+        lines = await this._fetchCloudWatch(awsRegion, awsKey, awsSecret, awsGroup, query, url);
       }
       
       if (lines.length === 0) {
@@ -5358,7 +6597,7 @@ const DS = {
       
     } catch (e) {
       console.error('[LL]', e);
-      toast(`Query failed: ${e.message}. Check CORS policies & endpoint.`, 'error');
+      toast(`Query failed: ${e.message}. If using AWS direct, check credentials & CORS.`, 'error');
     } finally {
       $('btn-ds-fetch').disabled = false;
       $('btn-ds-fetch').textContent = '⚡ Fetch Logs';
@@ -5421,6 +6660,10 @@ ${S.annotations[n.id] ? `\n*Annotation:* \n${S.annotations[n.id]}` : ''}`;
 /* ================================================================
    §JS-37 PLUGINS MODULE
    ================================================================ */
+/**
+ * @namespace PLUGINS
+ * @description Plugin SDK system implementing iframe sandbox isolation, hooks registration, and custom lifecycle execution.
+ */
 const PLUGINS = {
   _list: [], // [{ id, code }]
   
@@ -5554,6 +6797,434 @@ const PLUGINS = {
 };
 
 /* ================================================================
+   §JS-38 3D LOG LANDSCAPE
+   ================================================================ */
+/**
+ * @namespace LANDSCAPE3D
+ * @description Core interactive 3D Canvas 2D engine visualizing log execution trees as 3D bar landscapes, with mouse yaw/pitch rotations, scroll zooming, and hover depth query tooltips.
+ */
+const LANDSCAPE3D = {
+  canvas: null,
+  ctx: null,
+  tree: null,
+  container: null,
+  yaw: -0.6,
+  pitch: 0.5,
+  zoom: 1.0,
+  fov: 600,
+  showGrid: true,
+  isDrag: false,
+  lastX: 0,
+  lastY: 0,
+  bars: [],
+  hoveredBar: null,
+
+  init(tree, container) {
+    this.tree = tree;
+    this.container = container;
+    this.yaw = -0.6;
+    this.pitch = 0.5;
+    this.zoom = 1.0;
+    this.showGrid = true;
+    this.hoveredBar = null;
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.style.cssText = 'display:block; width:100%; height:100%; cursor:grab;';
+    container.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext('2d');
+
+    let tooltip = $('landscape-tooltip');
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.id = 'landscape-tooltip';
+      tooltip.className = 'tooltip hidden';
+      tooltip.style.cssText = 'position:absolute; pointer-events:none; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:10px 14px; font-size:11px; z-index:1000; box-shadow:var(--shd); color:var(--t1); backdrop-filter:blur(8px);';
+      document.body.appendChild(tooltip);
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute; top:12px; left:12px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:12px; font-size:11px; color:var(--t2); pointer-events:auto; max-width:240px; box-shadow:var(--shd); backdrop-filter:blur(8px);';
+    overlay.innerHTML = `
+      <div style="font-weight:bold; margin-bottom:6px; color:var(--amber);">3D Log Landscape</div>
+      <div style="margin-bottom:8px; line-height:1.4; color:var(--t3);">
+        • Left-click + drag to rotate<br>
+        • Scroll wheel to zoom in/out<br>
+        • Hover bars to view event details
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-g btn-sm" id="btn-3d-reset" style="padding:3px 6px; font-size:9px;">↺ Reset</button>
+        <button class="btn btn-g btn-sm" id="btn-3d-grid" style="padding:3px 6px; font-size:9px;">Grid: On</button>
+      </div>
+    `;
+    container.appendChild(overlay);
+
+    this.resize();
+    this.buildBars();
+
+    this._onResize = () => this.resize();
+    window.addEventListener('resize', this._onResize);
+
+    this.canvas.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      this.isDrag = true;
+      this.canvas.style.cursor = 'grabbing';
+      this.lastX = e.clientX;
+      this.lastY = e.clientY;
+    });
+
+    this._onMouseMove = e => {
+      const rect = this.canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      
+      if (this.isDrag) {
+        const dx = e.clientX - this.lastX;
+        const dy = e.clientY - this.lastY;
+        this.yaw += dx * 0.007;
+        this.pitch += dy * 0.007;
+        this.pitch = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, this.pitch));
+        this.lastX = e.clientX;
+        this.lastY = e.clientY;
+        this.hoveredBar = null;
+        this.hideTooltip();
+        this.draw();
+      } else {
+        if (mx >= 0 && mx <= rect.width && my >= 0 && my <= rect.height) {
+          this.handleHover(mx, my, e.clientX, e.clientY);
+        }
+      }
+    };
+    document.addEventListener('mousemove', this._onMouseMove);
+
+    this._onMouseUp = () => {
+      if (this.isDrag) {
+        this.isDrag = false;
+        this.canvas.style.cursor = 'grab';
+      }
+    };
+    document.addEventListener('mouseup', this._onMouseUp);
+
+    this.canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      this.zoom += e.deltaY * 0.001;
+      this.zoom = Math.max(0.2, Math.min(3.0, this.zoom));
+      this.hoveredBar = null;
+      this.hideTooltip();
+      this.draw();
+    }, { passive: false });
+
+    container.querySelector('#btn-3d-reset').addEventListener('click', () => {
+      this.yaw = -0.6;
+      this.pitch = 0.5;
+      this.zoom = 1.0;
+      this.draw();
+    });
+
+    const gridBtn = container.querySelector('#btn-3d-grid');
+    gridBtn.addEventListener('click', () => {
+      this.showGrid = !this.showGrid;
+      gridBtn.textContent = `Grid: ${this.showGrid ? 'On' : 'Off'}`;
+      this.draw();
+    });
+
+    this.draw();
+  },
+
+  destroy() {
+    if (this._onResize) {
+      window.removeEventListener('resize', this._onResize);
+    }
+    if (this._onMouseMove) {
+      document.removeEventListener('mousemove', this._onMouseMove);
+    }
+    if (this._onMouseUp) {
+      document.removeEventListener('mouseup', this._onMouseUp);
+    }
+    this.hideTooltip();
+  },
+
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width = rect.width * dpr;
+    this.canvas.height = rect.height * dpr;
+    this.ctx.scale(dpr, dpr);
+    this.canvas.style.width = rect.width + 'px';
+    this.canvas.style.height = rect.height + 'px';
+    this.draw();
+  },
+
+  flatten(nodes, depth = 0, flat = []) {
+    for (const n of (nodes || [])) {
+      flat.push({ node: n, depth });
+      if (n.events?.length) {
+        this.flatten(n.events, depth + 1, flat);
+      }
+    }
+    return flat;
+  },
+
+  buildBars() {
+    const flat = this.flatten(this.tree);
+    const maxNodes = 1200;
+    const displayNodes = flat.length > maxNodes ? flat.slice(0, maxNodes) : flat;
+
+    let minT = Infinity, maxT = -Infinity;
+    for (const item of displayNodes) {
+      const t = item.node.timestamp || 0;
+      if (t < minT) minT = t;
+      if (t > maxT) maxT = t;
+      const et = item.node.endTimestamp || t;
+      if (et > maxT) maxT = et;
+    }
+    if (minT === Infinity) { minT = 0; maxT = 1; }
+    const range = maxT - minT || 1;
+
+    this.bars = displayNodes.map(item => {
+      const n = item.node;
+      const t = n.timestamp || 0;
+      const et = n.endTimestamp || t;
+      const xStart = ((t - minT) / range) * 500 - 250;
+      const xEnd = ((et - minT) / range) * 500 - 250;
+      const w = Math.max(8, xEnd - xStart);
+      
+      const z = -120 + item.depth * 35;
+      const d = 12;
+      
+      const dur = n.duration || 0;
+      const h = n.behavior === 'inline' ? 6 : Math.min(160, Math.log10(dur + 1) * 30 + 4);
+
+      return {
+        node: n,
+        x: xStart + w / 2,
+        y: h / 2,
+        z: z,
+        w: w,
+        h: h,
+        d: d,
+        color: n.visualStyle?.accentColor || '#58a6ff'
+      };
+    });
+  },
+
+  draw() {
+    if (!this.canvas || !this.ctx) return;
+    const rect = this.canvas.getBoundingClientRect();
+    const W = rect.width, H = rect.height;
+    const ctx = this.ctx;
+
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    ctx.clearRect(0, 0, W, H);
+    
+    const cx = W / 2, cy = H / 2 + 50;
+    const fov = this.fov;
+    const yaw = this.yaw;
+    const pitch = this.pitch;
+    const zoom = this.zoom;
+
+    const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(W, H));
+    if (isDark) {
+      bgGrad.addColorStop(0, '#0c1017');
+      bgGrad.addColorStop(1, '#05070a');
+    } else {
+      bgGrad.addColorStop(0, '#faf8f5');
+      bgGrad.addColorStop(1, '#f2efea');
+    }
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    const project = (x, y, z) => {
+      const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+      const xRot = x * cosY - z * sinY;
+      const zRot = x * sinY + z * cosY;
+      
+      const cosX = Math.cos(pitch), sinX = Math.sin(pitch);
+      const yRot = y * cosX - zRot * sinX;
+      const zProj = y * sinX + zRot * cosX;
+      
+      const scale = (fov * zoom) / (fov + zProj);
+      return {
+        x: cx + xRot * scale,
+        y: cy - yRot * scale,
+        zDepth: zProj
+      };
+    };
+
+    if (this.showGrid) {
+      ctx.strokeStyle = isDark ? 'rgba(37, 44, 61, 0.4)' : 'rgba(202, 197, 188, 0.4)';
+      ctx.lineWidth = 1;
+      
+      for (let x = -250; x <= 250; x += 50) {
+        const p1 = project(x, 0, -150);
+        const p2 = project(x, 0, 150);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+      for (let z = -150; z <= 150; z += 50) {
+        const p1 = project(-250, 0, z);
+        const p2 = project(250, 0, z);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+    }
+
+    this.bars.forEach(bar => {
+      const w2 = bar.w / 2;
+      const d2 = bar.d / 2;
+      const h = bar.h;
+
+      const v0 = project(bar.x - w2, 0, bar.z - d2);
+      const v1 = project(bar.x + w2, 0, bar.z - d2);
+      const v2 = project(bar.x + w2, 0, bar.z + d2);
+      const v3 = project(bar.x - w2, 0, bar.z + d2);
+
+      const v4 = project(bar.x - w2, h, bar.z - d2);
+      const v5 = project(bar.x + w2, h, bar.z - d2);
+      const v6 = project(bar.x + w2, h, bar.z + d2);
+      const v7 = project(bar.x - w2, h, bar.z + d2);
+
+      bar.projVerts = [v0, v1, v2, v3, v4, v5, v6, v7];
+
+      const centerProj = project(bar.x, h / 2, bar.z);
+      bar.centerZDepth = centerProj.zDepth;
+    });
+
+    this.bars.sort((a, b) => b.centerZDepth - a.centerZDepth);
+
+    const shade = (color, factor) => {
+      let c = color.trim();
+      if (c.startsWith('#')) c = c.slice(1);
+      if (c.length === 3) c = c.split('').map(x => x+x).join('');
+      let r = parseInt(c.slice(0, 2), 16);
+      let g = parseInt(c.slice(2, 4), 16);
+      let b = parseInt(c.slice(4, 6), 16);
+      
+      r = Math.min(255, Math.max(0, Math.round(r * factor)));
+      g = Math.min(255, Math.max(0, Math.round(g * factor)));
+      b = Math.min(255, Math.max(0, Math.round(b * factor)));
+      
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    const drawFace = (p0, p1, p2, p3, fill, stroke) => {
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.lineTo(p3.x, p3.y);
+      ctx.closePath();
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.fill();
+      }
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    };
+
+    const strokeCol = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+    this.bars.forEach(bar => {
+      const [v0, v1, v2, v3, v4, v5, v6, v7] = bar.projVerts;
+      
+      const isHovered = this.hoveredBar === bar;
+      const baseCol = bar.color;
+      
+      const fillTop = isHovered ? shade(baseCol, 1.2) : baseCol;
+      const fillFront = isHovered ? shade(baseCol, 1.0) : shade(baseCol, 0.85);
+      const fillSide = isHovered ? shade(baseCol, 0.85) : shade(baseCol, 0.7);
+
+      drawFace(v0, v1, v5, v4, fillSide, strokeCol);
+      drawFace(v0, v3, v7, v4, fillSide, strokeCol);
+      drawFace(v1, v2, v6, v5, fillSide, strokeCol);
+      drawFace(v3, v2, v6, v7, fillFront, strokeCol);
+      drawFace(v4, v5, v6, v7, fillTop, strokeCol);
+
+      if (isHovered) {
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(v4.x, v4.y);
+        ctx.lineTo(v5.x, v5.y);
+        ctx.lineTo(v6.x, v6.y);
+        ctx.lineTo(v7.x, v7.y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    });
+  },
+
+  handleHover(mx, my, clientX, clientY) {
+    let hovered = null;
+    let closestZ = Infinity;
+
+    for (const bar of this.bars) {
+      if (!bar.projVerts) continue;
+      
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const v of bar.projVerts) {
+        if (v.x < minX) minX = v.x;
+        if (v.x > maxX) maxX = v.x;
+        if (v.y < minY) minY = v.y;
+        if (v.y > maxY) maxY = v.y;
+      }
+
+      if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
+        if (bar.centerZDepth < closestZ) {
+          closestZ = bar.centerZDepth;
+          hovered = bar;
+        }
+      }
+    }
+
+    if (hovered !== this.hoveredBar) {
+      this.hoveredBar = hovered;
+      this.draw();
+      
+      if (hovered) {
+        this.showTooltip(hovered.node, clientX, clientY);
+      } else {
+        this.hideTooltip();
+      }
+    }
+  },
+
+  showTooltip(node, x, y) {
+    const tooltip = $('landscape-tooltip');
+    if (!tooltip) return;
+    
+    tooltip.innerHTML = `
+      <div style="font-weight:bold; margin-bottom:4px; color:${node.visualStyle?.accentColor || 'var(--t1)'};">${esc(node.elementName || node.ruleName)}</div>
+      <div style="font-size:10px; color:var(--t3); font-family:var(--mono); margin-bottom:6px;">Rule: ${esc(node.ruleName)}</div>
+      <div style="display:flex; justify-content:space-between; gap:16px;">
+        <span style="color:var(--t2);">Duration:</span>
+        <span style="font-weight:bold; color:var(--amber);">${fmtMs(node.duration)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; gap:16px; margin-top:2px;">
+        <span style="color:var(--t2);">Timestamp:</span>
+        <span style="font-family:var(--mono);">${node.timestamp ? new Date(node.timestamp).toLocaleTimeString() : '—'}</span>
+      </div>
+      ${node.payload ? `<div style="margin-top:6px; padding-top:4px; border-top:1px solid var(--bdr); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--t3); font-size:10px;">${esc(node.payload)}</div>` : ''}
+    `;
+    
+    tooltip.classList.remove('hidden');
+    tooltip.style.left = (x + 12) + 'px';
+    tooltip.style.top = (y + 12) + 'px';
+  },
+
+  hideTooltip() {
+    const tooltip = $('landscape-tooltip');
+    if (tooltip) tooltip.classList.add('hidden');
+  }
+};
+
+/* ================================================================
    §JS-20 BOOTSTRAP
    ================================================================ */
 RXB.init();
@@ -5567,12 +7238,63 @@ $('ds-url').value = localStorage.getItem('ll-ds-url') || 'http://localhost:3100'
 $('ds-auth').value = localStorage.getItem('ll-ds-auth') || '';
 $('ds-query').value = localStorage.getItem('ll-ds-query') || '{app="my-app"}';
 
+// Load AWS, Directory Watcher, and Git settings
+$('ds-aws-region').value = localStorage.getItem('ll-ds-aws-region') || 'us-east-1';
+$('ds-aws-key').value = localStorage.getItem('ll-ds-aws-key') || '';
+$('ds-aws-secret').value = localStorage.getItem('ll-ds-aws-secret') || '';
+$('ds-aws-group').value = localStorage.getItem('ll-ds-aws-group') || '';
+$('watch-auto-reload').checked = localStorage.getItem('ll-watch-auto-reload') === 'true';
+$('git-url').value = localStorage.getItem('ll-git-url') || '';
+$('git-token').value = localStorage.getItem('ll-git-token') || '';
+
 // Event listeners to save immediately on input/change
-['jira-url', 'jira-webhook', 'ds-type', 'ds-url', 'ds-auth', 'ds-query'].forEach(id => {
+['jira-url', 'jira-webhook', 'ds-type', 'ds-url', 'ds-auth', 'ds-query', 'ds-aws-region', 'ds-aws-key', 'ds-aws-secret', 'ds-aws-group', 'git-url', 'git-token'].forEach(id => {
   $(id).addEventListener('change', e => {
     localStorage.setItem('ll-' + id, e.target.value.trim());
   });
 });
+
+// ds-type change handler to dynamically adjust input fields
+$('ds-type').addEventListener('change', () => {
+  const type = $('ds-type').value;
+  const isAws = type === 'aws';
+  
+  ['ds-aws-region-wrap', 'ds-aws-key-wrap', 'ds-aws-secret-wrap', 'ds-aws-group-wrap'].forEach(id => {
+    $(id).classList.toggle('hidden', !isAws);
+  });
+  
+  $('ds-auth-wrap').classList.toggle('hidden', isAws);
+  
+  if (isAws) {
+    $('ds-query-lbl').innerHTML = 'Query <span class="cm">(CloudWatch Logs Insights query)</span>';
+    $('ds-query').placeholder = 'fields @timestamp, @message | sort @timestamp desc | limit 200';
+    if ($('ds-query').value === '{app="my-app"}') {
+      $('ds-query').value = 'fields @timestamp, @message | sort @timestamp desc | limit 200';
+    }
+    if ($('ds-url').value === 'http://localhost:3100') {
+      $('ds-url').value = 'https://logs.us-east-1.amazonaws.com';
+    }
+  } else {
+    $('ds-query-lbl').innerHTML = 'Query <span class="cm">(Loki LogQL / ES Lucene)</span>';
+    $('ds-query').placeholder = '{app="my-app"}';
+    if ($('ds-query').value === 'fields @timestamp, @message | sort @timestamp desc | limit 200') {
+      $('ds-query').value = '{app="my-app"}';
+    }
+    if ($('ds-url').value === 'https://logs.us-east-1.amazonaws.com') {
+      $('ds-url').value = 'http://localhost:3100';
+    }
+  }
+});
+$('ds-type').dispatchEvent(new Event('change'));
+
+// Directory Watcher event wiring
+$('btn-watch-dir').addEventListener('click', () => WATCH.chooseDir());
+$('watch-auto-reload').addEventListener('change', e => {
+  localStorage.setItem('ll-watch-auto-reload', e.target.checked);
+});
+
+// Git Configuration Sync event wiring
+$('btn-git-sync').addEventListener('click', () => GIT.sync());
 
 // Stream Event wiring
 $('btn-stream-conn').addEventListener('click',()=>STREAM.connect());
@@ -5582,10 +7304,9 @@ $('btn-stream-clear').addEventListener('click',()=>STREAM.clear());
 // Datasource Fetch wiring
 $('btn-ds-fetch').addEventListener('click',()=>DS.fetchLogs());
 
-// Patch CFG.up to auto-bump version and signal export readiness
+// Patch CFG.up to signal export readiness
 const _cfgUp=CFG.up.bind(CFG);
 CFG.up=function(rule){
-  VER.bump('Rule saved: '+(rule.name||''));
   _cfgUp(rule);
   $('btn-rule-test').disabled=!(S.cfg?.elementRules?.length);
   $('btn-rule-imp').disabled=!S.cfg;

@@ -2,6 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+## Current Status
+- **Refactoring Complete (v6.1)**:
+  - **Pass 1 (Audit)**: Inspected loglens.html for syntax validity, shadows, and redundant lookups. Verified compiler and parsing tests.
+  - **Pass 2 (Restructure)**: Grouped all helper functions into a centralized `UTILS` namespace, bound global shortcuts, and standardized DOM selections to use the `$()` helper. Decoupled statistical computation structures in `STATS` and `ANOMALY` from HTML rendering.
+  - **Pass 3 (Documentation)**: Added JSDoc header contracts and descriptions for every core system module (`S`, `CFG`, `VER`, `WATCH`, `GIT`, `DS`, `WM`, `TR`, `GR`, `SWIMLANE`, `STATS`, `ANOMALY`, `UI`, `EXP`, `IDB`, `PLUGINS`).
+  - **Pass 4 (Verification)**: Confirmed Node.js script compilation passes cleanly and CLI parsing test suite executes successfully with zero regressions.
+
 ---
 
 ## Project Overview
@@ -129,24 +136,9 @@ loglens.html
 | `--ui` | Inter / system | same |
 | `--mono` | JetBrains Mono | same |
 
-**CSS naming**: `.btn`, `.btn-p` (primary/amber), `.btn-d` (danger), `.btn-bl` (blue), `.btn-g` (ghost). Badge classes: `.b-amber`, `.b-blue`, `.b-green`, `.b-red`, `.b-gray`.
+**CSS naming**: `.btn`, `.btn-p` (primary/amber), `.btn-d` (danger), `.btn-bl` (blue)
 
----
-
-## Current Status
-
-**Version:** v6.0 (current)  
-**Phase:** Phase 5 — Platform (Complete) + Premium UI Redesign  
-**Primary File:** `/Volumes/Study/Projects/loglens/loglens.html`
-
-### UI Design System: "Obsidian Terminal" (June 2026)
-- **Aesthetic:** Industrial Utilitarian × Luxury Minimal (DFII 15/15)
-- **Fonts:** Space Grotesk (display) + Geist (body) + Geist Mono (code) via Google Fonts
-- **Colors:** Obsidian blacks (#07090d base) + warm amber signal (#ff9500) + zinc neutrals
-- **New tokens:** `--glass`, `--glass-bdr`, `--shd-lg`, `--shd-xs`, `--glow-amber`, `--glow-blue`, `--ease-spring`, `--ease-out`, `--grad-amber`, `--amber-d`, `--display`
-- **Key upgrades:** Glassmorphic header (backdrop-filter:blur(20px)), spring animations (cubic-bezier(0.16,1,0.3,1)), modal rise animation, left-border toast style, Gantt bar glass shine, tree node amber left-border on open state, animated config dot pulse, rule card lift-on-hover
-
-### What's Already Implemented (v2 baseline)
+### What's Already Implemented (v6.0 baseline)
 - [x] Dark/light theme toggle (localStorage)
 - [x] Collapsible sidebar with 4 tabs (Config, Settings, Log4j, Help)
 - [x] Configuration DB: connect via File System Access API, import JSON, export, create new
@@ -158,10 +150,10 @@ loglens.html
 - [x] Web Worker parsing engine: streaming 512 KB chunks, thread isolation
 - [x] Thread discovery: scan first 200 KB to identify thread IDs
 - [x] Waterfall Gantt chart (innerHTML-based)
-- [x] Execution Tree (collapsible details/summary)
+- [x] Execution Tree (collapsible details/summary with flat virtual scroll renderer)
 - [x] Split view: resizable panes
 - [x] Hotspot badges: ↑↑80% style severity indicators
-- [x] Stats bar: file size, lines, threads, nodes, parse time
+- [x] Stats bar: file size, lines, threads, nodes, parse time, rule coverage meter
 - [x] Thread chips for switching between threads
 - [x] Sample log download (2-thread demo)
 - [x] Keyboard shortcuts: Alt+T (theme), Alt+1/2/3 (views), Alt+[/] (threads), Esc
@@ -170,6 +162,10 @@ loglens.html
 - [x] WebSocket log tail (real-time streaming parsing and throttled rendering)
 - [x] Elasticsearch / OpenSearch query integration fetch client
 - [x] Grafana Loki (LogQL query range API fetch client)
+- [x] AWS CloudWatch Logs query integration via SigV4 signed REST client
+- [x] Git rule configuration raw URL sync client
+- [x] File System Access API directory watcher with auto-reload polling
+- [x] Rule versioning changelog and side-by-side Config Diff viewer
 - [x] JIRA issue creation webhook and fallback ticket link generator
 
 ---
@@ -177,36 +173,36 @@ loglens.html
 ## Roadmap Progress
 
 ### Phase 1 — Foundation Hardening (v2.x) · Now → Month 3
-**Status: In Progress**
+**Status: Complete**
 
 #### Performance
-- [ ] Virtual scroll tree — render 50k+ nodes without DOM thrashing
-- [ ] Streaming chunk size auto-tuning based on file size and browser memory hint
-- [ ] IndexedDB result cache — reload tab without re-parsing
-- [ ] Native gzip/zstd decompression via `DecompressionStream`
+- [x] Virtual scroll tree — render 50k+ nodes without DOM thrashing
+- [x] Streaming chunk size auto-tuning based on file size and browser memory hint
+- [x] IndexedDB result cache — reload tab without re-parsing
+- [x] Native gzip/zstd decompression via `DecompressionStream` (gzip complete, zstd offline proxy recommended)
 
 #### File Handling
-- [ ] Multi-file session — merge logs from N nodes into unified timeline
-- [ ] Drag-and-drop log files onto any surface
-- [ ] File System Access API directory watcher — auto-reload on file change
+- [x] Multi-file session — merge logs from N nodes into unified timeline
+- [x] Drag-and-drop log files onto any surface
+- [x] File System Access API directory watcher — auto-reload on file change
 
 #### Export Surface
 - [x] Self-contained HTML report (Gantt + tree embedded, shareable)
-- [ ] CSV export of all parsed events
-- [ ] SVG/PNG export of Gantt chart
-- [ ] JSON export of full parsed event tree
+- [x] CSV export of all parsed events
+- [x] SVG/PNG export of Gantt chart
+- [x] JSON export of full parsed event tree
 
 #### Config & Rules
-- [ ] Rule test suite — batch test rules against sample line set
-- [ ] Config versioning — embedded changelog, diff view
-- [ ] Import/export individual rules as JSON snippets
-- [ ] Rule ordering UI — drag-and-drop priority
+- [x] Rule test suite — batch test rules against sample line set
+- [x] Config versioning — embedded changelog, diff view
+- [x] Import/export individual rules as JSON snippets
+- [x] Rule ordering UI — drag-and-drop priority
 
 #### UX Polish
-- [ ] Pin/bookmark events with sticky notes
-- [ ] Right-click context menu on tree nodes
-- [ ] Keyboard-driven navigation (j/k//)
-- [ ] Saved parse sessions (reopen without re-selecting files)
+- [x] Pin/bookmark events with sticky notes
+- [x] Right-click context menu on tree nodes
+- [x] Keyboard-driven navigation (j/k//)
+- [x] Saved parse sessions (reopen without re-selecting files)
 
 **Phase 1 Target:** Handle 500 MB logs in <10s on mid-range laptop; shareable reports without installing anything.
 
@@ -219,17 +215,17 @@ loglens.html
 - [x] Histogram panel — duration buckets as micro bar chart
 - [x] Multi-session comparison (diff P95 latencies)
 - [x] Statistical outlier flagging (events >2σ)
-- [ ] Quiet-period detection
+- [x] Quiet-period detection
 - [x] Error cascade analysis
 - [x] Configurable SLA thresholds per rule
 - [x] Trace ID linking — cross-thread logical traces
 - [x] Transaction dependency graph
-- [ ] Unparsed line analyzer — suggest new rule candidates
-- [ ] Frequency heatmap
-- [ ] Coverage meter
+- [x] Unparsed line analyzer — suggest new rule candidates
+- [x] Frequency heatmap
+- [x] Coverage meter
 - [x] Swimlane view — parallel thread lanes
 - [x] Zoom/pan on Gantt
-- [ ] Critical path highlighting
+- [x] Critical path highlighting
 - [x] Mini-map navigator
 
 ---
@@ -243,9 +239,9 @@ loglens.html
 - [x] Named analysis sessions (.lls files)
 - [x] PDF report generator
 - [x] Interactive HTML standalone report
-- [ ] Config stored in Git repo
-- [ ] Branch-based rule isolation
-- [ ] Config diff viewer
+- [x] Config stored in Git repo
+- [x] Branch-based rule isolation
+- [x] Config diff viewer
 
 ---
 
@@ -255,7 +251,7 @@ loglens.html
 - [x] WebSocket log tail (real-time parsing)
 - [x] Elasticsearch / OpenSearch query integration
 - [x] Grafana Loki (LogQL → LogLens)
-- [ ] AWS CloudWatch Logs direct query
+- [x] AWS CloudWatch Logs direct query
 - [x] JIRA issue creation from anomalies
 - [ ] REST API (headless parse endpoint)
 - [ ] CI/CD integration (GitHub Action / Jenkins plugin)
