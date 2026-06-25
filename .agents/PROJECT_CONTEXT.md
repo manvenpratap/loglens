@@ -136,8 +136,15 @@ loglens.html
 ## Current Status
 
 **Version:** v6.0 (current)  
-**Phase:** Phase 5 — Platform (Complete)  
+**Phase:** Phase 5 — Platform (Complete) + Premium UI Redesign  
 **Primary File:** `/Volumes/Study/Projects/loglens/loglens.html`
+
+### UI Design System: "Obsidian Terminal" (June 2026)
+- **Aesthetic:** Industrial Utilitarian × Luxury Minimal (DFII 15/15)
+- **Fonts:** Space Grotesk (display) + Geist (body) + Geist Mono (code) via Google Fonts
+- **Colors:** Obsidian blacks (#07090d base) + warm amber signal (#ff9500) + zinc neutrals
+- **New tokens:** `--glass`, `--glass-bdr`, `--shd-lg`, `--shd-xs`, `--glow-amber`, `--glow-blue`, `--ease-spring`, `--ease-out`, `--grad-amber`, `--amber-d`, `--display`
+- **Key upgrades:** Glassmorphic header (backdrop-filter:blur(20px)), spring animations (cubic-bezier(0.16,1,0.3,1)), modal rise animation, left-border toast style, Gantt bar glass shine, tree node amber left-border on open state, animated config dot pulse, rule card lift-on-hover
 
 ### What's Already Implemented (v2 baseline)
 - [x] Dark/light theme toggle (localStorage)
