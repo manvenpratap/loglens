@@ -157,12 +157,16 @@ html,body{
   overflow:hidden;
   transition:width .28s var(--ease-spring);
 }
-.sb.collapsed{width:44px}
+.sb.collapsed{width:44px;background:var(--bg-0)}
+.sb.collapsed .sb-top{flex-direction:column-reverse;align-items:center;border-bottom:none}
+.sb.collapsed .sb-tabs{flex-direction:column;width:100%;flex:none}
 .sb.collapsed .stab-lbl{display:none}
-.sb.collapsed .stab{padding:10px 0;font-size:0;justify-content:center}
+.sb.collapsed .stab{padding:12px 0;font-size:0;justify-content:center;border-bottom:none;border-left:2px solid transparent;width:100%}
+.sb.collapsed .stab.active{border-left-color:var(--amber);border-bottom-color:transparent}
 .sb.collapsed .stab-ic{font-size:16px;margin:0}
-.sb.collapsed .sb-body{overflow:hidden}
-.sb.collapsed .sp{pointer-events:none;opacity:0}
+.sb.collapsed .stab-ic svg{width:16px;height:16px}
+.sb.collapsed .sb-body{display:none}
+.sb.collapsed .btn-tog svg{transform:rotate(180deg)}
 
 .sb-top{
   display:flex;align-items:center;
