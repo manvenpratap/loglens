@@ -1632,7 +1632,267 @@ mark.hl{
   border-color:var(--amber);
   background:var(--amber-g);color:var(--amber);
 }
+
+/* ============================================================
+   CSS §23 · INTEL ENGINE & ANOMALY HEATMAPS
+   ============================================================ */
+.stats-card-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px;
+}
+.stats-panel-card{
+  background:var(--bg-1);border:1px solid var(--bdr);border-radius:8px;padding:14px;
+}
+.sp-title{
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3);margin-bottom:12px;
+}
+/* A2 Heatmap Matrix Grid */
+.corr-grid-wrap{
+  overflow-x:auto;padding-bottom:6px;
+}
+.corr-grid{
+  display:grid;gap:2px;background:var(--bdr-d);padding:2px;border-radius:6px;
+}
+.corr-cell{
+  aspect-ratio:1.6;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:11px;font-family:var(--mono);color:var(--t2);cursor:pointer;
+  transition:transform .12s,filter .12s;
+  min-width:48px;border-radius:3px;
+}
+.corr-cell:hover{
+  transform:scale(1.05);z-index:2;filter:brightness(1.2);
+}
+.corr-hdr-cell{
+  font-weight:600;font-size:10px;text-align:center;
+  background:var(--bg-2);color:var(--t4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;
+}
+.corr-cell-diag{
+  background:var(--bg-0);color:var(--t4);cursor:default;
+}
+/* A3 Contribution Heatmap */
+.heat-cal-wrap{
+  display:flex;flex-wrap:wrap;gap:2px;padding:8px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:6px;
+}
+.heat-cal-cell{
+  width:14px;height:14px;border-radius:3px;cursor:pointer;position:relative;
+  transition:transform .12s;
+}
+.heat-cal-cell:hover{transform:scale(1.15);z-index:2;}
+/* B1/B2 Stream Badges & Sparkline */
+#hdr-live-badge{
+  display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;
+  background:rgba(86,211,100,0.12);border:1px solid rgba(86,211,100,0.24);
+  padding:2px 8px;border-radius:99px;color:var(--green);font-weight:700;
+}
+#hdr-live-badge span.dot{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  animation:pulse-green 1s infinite alternate;
+}
+@keyframes pulse-green{
+  0%{opacity:.3;transform:scale(.8)}
+  100%{opacity:1;transform:scale(1.2)}
+}
+.hdr-spark-wrap{
+  display:flex;align-items:center;height:18px;margin-left:8px;position:relative;
+}
+.hdr-spark-wrap:hover .spark-tooltip{display:block;}
+.spark-tooltip{
+  display:none;position:absolute;top:24px;left:50%;transform:translateX(-50%);
+  background:var(--bg-2);border:1px solid var(--bdr);border-radius:6px;
+  padding:6px 10px;font-size:11px;font-family:var(--mono);color:var(--t2);
+  white-space:nowrap;box-shadow:var(--shd-lg);z-index:1000;pointer-events:none;
+}
+.stream-scroll-banner{
+  position:absolute;bottom:10px;right:20px;
+  background:var(--amber);color:#000;font-size:12px;font-weight:700;
+  padding:6px 14px;border-radius:20px;box-shadow:var(--shd-lg);
+  cursor:pointer;z-index:100;animation:stream-bounce .8s infinite alternate;
+}
+@keyframes stream-bounce{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-4px)}
+}
+
+/* ============================================================
+   CSS §24 · FILE COMPARE (DIFF) MODE
+   ============================================================ */
+.diff-split-container{
+  display:grid;grid-template-columns:1fr 8px 1fr;height:100%;min-height:0;
+}
+.diff-pane{
+  overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
+}
+.diff-pane-hdr{
+  font-size:13px;font-weight:700;font-family:var(--display);color:var(--t2);
+  padding-bottom:8px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;
+}
+.diff-table{
+  width:100%;border-collapse:collapse;font-size:12px;
+}
+.diff-table th{
+  background:var(--bg-2);color:var(--t4);font-size:10px;font-weight:700;text-transform:uppercase;padding:8px;
+}
+.diff-table td{
+  padding:8px;border-bottom:1px solid var(--bdr-d);
+}
+.d-chip{
+  padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);
+}
+.d-chip-add{background:rgba(86,211,100,0.15);color:var(--green)}
+.d-chip-rem{background:rgba(248,81,73,0.15);color:var(--red)}
+.d-chip-eq{background:var(--bg-3);color:var(--t3)}
+
+/* C2 Sequence Diff Rows */
+.seq-diff-box{
+  border:1px solid var(--bdr);border-radius:6px;overflow:hidden;margin-top:10px;font-family:var(--mono);font-size:11px;
+}
+.seq-row{
+  display:flex;align-items:center;padding:4px 8px;border-bottom:1px solid var(--bdr-d);
+}
+.seq-row-add{background:rgba(86,211,100,0.1);border-left:3px solid var(--green)}
+.seq-row-rem{background:rgba(248,81,73,0.1);border-left:3px solid var(--red)}
+.seq-row-match{background:transparent;border-left:3px solid transparent;opacity:.8}
+
+/* ============================================================
+   CSS §25 · QUERY LANGUAGE (LQL) PANEL
+   ============================================================ */
+.lql-box{
+  display:flex;flex-direction:column;height:100%;min-height:0;padding:12px;gap:12px;
+}
+.lql-input-row{
+  display:flex;gap:10px;align-items:center;background:var(--bg-2);border:1px solid var(--bdr);border-radius:8px;padding:6px 12px;
+}
+.lql-caret{
+  color:var(--amber);font-weight:700;font-size:16px;
+}
+.lql-inp{
+  flex:1;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:14px;color:var(--t1);caret-color:var(--amber);
+}
+.lql-presets-bar{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+}
+.lql-preset-btn{
+  background:var(--bg-1);border:1px solid var(--bdr);border-radius:6px;padding:4px 10px;
+  font-size:11px;color:var(--t3);cursor:pointer;transition:background .12s;
+}
+.lql-preset-btn:hover{
+  background:var(--bg-3);color:var(--t1);border-color:var(--bdr-h);
+}
+.lql-history-bar{
+  display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:var(--t4);align-items:center;
+}
+.lql-hist-chip{
+  background:var(--bg-2);border:1px solid var(--bdr-d);border-radius:4px;padding:2px 8px;cursor:pointer;
+  font-family:var(--mono);color:var(--t3);
+}
+.lql-hist-chip:hover{
+  background:var(--bg-3);color:var(--amber);
+}
+.lql-table-wrap{
+  flex:1;overflow:auto;border:1px solid var(--bdr);border-radius:8px;background:var(--bg-0);
+}
+.lql-table{
+  width:100%;border-collapse:collapse;font-size:12px;
+}
+.lql-table th{
+  position:sticky;top:0;background:var(--bg-2);color:var(--t3);font-size:10px;font-weight:700;
+  text-transform:uppercase;padding:10px 12px;text-align:left;border-bottom:1px solid var(--bdr);cursor:pointer;user-select:none;
+}
+.lql-table th:hover{background:var(--bg-3)}
+.lql-table td{
+  padding:8px 12px;border-bottom:1px solid var(--bdr-d);color:var(--t2);cursor:pointer;
+}
+.lql-table tr:hover td{
+  background:var(--amber-d);color:var(--t1);
+}
+
+/* ============================================================
+   CSS §26 · REGEX EXPLAINER BREAKDOWN & QUICK EDIT
+   ============================================================ */
+.rex-explain-wrap{
+  margin-top:10px;padding:10px;background:var(--bg-1);border:1px solid var(--bdr);border-radius:6px;
+}
+.rex-tokens{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;
+}
+.rex-token-chip{
+  padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:11px;color:#000;font-weight:700;
+  cursor:pointer;transition:transform .1s;position:relative;
+}
+.rex-token-chip:hover{transform:scale(1.04)}
+
+/* Quick Edit Rule Popover */
+.quick-edit-pop{
+  position:absolute;width:240px;background:var(--bg-2);border:1px solid var(--bdr-h);border-radius:8px;
+  box-shadow:var(--shd-lg);padding:10px;z-index:9000;display:flex;flex-direction:column;gap:8px;
+  animation:modal-rise .15s var(--ease-spring);
+}
+.quick-edit-pop input,.quick-edit-pop select{
+  font-size:11px;padding:4px 6px;
+}
+.color-swatch-row{
+  display:flex;gap:4px;
+}
+.color-swatch{
+  width:16px;height:16px;border-radius:3px;cursor:pointer;border:1px solid rgba(0,0,0,.2);
+}
+.color-swatch.selected{
+  box-shadow:0 0 0 2px var(--amber);
+}
+
+/* F1 Critical Path highlighting classes */
+.g-bar.g-critical::after{
+  content:"›";position:absolute;right:6px;top:50%;transform:translateY(-50%);color:#000;font-weight:700;font-size:11px;
+}
+.tree-critical{
+  border-left:3px solid var(--amber) !important;
+  background:rgba(255,149,0,0.06) !important;
+}
+.tree-row-rare-hl{
+  outline:2px solid #ffea00 !important;
+  outline-offset:-1px;
+  background:rgba(255,234,0,0.1) !important;
+}
+.tree-row-flash{
+  animation:flash-amber-blink 0.8s ease-in-out infinite alternate;
+}
+@keyframes flash-amber-blink{
+  0%{background:rgba(255,149,0,0.05)}
+  100%{background:rgba(255,149,0,0.35)}
+}
+.tree-row-new{
+  animation:flash-amber-stream 0.5s ease-out;
+}
+@keyframes flash-amber-stream{
+  0%{background:var(--amber);color:#000;}
+  100%{background:transparent;}
+}
+.g-trk-dim{
+  opacity:0.3 !important;
+}
+
+/* Gantt Pan grab state */
+.g-rows.grab{cursor:grab}
+.g-rows.grabbing{cursor:grabbing}
+
+/* Annotation Resolved thread row */
+.ann-comment{
+  background:var(--bg-2);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;
+}
+.ann-comment.resolved{
+  opacity:0.5;
+  text-decoration:line-through;
+}
+
+/* Community packs zero-match alert indicator */
+.badge-zero-match{
+  background:var(--amber-d) !important;
+  border:1px solid var(--amber) !important;
+  color:var(--amber) !important;
+  cursor:pointer;animation:sla-pulse 1.8s ease-in-out infinite;
+}
 </style>
+
 </head>
 <body>
 <div class="app">
@@ -1648,6 +1908,12 @@ mark.hl{
   <span class="hsub">Metadata-Driven Log Analyzer</span>
   <input class="inp" id="hdr-search" placeholder="🔍 Filter events (ID, rule, payload...)" style="width:340px; font-size:11px; padding:6px 12px; margin-left:24px; border-radius:6px; background:var(--bg-1); border:1px solid var(--bdr); color:var(--t1);" />
   <div class="hr">
+    <div id="hdr-live-badge" class="hidden" style="display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--green); font-weight:bold; margin-left:8px;" title="Connected to WebSocket log stream">
+      <span class="dot" style="width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block;"></span>
+      LIVE <span id="hdr-live-rate">0 ev/s</span>
+      <div class="hdr-spark-wrap" id="hdr-spark-wrap"></div>
+    </div>
+    <span class="badge b-red hidden" id="hdr-unmatched" style="cursor:pointer;" title="Unmatched push blocks. Click to view stats.">⚠️ 0 Unmatched</span>
     <span class="badge b-red hidden" id="hdr-sla" style="cursor:pointer;" title="SLA Breaches. Click to view stats.">⚠️ 0 SLA</span>
     <span class="badge b-amber hidden" id="hdr-outliers" style="cursor:pointer;" title="Outliers. Click to view stats.">🔍 0 Outliers</span>
     <span class="badge b-gray" id="hdr-fs">FS API</span>
@@ -1964,6 +2230,10 @@ mark.hl{
       <button class="btn btn-p" id="btn-parse" disabled>▶ Parse</button>
       <button class="btn btn-d btn-sm" id="btn-abort" disabled>■ Abort</button>
     </div>
+    <div class="cg hidden" id="cg-stream-ctrl" style="align-items:center;gap:6px;">
+      <button class="btn btn-g btn-sm" id="btn-stream-pause">⏸ Pause</button>
+      <span id="stream-buf-count" class="badge b-gray" style="font-family:var(--mono);">Buffer: 0 / 2000</span>
+    </div>
   </div>
   <div id="file-chips"></div>
 
@@ -1981,6 +2251,8 @@ mark.hl{
     <div class="vt active" data-v="split"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
     <div class="vt" data-v="gantt"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Timeline</div>
     <div class="vt" data-v="tree"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
+    <div class="vt" data-v="diff" id="vt-diff" style="display:none;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Diff</div>
+    <div class="vt" data-v="query" id="vt-query"><span class="ico" aria-hidden="true">>_</span> Query</div>
     <div class="vt" data-v="stats"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
     <div class="vt" data-v="graph"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
     <div class="vt" data-v="3d"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
@@ -2117,10 +2389,14 @@ mark.hl{
         </select>
       </div>
       <div class="f">
-        <div class="fl">Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></div>
+        <div class="fl" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></span>
+          <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
+        </div>
         <textarea class="inp inp-m" id="e-rx" rows="3"
           placeholder="^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*TX-BEGIN\s+(\S+)">
         </textarea>
+        <div id="rex-explain-results" class="hidden"></div>
       </div>
 
       <!-- Token builder -->
@@ -2249,6 +2525,8 @@ mark.hl{
 <div id="drop-ov"><div id="drop-ov-inner"><div class="di">📂</div>Drop log file or config JSON</div></div>
 <!-- Context menu -->
 <div id="ctx-menu"></div>
+<!-- Quick edit popover -->
+<div id="quick-edit-pop" class="quick-edit-pop hidden" role="dialog" aria-label="Quick edit rule"></div>
 <input type="file" id="fi-cfg" accept=".json" style="display:none"/>
 <input type="file" id="fi-log" accept=".log,.txt,.out,.gz" style="display:none"/>
 <input type="file" id="fi-log2" accept=".log,.txt,.out,.gz" multiple style="display:none"/>
@@ -8212,9 +8490,9 @@ _origHdrSearch.addEventListener('input', () => {
 }, { capture: false });
 
 // Also patch UI.rv to re-apply highlights after any re-render
-const _uiRvHL = UI.rv.bind(UI);
+const _uiRvSearch = UI.rv.bind(UI);
 UI.rv = function() {
-  _uiRvHL();
+  _uiRvSearch();
   const q = $('hdr-search')?.value?.trim();
   if (q) {
     requestAnimationFrame(() => {
@@ -8495,13 +8773,3873 @@ document.addEventListener('keydown', e => {
 // Update BCB after parse completes
 const _uiRenderBCB = UI.render.bind(UI);
 UI.render = function(trees, threads, stats) {
+  // Clear any single session filters on parse/reload
+  S.filterDay = null;
+  S.ruleFilter = null;
+  S.highlightRules = null;
+  S.timeFilterRange = null;
+
   _uiRenderBCB(trees, threads, stats);
   BCB.render();
+
+  // Run Intelligence Engines
+  ANOM.analyze(trees, threads);
+  CORR.analyze(trees, threads);
+  HEAT.analyze(trees);
+  HIST.add(S.logFile ? S.logFile.name : 'Unknown File', stats);
+
+  // Deep Link restore on initial load
+  if (window.location.hash) {
+    SHARE.restore();
+  }
+
+  // Hook plugins on parse complete
+  PLUG.onParseDone();
 };
 
-console.log('%c[LogLens v6.1]%c New features: CMD Palette, Breadcrumb, Gantt Resize, Search HL, Settings+',
+// Also patch UI.rv to re-apply highlights, time ranges, and custom filters after any re-render
+const _uiRvFilter = UI.rv.bind(UI);
+UI.rv = function() {
+  // Apply time range filter on S.trees before rendering
+  let originalTrees = S.trees;
+  if (S.timeFilterRange) {
+    const filterByTime = (nodes) => {
+      const res = [];
+      for (const n of nodes) {
+        if (n.timestamp >= S.timeFilterRange.start && n.timestamp <= S.timeFilterRange.end) {
+          const sub = filterByTime(n.events || []);
+          res.push({ ...n, events: sub });
+        }
+      }
+      return res;
+    };
+    const tempTrees = {};
+    for (const [thr, tr] of Object.entries(S.trees)) {
+      tempTrees[thr] = filterByTime(tr);
+    }
+    S.trees = tempTrees;
+  }
+
+  // Apply rule filter if set
+  if (S.ruleFilter) {
+    let originalActiveThrTree = S.trees[S.activeThr] || [];
+    const filterByRules = (nodes) => {
+      const res = [];
+      for (const n of nodes) {
+        const matches = S.ruleFilter.includes(n.ruleId);
+        const sub = filterByRules(n.events || []);
+        if (matches || sub.length > 0) {
+          res.push({ ...n, events: sub });
+        }
+      }
+      return res;
+    };
+    S.trees[S.activeThr] = filterByRules(originalActiveThrTree);
+  }
+
+  // Apply single calendar day filter if set
+  if (S.filterDay) {
+    let originalActiveThrTree = S.trees[S.activeThr] || [];
+    const filterByDay = (nodes) => {
+      const res = [];
+      for (const n of nodes) {
+        const day = new Date(n.timestamp).getFullYear() + '-' +
+          String(new Date(n.timestamp).getMonth() + 1).padStart(2, '0') + '-' +
+          String(new Date(n.timestamp).getDate()).padStart(2, '0');
+        const matches = day === S.filterDay;
+        const sub = filterByDay(n.events || []);
+        if (matches || sub.length > 0) {
+          res.push({ ...n, events: sub });
+        }
+      }
+      return res;
+    };
+    S.trees[S.activeThr] = filterByDay(originalActiveThrTree);
+  }
+
+  // Multi thread side-by-side mode in split view
+  if (S.activeThr && S.activeThr.startsWith('multi:') && S.viewMode === 'split') {
+    const threads = S.activeThr.split(':')[1].split(',');
+    const treeA = S.trees[threads[0]] || [];
+    const treeB = S.trees[threads[1]] || [];
+    const r = $('res');
+    r.style.overflowY = 'hidden';
+    r.style.padding = '0';
+    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+
+    const w = document.createElement('div');
+    w.className = 'res-split';
+    w.style.cssText = 'flex:1;min-height:0;';
+    const l = document.createElement('div');
+    l.className = 'sp-pane';
+    const h = document.createElement('div');
+    h.className = 'sp-hdl';
+    h.id = 'sp-hdl';
+    const rp = document.createElement('div');
+    rp.className = 'sp-pane';
+    w.append(l, h, rp);
+    r.appendChild(w);
+
+    l.innerHTML = `<div class="tw" style="display:flex; flex-direction:column; height:100%;"><div class="pt">🧵 ${esc(threads[0])}</div><div style="flex:1; overflow:auto; padding:10px; background:var(--bg-0);">${treeA.map(n => TR._nd(n, 0)).join('')}</div></div>`;
+    rp.innerHTML = `<div class="tw" style="display:flex; flex-direction:column; height:100%;"><div class="pt">🧵 ${esc(threads[1])}</div><div style="flex:1; overflow:auto; padding:10px; background:var(--bg-0);">${treeB.map(n => TR._nd(n, 0)).join('')}</div></div>`;
+
+    // Handle resizer
+    UI._res(h, l, rp);
+    S.trees = originalTrees;
+    return;
+  }
+
+  // Rule highlighting diff-mode split view
+  if (S.activeThr === 'diff-mode' && S.viewMode === 'split') {
+    const r = $('res');
+    r.style.overflowY = 'hidden';
+    r.style.padding = '0';
+    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+
+    const w = document.createElement('div');
+    w.className = 'res-split';
+    w.style.cssText = 'flex:1;min-height:0;';
+    const l = document.createElement('div');
+    l.className = 'sp-pane';
+    const h = document.createElement('div');
+    h.className = 'sp-hdl';
+    h.id = 'sp-hdl';
+    const rp = document.createElement('div');
+    rp.className = 'sp-pane';
+    w.append(l, h, rp);
+    r.appendChild(w);
+
+    const fNameA = DIFF.fileA ? DIFF.fileA.name : 'File A';
+    const fNameB = DIFF.fileB ? DIFF.fileB.name : 'File B';
+
+    // Helper to render tree with diff rules highlighted
+    const renderDiffTree = (nodes, isFileB) => {
+      const render = (n, d) => {
+        const col = scol(n.visualStyle?.accentColor || '#8b949e');
+        const ico = esc(n.visualStyle?.icon || '•');
+        const kids = n.events && n.events.length > 0;
+        const dur = n.duration != null ? fmtMs(n.duration) : null;
+        const bg = ibg(col);
+        const durB = dur ? `<span class="tdr" style="color:${col};">${esc(dur)}</span>` : '';
+        const hotB = HS.badge(n._hp);
+        const smB = n._sm != null && n.duration != null && n._sm !== n.duration ? `<span class="ts-b">self ${esc(fmtMs(n._sm))}</span>` : '';
+
+        // Diff background highlights
+        let customBg = '';
+        if (n.ruleId === S.diffHighlightRule) {
+          customBg = isFileB ? 'background:rgba(0,149,255,0.2) !important;' : 'background:rgba(255,149,0,0.2) !important;';
+        }
+
+        const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
+        const payB = n.payload ? `<div class="tpy">${esc(n.payload)}</div>` : '';
+        const hd = `<span class="tchev">▶</span>
+          <div class="tico" style="background:${bg};color:${col};">${ico}</div>
+          <div class="tbd"><div class="thr" style="${customBg}"><span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>${elB}${durB}${hotB}${smB}</div>${payB}</div>`;
+        const ch = kids ? `<div class="tch">${n.events.map(c => render(c, d + 1)).join('')}</div>` : '';
+        return `<details class="tn" ${d < 2 ? 'open' : ''}><summary class="ts" style="border-left:3px solid ${col};padding-left:6px;${customBg}">${hd}</summary>${ch}</details>`;
+      };
+      return nodes.map(n => render(n, 0)).join('');
+    };
+
+    const thr = Object.keys(DIFF.treeA)[0];
+    const treeA = DIFF.treeA[thr] || [];
+    const treeB = DIFF.treeB[thr] || [];
+
+    l.innerHTML = `<div class="tw" style="display:flex; flex-direction:column; height:100%;"><div class="pt">📄 A: ${esc(fNameA)}</div><div style="flex:1; overflow:auto; padding:10px; background:var(--bg-0);">${renderDiffTree(treeA, false)}</div></div>`;
+    rp.innerHTML = `<div class="tw" style="display:flex; flex-direction:column; height:100%;"><div class="pt">📄 B: ${esc(fNameB)}</div><div style="flex:1; overflow:auto; padding:10px; background:var(--bg-0);">${renderDiffTree(treeB, true)}</div></div>`;
+
+    UI._res(h, l, rp);
+    S.trees = originalTrees;
+    return;
+  }
+
+  // Trigger default view render
+  _uiRvFilter();
+
+  // Restore modified trees
+  S.trees = originalTrees;
+
+  // Custom Highlights/Scroll logic
+  if (S.viewMode === 'tree') {
+    const q = $('hdr-search')?.value?.trim();
+    if (q && S.appPrefs.enableHighlighting) {
+      requestAnimationFrame(() => {
+        SEARCH_HL.clear();
+        SEARCH_HL.highlight(q);
+      });
+    }
+    // Highlight Critical Path border left in tree
+    if (S.criticalPathOn) {
+      document.querySelectorAll('.tree-row').forEach(row => {
+        const idx = parseInt(row.dataset.idx, 10);
+        const n = TR._visibleNodes[idx];
+        if (n && n._isCriticalPath) {
+          row.classList.add('tree-critical');
+        }
+      });
+    }
+  }
+
+  // Draw query language view if active
+  if (S.viewMode === 'query') {
+    const r = $('res');
+    r.innerHTML = '';
+    LQL.render(r);
+  }
+
+  // Draw diff compare view if active
+  if (S.viewMode === 'diff') {
+    const r = $('res');
+    r.innerHTML = '';
+    DIFF.render(r);
+  }
+
+  // Update Critical path display on Gantt
+  if (S.viewMode === 'gantt' && S.criticalPathOn) {
+    document.querySelectorAll('.g-row').forEach(row => {
+      const bar = row.querySelector('.g-bar');
+      if (bar && !bar.classList.contains('g-critical')) {
+        bar.classList.add('g-trk-dim');
+      }
+    });
+  }
+
+  // Render zoom value onto Gantt view elements
+  if (S.viewMode === 'gantt') {
+    document.documentElement.style.setProperty('--g-zoom', S.ganttZoom || 1);
+    GANTT_ZOOM_PAN.initEvents();
+  }
+};
+
+/* ================================================================
+   §JS-ANOM PATTERN FREQUENCY ANOMALY DETECTOR
+   ================================================================ */
+const ANOM = {
+  results: { hotPaths: [], rareSequences: [], unmatchedBlocks: [] },
+  
+  analyze(trees, threads) {
+    this.results = { hotPaths: [], rareSequences: [], unmatchedBlocks: [] };
+    const transitions = {};
+    let totalPairs = 0;
+    
+    // 1. Walk trees to extract sequences and unmatched blocks
+    for (const [thr, tree] of Object.entries(trees)) {
+      const events = [];
+      const traverse = (nodes) => {
+        for (const n of nodes) {
+          events.push(n);
+          // Flag unmatched push block
+          if (n.behavior === 'push' && n.endTimestamp === null) {
+            this.results.unmatchedBlocks.push(n);
+          }
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      traverse(tree);
+      
+      // Sort by timestamp
+      events.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      const sequence = events.map(e => e.ruleId).filter(Boolean);
+      
+      // 2. Count bigram frequencies
+      for (let i = 0; i < sequence.length - 1; i++) {
+        const key = sequence[i] + '→' + sequence[i+1];
+        transitions[key] = (transitions[key] || 0) + 1;
+        totalPairs++;
+      }
+    }
+    
+    // Update unmatched badge count
+    const badge = $('hdr-unmatched');
+    if (badge) {
+      if (this.results.unmatchedBlocks.length > 0) {
+        badge.textContent = `⚠️ ${this.results.unmatchedBlocks.length} Unmatched`;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+    
+    const counts = Object.values(transitions);
+    if (!counts.length) return;
+    
+    // 3. Compute mean and standard deviation
+    const mean = counts.reduce((s, x) => s + x, 0) / counts.length;
+    const variance = counts.reduce((s, x) => s + Math.pow(x - mean, 2), 0) / counts.length;
+    const stdDev = Math.sqrt(variance) || 1;
+    
+    // 4. Flag Hot Paths and Rare Sequences
+    const sorted = Object.entries(transitions).sort((a,b)=>b[1]-a[1]);
+    sorted.forEach(([key, freq]) => {
+      const [from, to] = key.split('→');
+      const fromName = S.cfg?.elementRules?.find(r => r.id === from)?.name || from;
+      const toName = S.cfg?.elementRules?.find(r => r.id === to)?.name || to;
+      const percent = totalPairs ? (freq / totalPairs * 100).toFixed(1) : 0;
+      
+      if (freq > mean + 2 * stdDev) {
+        this.results.hotPaths.push({ from, to, fromName, toName, count: freq, percent });
+      }
+      if (freq === 1 && totalPairs > 20) {
+        this.results.rareSequences.push({ from, to, fromName, toName });
+      }
+    });
+    
+    // Sort hot paths to top 5
+    this.results.hotPaths = this.results.hotPaths.slice(0, 5);
+  },
+  
+  renderCard(container) {
+    const hotRows = this.results.hotPaths.map(hp =>
+      `<tr class="anom-hot-row" data-from="${esc(hp.from)}" data-to="${esc(hp.to)}" style="border-bottom:1px solid var(--bdr-d); cursor:pointer;">
+        <td style="padding:6px; font-weight:bold; color:var(--amber);">${esc(hp.fromName)} → ${esc(hp.toName)}</td>
+        <td style="padding:6px; text-align:right;">${hp.count}</td>
+        <td style="padding:6px; text-align:right; font-family:var(--mono);">${hp.percent}%</td>
+      </tr>`
+    ).join('');
+    
+    const rareRows = this.results.rareSequences.map(rs =>
+      `<div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:4px 0; border-bottom:1px solid var(--bdr-d);">
+        <span>${esc(rs.fromName)} → ${esc(rs.toName)}</span>
+        <button class="btn btn-xs btn-g btn-rare-focus" data-from="${esc(rs.from)}" data-to="${esc(rs.to)}">Focus</button>
+      </div>`
+    ).join('');
+    
+    const unmatchedRows = this.results.unmatchedBlocks.map(ub =>
+      `<div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:4px 0; border-bottom:1px solid var(--bdr-d);">
+        <span class="trunc" style="max-width:180px;">🧵 ${esc(ub.thread)}: ${esc(ub.elementName || ub.ruleName)}</span>
+        <button class="btn btn-xs btn-d btn-unmatched-jump" data-id="${esc(ub.id)}">Jump</button>
+      </div>`
+    ).join('');
+    
+    const html = `
+      <div class="stats-panel-card" style="margin-top:16px;">
+        <div class="sp-title">🕵️ Pattern Anomalies</div>
+        <div class="stats-card-grid">
+          <div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">🔥 HOT PATHS (Transition sequences)</div>
+            <table style="width:100%; border-collapse:collapse; font-size:11px;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--bdr); color:var(--t4);">
+                  <th style="padding:6px; text-align:left;">Transition</th>
+                  <th style="padding:6px; text-align:right;">Count</th>
+                  <th style="padding:6px; text-align:right;">% Pairs</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${hotRows || '<tr><td colspan="3" style="padding:10px; text-align:center; color:var(--t4);">No transitions detected.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">🔍 RARE SEQUENCES (Frequency = 1)</div>
+            <div style="max-height:160px; overflow-y:auto; padding-right:4px;">
+              ${rareRows || '<div style="text-align:center; padding:10px; color:var(--t4); font-size:11px;">No rare transitions.</div>'}
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">📦 UNMATCHED BLOCKS (Push without pop)</div>
+            <div style="max-height:160px; overflow-y:auto; padding-right:4px;">
+              ${unmatchedRows || '<div style="text-align:center; padding:10px; color:var(--t4); font-size:11px;">All push blocks matched.</div>'}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    
+    // Wire up events
+    div.querySelectorAll('.anom-hot-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const from = row.dataset.from, to = row.dataset.to;
+        S.ruleFilter = [from, to];
+        UI.rv();
+        BCB.render();
+      });
+    });
+    
+    div.querySelectorAll('.btn-rare-focus').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const from = btn.dataset.from, to = btn.dataset.to;
+        S.highlightRules = [from, to];
+        UI.svm('tree');
+        // Find first matching node in S.trees
+        let foundNode = null;
+        const find = (nodes) => {
+          for (const n of nodes) {
+            if (n.ruleId === from || n.ruleId === to) { foundNode = n; return; }
+            if (n.events && n.events.length) find(n.events);
+          }
+        };
+        find(S.trees[S.activeThr] || []);
+        if (foundNode) {
+          jumpToNode(foundNode);
+        } else {
+          toast('Matching node not found in active thread tree.','warn');
+        }
+      });
+    });
+    
+    div.querySelectorAll('.btn-unmatched-jump').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        let foundNode = null;
+        for (const tree of Object.values(S.trees)) {
+          const find = (nodes) => {
+            for (const n of nodes) {
+              if (n.id === id) { foundNode = n; return; }
+              if (n.events && n.events.length) find(n.events);
+            }
+          };
+          find(tree);
+          if (foundNode) break;
+        }
+        if (foundNode) {
+          S.activeThr = foundNode.thread;
+          jumpToNode(foundNode);
+        }
+      });
+    });
+    
+    container.appendChild(div);
+  }
+};
+
+/* ================================================================
+   §JS-CORR THREAD CORRELATION MATRIX
+   ================================================================ */
+const CORR = {
+  matrix: {},
+  
+  analyze(trees, threads) {
+    this.matrix = {};
+    const intervals = {};
+    const threadMax = {};
+    
+    // 1. Gather active push intervals for each thread
+    for (const [thr, tree] of Object.entries(trees)) {
+      intervals[thr] = [];
+      let minTs = Infinity, maxTs = -Infinity;
+      
+      const traverse = (nodes) => {
+        for (const n of nodes) {
+          if (n.timestamp != null) {
+            minTs = Math.min(minTs, n.timestamp);
+            maxTs = Math.max(maxTs, n.timestamp);
+            if (n.behavior === 'push') {
+              const start = n.timestamp;
+              const end = n.endTimestamp || n.timestamp;
+              intervals[thr].push([start, end]);
+            }
+          }
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      traverse(tree);
+      threadMax[thr] = maxTs;
+      
+      // Sort and merge intervals
+      intervals[thr].sort((a,b)=>a[0]-b[0]);
+      const merged = [];
+      for (const iv of intervals[thr]) {
+        if (!merged.length || iv[0] > merged[merged.length-1][1]) {
+          merged.push(iv);
+        } else {
+          merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], iv[1]);
+        }
+      }
+      intervals[thr] = merged;
+    }
+    
+    // 2. Compute symmetric overlap percentage matrix
+    threads.forEach(tA => {
+      this.matrix[tA] = {};
+      threads.forEach(tB => {
+        if (tA === tB) {
+          this.matrix[tA][tB] = null;
+          return;
+        }
+        const ivA = intervals[tA] || [];
+        const ivB = intervals[tB] || [];
+        
+        let i = 0, j = 0, overlapMs = 0;
+        while (i < ivA.length && j < ivB.length) {
+          const start = Math.max(ivA[i][0], ivB[j][0]);
+          const end = Math.min(ivA[i][1], ivB[j][1]);
+          if (start < end) {
+            overlapMs += (end - start);
+          }
+          if (ivA[i][1] < ivB[j][1]) i++; else j++;
+        }
+        
+        const durA = ivA.length ? (ivA[ivA.length-1][1] - ivA[0][0]) : 0;
+        const durB = ivB.length ? (ivB[ivB.length-1][1] - ivB[0][0]) : 0;
+        const minDur = Math.min(durA, durB);
+        
+        this.matrix[tA][tB] = minDur > 0 ? (overlapMs / minDur * 100) : 0;
+      });
+    });
+  },
+  
+  renderCard(container) {
+    const threads = Object.keys(this.matrix);
+    if (threads.length < 2) return;
+    
+    // Limit to max 10 threads in matrix to fit display comfortably
+    const dispThreads = threads.slice(0, 10);
+    const cols = dispThreads.length + 1;
+    
+    // Header cells
+    let gridHtml = `<div class="corr-hdr-cell" style="grid-column:1; height:32px;">Threads</div>`;
+    dispThreads.forEach((t, i) => {
+      gridHtml += `<div class="corr-hdr-cell" style="grid-column:${i+2};" title="${esc(t)}">${esc(t.slice(0,10))}${t.length>10?'…':''}</div>`;
+    });
+    
+    dispThreads.forEach((tRow, rIdx) => {
+      // Row header
+      gridHtml += `<div class="corr-hdr-cell" style="grid-row:${rIdx+2}; grid-column:1; text-align:left; justify-content:flex-start; padding:0 6px;" title="${esc(tRow)}">${esc(tRow.slice(0,12))}</div>`;
+      
+      dispThreads.forEach((tCol, cIdx) => {
+        if (tRow === tCol) {
+          gridHtml += `<div class="corr-cell corr-cell-diag" style="grid-row:${rIdx+2}; grid-column:${cIdx+2};">—</div>`;
+        } else {
+          const val = this.matrix[tRow][tCol];
+          const bg = `background:rgba(255,149,0,${((val||0)/100 * 0.8).toFixed(2)})`;
+          gridHtml += `<div class="corr-cell" style="grid-row:${rIdx+2}; grid-column:${cIdx+2}; ${bg};"
+            data-ta="${esc(tRow)}" data-tb="${esc(tCol)}" title="Overlap: ${val.toFixed(2)}%">
+            ${val.toFixed(1)}%
+          </div>`;
+        }
+      });
+    });
+    
+    const html = `
+      <div class="stats-panel-card" style="margin-top:16px;">
+        <div class="sp-title">🔗 Thread Correlation (Overlap Heatmap)</div>
+        <div class="corr-grid-wrap">
+          <div class="corr-grid" style="grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width:max-content; min-width:100%;">
+            ${gridHtml}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    
+    // Wire overlap cell clicks
+    div.querySelectorAll('.corr-cell').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const ta = cell.dataset.ta;
+        const tb = cell.dataset.tb;
+        if (ta && tb) {
+          S.activeThr = `multi:${ta},${tb}`;
+          S.viewMode = 'split';
+          UI.rv();
+          BCB.render();
+        }
+      });
+    });
+    
+    container.appendChild(div);
+  }
+};
+
+/* ================================================================
+   §JS-HEAT DURATION HEATMAP CALENDAR
+   ================================================================ */
+const HEAT = {
+  calData: {},
+  
+  analyze(trees) {
+    this.calData = {};
+    let minTs = Infinity, maxTs = -Infinity;
+    
+    const traverse = (nodes) => {
+      for (const n of nodes) {
+        if (n.timestamp != null) {
+          minTs = Math.min(minTs, n.timestamp);
+          maxTs = Math.max(maxTs, n.timestamp);
+          
+          if (n.behavior === 'push' && n.duration != null) {
+            const date = new Date(n.timestamp);
+            const dayStr = date.getFullYear() + '-' +
+              String(date.getMonth() + 1).padStart(2, '0') + '-' +
+              String(date.getDate()).padStart(2, '0');
+            
+            if (!this.calData[dayStr]) this.calData[dayStr] = { count: 0, totalDuration: 0 };
+            this.calData[dayStr].count++;
+            this.calData[dayStr].totalDuration += n.duration;
+          }
+        }
+        if (n.events && n.events.length) traverse(n.events);
+      }
+    };
+    
+    for (const tree of Object.values(trees)) traverse(tree);
+    
+    const diffDays = (maxTs - minTs) / (1000 * 60 * 60 * 24);
+    this.hasMultipleDays = diffDays > 1 && Object.keys(this.calData).length >= 2;
+  },
+  
+  renderCard(container) {
+    if (!this.hasMultipleDays) return;
+    
+    const days = Object.keys(this.calData).sort();
+    const durations = Object.values(this.calData).map(d => d.totalDuration).sort((a,b)=>a-b);
+    if (!durations.length) return;
+    
+    const minDur = durations[0];
+    const maxDur = durations[durations.length-1];
+    const avgDur = durations.reduce((s,x)=>s+x, 0) / durations.length;
+    
+    // Quartile splits
+    const q1 = durations[Math.round(0.25 * (durations.length - 1))];
+    const q2 = durations[Math.round(0.50 * (durations.length - 1))];
+    const q3 = durations[Math.round(0.75 * (durations.length - 1))];
+    
+    let cellsHtml = '';
+    days.forEach(day => {
+      const data = this.calData[day];
+      const dur = data.totalDuration;
+      let opacity = 0;
+      if (dur > 0) {
+        if (dur <= q1) opacity = 0.20;
+        else if (dur <= q2) opacity = 0.45;
+        else if (dur <= q3) opacity = 0.70;
+        else opacity = 1.0;
+      }
+      
+      const style = dur > 0 ? `background:rgba(255,149,0,${opacity});` : `background:var(--bg-3);`;
+      const title = `${esc(day)} · ${data.count} event${data.count===1?'':'s'} · ${esc(fmtMs(dur))} total duration`;
+      
+      cellsHtml += `<div class="heat-cal-cell" style="${style}" data-day="${esc(day)}" title="${title}"></div>`;
+    });
+    
+    const html = `
+      <div class="stats-panel-card" style="margin-top:16px;">
+        <div class="sp-title">📅 Duration Heatmap Calendar</div>
+        <div class="heat-cal-wrap">
+          ${cellsHtml}
+        </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <div style="flex:1; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:6px; padding:6px 10px; text-align:center;">
+            <div style="font-size:10px; color:var(--t4);">Min day latency</div>
+            <div style="font-size:12px; font-weight:bold; color:var(--t2); margin-top:2px;">${esc(fmtMs(minDur))}</div>
+          </div>
+          <div style="flex:1; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:6px; padding:6px 10px; text-align:center;">
+            <div style="font-size:10px; color:var(--t4);">Max day latency</div>
+            <div style="font-size:12px; font-weight:bold; color:var(--t2); margin-top:2px; color:var(--red);">${esc(fmtMs(maxDur))}</div>
+          </div>
+          <div style="flex:1; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:6px; padding:6px 10px; text-align:center;">
+            <div style="font-size:10px; color:var(--t4);">Avg day latency</div>
+            <div style="font-size:12px; font-weight:bold; color:var(--t2); margin-top:2px; color:var(--amber);">${esc(fmtMs(avgDur))}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    
+    div.querySelectorAll('.heat-cal-cell').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const day = cell.dataset.day;
+        if (day) {
+          S.filterDay = day;
+          UI.rv();
+          BCB.render();
+        }
+      });
+    });
+    
+    container.appendChild(div);
+  }
+};
+
+// Patch STATS.render to call ANOM, CORR, and HEAT card additions
+const _origStatsRender = STATS.render.bind(STATS);
+STATS.render = async function(tree, container) {
+  await _origStatsRender(tree, container);
+  
+  // Appends pattern anomalies, thread correlation and contribution calendar heatmaps
+  const extWrap = container.querySelector('.tw');
+  if (extWrap) {
+    ANOM.renderCard(extWrap);
+    CORR.renderCard(extWrap);
+    HEAT.renderCard(extWrap);
+  }
+};
+
+/* ================================================================
+   §JS-STREAM STREAMING ENHANCEMENTS & SPARKLINE
+   ================================================================ */
+// Redefining STREAM.buffer to act as FIFO rolling buffer
+STREAM.buffer = [];
+STREAM.paused = false;
+STREAM.eventsThisSecond = 0;
+STREAM.rateHistory = new Array(60).fill(0);
+
+// Redefine STREAM_PARSER.parseLine to stream nodes into the buffer
+STREAM_PARSER.parseLine = function(line) {
+  for (const r of this.rules) {
+    const m = r._rx.exec(line);
+    if (!m) continue;
+    const c = this.caps(m, r.captureMapping);
+    const thr = (c.thread || 'default').trim();
+    this.all.add(thr);
+    
+    const ts = c.timestamp ? this.pts(c.timestamp) : this.gts(line);
+    if (!this.stacks[thr]) this.stacks[thr] = [];
+    if (!S.trees[thr]) S.trees[thr] = [];
+    const stk = this.stacks[thr], tr = S.trees[thr];
+    
+    const nd = {
+      id: 's_' + (++this._i),
+      ruleId: r.id,
+      ruleName: r.name,
+      elementName: (c.elementName || r.name || '').trim(),
+      payload: (c.payload || '').trim(),
+      thread: thr,
+      timestamp: ts,
+      endTimestamp: null,
+      duration: null,
+      behavior: r.stackBehavior,
+      visualStyle: r.visualStyle || {},
+      events: [],
+      correlationId: c.correlationId || null,
+      slaThresholdMs: r.slaThresholdMs || null,
+      rawLine: line.length > 260 ? line.slice(0, 260) + '…' : line
+    };
+    
+    // Add flashing flag
+    nd._isNewStream = true;
+    setTimeout(() => {
+      nd._isNewStream = false;
+      if (S.viewMode === 'tree' && TR._container) TR.drawVisible();
+    }, 500);
+
+    switch (r.stackBehavior) {
+      case 'push':
+        if (stk.length > 0) stk[stk.length - 1].events.push(nd);
+        else {
+          if (S.viewMode === 'tree') tr.unshift(nd);
+          else tr.push(nd);
+        }
+        stk.push(nd);
+        break;
+      case 'pop':
+        if (stk.length > 0) {
+          const o = stk.pop();
+          o.endTimestamp = ts;
+          o.duration = (ts != null && o.timestamp != null) ? (ts - o.timestamp) : null;
+        }
+        break;
+      case 'inline':
+        if (stk.length > 0) stk[stk.length - 1].events.push(nd);
+        else {
+          if (S.viewMode === 'tree') tr.unshift(nd);
+          else tr.push(nd);
+        }
+        break;
+    }
+    
+    if (!S.threads.includes(thr)) {
+      S.threads.push(thr);
+      S.threads.sort();
+    }
+
+    // Add to rolling buffer
+    STREAM.buffer.push(nd);
+    STREAM.eventsThisSecond++;
+    
+    // Evict oldest if limit exceeded
+    if (STREAM.buffer.length > 2000) {
+      const evicted = STREAM.buffer.shift();
+      if (evicted) {
+        // Remove from thread tree
+        const tTree = S.trees[evicted.thread] || [];
+        const removeNode = (nodes, id) => {
+          for (let idx = 0; idx < nodes.length; idx++) {
+            if (nodes[idx].id === id) {
+              nodes.splice(idx, 1);
+              return true;
+            }
+            if (nodes[idx].events && nodes[idx].events.length) {
+              if (removeNode(nodes[idx].events, id)) return true;
+            }
+          }
+          return false;
+        };
+        removeNode(tTree, evicted.id);
+      }
+    }
+    return;
+  }
+};
+
+// Patch WebSocket connection callbacks in STREAM
+const _origConnect = STREAM.connect.bind(STREAM);
+STREAM.connect = function() {
+  _origConnect();
+  
+  // Custom websocket message handler with pause/resume support
+  if (this.ws) {
+    this.ws.onmessage = (e) => {
+      const lines = e.data.split(/\r?\n/);
+      lines.forEach(l => {
+        if (l.trim()) STREAM_PARSER.parseLine(l);
+      });
+      
+      // Update buffer count chip
+      const bufCount = $('stream-buf-count');
+      if (bufCount) {
+        bufCount.textContent = `Buffer: ${STREAM.buffer.length} / 2000`;
+      }
+      
+      if (!STREAM.paused) {
+        requestRender();
+      }
+    };
+    
+    this.ws.addEventListener('open', () => {
+      $('hdr-live-badge').classList.remove('hidden');
+      $('cg-stream-ctrl').classList.remove('hidden');
+      STREAM.startSparkline();
+    });
+    
+    this.ws.addEventListener('close', () => {
+      $('hdr-live-badge').classList.add('hidden');
+      $('cg-stream-ctrl').classList.add('hidden');
+      STREAM.stopSparkline();
+    });
+  }
+};
+
+// Redefine disconnect to clear live badges
+const _origDisconnect = STREAM.disconnect.bind(STREAM);
+STREAM.disconnect = function() {
+  _origDisconnect();
+  $('hdr-live-badge').classList.add('hidden');
+  $('cg-stream-ctrl').classList.add('hidden');
+  STREAM.stopSparkline();
+};
+
+// Wire stream controls
+$('btn-stream-pause').addEventListener('click', () => {
+  STREAM.paused = !STREAM.paused;
+  $('btn-stream-pause').textContent = STREAM.paused ? '▶ Resume' : '⏸ Pause';
+  $('btn-stream-pause').className = STREAM.paused ? 'btn btn-p btn-sm' : 'btn btn-g btn-sm';
+  if (!STREAM.paused) requestRender();
+});
+
+// Sparkline drawing
+let sparkTimer = null;
+let lastTickTime = Date.now();
+
+STREAM.startSparkline = function() {
+  this.rateHistory = new Array(60).fill(0);
+  lastTickTime = Date.now();
+  
+  const tick = () => {
+    const now = Date.now();
+    if (now - lastTickTime >= 1000) {
+      this.rateHistory.push(this.eventsThisSecond);
+      this.rateHistory.shift();
+      
+      // Update LIVE rate badge
+      const rateLabel = $('hdr-live-rate');
+      if (rateLabel) {
+        rateLabel.textContent = `${this.eventsThisSecond} ev/s`;
+      }
+      
+      this.eventsThisSecond = 0;
+      lastTickTime = now;
+      this.drawSparkline();
+    }
+    sparkTimer = requestAnimationFrame(tick);
+  };
+  sparkTimer = requestAnimationFrame(tick);
+};
+
+STREAM.stopSparkline = function() {
+  if (sparkTimer) {
+    cancelAnimationFrame(sparkTimer);
+    sparkTimer = null;
+  }
+};
+
+STREAM.drawSparkline = function() {
+  const container = $('hdr-spark-wrap');
+  if (!container) return;
+  
+  const max = Math.max(...this.rateHistory) || 1;
+  const avg = Math.round(this.rateHistory.reduce((s,x)=>s+x, 0) / this.rateHistory.length);
+  const nowVal = this.rateHistory[this.rateHistory.length - 1];
+  
+  const W = 60, H = 18;
+  
+  // Calculate points
+  const points = this.rateHistory.map((val, idx) => {
+    const x = idx * (W / (this.rateHistory.length - 1));
+    const y = H - (val / max) * (H - 4) - 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  
+  const polyPoints = points.join(' ');
+  const areaPoints = `0,${H} ` + polyPoints + ` ${W},${H}`;
+  
+  container.innerHTML = `
+    <svg width="${W}" height="${H}" style="overflow:visible; display:block;">
+      <polygon points="${areaPoints}" fill="rgba(255,149,0,0.15)"></polygon>
+      <polyline points="${polyPoints}" fill="none" stroke="var(--amber)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </svg>
+    <div class="spark-tooltip">Peak: ${max} ev/s · Avg: ${avg} ev/s · Now: ${nowVal} ev/s</div>
+  `;
+};
+
+// Banner scrolling support for Gantt streaming
+const _origGrRender = GR.render.bind(GR);
+GR.render = function(tree, el) {
+  _origGrRender(tree, el);
+  
+  // If streaming and scroll is away from bottom, display banner
+  const rowsCont = el.querySelector('.g-rows');
+  if (rowsCont && STREAM.ws && STREAM.ws.readyState === WebSocket.OPEN) {
+    rowsCont.addEventListener('scroll', () => {
+      const diff = rowsCont.scrollHeight - rowsCont.scrollTop - rowsCont.clientHeight;
+      const banner = el.querySelector('#stream-scroll-banner');
+      if (diff > 50) {
+        if (!banner) {
+          const b = document.createElement('div');
+          b.id = 'stream-scroll-banner';
+          b.className = 'stream-scroll-banner';
+          b.textContent = '↓ Scroll to new live events';
+          b.addEventListener('click', () => {
+            rowsCont.scrollTop = rowsCont.scrollHeight;
+            b.remove();
+          });
+          el.querySelector('.gw').appendChild(b);
+        }
+      } else {
+        if (banner) banner.remove();
+      }
+    });
+  }
+};
+
+/* ================================================================
+   §JS-DIFF FILE COMPARISON MODE
+   ================================================================ */
+const DIFF = {
+  treeA: null,
+  treeB: null,
+  fileA: null,
+  fileB: null,
+  report: [],
+  subTab: 'stats', // 'stats' | 'sequence'
+  
+  async compare() {
+    if (MF.files.length < 2) return toast('At least 2 files required to compare.', 'warn');
+    
+    // Parse File A and File B separately using S.cfg
+    try {
+      this.fileA = MF.files[0];
+      this.fileB = MF.files[1];
+      
+      toast(`Comparing: ${this.fileA.name} and ${this.fileB.name}...`, 'info');
+      
+      const resA = await WM.parse(this.fileA, S.cfg, '');
+      const resB = await WM.parse(this.fileB, S.cfg, '');
+      
+      this.treeA = resA.trees;
+      this.treeB = resB.trees;
+      
+      // Build Delta statistics report
+      this.buildReport();
+      
+      // Show diff tab and trigger view switch
+      const tab = $('vt-diff');
+      if (tab) {
+        tab.style.display = 'inline-block';
+        UI.svm('diff');
+      }
+      toast('Compare complete. View in Diff tab.', 'success');
+    } catch(e) {
+      toast('Compare failed: ' + e.message, 'error');
+    }
+  },
+  
+  buildReport() {
+    const statsA = this.gatherStats(this.treeA);
+    const statsB = this.gatherStats(this.treeB);
+    
+    this.report = [];
+    
+    const allRuleIds = new Set([...Object.keys(statsA), ...Object.keys(statsB)]);
+    allRuleIds.forEach(rid => {
+      const a = statsA[rid] || { count: 0, durCount: 0, totalDuration: 0 };
+      const b = statsB[rid] || { count: 0, durCount: 0, totalDuration: 0 };
+      
+      const name = S.cfg?.elementRules?.find(r => r.id === rid)?.name || rid;
+      const countA = a.count;
+      const countB = b.count;
+      const deltaCount = countB - countA;
+      
+      const avgA = a.durCount ? a.totalDuration / a.durCount : 0;
+      const avgB = b.durCount ? b.totalDuration / b.durCount : 0;
+      const deltaDur = avgB - avgA;
+      
+      this.report.push({
+        ruleId: rid,
+        name,
+        countA,
+        countB,
+        deltaCount,
+        avgA,
+        avgB,
+        deltaDur
+      });
+    });
+  },
+  
+  gatherStats(trees) {
+    const stats = {};
+    const traverse = (nodes) => {
+      for (const n of (nodes || [])) {
+        if (!stats[n.ruleId]) stats[n.ruleId] = { count: 0, durCount: 0, totalDuration: 0 };
+        stats[n.ruleId].count++;
+        if (n.duration != null) {
+          stats[n.ruleId].durCount++;
+          stats[n.ruleId].totalDuration += n.duration;
+        }
+        if (n.events && n.events.length) traverse(n.events);
+      }
+    };
+    for (const tree of Object.values(trees)) traverse(tree);
+    return stats;
+  },
+  
+  render(container) {
+    const sumA = this.report.reduce((s, r) => s + r.countA, 0);
+    const sumB = this.report.reduce((s, r) => s + r.countB, 0);
+    
+    let subContent = '';
+    
+    if (this.subTab === 'stats') {
+      const rows = this.report.map(r => {
+        const dCountClass = r.deltaCount > 0 ? 'd-chip-add' : r.deltaCount < 0 ? 'd-chip-rem' : 'd-chip-eq';
+        const dCountTxt = r.deltaCount > 0 ? `+${r.deltaCount}` : r.deltaCount === 0 ? '=' : `${r.deltaCount}`;
+        
+        const dDurClass = r.deltaDur > 0 ? 'd-chip-rem' : r.deltaDur < 0 ? 'd-chip-add' : 'd-chip-eq';
+        const dDurTxt = r.deltaDur > 0 ? `+${fmtMs(r.deltaDur)}` : r.deltaDur === 0 ? '=' : `${fmtMs(r.deltaDur)}`;
+        
+        return `<tr class="diff-rule-row" data-rid="${esc(r.ruleId)}" style="cursor:pointer; border-bottom:1px solid var(--bdr-d);">
+          <td style="padding:10px; font-weight:bold; color:var(--amber);">${esc(r.name)}</td>
+          <td style="padding:10px; text-align:right;">${r.countA}</td>
+          <td style="padding:10px; text-align:right;">${r.countB}</td>
+          <td style="padding:10px; text-align:center;"><span class="d-chip ${dCountClass}">${dCountTxt}</span></td>
+          <td style="padding:10px; text-align:right;">${fmtMs(r.avgA)}</td>
+          <td style="padding:10px; text-align:right;">${fmtMs(r.avgB)}</td>
+          <td style="padding:10px; text-align:center;"><span class="d-chip ${dDurClass}">${dDurTxt}</span></td>
+        </tr>`;
+      }).join('');
+      
+      const incCount = this.report.filter(r => r.deltaCount > 0).length;
+      const decCount = this.report.filter(r => r.deltaCount < 0).length;
+      const eqCount = this.report.filter(r => r.deltaCount === 0).length;
+      
+      subContent = `
+        <div style="overflow-x:auto;">
+          <table class="diff-table">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Rule</th>
+                <th style="text-align:right;">Count A</th>
+                <th style="text-align:right;">Count B</th>
+                <th style="text-align:center;">Δ Count</th>
+                <th style="text-align:right;">Avg Dur A</th>
+                <th style="text-align:right;">Avg Dur B</th>
+                <th style="text-align:center;">Δ Dur</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px; padding:10px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; font-size:11px; font-family:var(--mono); text-align:center; color:var(--t3);">
+          📈 ${incCount} rules increased · 📉 ${decCount} rules decreased · ⚖️ ${eqCount} unchanged
+        </div>
+      `;
+    } else {
+      // Sequence Diff view (LCS)
+      // Get standard comparison thread (first key in both)
+      const thr = Object.keys(this.treeA)[0];
+      const seqA = this.getSequence(this.treeA[thr] || []);
+      const seqB = this.getSequence(this.treeB[thr] || []);
+      
+      // Limit sequence elements to 300 to avoid browser hangs
+      const limSeqA = seqA.slice(0, 300);
+      const limSeqB = seqB.slice(0, 300);
+      
+      const diffs = this.lcsDiff(limSeqA, limSeqB);
+      
+      const diffRows = diffs.map(d => {
+        let cls = 'seq-row-match';
+        let prefix = ' ';
+        let n = d.node;
+        let btn = '';
+        
+        if (d.type === 'add') {
+          cls = 'seq-row-add';
+          prefix = '+';
+          btn = `<button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(n.id)}">Jump B</button>`;
+        } else if (d.type === 'remove') {
+          cls = 'seq-row-rem';
+          prefix = '-';
+          n = d.node;
+          btn = `<button class="btn btn-xs btn-d btn-seq-jump" data-side="A" data-id="${esc(n.id)}">Jump A</button>`;
+        } else {
+          btn = `
+            <button class="btn btn-xs btn-g btn-seq-jump" data-side="A" data-id="${esc(d.nodeA.id)}" style="margin-right:2px;">A</button>
+            <button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(d.nodeB.id)}">B</button>
+          `;
+          n = d.nodeA;
+        }
+        
+        const col = scol(n.visualStyle?.accentColor || '#8b949e');
+        const ico = esc(n.visualStyle?.icon || '•');
+        const elName = esc((n.elementName || '').slice(0, 24));
+        const dur = n.duration != null ? fmtMs(n.duration) : '';
+        const ts = n.timestamp ? new Date(n.timestamp).toLocaleTimeString() : '';
+        
+        return `<div class="seq-row ${cls}">
+          <span style="width:20px; font-weight:bold; opacity:0.6;">${prefix}</span>
+          <span style="width:22px; text-align:center; color:${col};">${ico}</span>
+          <span style="width:110px; font-weight:bold; color:${col};" class="trunc">${esc(n.ruleName)}</span>
+          <span style="flex:1; color:var(--t3);" class="trunc">${elName}</span>
+          <span style="width:90px; color:var(--t4);">${ts}</span>
+          <span style="width:70px; text-align:right; font-weight:bold; color:${col};">${dur}</span>
+          <span style="margin-left:12px;">${btn}</span>
+        </div>`;
+      }).join('');
+      
+      subContent = `
+        <div style="font-size:11px; color:var(--t3); margin-bottom:6px; font-weight:bold;">🧵 Thread LCS Sequence Comparison: "${esc(thr)}"</div>
+        <div class="seq-diff-box">
+          <div style="max-height:360px; overflow-y:auto;">
+            ${diffRows || '<div style="padding:20px; text-align:center;">No sequence to diff.</div>'}
+          </div>
+        </div>
+      `;
+    }
+    
+    container.innerHTML = `
+      <div class="diff-split-container">
+        <!-- Panel Left: Files summary & Sub tabs -->
+        <div class="diff-pane">
+          <div class="diff-pane-hdr">🔍 Deploy Compare Mode</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="background:rgba(255,149,0,0.06); border:1px solid var(--amber); border-radius:6px; padding:10px; font-size:11px;">
+              <span style="font-weight:bold; color:var(--amber);">📄 File A (Base):</span>
+              <div class="trunc" style="font-weight:bold; margin-top:2px;">${esc(this.fileA.name)}</div>
+              <div style="color:var(--t4); margin-top:4px;">Size: ${fmtB(this.fileA.size)} · Events: ${sumA}</div>
+            </div>
+            <div style="background:rgba(0,149,255,0.06); border:1px solid #58a6ff; border-radius:6px; padding:10px; font-size:11px;">
+              <span style="font-weight:bold; color:#58a6ff;">📄 File B (Compare):</span>
+              <div class="trunc" style="font-weight:bold; margin-top:2px;">${esc(this.fileB.name)}</div>
+              <div style="color:var(--t4); margin-top:4px;">Size: ${fmtB(this.fileB.size)} · Events: ${sumB}</div>
+            </div>
+          </div>
+          
+          <!-- Sub Navigation -->
+          <div style="display:flex; flex-direction:column; gap:4px; margin-top:12px;">
+            <button class="btn ${this.subTab==='stats'?'btn-p':''}" id="btn-diff-sub-stats">📈 Delta Stats Summary</button>
+            <button class="btn ${this.subTab==='sequence'?'btn-p':''}" id="btn-diff-sub-seq">🧵 Sequence LCS Flow</button>
+          </div>
+        </div>
+        
+        <!-- Divider -->
+        <div style="background:var(--bdr-d);"></div>
+        
+        <!-- Panel Right: Table display / Sequence display -->
+        <div class="diff-pane">
+          ${subContent}
+        </div>
+      </div>
+    `;
+    
+    // Wire sub tab switches
+    container.querySelector('#btn-diff-sub-stats').addEventListener('click', () => {
+      this.subTab = 'stats';
+      this.render(container);
+    });
+    container.querySelector('#btn-diff-sub-seq').addEventListener('click', () => {
+      this.subTab = 'sequence';
+      this.render(container);
+    });
+    
+    // Rule row click triggers highlighting in Split view
+    if (this.subTab === 'stats') {
+      container.querySelectorAll('.diff-rule-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const rid = row.dataset.rid;
+          S.activeThr = 'diff-mode';
+          S.diffHighlightRule = rid;
+          UI.svm('split');
+          BCB.render();
+        });
+      });
+    }
+    
+    // Sequence jump buttons
+    container.querySelectorAll('.btn-seq-jump').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const side = btn.dataset.side;
+        const id = btn.dataset.id;
+        
+        // Target target tree
+        const targetTree = side === 'A' ? this.treeA : this.treeB;
+        let foundNode = null;
+        for (const tree of Object.values(targetTree)) {
+          const find = (nodes) => {
+            for (const n of nodes) {
+              if (n.id === id) { foundNode = n; return; }
+              if (n.events && n.events.length) find(n.events);
+            }
+          };
+          find(tree);
+          if (foundNode) break;
+        }
+        
+        if (foundNode) {
+          S.activeThr = 'diff-mode';
+          jumpToNode(foundNode);
+        }
+      });
+    });
+  },
+  
+  getSequence(tree) {
+    const list = [];
+    const traverse = (nodes) => {
+      for (const n of nodes) {
+        list.push(n);
+        if (n.events && n.events.length) traverse(n.events);
+      }
+    };
+    traverse(tree);
+    list.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    return list;
+  },
+  
+  lcsDiff(arrA, arrB) {
+    const m = arrA.length, n = arrB.length;
+    const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
+    
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (arrA[i - 1].ruleId === arrB[j - 1].ruleId) {
+          dp[i][j] = dp[i - 1][j - 1] + 1;
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+    }
+    
+    const result = [];
+    let i = m, j = n;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && arrA[i - 1].ruleId === arrB[j - 1].ruleId) {
+        result.push({ type: 'match', nodeA: arrA[i - 1], nodeB: arrB[j - 1] });
+        i--; j--;
+      } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+        result.push({ type: 'add', node: arrB[j - 1] });
+        j--;
+      } else {
+        result.push({ type: 'remove', node: arrA[i - 1] });
+        i--;
+      }
+    }
+    return result.reverse();
+  }
+};
+
+/* ================================================================
+   §JS-LQL LOGLENS QUERY LANGUAGE
+   ================================================================ */
+const LQL = {
+  history: [],
+  currentQuery: '',
+  sortField: 'duration',
+  sortAsc: false,
+  
+  presets: [
+    { label: '🔴 Top 10 slowest events', q: 'SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10' },
+    { label: '⚠️ All SLA breaches', q: 'SELECT * FROM events WHERE sla_breach = true ORDER BY duration DESC' },
+    { label: '🔗 Events by thread', q: 'SELECT thread, COUNT(*) FROM events GROUP BY thread ORDER BY COUNT DESC' },
+    { label: '📦 Unmatched blocks', q: 'SELECT * FROM events WHERE anomaly = true AND behavior = "push"' },
+    { label: '🔍 Error events', q: 'SELECT * FROM events WHERE ruleName CONTAINS "Error" OR ruleName CONTAINS "error"' }
+  ],
+  
+  parse(query) {
+    const selectMatch = query.match(/select\s+([\s\S]+?)\s+from\s+events/i);
+    if (!selectMatch) throw new Error('Query must start with SELECT ... FROM events');
+    const selectFieldsStr = selectMatch[1].trim();
+
+    let whereStr = null;
+    const whereMatch = query.match(/where\s+([\s\S]+?)(?:\s+group\s+by|\s+order\s+by|\s+limit|$)/i);
+    if (whereMatch) whereStr = whereMatch[1].trim();
+
+    let groupByStr = null;
+    const groupByMatch = query.match(/group\s+by\s+([\s\S]+?)(?:\s+order\s+by|\s+limit|$)/i);
+    if (groupByMatch) groupByStr = groupByMatch[1].trim();
+
+    let orderByStr = null;
+    let orderDir = 'ASC';
+    const orderByMatch = query.match(/order\s+by\s+([\s\S]+?)(?:\s+limit|$)/i);
+    if (orderByMatch) {
+      const parts = orderByMatch[1].trim().split(/\s+/);
+      orderByStr = parts[0];
+      if (parts[1] && parts[1].toUpperCase() === 'DESC') {
+        orderDir = 'DESC';
+      }
+    }
+
+    let limitNum = null;
+    const limitMatch = query.match(/limit\s+(\d+)/i);
+    if (limitMatch) limitNum = parseInt(limitMatch[1], 10);
+
+    return { selectFieldsStr, whereStr, groupByStr, orderByStr, orderDir, limitNum };
+  },
+  
+  evaluateWhere(item, whereStr) {
+    if (!whereStr) return true;
+    const orGroups = whereStr.split(/\s+OR\s+/i);
+    return orGroups.some(orGroup => {
+      const andParts = orGroup.split(/\s+AND\s+/i);
+      return andParts.every(c => {
+        const m = c.match(/([a-zA-Z_]+)\s*(=|!=|>=|<=|>|<|contains|starts_with|ends_with)\s*(["'][\s\S]*?["']|\S+)/i);
+        if (!m) return true;
+        const field = m[1].trim();
+        const op = m[2].trim().toLowerCase();
+        let val = m[3].trim().replace(/^["']|["']$/g, '');
+        
+        let itemVal = item[field];
+        if (itemVal === undefined) return false;
+        
+        if (!isNaN(val) && val !== '' && typeof itemVal !== 'boolean') {
+          val = parseFloat(val);
+          itemVal = parseFloat(itemVal);
+        }
+        if (val === 'true') val = true;
+        if (val === 'false') val = false;
+        if (val === 'null') val = null;
+        
+        if (op === '=') return itemVal === val;
+        if (op === '!=') return itemVal !== val;
+        if (op === '>') return itemVal > val;
+        if (op === '<') return itemVal < val;
+        if (op === '>=') return itemVal >= val;
+        if (op === '<=') return itemVal <= val;
+        if (op === 'contains') return String(itemVal).toLowerCase().includes(String(val).toLowerCase());
+        if (op === 'starts_with') return String(itemVal).toLowerCase().startsWith(String(val).toLowerCase());
+        if (op === 'ends_with') return String(itemVal).toLowerCase().endsWith(String(val).toLowerCase());
+        return false;
+      });
+    });
+  },
+  
+  runQuery(queryStr) {
+    const tStart = performance.now();
+    try {
+      const parsed = this.parse(queryStr);
+      
+      // Flat list of all event records
+      const records = [];
+      const traverse = (nodes) => {
+        for (const n of (nodes || [])) {
+          records.push({
+            id: n.id,
+            elementName: n.elementName,
+            ruleName: n.ruleName,
+            ruleId: n.ruleId,
+            thread: n.thread,
+            timestamp: n.timestamp,
+            endTimestamp: n.endTimestamp,
+            duration: n.duration,
+            payload: n.payload,
+            correlationId: n.correlationId,
+            rawLine: n.rawLine,
+            behavior: n.behavior,
+            sla_breach: !!n._isSlaBreach,
+            anomaly: !!n._isOutlier,
+            pinned: !!(S.pins && S.pins[n.id]),
+            nodeRef: n
+          });
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      for (const tree of Object.values(S.trees || {})) traverse(tree);
+      
+      // Filter
+      let results = records.filter(item => this.evaluateWhere(item, parsed.whereStr));
+      
+      const selectFields = parsed.selectFieldsStr.split(',').map(f => f.trim());
+      
+      // Group By & Aggregation
+      if (parsed.groupByStr) {
+        const groups = {};
+        results.forEach(e => {
+          const val = e[parsed.groupByStr] || 'null';
+          if (!groups[val]) groups[val] = [];
+          groups[val].push(e);
+        });
+        
+        let groupedResults = [];
+        for (const [groupVal, items] of Object.entries(groups)) {
+          const row = {};
+          selectFields.forEach(f => {
+            if (f === parsed.groupByStr) {
+              row[f] = groupVal;
+            } else if (f.toLowerCase() === 'count(*)') {
+              row[f] = items.length;
+            } else {
+              const aggMatch = f.match(/(min|max|avg|sum)\(([a-zA-Z_]+)\)/i);
+              if (aggMatch) {
+                const aggOp = aggMatch[1].toLowerCase();
+                const aggField = aggMatch[2];
+                const vals = items.map(it => it[aggField]).filter(v => v !== null && !isNaN(v)).map(Number);
+                if (aggOp === 'min') row[f] = vals.length ? Math.min(...vals) : null;
+                else if (aggOp === 'max') row[f] = vals.length ? Math.max(...vals) : null;
+                else if (aggOp === 'sum') row[f] = vals.reduce((s, v) => s + v, 0);
+                else if (aggOp === 'avg') row[f] = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+              } else {
+                row[f] = items[0][f];
+              }
+            }
+          });
+          groupedResults.push(row);
+        }
+        results = groupedResults;
+      }
+      
+      // Order By
+      const sortF = parsed.orderByStr || this.sortField;
+      const asc = parsed.orderByStr ? (parsed.orderDir === 'ASC') : this.sortAsc;
+      
+      results.sort((a, b) => {
+        let va = a[sortF];
+        let vb = b[sortF];
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        if (va < vb) return asc ? -1 : 1;
+        if (va > vb) return asc ? 1 : -1;
+        return 0;
+      });
+      
+      // Limit
+      if (parsed.limitNum != null) {
+        results = results.slice(0, parsed.limitNum);
+      }
+      
+      const tEnd = performance.now();
+      
+      // Add to query history
+      if (!this.history.includes(queryStr)) {
+        this.history.unshift(queryStr);
+        if (this.history.length > 20) this.history.pop();
+      }
+      
+      this.currentResults = results;
+      this.currentFields = selectFields;
+      this.queryTime = tEnd - tStart;
+      this.error = null;
+    } catch(err) {
+      this.error = err.message;
+      this.currentResults = [];
+      this.currentFields = [];
+    }
+  },
+  
+  render(container) {
+    const presetPills = this.presets.map(p =>
+      `<button class="lql-preset-btn" data-q="${esc(p.q)}">${esc(p.label)}</button>`
+    ).join('');
+    
+    const historyPills = this.history.map(h =>
+      `<span class="lql-hist-chip" data-q="${esc(h)}">${esc(h.slice(0, 30))}${h.length>30?'…':''}</span>`
+    ).join('');
+    
+    let tableHtml = '';
+    if (this.error) {
+      tableHtml = `<div style="color:var(--red); font-family:var(--mono); padding:20px; font-weight:bold;">⚠️ Error: ${esc(this.error)}</div>`;
+    } else if (this.currentResults) {
+      // Table headers
+      const fields = this.currentFields.includes('*')
+        ? ['elementName', 'ruleName', 'thread', 'timestamp', 'duration', 'payload']
+        : this.currentFields;
+      
+      const ths = fields.map(f => `<th class="lql-th" data-f="${esc(f)}">${esc(f)}</th>`).join('');
+      
+      const trs = this.currentResults.map(row => {
+        const tds = fields.map(f => {
+          let val = row[f];
+          if (f === 'timestamp' || f === 'endTimestamp') {
+            val = val ? new Date(val).toLocaleTimeString() : '';
+          }
+          if (f === 'duration' && typeof val === 'number') {
+            val = fmtMs(val);
+          }
+          return `<td style="padding:10px 12px;">${esc(val)}</td>`;
+        }).join('');
+        
+        const jumpId = row.nodeRef ? row.nodeRef.id : '';
+        return `<tr class="lql-row" data-id="${esc(jumpId)}">${tds}</tr>`;
+      }).join('');
+      
+      tableHtml = `
+        <table class="lql-table">
+          <thead>
+            <tr>${ths}</tr>
+          </thead>
+          <tbody>
+            ${trs || '<tr><td colspan="10" style="padding:20px; text-align:center; color:var(--t4);">No query results found.</td></tr>'}
+          </tbody>
+        </table>
+      `;
+    }
+    
+    container.innerHTML = `
+      <div class="lql-box">
+        <div style="font-weight:bold; font-size:13px; font-family:var(--display); color:var(--t2);">💬 LQL Plain-English Query Engine</div>
+        
+        <div class="lql-presets-bar">
+          ${presetPills}
+        </div>
+        
+        <div class="lql-input-row">
+          <span class="lql-caret">&gt;_</span>
+          <input class="lql-inp" id="lql-inp-val" type="text"
+            placeholder="SELECT elementName, duration FROM events WHERE duration > 100 ORDER BY duration DESC LIMIT 20"
+            value="${esc(this.currentQuery)}" autocomplete="off" spellcheck="false" aria-label="LQL Query Input"/>
+          <button class="btn btn-p btn-sm" id="btn-lql-run">Run Query</button>
+        </div>
+        
+        ${this.history.length ? `<div class="lql-history-bar"><span>History:</span> ${historyPills}</div>` : ''}
+        
+        <div class="lql-table-wrap">
+          ${tableHtml}
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--t3); font-family:var(--mono);">
+          <span>${this.currentResults ? `${this.currentResults.length} rows returned · ${(this.queryTime||0).toFixed(1)}ms` : ''}</span>
+          ${this.currentResults && this.currentResults.length ? `<button class="btn btn-xs btn-g" id="btn-lql-csv">Export as CSV</button>` : ''}
+        </div>
+      </div>
+    `;
+    
+    // Wire LQL events
+    const inp = container.querySelector('#lql-inp-val');
+    const run = () => {
+      const q = inp.value.trim();
+      if (!q) return;
+      this.currentQuery = q;
+      this.runQuery(q);
+      this.render(container);
+    };
+    
+    container.querySelector('#btn-lql-run').addEventListener('click', run);
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); run(); }
+      // Up/Down arrows to cycle query history
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (this.history.length) {
+          const curIdx = this.history.indexOf(inp.value);
+          const nextQ = this.history[curIdx + 1] || this.history[0];
+          inp.value = nextQ;
+        }
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (this.history.length) {
+          const curIdx = this.history.indexOf(inp.value);
+          const nextQ = this.history[curIdx - 1] || this.history[this.history.length - 1];
+          inp.value = nextQ;
+        }
+      }
+    });
+    
+    container.querySelectorAll('.lql-preset-btn, .lql-hist-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        inp.value = btn.dataset.q;
+        run();
+      });
+    });
+    
+    // Sort columns
+    container.querySelectorAll('.lql-th').forEach(th => {
+      th.addEventListener('click', () => {
+        const f = th.dataset.f;
+        if (this.sortField === f) this.sortAsc = !this.sortAsc;
+        else { this.sortField = f; this.sortAsc = false; }
+        if (this.currentQuery) {
+          this.runQuery(this.currentQuery);
+          this.render(container);
+        }
+      });
+    });
+    
+    // Jump row click
+    container.querySelectorAll('.lql-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.id;
+        if (!id) return;
+        let foundNode = null;
+        for (const tree of Object.values(S.trees)) {
+          const find = (nodes) => {
+            for (const n of nodes) {
+              if (n.id === id) { foundNode = n; return; }
+              if (n.events && n.events.length) find(n.events);
+            }
+          };
+          find(tree);
+          if (foundNode) break;
+        }
+        if (foundNode) {
+          S.activeThr = foundNode.thread;
+          jumpToNode(foundNode);
+        }
+      });
+    });
+    
+    // Export CSV from LQL query
+    const csvBtn = container.querySelector('#btn-lql-csv');
+    if (csvBtn) {
+      csvBtn.addEventListener('click', () => {
+        const fields = this.currentFields.includes('*')
+          ? ['elementName', 'ruleName', 'thread', 'timestamp', 'duration', 'payload']
+          : this.currentFields;
+        
+        let csv = fields.join(',') + '\n';
+        this.currentResults.forEach(row => {
+          const line = fields.map(f => {
+            let val = row[f] ?? '';
+            if (f === 'timestamp') val = val ? new Date(val).toISOString() : '';
+            return `"${String(val).replace(/"/g, '""')}"`;
+          }).join(',');
+          csv += line + '\n';
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `loglens-query-${Date.now()}.csv`);
+        link.click();
+      });
+    }
+  }
+};
+
+/* ================================================================
+   §JS-REX REGEX EXPLAINER & AUTO-SUGGEST
+   ================================================================ */
+const REX = {
+  explain(pattern) {
+    const segments = [];
+    let i = 0;
+    const len = pattern.length;
+    let groupCount = 0;
+    
+    const colors = ['#ffe3b3', '#a5d6ff', '#85ea9a', '#ff7b72', '#f0883e', '#58a6ff', '#56d364'];
+    
+    while (i < len) {
+      const char = pattern[i];
+      let start = i;
+
+      // Named capture group
+      if (char === '(') {
+        if (pattern.startsWith('(?P<', i) || pattern.startsWith('(?<', i)) {
+          const isP = pattern.startsWith('(?P<', i);
+          const closeBracket = pattern.indexOf('>', i);
+          if (closeBracket !== -1) {
+            const name = pattern.slice(i + (isP ? 4 : 3), closeBracket);
+            segments.push({
+              start: i,
+              end: closeBracket + 1,
+              fragment: pattern.slice(i, closeBracket + 1),
+              description: `Named capture group: "${name}"`,
+              color: colors[groupCount % colors.length]
+            });
+            groupCount++;
+            i = closeBracket + 1;
+            continue;
+          }
+        }
+        if (pattern.startsWith('(?:', i)) {
+          segments.push({
+            start: i,
+            end: i + 3,
+            fragment: '(?:',
+            description: 'Non-capturing group start',
+            color: '#8b949e'
+          });
+          i += 3;
+          continue;
+        }
+        segments.push({
+          start: i,
+          end: i + 1,
+          fragment: '(',
+          description: `Capture group ${++groupCount} start`,
+          color: colors[(groupCount - 1) % colors.length]
+        });
+        i++;
+        continue;
+      }
+
+      if (char === ')') {
+        segments.push({
+          start: i,
+          end: i + 1,
+          fragment: ')',
+          description: 'Group end',
+          color: '#8b949e'
+        });
+        i++;
+        continue;
+      }
+
+      // Character classes
+      if (char === '[') {
+        let closeBracket = pattern.indexOf(']', i);
+        while (closeBracket !== -1 && pattern[closeBracket - 1] === '\\') {
+          closeBracket = pattern.indexOf(']', closeBracket + 1);
+        }
+        if (closeBracket !== -1) {
+          const content = pattern.slice(i, closeBracket + 1);
+          const isNegated = content.startsWith('[^');
+          segments.push({
+            start: i,
+            end: closeBracket + 1,
+            fragment: content,
+            description: isNegated ? `Negated character class: matches any character EXCEPT: ${esc(content.slice(2, -1))}` : `Character class: matches any character in: ${esc(content.slice(1, -1))}`,
+            color: '#ff7b72'
+          });
+          i = closeBracket + 1;
+          continue;
+        }
+      }
+
+      // Metacharacters
+      if (char === '\\') {
+        if (i + 1 < len) {
+          const next = pattern[i + 1];
+          let fragment = '\\' + next;
+          let desc = '';
+          let end = i + 2;
+          if (next === 'd') desc = 'One digit (0-9)';
+          else if (next === 'w') desc = 'One word character (a-z, A-Z, 0-9, _)';
+          else if (next === 's') desc = 'One whitespace character';
+          else if (next === 'D') desc = 'Any non-digit character';
+          else if (next === 'W') desc = 'Any non-word character';
+          else if (next === 'S') desc = 'Any non-whitespace character';
+          else desc = `Escaped literal character: "${next}"`;
+
+          if (i + 2 < len && (pattern[i + 2] === '+' || pattern[i + 2] === '*' || pattern[i + 2] === '?')) {
+            const quant = pattern[i + 2];
+            fragment += quant;
+            end++;
+            if (quant === '+') desc = desc.replace('One ', 'One or more ');
+            else if (quant === '*') desc = desc.replace('One ', 'Zero or more ');
+            else if (quant === '?') desc = desc.replace('One ', 'Optional ');
+          }
+          segments.push({
+            start: i,
+            end,
+            fragment,
+            description: desc,
+            color: '#58a6ff'
+          });
+          i = end;
+          continue;
+        }
+      }
+
+      // Greedy quantifiers
+      if (char === '.') {
+        let fragment = '.';
+        let desc = 'Any character (except newline)';
+        let end = i + 1;
+        if (i + 1 < len && (pattern[i + 1] === '+' || pattern[i + 1] === '*' || pattern[i + 1] === '?')) {
+          const quant = pattern[i + 1];
+          fragment += quant;
+          end++;
+          if (quant === '+') desc = 'Any character, greedy (1 or more)';
+          else if (quant === '*') desc = 'Any character, greedy (0 or more)';
+          else if (quant === '?') desc = 'Any character, optional';
+        }
+        segments.push({
+          start: i,
+          end,
+          fragment,
+          description: desc,
+          color: '#56d364'
+        });
+        i = end;
+        continue;
+      }
+
+      // Repetition range
+      if (char === '{') {
+        const closeBrace = pattern.indexOf('}', i);
+        if (closeBrace !== -1) {
+          const content = pattern.slice(i, closeBrace + 1);
+          segments.push({
+            start: i,
+            end: closeBrace + 1,
+            fragment: content,
+            description: `Repetition: matches ${content.slice(1, -1)} times`,
+            color: '#58a6ff'
+          });
+          i = closeBrace + 1;
+          continue;
+        }
+      }
+
+      // Anchors
+      if (char === '^') {
+        segments.push({ start: i, end: i + 1, fragment: '^', description: 'Start of line anchor', color: '#ff7b72' });
+        i++;
+        continue;
+      }
+      if (char === '$') {
+        segments.push({ start: i, end: i + 1, fragment: '$', description: 'End of line anchor', color: '#ff7b72' });
+        i++;
+        continue;
+      }
+      if (char === '|') {
+        segments.push({ start: i, end: i + 1, fragment: '|', description: 'Alternation (OR operator)', color: '#f0883e' });
+        i++;
+        continue;
+      }
+
+      // Literals
+      let literals = '';
+      while (i < len && !'()[]{}\\.*+?^$|'.includes(pattern[i])) {
+        literals += pattern[i];
+        i++;
+      }
+      segments.push({
+        start,
+        end: i,
+        fragment: literals,
+        description: `Literal text: "${esc(literals)}"`,
+        color: '#8b949e'
+      });
+    }
+    return segments;
+  }
+};
+
+// Wire Explainer click
+$('btn-rex-explain').addEventListener('click', () => {
+  const rxVal = $('e-rx').value.trim();
+  if (!rxVal) return toast('Please enter a regex pattern first.', 'warn');
+  
+  const segments = REX.explain(rxVal);
+  const wrap = $('rex-explain-results');
+  wrap.classList.remove('hidden');
+  
+  const chipsHtml = segments.map((seg, idx) => {
+    return `<span class="rex-token-chip" data-idx="${idx}"
+      style="background:${seg.color};" title="${esc(seg.description)}">
+      ${esc(seg.fragment)}
+    </span>`;
+  }).join('');
+  
+  wrap.innerHTML = `
+    <div class="rex-explain-wrap">
+      <div style="font-size:10px; text-transform:uppercase; color:var(--t3); font-weight:bold;">Regex Explainer</div>
+      <div class="rex-tokens">${chipsHtml}</div>
+    </div>
+  `;
+  
+  // Clicking a chip highlights range in textarea
+  wrap.querySelectorAll('.rex-token-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const idx = parseInt(chip.dataset.idx, 10);
+      const seg = segments[idx];
+      if (seg) {
+        const area = $('e-rx');
+        area.focus();
+        area.setSelectionRange(seg.start, seg.end);
+      }
+    });
+  });
+});
+
+/* ================================================================
+   §JS-UNPARSED AUTO-SUGGEST & CLUSTERS
+   ================================================================ */
+// Enhance existing unparsed display with auto-suggest and accordion clusters
+const _origUnparsedRender = UNPARSED.render.bind(UNPARSED);
+UNPARSED.render = function() {
+  _origUnparsedRender();
+  
+  const container = $('unparsed-container') || document.querySelector('#p-packs-body'); // Fallback or wrapper
+  if (!container) return;
+  
+  const lines = S.stats?.unparsedSample || [];
+  if (!lines.length) return;
+  
+  // 1. AUTO-SUGGEST
+  // Tokenize lines to discover patterns
+  const tokenMap = {};
+  lines.forEach(l => {
+    const tokens = l.split(/[\s\[\]\-:=]+/);
+    tokens.forEach(tok => {
+      if (tok.trim()) tokenMap[tok] = (tokenMap[tok] || 0) + 1;
+    });
+  });
+  
+  // Find structural anchors (appear in > 50% of unparsed lines)
+  const threshold = lines.length * 0.5;
+  const anchors = Object.keys(tokenMap).filter(tok => tokenMap[tok] > threshold);
+  
+  // Construct suggested regex pattern
+  let suggestedRx = '^';
+  const firstLine = lines[0];
+  const firstTokens = firstLine.split(/(\s+|[\[\]\-:=]+)/);
+  
+  firstTokens.forEach(tok => {
+    if (!tok.trim()) {
+      suggestedRx += tok; // keep whitespace/delimiters
+      return;
+    }
+    
+    // Check timestamp
+    if (/\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/.test(tok)) {
+      suggestedRx += String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`;
+    } else if (/\b(INFO|ERROR|WARN|DEBUG|TRACE)\b/.test(tok)) {
+      suggestedRx += String.raw`(INFO|ERROR|WARN|DEBUG)`;
+    } else if (/^[a-zA-Z_]+\.[a-zA-Z0-9_\.]+$/.test(tok)) { // class name
+      suggestedRx += String.raw`([\w.]+)`;
+    } else if (anchors.includes(tok)) {
+      // Escape literal characters
+      suggestedRx += tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    } else {
+      suggestedRx += String.raw`(\S+)`;
+    }
+  });
+  suggestedRx += String.raw`\s*(.*)$`;
+  
+  // 2. CLUSTER VIEW
+  const clusters = {};
+  lines.forEach(l => {
+    const sig = (l.match(/[^a-zA-Z0-9\s]/g) || []).join('_');
+    if (!clusters[sig]) clusters[sig] = [];
+    clusters[sig].push(l);
+  });
+  
+  let clusterHtml = '';
+  Object.entries(clusters).forEach(([sig, cLines], idx) => {
+    const list = cLines.slice(0, 5).map(l => `<div class="trunc mono" style="font-size:11px; padding:2px 0;">${esc(l)}</div>`).join('');
+    clusterHtml += `
+      <details style="margin-top:4px; padding:4px 6px; border:1px solid var(--bdr-d); border-radius:4px;">
+        <summary style="font-size:11px; font-weight:bold; cursor:pointer;">Cluster ${idx+1} (${cLines.length} lines) — sig: ${esc(sig || 'plaintext')}</summary>
+        <div style="padding-left:12px; margin-top:4px; background:var(--bg-0); border-radius:4px; padding:6px;">
+          ${list}
+          <button class="btn btn-xs btn-g btn-cluster-add" data-rx="${esc(suggestedRx)}" style="margin-top:6px;">Add Rule for this cluster</button>
+        </div>
+      </details>
+    `;
+  });
+  
+  // Inject visual suggester box before the unparsed raw lines block
+  const parent = $('p-packs-body'); // Community packs body panel as host or help section
+  const box = document.createElement('div');
+  box.style.cssText = 'border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;';
+  box.innerHTML = `
+    <div style="font-size:11px; font-weight:bold; color:var(--amber); margin-bottom:6px;">⚡ LogLens Suggested Pattern</div>
+    <div style="background:rgba(255,149,0,0.06); border:1px solid var(--amber); border-radius:6px; padding:8px; font-family:var(--mono); font-size:11px; word-break:break-all;">
+      ${esc(suggestedRx)}
+    </div>
+    <button class="btn btn-xs btn-p" id="btn-unparsed-suggest-try" style="margin-top:6px;">Try this pattern</button>
+    
+    <div style="font-size:11px; font-weight:bold; color:var(--t3); margin-top:14px; margin-bottom:6px;">📦 Unparsed Structural Clusters</div>
+    ${clusterHtml}
+  `;
+  
+  parent.appendChild(box);
+  
+  // Wire suggests
+  container.querySelector('#btn-unparsed-suggest-try')?.addEventListener('click', () => {
+    UI.openM(); // Open rule modal
+    UI.setMM('advanced');
+    $('e-rx').value = suggestedRx;
+    $('btn-rex-explain').click();
+  });
+  
+  container.querySelectorAll('.btn-cluster-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      UI.openM();
+      UI.setMM('advanced');
+      $('e-rx').value = btn.dataset.rx;
+      $('btn-rex-explain').click();
+    });
+  });
+};
+
+/* ================================================================
+   §JS-GANTT_ZOOM_PAN GANTT PAN & TIME RANGE ZOOM
+   ================================================================ */
+S.ganttZoom = 1;
+S.criticalPathOn = false;
+
+const GANTT_ZOOM_PAN = {
+  isPanned: false,
+  
+  initEvents() {
+    const container = document.querySelector('.g-rows');
+    if (!container) return;
+    
+    // Zoom control bar
+    if (!$('g-zoom-ctrl-row')) {
+      const parent = document.querySelector('.gw');
+      if (parent) {
+        const row = document.createElement('div');
+        row.id = 'g-zoom-ctrl-row';
+        row.style.cssText = 'display:flex; align-items:center; gap:8px; background:var(--bg-2); padding:6px 12px; border-bottom:1px solid var(--bdr); font-size:11px;';
+        row.innerHTML = `
+          <span>🔍 Time Zoom:</span>
+          <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.5" value="${S.ganttZoom}" style="width:120px; accent-color:var(--amber);">
+          <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold;">×${S.ganttZoom.toFixed(1)}</span>
+          <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit Window</button>
+          <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
+          <div style="border-left:1px solid var(--bdr); height:16px; margin:0 4px;"></div>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
+            🔥 Highlight Critical Path
+          </label>
+        `;
+        parent.insertBefore(row, parent.querySelector('.g-hdr'));
+        
+        // Wire events
+        row.querySelector('#gantt-zoom-slider').addEventListener('input', e => {
+          this.applyZoom(parseFloat(e.target.value));
+        });
+        row.querySelector('#btn-zoom-reset').addEventListener('click', () => {
+          this.applyZoom(1);
+        });
+        row.querySelector('#btn-zoom-fit').addEventListener('click', () => {
+          this.fitWindow();
+        });
+        row.querySelector('#gantt-crit-chk').addEventListener('change', e => {
+          S.criticalPathOn = e.target.checked;
+          UI.rv();
+        });
+      }
+    }
+    
+    // Horizontal click-and-drag pan
+    let isDown = false;
+    let startX, scrollLeft;
+    
+    container.addEventListener('mousedown', e => {
+      if (e.altKey) return; // let Alt+drag do range select
+      isDown = true;
+      container.classList.add('grabbing');
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
+    });
+    
+    container.addEventListener('mouseleave', () => {
+      isDown = false;
+      container.classList.remove('grabbing');
+    });
+    container.addEventListener('mouseup', () => {
+      isDown = false;
+      container.classList.remove('grabbing');
+    });
+    
+    container.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      container.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Mouse wheel zoom centered on cursor
+    container.addEventListener('wheel', e => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        const newZoom = Math.max(0.5, Math.min(8, S.ganttZoom * factor));
+        this.applyZoom(newZoom);
+      }
+    }, { passive: false });
+    
+    // Alt+drag time range selection
+    let dragBox = null;
+    let startDragX = 0;
+    
+    container.addEventListener('mousedown', e => {
+      if (!e.altKey) return;
+      e.preventDefault();
+      const rect = container.getBoundingClientRect();
+      startDragX = e.clientX - rect.left + container.scrollLeft;
+      
+      dragBox = document.createElement('div');
+      dragBox.style.cssText = 'position:absolute; top:0; bottom:0; background:rgba(255,149,0,0.25); border-left:1px dashed var(--amber); border-right:1px dashed var(--amber); pointer-events:none; z-index:100;';
+      dragBox.style.left = startDragX + 'px';
+      dragBox.style.width = '0px';
+      container.appendChild(dragBox);
+      
+      const onMove = ev => {
+        const curX = ev.clientX - rect.left + container.scrollLeft;
+        const left = Math.min(startDragX, curX);
+        const width = Math.abs(curX - startDragX);
+        dragBox.style.left = left + 'px';
+        dragBox.style.width = width + 'px';
+      };
+      
+      const onUp = ev => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        
+        const curX = ev.clientX - rect.left + container.scrollLeft;
+        const left = Math.min(startDragX, curX);
+        const width = Math.abs(curX - startDragX);
+        dragBox.remove();
+        
+        if (width > 20) {
+          // Map left/right positions back to event timestamps
+          const trackWidth = container.querySelector('.g-trk').clientWidth;
+          const tree = S.trees[S.activeThr] || [];
+          if (tree.length > 0 && trackWidth > 0) {
+            const rs = tree[0].timestamp || 0;
+            const re = mEnd(tree);
+            const rd = re - rs;
+            
+            const startRatio = left / trackWidth;
+            const endRatio = (left + width) / trackWidth;
+            
+            S.timeFilterRange = {
+              start: rs + startRatio * rd,
+              end: rs + endRatio * rd
+            };
+            UI.rv();
+            BCB.render();
+          }
+        }
+      };
+      
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  },
+  
+  applyZoom(z) {
+    S.ganttZoom = z;
+    const slider = $('gantt-zoom-slider');
+    if (slider) slider.value = z;
+    const lbl = $('gantt-zoom-val');
+    if (lbl) lbl.textContent = `×${z.toFixed(1)}`;
+    document.documentElement.style.setProperty('--g-zoom', z);
+  },
+  
+  fitWindow() {
+    const container = document.querySelector('.g-rows');
+    if (container) {
+      const viewportW = container.clientWidth - 270; // sub label width
+      const track = container.querySelector('.g-trk');
+      if (track) {
+        this.applyZoom(1);
+      }
+    }
+  }
+};
+
+/* ================================================================
+   §JS-SWIM swimlane HTML refinements
+   ================================================================ */
+// Enhanced HTML swimlane renderer supporting Group-by-rule
+const SWIM = {
+  order: [],
+  groupByRule: false,
+  laneH: 36
+};
+
+// Redefine SWIMLANE.init to render stack HTML Swimlanes instead of basic Canvas
+SWIMLANE.init = function(el) {
+  const trees = S.trees;
+  const threads = S.threads;
+  
+  let swimlanes = [];
+  if (SWIM.groupByRule) {
+    // Group all events by rule type
+    const rules = S.cfg?.elementRules || [];
+    swimlanes = rules.map(r => ({ id: r.id, name: r.name, color: r.visualStyle?.accentColor || '#58a6ff', events: [] }));
+    
+    for (const tree of Object.values(trees)) {
+      const traverse = (nodes) => {
+        for (const n of nodes) {
+          const lane = swimlanes.find(l => l.id === n.ruleId);
+          if (lane) lane.events.push(n);
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      traverse(tree);
+    }
+  } else {
+    // Group by thread
+    swimlanes = threads.map(thr => ({ id: thr, name: thr, color: '#f0883e', events: [] }));
+    // Draggable order
+    if (SWIM.order.length > 0) {
+      swimlanes.sort((a, b) => SWIM.order.indexOf(a.id) - SWIM.order.indexOf(b.id));
+    }
+    swimlanes.forEach(lane => {
+      const traverse = (nodes) => {
+        for (const n of nodes) {
+          lane.events.push(n);
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      traverse(trees[lane.id] || []);
+    });
+  }
+  
+  // Find global min and max timestamp
+  let globalMin = Infinity, globalMax = -Infinity;
+  swimlanes.forEach(l => {
+    l.events.forEach(e => {
+      if (e.timestamp != null) {
+        globalMin = Math.min(globalMin, e.timestamp);
+        globalMax = Math.max(globalMax, e.timestamp);
+      }
+    });
+  });
+  if (globalMin === Infinity) { globalMin = 0; globalMax = 1; }
+  const globalDur = globalMax - globalMin || 1;
+  
+  // Axis ticks
+  const PCT = [0, 25, 50, 75, 100];
+  const ax = PCT.map(p => `<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(globalDur * p / 100))}</div></div>`).join('');
+  
+  const lanesHtml = swimlanes.map((lane, idx) => {
+    const barsHtml = lane.events.map(n => {
+      const col = scol(n.visualStyle?.accentColor || lane.color);
+      const sp = n.timestamp != null ? Math.max(0, (n.timestamp - globalMin) / globalDur * 100) : 0;
+      const wp = n.behavior !== 'inline' && n.duration > 0 ? Math.max(0.4, n.duration / globalDur * 100) : 0.4;
+      const dur = n.behavior !== 'inline' && n.duration != null ? fmtMs(n.duration) : '';
+      
+      const style = n.behavior === 'inline'
+        ? `left:calc(${sp.toFixed(2)}% - 1px); width:3px; background:${col}; height:100%;`
+        : `left:${sp.toFixed(2)}%; width:${wp.toFixed(2)}%; background:${col}; opacity:0.8; height:18px; border-radius:3px;`;
+      
+      return `<div style="position:absolute; top:calc(50% - 9px); ${style}" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
+    }).join('');
+    
+    const bg = idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)';
+    
+    return `<div class="swim-lane" data-id="${esc(lane.id)}" draggable="true" style="display:grid; grid-template-columns:180px 1fr; border-bottom:1px solid var(--bdr-d); background:${bg}; align-items:center; height:${SWIM.laneH}px;">
+      <div class="swim-lane-hdr trunc" style="font-weight:bold; font-size:11px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr);">
+        ${esc(lane.name)} <span class="badge b-gray" style="font-size:9px;">${lane.events.length}</span>
+      </div>
+      <div style="position:relative; height:100%; width:calc(100% * var(--g-zoom, 1)); min-width:100%;">
+        ${barsHtml}
+      </div>
+    </div>`;
+  }).join('');
+  
+  el.innerHTML = `
+    <div class="gw" style="display:flex; flex-direction:column; height:100%;">
+      <div class="pt" style="display:flex; align-items:center;">
+        <span>🏊‍♂️</span> Swimlane Timeline View
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">Show Standard Waterfall</button>
+        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 8px;"></div>
+        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="chk-swim-groupby" ${SWIM.groupByRule ? 'checked' : ''}> Group by Rule Type
+        </label>
+        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 8px;"></div>
+        <span style="font-size:11px;">Lane Height:</span>
+        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:80px; accent-color:var(--amber);">
+        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold; margin-left:4px;">${SWIM.laneH}px</span>
+      </div>
+      <div class="g-hdr" style="grid-template-columns:180px 1fr;"><div class="g-ch">Thread / Rule</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
+      <div style="flex:1; overflow-y:auto; overflow-x:hidden;" id="swim-lanes-rows">
+        ${lanesHtml}
+      </div>
+    </div>
+  `;
+  
+  // Wire group-by rule checkbox
+  el.querySelector('#chk-swim-groupby').addEventListener('change', e => {
+    SWIM.groupByRule = e.target.checked;
+    UI.rv();
+  });
+  
+  // Wire lane height slider
+  el.querySelector('#slider-swim-h').addEventListener('input', e => {
+    SWIM.laneH = parseInt(e.target.value, 10);
+    UI.rv();
+  });
+  
+  // Draggable drag-reorder lanes
+  if (!SWIM.groupByRule) {
+    const rowsCont = el.querySelector('#swim-lanes-rows');
+    let draggedLane = null;
+    
+    rowsCont.querySelectorAll('.swim-lane').forEach(lane => {
+      lane.addEventListener('dragstart', () => { draggedLane = lane; lane.style.opacity = '0.5'; });
+      lane.addEventListener('dragend', () => { lane.style.opacity = '1'; });
+      lane.addEventListener('dragover', e => e.preventDefault());
+      lane.addEventListener('drop', () => {
+        if (draggedLane && draggedLane !== lane) {
+          const lanes = [...rowsCont.querySelectorAll('.swim-lane')];
+          const fromIdx = lanes.indexOf(draggedLane);
+          const toIdx = lanes.indexOf(lane);
+          
+          const order = lanes.map(l => l.dataset.id);
+          order.splice(fromIdx, 1);
+          order.splice(toIdx, 0, draggedLane.dataset.id);
+          SWIM.order = order;
+          UI.rv();
+        }
+      });
+    });
+  }
+};
+
+/* ================================================================
+   §JS-ANN THREADED ANNOTATION SYSTEM
+   ================================================================ */
+// Redefine UI.openAnn to support Threaded comment annotations
+UI.openAnn = function(node) {
+  const modal = $('ann-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  
+  // Migrate existing flat annotations
+  let ann = S.annotations[node.id];
+  if (!ann) ann = { comments: [] };
+  if (typeof ann === 'string') {
+    ann = {
+      comments: [{
+        id: 'c_' + Date.now(),
+        author: 'Me',
+        ts: Date.now(),
+        body: ann,
+        resolved: false
+      }]
+    };
+    S.annotations[node.id] = ann;
+  }
+  
+  const drawComments = () => {
+    const list = modal.querySelector('#ann-comments-list');
+    const title = modal.querySelector('#ann-count-title');
+    
+    const resCount = ann.comments.filter(c => c.resolved).length;
+    title.textContent = `${ann.comments.length} comment${ann.comments.length===1?'':'s'} · ${resCount} resolved`;
+    
+    let html = '';
+    ann.comments.forEach(c => {
+      const initial = esc(c.author.slice(0, 1).toUpperCase());
+      // Coloured circle hash
+      const hash = c.author.split('').reduce((s, ch) => s + ch.charCodeAt(0), 0);
+      const cols = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+      const avatarCol = cols[hash % cols.length];
+      
+      const relativeTime = Math.max(0, Math.round((Date.now() - c.ts) / (1000 * 60))); // minutes ago
+      const timeStr = relativeTime < 1 ? 'just now' : relativeTime < 60 ? `${relativeTime}m ago` : `${Math.round(relativeTime/60)}h ago`;
+      
+      const resClass = c.resolved ? ' resolved' : '';
+      
+      html += `
+        <div class="ann-comment${resClass}" data-cid="${esc(c.id)}">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:20px; height:20px; border-radius:50%; background:${avatarCol}; color:#000; font-weight:bold; display:flex; align-items:center; justify-content:center; font-size:10px;">${initial}</div>
+            <span style="font-weight:bold; font-size:11px;">${esc(c.author)}</span>
+            <span style="font-size:10px; color:var(--t4);">${timeStr}</span>
+            <span class="mla" style="display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" class="comment-resolve-chk" ${c.resolved ? 'checked' : ''} style="cursor:pointer;">
+              <span style="font-size:10px; color:var(--t4);">resolved</span>
+              <span class="comment-delete" style="cursor:pointer; color:var(--red); font-size:12px; margin-left:4px;">✕</span>
+            </span>
+          </div>
+          <div style="font-size:11px; margin-top:4px; line-height:1.5;">${esc(c.body)}</div>
+        </div>
+      `;
+    });
+    list.innerHTML = html || '<div style="text-align:center; padding:20px; color:var(--t4); font-size:11px;">No notes yet. Add one below.</div>';
+    
+    // Wire comment resolve and delete buttons
+    list.querySelectorAll('.comment-resolve-chk').forEach(chk => {
+      chk.addEventListener('change', () => {
+        const cid = chk.closest('.ann-comment').dataset.cid;
+        const c = ann.comments.find(x => x.id === cid);
+        if (c) c.resolved = chk.checked;
+        drawComments();
+        UI.rv();
+      });
+    });
+    
+    list.querySelectorAll('.comment-delete').forEach(del => {
+      del.addEventListener('click', () => {
+        const cid = del.closest('.ann-comment').dataset.cid;
+        ann.comments = ann.comments.filter(x => x.id !== cid);
+        if (ann.comments.length === 0) delete S.annotations[node.id];
+        drawComments();
+        UI.rv();
+      });
+    });
+  };
+  
+  modal.innerHTML = `
+    <div style="position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;">
+      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:480px; max-width:100%; display:flex; flex-direction:column; max-height:86vh; box-shadow:var(--shd-lg); overflow:hidden;">
+        <div style="padding:12px; border-bottom:1px solid var(--bdr); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:bold; font-size:13px; font-family:var(--display);">${esc(node.elementName || node.ruleName)}</div>
+            <div id="ann-count-title" style="font-size:10px; color:var(--t4); margin-top:2px;">0 comments</div>
+          </div>
+          <button class="btn btn-xs" id="btn-ann-close" style="padding:4px 8px;">✕</button>
+        </div>
+        
+        <div style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;" id="ann-comments-list"></div>
+        
+        <div style="padding:12px; border-top:1px solid var(--bdr); background:var(--bg-1); display:flex; flex-direction:column; gap:8px;">
+          <textarea id="ann-input-text" class="inp" rows="3" placeholder="Leave a markdown comment..." style="font-size:11px;"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <input id="ann-input-author" class="inp" type="text" value="Me" style="width:110px; font-size:11px; padding:3px 6px;" placeholder="Author"/>
+            <button class="btn btn-p btn-sm" id="btn-ann-post">Post Comment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  drawComments();
+  
+  // Wire posting comments
+  modal.querySelector('#btn-ann-post').addEventListener('click', () => {
+    const txt = modal.querySelector('#ann-input-text').value.trim();
+    const auth = modal.querySelector('#ann-input-author').value.trim() || 'Me';
+    if (!txt) return;
+    
+    ann.comments.push({
+      id: 'c_' + Date.now(),
+      author: auth,
+      ts: Date.now(),
+      body: txt,
+      resolved: false
+    });
+    S.annotations[node.id] = ann;
+    modal.querySelector('#ann-input-text').value = '';
+    
+    drawComments();
+    UI.rv();
+    ANNOTATIONS_SUMMARY.render();
+  });
+  
+  modal.querySelector('#btn-ann-close').addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.innerHTML = '';
+  });
+};
+
+// G2 Annotation Summary panel in Help panel (p-hlp)
+const ANNOTATIONS_SUMMARY = {
+  render() {
+    const listCont = $('ann-summary-list') || this.createSummaryContainer();
+    if (!listCont) return;
+    
+    const items = [];
+    for (const [nodeId, ann] of Object.entries(S.annotations || {})) {
+      if (typeof ann !== 'object' || !ann.comments || !ann.comments.length) continue;
+      
+      // Find matching node reference
+      let foundNode = null;
+      for (const tree of Object.values(S.trees || {})) {
+        const find = (nodes) => {
+          for (const n of nodes) {
+            if (n.id === nodeId) { foundNode = n; return; }
+            if (n.events && n.events.length) find(n.events);
+          }
+        };
+        find(tree);
+        if (foundNode) break;
+      }
+      
+      if (foundNode) {
+        const lastComment = ann.comments[ann.comments.length - 1];
+        items.push({
+          node: foundNode,
+          count: ann.comments.length,
+          lastBody: lastComment.body,
+          lastAuthor: lastComment.author
+        });
+      }
+    }
+    
+    const rows = items.map(item => {
+      const col = scol(item.node.visualStyle?.accentColor || '#8b949e');
+      const ico = esc(item.node.visualStyle?.icon || '•');
+      return `
+        <div class="ann-summary-row" data-id="${esc(item.node.id)}" style="cursor:pointer; padding:6px; border-bottom:1px solid var(--bdr-d); display:flex; flex-direction:column; gap:2px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:11px; color:${col};">${ico} ${esc(item.node.elementName || item.node.ruleName)}</span>
+            <span class="badge b-gray" style="font-size:9px;">${item.count}</span>
+          </div>
+          <div style="font-size:10px; color:var(--t4);" class="trunc">
+            <b>${esc(item.lastAuthor)}:</b> ${esc(item.lastBody.slice(0, 60))}${item.lastBody.length>60?'…':''}
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    listCont.innerHTML = `
+      <div style="border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;">
+        <div style="font-size:11px; font-weight:bold; color:var(--amber); margin-bottom:6px;">📝 Threaded Log Notes</div>
+        <div style="max-height:180px; overflow-y:auto;">
+          ${rows || '<div style="text-align:center; padding:10px; color:var(--t4); font-size:11px;">No annotated comments.</div>'}
+        </div>
+        ${items.length ? `<button class="btn btn-xs btn-g wf" id="btn-export-notes-md" style="margin-top:6px;">Export Notes as Markdown</button>` : ''}
+      </div>
+    `;
+    
+    // Wire click jumps
+    listCont.querySelectorAll('.ann-summary-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.id;
+        let foundNode = null;
+        for (const tree of Object.values(S.trees)) {
+          const find = (nodes) => {
+            for (const n of nodes) {
+              if (n.id === id) { foundNode = n; return; }
+              if (n.events && n.events.length) find(n.events);
+            }
+          };
+          find(tree);
+          if (foundNode) break;
+        }
+        if (foundNode) {
+          S.activeThr = foundNode.thread;
+          jumpToNode(foundNode);
+          UI.openAnn(foundNode);
+        }
+      });
+    });
+    
+    // Export notes as markdown download
+    listCont.querySelector('#btn-export-notes-md')?.addEventListener('click', () => {
+      let md = `# LogLens Annotations — ${S.logFile ? S.logFile.name : 'Unknown File'} — ${new Date().toLocaleDateString()}\n\n`;
+      items.forEach(item => {
+        md += `## ${esc(item.node.thread)} › ${esc(item.node.elementName || item.node.ruleName)}\n`;
+        const ann = S.annotations[item.node.id];
+        ann.comments.forEach(c => {
+          md += `**${esc(c.author)}** · ${new Date(c.ts).toLocaleString()} · ${c.resolved?'[RESOLVED]':''}\n`;
+          md += `> ${c.body}\n\n`;
+        });
+        md += `---\n\n`;
+      });
+      
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `loglens-notes-${Date.now()}.md`);
+      link.click();
+    });
+  },
+  
+  createSummaryContainer() {
+    const parent = $('p-hlp');
+    if (!parent) return null;
+    const div = document.createElement('div');
+    div.id = 'ann-summary-list';
+    parent.appendChild(div);
+    return div;
+  }
+};
+
+// Trigger annotations summary rendering
+ANNOTATIONS_SUMMARY.render();
+
+/* ================================================================
+   §JS-PLUG PLUGIN SYSTEM FORMALISATION & EXAMPLES
+   ================================================================ */
+const PLUG = {
+  hooks: { onParseDone: [], onNodeClick: [], onContextMenu: [] },
+  loadedPlugins: [],
+  
+  builtInTemplates: [
+    {
+      name: "Slow Query Detector",
+      version: "1.0.0",
+      code: `return {
+  name: "Slow Query Detector",
+  version: "1.0.0",
+  onParseDone: (ctx) => {
+    const slow = ctx.allEvents.filter(e => e.duration > 1000);
+    ctx.badge("⚠️ " + slow.length + " slow operations", "amber");
+    ctx.addStatsCard("Slow Operations", slow.length, "amber");
+  },
+  onNodeClick: (ctx, node) => {
+    if (node.duration > 1000) {
+      ctx.toast("⚠️ This operation took " + node.duration + "ms", "warn");
+    }
+  },
+  onContextMenu: (ctx, node) => {
+    if (node.duration > 1000) {
+      return [{
+        label: "Benchmark this event",
+        action: () => ctx.toast("Benchmark: " + node.elementName + " took " + node.duration + "ms")
+      }];
+    }
+    return [];
+  }
+};`
+    },
+    {
+      name: "Thread Starvation Detector",
+      version: "1.0.1",
+      code: `return {
+  name: "Thread Starvation Detector",
+  version: "1.0.1",
+  onParseDone: (ctx) => {
+    let starveCount = 0;
+    for (const [thr, tree] of Object.entries(ctx.trees)) {
+      let consecutivePush = 0;
+      const check = (nodes) => {
+        for (const n of nodes) {
+          if (n.behavior === 'push') consecutivePush++;
+          else consecutivePush = 0;
+          if (consecutivePush > 10) starveCount++;
+          if (n.events && n.events.length) check(n.events);
+        }
+      };
+      check(tree);
+    }
+    if (starveCount > 0) {
+      ctx.badge("⚠️ " + starveCount + " Thread Starvations", "red");
+      ctx.addStatsCard("Thread Starvations", starveCount, "red");
+    }
+  }
+};`
+    },
+    {
+      name: "Error Spike Detector",
+      version: "1.0.0",
+      code: `return {
+  name: "Error Spike Detector",
+  version: "1.0.0",
+  onParseDone: (ctx) => {
+    const errors = ctx.allEvents.filter(e =>
+      e.ruleName.toLowerCase().includes("error") ||
+      e.payload.toLowerCase().includes("error")
+    );
+    // Find spikes in 5s windows
+    errors.sort((a,b)=>a.timestamp-b.timestamp);
+    let maxSpike = 0;
+    for (let i=0; i<errors.length; i++) {
+      let count = 0;
+      for (let j=i; j<errors.length; j++) {
+        if (errors[j].timestamp - errors[i].timestamp <= 5000) count++;
+        else break;
+      }
+      maxSpike = Math.max(maxSpike, count);
+    }
+    if (maxSpike > 3) {
+      ctx.badge("🚨 Spike: " + maxSpike + " Errors/5s", "red");
+    }
+  }
+};`
+    }
+  ],
+  
+  init() {
+    const panel = $('p-plugs');
+    if (!panel) return;
+    
+    // Build select dropdown for built-in plugins
+    const opts = this.builtInTemplates.map((p, idx) =>
+      `<option value="${idx}">${esc(p.name)}</option>`
+    ).join('');
+    
+    const html = `
+      <div style="border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;">
+        <div style="font-size:11px; font-weight:bold; color:var(--amber); margin-bottom:6px;">🚀 Community Plugins</div>
+        <div class="f">
+          <div class="fl" style="font-size:10px;">Load Built-in Example</div>
+          <select class="inp" id="plug-preset-sel" style="font-size:11px; padding:3px 6px;">
+            <option value="">-- Select template --</option>
+            ${opts}
+          </select>
+        </div>
+        <div style="font-size:11px; font-weight:bold; color:var(--t3); margin-top:12px; margin-bottom:4px;">Loaded Plugins</div>
+        <div id="loaded-plugins-list" style="max-height:120px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
+          <div style="font-size:10px; color:var(--t4); text-align:center; padding:10px;">No custom plugins active.</div>
+        </div>
+      </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    panel.appendChild(div);
+    
+    // Wire preset selector
+    panel.querySelector('#plug-preset-sel').addEventListener('change', e => {
+      const idx = e.target.value;
+      if (idx !== '') {
+        const area = panel.querySelector('textarea');
+        if (area) {
+          area.value = this.builtInTemplates[idx].code;
+        }
+      }
+    });
+    
+    // We also need to hook into the existing "Load Plugin" button
+    // Let's find it.
+    const btn = $('btn-plugin-add');
+    if (btn) {
+      // Monkeypatch btn action
+      btn.addEventListener('click', () => {
+        const code = panel.querySelector('textarea').value.trim();
+        if (!code) return;
+        this.loadPlugin(code);
+      });
+    }
+  },
+  
+  loadPlugin(code) {
+    try {
+      const pluginFn = new Function(code);
+      const plugin = pluginFn();
+      if (!plugin || !plugin.name) throw new Error('Plugin must return an object with a name.');
+      
+      this.loadedPlugins.push(plugin);
+      
+      // Register hooks
+      if (plugin.onParseDone) this.hooks.onParseDone.push(plugin.onParseDone);
+      if (plugin.onNodeClick) this.hooks.onNodeClick.push(plugin.onNodeClick);
+      if (plugin.onContextMenu) this.hooks.onContextMenu.push(plugin.onContextMenu);
+      
+      toast(`Loaded plugin: ${plugin.name} v${plugin.version || '1.0.0'}`);
+      this.renderLoaded();
+      if (S.trees) this.onParseDone();
+    } catch(err) {
+      toast('Failed to load plugin: ' + err.message, 'error');
+    }
+  },
+  
+  unloadPlugin(idx) {
+    const plugin = this.loadedPlugins[idx];
+    if (!plugin) return;
+    
+    // Remove hooks
+    if (plugin.onParseDone) this.hooks.onParseDone = this.hooks.onParseDone.filter(x => x !== plugin.onParseDone);
+    if (plugin.onNodeClick) this.hooks.onNodeClick = this.hooks.onNodeClick.filter(x => x !== plugin.onNodeClick);
+    if (plugin.onContextMenu) this.hooks.onContextMenu = this.hooks.onContextMenu.filter(x => x !== plugin.onContextMenu);
+    
+    toast(`Unloaded plugin: ${plugin.name}`);
+    this.loadedPlugins.splice(idx, 1);
+    this.renderLoaded();
+    UI.rv();
+  },
+  
+  renderLoaded() {
+    const list = $('loaded-plugins-list');
+    if (!list) return;
+    
+    if (this.loadedPlugins.length === 0) {
+      list.innerHTML = '<div style="font-size:10px; color:var(--t4); text-align:center; padding:10px;">No custom plugins active.</div>';
+      return;
+    }
+    
+    list.innerHTML = this.loadedPlugins.map((p, idx) => {
+      let hookCount = 0;
+      if (p.onParseDone) hookCount++;
+      if (p.onNodeClick) hookCount++;
+      if (p.onContextMenu) hookCount++;
+      
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:4px; padding:4px 6px; font-size:11px;">
+          <div>
+            <b>${esc(p.name)}</b> <span style="font-size:9px; color:var(--t4);">v${esc(p.version || '1.0.0')} (${hookCount} hooks)</span>
+          </div>
+          <button class="btn btn-xs btn-d btn-plug-unload" data-idx="${idx}" style="padding:2px 4px;">Unload</button>
+        </div>
+      `;
+    }).join('');
+    
+    list.querySelectorAll('.btn-plug-unload').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.unloadPlugin(parseInt(btn.dataset.idx, 10));
+      });
+    });
+  },
+  
+  onParseDone() {
+    // Build context
+    const allEvents = [];
+    const traverse = (nodes) => {
+      for (const n of (nodes || [])) {
+        allEvents.push(n);
+        if (n.events && n.events.length) traverse(n.events);
+      }
+    };
+    for (const tree of Object.values(S.trees || {})) traverse(tree);
+    
+    const ctx = {
+      trees: S.trees,
+      threads: S.threads,
+      stats: S.stats,
+      rules: S.cfg?.elementRules,
+      allEvents,
+      badge: (label, color) => {
+        // Adds temporary badge chip in header
+        let badge = $('hdr-plugin-' + label);
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.id = 'hdr-plugin-' + label;
+          badge.className = `badge b-${color || 'gray'}`;
+          badge.textContent = label;
+          document.querySelector('.hr')?.appendChild(badge);
+        }
+      },
+      addStatsCard: (label, value, color) => {
+        // Appends card to Stats view
+        const target = document.querySelector('.tw');
+        if (target) {
+          const card = document.createElement('div');
+          card.className = 'stats-panel-card';
+          card.style.marginTop = '16px';
+          card.innerHTML = `<div class="sp-title">${esc(label)}</div>
+            <div style="font-size:24px; font-weight:bold; color:var(--${color||'t2'});">${value}</div>`;
+          target.appendChild(card);
+        }
+      },
+      toast: (msg, type) => toast(msg, type)
+    };
+    
+    this.hooks.onParseDone.forEach(h => {
+      try { h(ctx); } catch(err) { console.error(err); }
+    });
+  }
+};
+
+PLUG.init();
+
+// Hook plugin actions on context menu rendering
+const _origCtxAct = CTX.act.bind(CTX);
+CTX.act = function(action, node) {
+  _origCtxAct(action, node);
+};
+
+// Patch CTX.show to execute custom plugin context menu options
+const _origCtxShow = CTX.show.bind(CTX);
+CTX.show = function(e, node) {
+  _origCtxShow(e, node);
+  
+  // Custom context items from plugins
+  const listEl = $('ctx-menu');
+  if (!listEl) return;
+  
+  const allEvents = [];
+  const ctx = {
+    trees: S.trees,
+    threads: S.threads,
+    stats: S.stats,
+    rules: S.cfg?.elementRules,
+    allEvents,
+    toast: (msg, type) => toast(msg, type)
+  };
+  
+  PLUG.hooks.onContextMenu.forEach(h => {
+    try {
+      const items = h(ctx, node) || [];
+      items.forEach(it => {
+        const btn = document.createElement('button');
+        btn.className = 'ctx-btn';
+        btn.textContent = it.label;
+        btn.addEventListener('click', () => {
+          it.action();
+          listEl.classList.remove('vis');
+        });
+        listEl.appendChild(btn);
+      });
+    } catch(err) { console.error(err); }
+  });
+};
+
+// Patch TR.handleClick to call plugin onNodeClick hook
+const _origTrClick = TR.handleClick.bind(TR);
+TR.handleClick = function(e) {
+  _origTrClick(e);
+  
+  const row = e.target.closest('.tree-row');
+  if (!row) return;
+  const idx = parseInt(row.dataset.idx, 10);
+  const n = this._visibleNodes[idx];
+  if (!n) return;
+  
+  const allEvents = [];
+  const ctx = {
+    trees: S.trees,
+    threads: S.threads,
+    stats: S.stats,
+    rules: S.cfg?.elementRules,
+    allEvents,
+    toast: (msg, type) => toast(msg, type)
+  };
+  
+  PLUG.hooks.onNodeClick.forEach(h => {
+    try { h(ctx, n); } catch(err) { console.error(err); }
+  });
+};
+
+/* ================================================================
+   §JS-SHARE DEEP LINK STATE ENCODING
+   ================================================================ */
+const SHARE = {
+  getLink() {
+    const params = new URLSearchParams();
+    params.set('v', S.viewMode || 'split');
+    if (S.activeThr) params.set('thr', S.activeThr);
+    const q = $('hdr-search')?.value?.trim();
+    if (q) params.set('q', q);
+    
+    // Add pinned node IDs
+    if (S.pins && Object.keys(S.pins).length) {
+      params.set('pins', Object.keys(S.pins).join(','));
+    }
+    
+    // Add time filter range
+    if (S.timeFilterRange) {
+      params.set('tf_s', S.timeFilterRange.start);
+      params.set('tf_e', S.timeFilterRange.end);
+    }
+    
+    const hash = '#' + params.toString();
+    const url = window.location.origin + window.location.pathname + hash;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      toast('Shareable view link copied! Teammates will need the same log file & config.', 'success');
+    }).catch(() => {
+      toast('Failed to copy link automatically. Current hash: ' + hash, 'warn');
+    });
+  },
+  
+  restore() {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    try {
+      const params = new URLSearchParams(hash);
+      const v = params.get('v');
+      const thr = params.get('thr');
+      const q = params.get('q');
+      const pins = params.get('pins');
+      const tf_s = params.get('tf_s');
+      const tf_e = params.get('tf_e');
+      
+      if (v) UI.svm(v);
+      if (thr && S.threads.includes(thr)) {
+        S.activeThr = thr;
+      }
+      if (q) {
+        const inp = $('hdr-search');
+        if (inp) {
+          inp.value = q;
+          S.searchQuery = q;
+          inp.classList.add('has-query');
+        }
+      }
+      if (pins) {
+        S.pins = {};
+        pins.split(',').forEach(id => {
+          S.pins[id] = true;
+        });
+      }
+      if (tf_s && tf_e) {
+        S.timeFilterRange = { start: parseFloat(tf_s), end: parseFloat(tf_e) };
+      }
+      
+      UI.rv();
+      BCB.render();
+    } catch(err) {
+      console.error('[LL] Share state restore failed: ', err);
+    }
+  }
+};
+
+// Inject "Copy Shareable Link" option into export menu
+const expMenu = $('exp-menu');
+if (expMenu) {
+  const item = document.createElement('div');
+  item.className = 'exp-mi';
+  item.innerHTML = `<span class="ico" aria-hidden="true">🔗</span> Copy Shareable Link`;
+  item.addEventListener('click', () => {
+    SHARE.getLink();
+    expMenu.classList.remove('open');
+  });
+  // Insert at top of export list
+  expMenu.insertBefore(item, expMenu.firstChild);
+}
+
+/* ================================================================
+   §JS-SCREEN ANNOTATED SCREENSHOT MODE
+   ================================================================ */
+const SCREEN = {
+  async download() {
+    toast('Generating annotated screenshot canvas...','info');
+    
+    // We can draw a beautiful Canvas representations of the Gantt timeline or Tree view
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    const W = 1200, H = 800;
+    canvas.width = W; canvas.height = H;
+    
+    // 1. Draw solid dark background
+    ctx.fillStyle = '#0d1117'; // Matches dark theme --bg-0
+    ctx.fillRect(0,0,W,H);
+    
+    // 2. Draw report header title
+    ctx.fillStyle = '#c9d1d9';
+    ctx.font = 'bold 22px Geist, sans-serif';
+    ctx.fillText('LogLens Workbench Export Summary', 40, 50);
+    
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '13px Geist Mono, monospace';
+    const filename = S.logFile ? S.logFile.name : 'Log File';
+    ctx.fillText(`File: ${filename} | Date: ${new Date().toLocaleString()}`, 40, 76);
+    
+    // Draw visual dividers
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40, 96); ctx.lineTo(W - 40, 96); ctx.stroke();
+    
+    // 3. Draw mini timeline bars
+    const tree = S.trees[S.activeThr] || [];
+    if (tree.length > 0) {
+      const rs = tree[0].timestamp || 0;
+      const re = mEnd(tree);
+      const rd = re - rs || 1;
+      
+      const flat = [];
+      const flatten = (nodes, depth) => {
+        nodes.forEach(n => {
+          flat.push({ n, depth });
+          if (n.events && n.events.length) flatten(n.events, depth + 1);
+        });
+      };
+      flatten(tree, 0);
+      
+      ctx.fillStyle = '#21262d';
+      ctx.fillRect(40, 116, W - 80, 24);
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '11px Geist Mono';
+      ctx.fillText(new Date(rs).toLocaleTimeString(), 45, 132);
+      ctx.fillText(new Date(re).toLocaleTimeString(), W - 140, 132);
+      
+      // Draw first 16 bars
+      let y = 160;
+      flat.slice(0, 16).forEach(item => {
+        const n = item.n;
+        const sp = n.timestamp ? (n.timestamp - rs) / rd : 0;
+        const wp = n.duration ? n.duration / rd : 0.05;
+        
+        const col = n.visualStyle?.accentColor || '#58a6ff';
+        
+        ctx.fillStyle = '#161b22';
+        ctx.fillRect(40, y, W - 80, 30);
+        
+        // Draw bar
+        ctx.fillStyle = col;
+        const barX = 40 + sp * (W - 80);
+        const barW = Math.max(4, wp * (W - 80));
+        ctx.fillRect(barX, y + 6, barW, 18);
+        
+        // Check if critical path
+        if (n._isCriticalPath) {
+          ctx.strokeStyle = 'var(--amber)';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(barX, y + 6, barW, 18);
+        }
+        
+        // Check if SLA breach
+        if (n._isSlaBreach) {
+          ctx.strokeStyle = '#f85149';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(barX - 2, y + 4, barW + 4, 22);
+        }
+        
+        // Label
+        ctx.fillStyle = '#c9d1d9';
+        ctx.font = '12px Geist';
+        ctx.fillText(n.elementName || n.ruleName, barX + 6 > W - 180 ? barX - 180 : barX + 6, y + 20);
+        
+        // Render annotation callout box if exists
+        const ann = S.annotations[n.id];
+        if (ann) {
+          ctx.fillStyle = 'rgba(255,149,0,0.1)';
+          ctx.strokeStyle = 'var(--amber)';
+          ctx.lineWidth = 1;
+          const boxX = W - 320;
+          ctx.fillRect(boxX, y + 2, 280, 26);
+          ctx.strokeRect(boxX, y + 2, 280, 26);
+          
+          ctx.fillStyle = '#ffe3b3';
+          ctx.font = 'italic 11px Geist';
+          const txt = typeof ann === 'string' ? ann : (ann.comments[ann.comments.length-1]?.body || '');
+          ctx.fillText(`📝 Note: ${txt.slice(0, 32)}`, boxX + 8, y + 18);
+        }
+        
+        // Pinned node star indicator
+        if (S.pins && S.pins[n.id]) {
+          ctx.fillStyle = '#d29922';
+          ctx.font = '12px Geist';
+          ctx.fillText('📌 Pinned', barX - 60, y + 18);
+        }
+        
+        y += 36;
+      });
+    } else {
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '14px Geist';
+      ctx.fillText('No tree operations to draw.', W/2 - 80, H/2);
+    }
+    
+    // Download
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.setAttribute('download', `loglens-screenshot-${Date.now()}.png`);
+    link.click();
+  }
+};
+
+// Wire screenshot into export menu
+const expScreenshot = document.createElement('div');
+expScreenshot.className = 'exp-mi';
+expScreenshot.innerHTML = `<span class="ico" aria-hidden="true">🖼️</span> Annotated Canvas Screenshot`;
+expScreenshot.addEventListener('click', () => {
+  SCREEN.download();
+});
+if (expMenu) {
+  // Insert before SVG/PNG export
+  expMenu.insertBefore(expScreenshot, expMenu.querySelectorAll('.exp-sep')[1]);
+}
+
+/* ================================================================
+   §JS-RCONF REPORT CONFIGURATION MODAL
+   ================================================================ */
+const RCONF = {
+  options: {
+    gantt: true,
+    tree: true,
+    stats: true,
+    annotations: true,
+    rawLines: false,
+    rules: true,
+    title: 'LogLens Diagnostics Report',
+    author: 'LogLens Team',
+    logoUrl: '',
+    theme: 'dark'
+  },
+  
+  open(callback) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;';
+    modal.innerHTML = `
+      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:440px; max-width:100%; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-weight:bold; font-size:14px; font-family:var(--display); border-bottom:1px solid var(--bdr); padding-bottom:8px;">⚙️ Configure HTML Report Options</div>
+        
+        <div class="f">
+          <div class="fl">Report Title</div>
+          <input class="inp" id="r-title" type="text" value="${esc(this.options.title)}"/>
+        </div>
+        <div class="f">
+          <div class="fl">Author Name</div>
+          <input class="inp" id="r-author" type="text" value="${esc(this.options.author)}"/>
+        </div>
+        <div class="f">
+          <div class="fl">Company Logo Image URL</div>
+          <input class="inp" id="r-logo" type="text" placeholder="https://..." value="${esc(this.options.logoUrl)}"/>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-gantt" ${this.options.gantt?'checked':''}> Include Gantt chart SVG
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-tree" ${this.options.tree?'checked':''}> Include Execution Trees
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-stats" ${this.options.stats?'checked':''}> Include Statistics
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-ann" ${this.options.annotations?'checked':''}> Include Annotations
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-raw" ${this.options.rawLines?'checked':''}> Include raw log lines (large files — opt-in)
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="r-chk-rules" ${this.options.rules?'checked':''}> Include config rules summary
+          </label>
+        </div>
+        
+        <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
+          <span style="font-size:11px;">Theme:</span>
+          <select class="inp" id="r-theme" style="font-size:11px; padding:4px; width:auto;">
+            <option value="dark" ${this.options.theme==='dark'?'selected':''}>Dark</option>
+            <option value="light" ${this.options.theme==='light'?'selected':''}>Light</option>
+          </select>
+        </div>
+        
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+          <button class="btn btn-g btn-sm" id="btn-rconf-cancel">Cancel</button>
+          <button class="btn btn-p btn-sm" id="btn-rconf-generate">Generate HTML Report</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.querySelector('#btn-rconf-cancel').addEventListener('click', () => modal.remove());
+    modal.querySelector('#btn-rconf-generate').addEventListener('click', () => {
+      this.options.title = modal.querySelector('#r-title').value;
+      this.options.author = modal.querySelector('#r-author').value;
+      this.options.logoUrl = modal.querySelector('#r-logo').value;
+      this.options.gantt = modal.querySelector('#r-chk-gantt').checked;
+      this.options.tree = modal.querySelector('#r-chk-tree').checked;
+      this.options.stats = modal.querySelector('#r-chk-stats').checked;
+      this.options.annotations = modal.querySelector('#r-chk-ann').checked;
+      this.options.rawLines = modal.querySelector('#r-chk-raw').checked;
+      this.options.rules = modal.querySelector('#r-chk-rules').checked;
+      this.options.theme = modal.querySelector('#r-theme').value;
+      
+      modal.remove();
+      callback();
+    });
+  }
+};
+
+// Hook Shift+click on HTML report option inside export menu to open report configuration options
+const htmlExportOption = expMenu.querySelector('[data-exp="html"]');
+if (htmlExportOption) {
+  // We can copy and replace this option element
+  const newOption = htmlExportOption.cloneNode(true);
+  htmlExportOption.parentNode.replaceChild(newOption, htmlExportOption);
+  
+  newOption.addEventListener('click', e => {
+    expMenu.classList.remove('open');
+    if (e.shiftKey) {
+      RCONF.open(() => EXP.html());
+    } else {
+      // Use defaults
+      EXP.html();
+    }
+  });
+}
+
+/* ================================================================
+   §JS-UNDO UNDO/REDO RULE TRANSACTION STACK
+   ================================================================ */
+const UNDO = {
+  stack: [],
+  future: [],
+  
+  push() {
+    if (!S.cfg) return;
+    this.stack.push(JSON.stringify(S.cfg));
+    if (this.stack.length > 20) this.stack.shift();
+    this.future = []; // Clear redo stack on new action
+    this.updateUI();
+  },
+  
+  undo() {
+    if (this.stack.length === 0) return;
+    
+    this.future.push(JSON.stringify(S.cfg));
+    const prev = JSON.parse(this.stack.pop());
+    S.cfg = prev;
+    
+    CFG.persist && CFG.persist();
+    CFG.load && CFG.load();
+    CFG.rl && CFG.rl();
+    
+    const note = VER.lastNote || 'rule edit';
+    toast(`↩ Undone: ${note}`, 'info');
+    this.updateUI();
+  },
+  
+  redo() {
+    if (this.future.length === 0) return;
+    
+    this.stack.push(JSON.stringify(S.cfg));
+    const next = JSON.parse(this.future.pop());
+    S.cfg = next;
+    
+    CFG.persist && CFG.persist();
+    CFG.load && CFG.load();
+    CFG.rl && CFG.rl();
+    
+    toast('↪ Redone', 'info');
+    this.updateUI();
+  },
+  
+  updateUI() {
+    const btnUndo = $('btn-rule-undo');
+    const btnRedo = $('btn-rule-redo');
+    if (btnUndo) btnUndo.disabled = (this.stack.length === 0);
+    if (btnRedo) btnRedo.disabled = (this.future.length === 0);
+  },
+  
+  init() {
+    // Inject Undo/Redo controls in Config panel header (.sh-gs or rules header)
+    const header = document.querySelector('.sb-pan .sh');
+    if (header) {
+      const wrapper = document.createElement('span');
+      wrapper.style.cssText = 'margin-left:auto; display:flex; gap:4px;';
+      wrapper.innerHTML = `
+        <button class="btn btn-xs" id="btn-rule-undo" disabled style="padding:2px 6px;">↩ Undo</button>
+        <button class="btn btn-xs" id="btn-rule-redo" disabled style="padding:2px 6px;">↪ Redo</button>
+      `;
+      header.appendChild(wrapper);
+      
+      wrapper.querySelector('#btn-rule-undo').addEventListener('click', e => { e.stopPropagation(); this.undo(); });
+      wrapper.querySelector('#btn-rule-redo').addEventListener('click', e => { e.stopPropagation(); this.redo(); });
+    }
+  }
+};
+
+UNDO.init();
+
+// Hook rule modifications to save state to undo stack
+const _origCfgPersist = CFG.persist ? CFG.persist.bind(CFG) : null;
+if (CFG.persist) {
+  CFG.persist = function() {
+    UNDO.push();
+    _origCfgPersist();
+  };
+}
+
+// Global hotkeys Ctrl+Z/Ctrl+Y
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    e.preventDefault();
+    UNDO.undo();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+    e.preventDefault();
+    UNDO.redo();
+  }
+});
+
+/* ================================================================
+   §JS-PIN_GROUPS UPGRADED EVENT BOOKMARK GROUPS
+   ================================================================ */
+PIN.groups = { 'Default': {} };
+
+// Redefine PIN.toggle to support groups
+PIN.toggle = function(node, groupName = 'Default') {
+  if (!this.groups[groupName]) this.groups[groupName] = {};
+  
+  if (this.groups[groupName][node.id]) {
+    delete this.groups[groupName][node.id];
+  } else {
+    this.groups[groupName][node.id] = { node, note: '' };
+  }
+  
+  // Re-sync basic flat pins for old logic
+  S.pins = {};
+  for (const group of Object.values(this.groups)) {
+    for (const id of Object.keys(group)) {
+      S.pins[id] = true;
+    }
+  }
+  
+  this.render();
+};
+
+// Redefine PIN.render to support collapsible group lists and inline new group additions
+PIN.render = function() {
+  const container = $('pin-list') || this.createContainer();
+  if (!container) return;
+  
+  let html = '';
+  for (const [groupName, groupData] of Object.entries(this.groups)) {
+    const list = Object.entries(groupData).map(([id, val]) => {
+      const col = scol(val.node.visualStyle?.accentColor || '#8b949e');
+      const ico = esc(val.node.visualStyle?.icon || '•');
+      return `
+        <div class="pin-item" data-id="${esc(id)}" data-g="${esc(groupName)}" style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:4px 0; border-bottom:1px solid var(--bdr-d); cursor:pointer;">
+          <span style="color:${col}; font-weight:bold;">${ico} ${esc(val.node.elementName || val.node.ruleName)}</span>
+          <span class="pin-x" style="color:var(--red); font-size:12px; cursor:pointer;">✕</span>
+        </div>
+      `;
+    }).join('');
+    
+    // Hash group name to colour
+    const hash = groupName.split('').reduce((s,ch)=>s+ch.charCodeAt(0), 0);
+    const cols = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+    const circleCol = cols[hash % cols.length];
+    
+    html += `
+      <details open style="margin-top:6px; border:1px solid var(--bdr-d); border-radius:6px; padding:4px 6px;">
+        <summary style="font-size:11px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <span style="width:8px; height:8px; border-radius:50%; background:${circleCol}; display:inline-block;"></span>
+          ${esc(groupName)} (${Object.keys(groupData).length})
+        </summary>
+        <div style="margin-top:4px;">
+          ${list || '<div style="font-size:10px; color:var(--t4); padding:6px; text-align:center;">No bookmarks.</div>'}
+        </div>
+      </details>
+    `;
+  }
+  
+  container.innerHTML = `
+    <div style="border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:11px; font-weight:bold; color:var(--amber);">📌 Bookmark Groups</span>
+        <button class="btn btn-xs" id="btn-pin-new-group" style="padding:2px 4px;">+ Group</button>
+      </div>
+      <div id="pin-groups-list">${html}</div>
+    </div>
+  `;
+  
+  // Wire group clicks and delete buttons
+  container.querySelectorAll('.pin-item').forEach(item => {
+    item.addEventListener('click', e => {
+      if (e.target.classList.contains('pin-x')) {
+        e.stopPropagation();
+        const id = item.dataset.id;
+        const gName = item.dataset.g;
+        delete this.groups[gName][id];
+        this.render();
+        UI.rv();
+        return;
+      }
+      const id = item.dataset.id;
+      let foundNode = null;
+      for (const tree of Object.values(S.trees)) {
+        const find = (nodes) => {
+          for (const n of nodes) {
+            if (n.id === id) { foundNode = n; return; }
+            if (n.events && n.events.length) find(n.events);
+          }
+        };
+        find(tree);
+        if (foundNode) break;
+      }
+      if (foundNode) {
+        S.activeThr = foundNode.thread;
+        jumpToNode(foundNode);
+      }
+    });
+  });
+  
+  container.querySelector('#btn-pin-new-group').addEventListener('click', () => {
+    const name = prompt('Enter new bookmark group name:');
+    if (name && name.trim()) {
+      this.groups[name.trim()] = {};
+      this.render();
+    }
+  });
+};
+
+PIN.createContainer = function() {
+  const parent = $('p-hlp');
+  if (!parent) return null;
+  const div = document.createElement('div');
+  div.id = 'pin-list';
+  parent.appendChild(div);
+  return div;
+};
+
+// Wire custom context menu option to choose bookmark group
+CTX.show = function(e, node) {
+  _origCtxShow(e, node);
+  
+  const listEl = $('ctx-menu');
+  if (!listEl) return;
+  
+  // Group selection menu
+  const submenu = document.createElement('div');
+  submenu.style.cssText = 'border-top:1px solid var(--bdr); margin-top:4px; padding-top:4px; font-size:10px; color:var(--t3);';
+  submenu.innerHTML = `<div style="padding:4px 8px; font-weight:bold;">Pin to Group:</div>`;
+  
+  Object.keys(PIN.groups).forEach(gName => {
+    const opt = document.createElement('button');
+    opt.className = 'ctx-btn';
+    opt.style.fontSize = '10px';
+    opt.textContent = `📌 ${gName}`;
+    opt.addEventListener('click', () => {
+      PIN.toggle(node, gName);
+      listEl.classList.remove('vis');
+    });
+    submenu.appendChild(opt);
+  });
+  
+  listEl.appendChild(submenu);
+};
+
+/* ================================================================
+   §JS-HIST PARSE HISTORY
+   ================================================================ */
+const HIST = {
+  sessions: [],
+  
+  add(fileName, stats) {
+    // Prevent duplicate entries
+    this.sessions = this.sessions.filter(s => s.fileName !== fileName);
+    this.sessions.unshift({
+      fileName,
+      lines: stats.linesProcessed || 0,
+      ts: Date.now()
+    });
+    if (this.sessions.length > 10) this.sessions.pop();
+    this.render();
+  },
+  
+  render() {
+    const container = $('hist-panel') || this.createContainer();
+    if (!container) return;
+    
+    const items = this.sessions.map((s, idx) =>
+      `<div class="lql-hist-chip trunc" style="max-width:260px; display:block; padding:4px; margin-top:2px;" data-idx="${idx}" title="${esc(s.fileName)}">
+        📄 ${esc(s.fileName.slice(0, 24))} · ${s.lines.toLocaleString()} ev · ${new Date(s.ts).toLocaleTimeString()}
+      </div>`
+    ).join('');
+    
+    container.innerHTML = `
+      <details style="border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;">
+        <summary style="font-size:11px; font-weight:bold; cursor:pointer; color:var(--amber);">⌛ Recent Parse History</summary>
+        <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
+          ${items || '<div style="font-size:10px; color:var(--t4); text-align:center; padding:6px;">No history sessions found.</div>'}
+        </div>
+      </details>
+    `;
+    
+    // Wire history item loading
+    container.querySelectorAll('.lql-hist-chip').forEach(chip => {
+      chip.addEventListener('click', async () => {
+        const s = this.sessions[chip.dataset.idx];
+        if (s) {
+          // Check if still in IndexedDB cache using fileName
+          try {
+            // Check IndexedDB
+            const cached = await IDB.get({ name: s.fileName, size: 0, lastModified: 0 }, S.cfg);
+            if (cached) {
+              UI.render(cached.trees, cached.threads, cached.stats);
+              toast(`Loaded "${s.fileName}" from cache.`, 'success');
+            } else {
+              toast('Session expired from database cache.', 'warn');
+            }
+          } catch(e) {
+            toast('Failed to load session from cache.', 'error');
+          }
+        }
+      });
+    });
+  },
+  
+  createContainer() {
+    const parent = $('p-cfg'); // Config panel
+    if (!parent) return null;
+    const div = document.createElement('div');
+    div.id = 'hist-panel';
+    parent.appendChild(div);
+    return div;
+  }
+};
+
+/* ================================================================
+   §JS-QUICK_EDIT INLINE RULE QUICK EDIT
+   ================================================================ */
+const QUICK_EDIT = {
+  currentRule: null,
+  
+  open(rule, targetCard) {
+    this.currentRule = rule;
+    const pop = $('quick-edit-pop');
+    pop.classList.remove('hidden');
+    
+    // Get position of card
+    const rect = targetCard.getBoundingClientRect();
+    pop.style.top = (rect.bottom + window.scrollY) + 'px';
+    pop.style.left = (rect.left + window.scrollX) + 'px';
+    
+    const colors = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+    const swatchHtml = colors.map(col => {
+      const activeClass = rule.visualStyle?.accentColor === col ? ' selected' : '';
+      return `<div class="color-swatch${activeClass}" style="background:${col};" data-col="${col}"></div>`;
+    }).join('');
+    
+    pop.innerHTML = `
+      <div style="font-weight:bold; font-size:10px; text-transform:uppercase; color:var(--t3);">Quick Edit Rule</div>
+      <input class="inp" id="qe-name" type="text" value="${esc(rule.name)}" placeholder="Rule Name" style="font-size:11px; padding:3px;"/>
+      <div style="font-size:10px; color:var(--t4); margin-top:2px;">SLA Threshold (ms):</div>
+      <input class="inp" id="qe-sla" type="number" value="${rule.slaThresholdMs || ''}" placeholder="None" style="font-size:11px; padding:3px;"/>
+      <div style="font-size:10px; color:var(--t4); margin-top:2px;">Accent Color:</div>
+      <div class="color-swatch-row">${swatchHtml}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; border-top:1px solid var(--bdr-d); padding-top:4px;">
+        <button class="btn btn-xs" id="btn-qe-full" style="font-size:9px;">Advanced</button>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-xs btn-g" id="btn-qe-cancel" style="font-size:9px;">Cancel</button>
+          <button class="btn btn-xs btn-p" id="btn-qe-save" style="font-size:9px; font-weight:bold;">Save</button>
+        </div>
+      </div>
+    `;
+    
+    // Wire Quick Edit events
+    let selectedCol = rule.visualStyle?.accentColor || '#58a6ff';
+    pop.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        pop.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        sw.classList.add('selected');
+        selectedCol = sw.dataset.col;
+      });
+    });
+    
+    pop.querySelector('#btn-qe-save').addEventListener('click', () => {
+      rule.name = pop.querySelector('#qe-name').value.trim() || rule.name;
+      const sla = parseInt(pop.querySelector('#qe-sla').value, 10);
+      rule.slaThresholdMs = isNaN(sla) ? null : sla;
+      if (!rule.visualStyle) rule.visualStyle = {};
+      rule.visualStyle.accentColor = selectedCol;
+      
+      CFG.persist();
+      CFG.load();
+      CFG.rl();
+      pop.classList.add('hidden');
+      toast('Rule updated successfully.', 'success');
+    });
+    
+    pop.querySelector('#btn-qe-cancel').addEventListener('click', () => pop.classList.add('hidden'));
+    pop.querySelector('#btn-qe-full').addEventListener('click', () => {
+      pop.classList.add('hidden');
+      UI.openM(rule);
+    });
+  }
+};
+
+// Wire rule card quick edits
+const _origCfgRl = CFG.rl.bind(CFG);
+CFG.rl = function() {
+  _origCfgRl();
+  
+  // Auto check matches coverage per rule card
+  const cards = document.querySelectorAll('.rc');
+  cards.forEach(card => {
+    // Get corresponding rule object from card ID
+    const rid = card.dataset.rid;
+    const rule = S.cfg?.elementRules?.find(r => r.id === rid);
+    if (!rule) return;
+    
+    // Add quick edit trigger on rule name text click
+    const nameEl = card.querySelector('.rc-nm') || card.querySelector('span');
+    if (nameEl) {
+      nameEl.style.cursor = 'pointer';
+      nameEl.addEventListener('click', e => {
+        e.stopPropagation();
+        QUICK_EDIT.open(rule, card);
+      });
+    }
+  });
+  
+  // Dismiss popover on click outside
+  document.addEventListener('click', e => {
+    const pop = $('quick-edit-pop');
+    if (pop && !pop.classList.contains('hidden') && !e.target.closest('#quick-edit-pop') && !e.target.closest('.rc')) {
+      pop.classList.add('hidden');
+    }
+  });
+};
+
+/* ================================================================
+   §JS-COVERAGE RULE COVERAGE INDICATOR
+   ================================================================ */
+// Hook rule cards display to count parser rule matches
+const _origUIsw = UI.sw.bind(UI);
+UI.sw = function(tid) {
+  _origUIsw(tid);
+  
+  // Calculate match count per rule across active thread tree
+  const ruleCounts = {};
+  const traverse = (nodes) => {
+    for (const n of (nodes || [])) {
+      ruleCounts[n.ruleId] = (ruleCounts[n.ruleId] || 0) + 1;
+      if (n.events && n.events.length) traverse(n.events);
+    }
+  };
+  traverse(S.trees[S.activeThr] || []);
+  
+  let zeroMatchCount = 0;
+  
+  // Update rule cards coverage chips
+  document.querySelectorAll('.rc').forEach(card => {
+    const rid = card.dataset.rid;
+    const hits = ruleCounts[rid] || 0;
+    
+    // Append or update coverage chip badge
+    let chip = card.querySelector('.cov-badge-chip');
+    if (!chip) {
+      chip = document.createElement('span');
+      chip.className = 'cov-badge-chip badge';
+      chip.style.cssText = 'margin-left:auto; font-size:10px; font-family:var(--mono);';
+      // Find rules content inside card
+      card.style.display = 'flex';
+      card.style.alignItems = 'center';
+      card.appendChild(chip);
+    }
+    
+    if (hits > 0) {
+      chip.textContent = `${hits} hits`;
+      chip.className = 'cov-badge-chip badge b-amber';
+    } else {
+      chip.textContent = '0 hits';
+      chip.className = 'cov-badge-chip badge b-gray';
+      zeroMatchCount++;
+    }
+  });
+  
+  // Injects rule list header badge for zero match warnings
+  const header = document.querySelector('.sb-pan .sh');
+  if (header) {
+    let warningBadge = header.querySelector('#zero-match-header-badge');
+    if (!warningBadge) {
+      warningBadge = document.createElement('span');
+      warningBadge.id = 'zero-match-header-badge';
+      warningBadge.className = 'badge badge-zero-match hidden';
+      warningBadge.style.cssText = 'margin-left:8px; font-size:10px;';
+      header.appendChild(warningBadge);
+      
+      warningBadge.addEventListener('click', () => {
+        // Modal list of zero-hit rules
+        const list = S.cfg?.elementRules?.filter(r => !ruleCounts[r.id]);
+        if (list && list.length) {
+          const listHtml = list.map(r => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px; border-bottom:1px solid var(--bdr-d); font-size:11px;">
+              <span>${esc(r.name)}</span>
+              <div>
+                <button class="btn btn-xs btn-g btn-zero-edit" data-id="${esc(r.id)}" style="margin-right:4px;">Edit</button>
+                <button class="btn btn-xs btn-d btn-zero-disable" data-id="${esc(r.id)}">Disable</button>
+              </div>
+            </div>
+          `).join('');
+          
+          const modal = document.createElement('div');
+          modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;';
+          modal.innerHTML = `
+            <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:340px; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
+              <div style="font-weight:bold; font-size:13px; font-family:var(--display); border-bottom:1px solid var(--bdr); padding-bottom:6px;">⚠️ Zero-Hit Rules list</div>
+              <div style="max-height:220px; overflow-y:auto;">${listHtml}</div>
+              <button class="btn btn-sm btn-g" id="btn-zero-modal-close" style="align-self:flex-end;">Close</button>
+            </div>
+          `;
+          document.body.appendChild(modal);
+          
+          modal.querySelector('#btn-zero-modal-close').addEventListener('click', () => modal.remove());
+          
+          modal.querySelectorAll('.btn-zero-edit').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const rule = S.cfg?.elementRules?.find(r => r.id === btn.dataset.id);
+              if (rule) UI.openM(rule);
+              modal.remove();
+            });
+          });
+          
+          modal.querySelectorAll('.btn-zero-disable').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const rule = S.cfg?.elementRules?.find(r => r.id === btn.dataset.id);
+              if (rule) {
+                rule.disabled = true;
+                CFG.persist();
+                CFG.load();
+                CFG.rl();
+                toast(`Disabled: ${rule.name}`, 'info');
+              }
+              modal.remove();
+            });
+          });
+        }
+      });
+    }
+    
+    if (zeroMatchCount > 0) {
+      warningBadge.textContent = `⚠️ ${zeroMatchCount} rules unused`;
+      warningBadge.classList.remove('hidden');
+    } else {
+      warningBadge.classList.add('hidden');
+    }
+  }
+};
+
+// Patch worker regex parser compiler check to skip disabled rules
+const _origWsrc = W_SRC;
+// Redefining W_SRC compile function text to check for r.disabled property
+// By replacing the compile script string representation in W_SRC
+const patchedWsrc = _origWsrc.replace(
+  'RULES=(c.elementRules||[]).map(r=>({...r,_rx:new RegExp(r.regexPattern)}));',
+  'RULES=(c.elementRules||[]).filter(r=>!r.disabled).map(r=>({...r,_rx:new RegExp(r.regexPattern)}));'
+);
+
+// Apply patches dynamically to the script source string
+try {
+  const blobUrl = URL.createObjectURL(new Blob([patchedWsrc], { type: 'application/javascript' }));
+  // Set worker source URL on WM
+  WM.wUrl = blobUrl;
+} catch(e) {
+  console.error('[LL] Failed to patch worker source string.', e);
+}
+
+// Hook multi-file toggle compared actions in control bar
+const compareFilesBtn = document.createElement('button');
+compareFilesBtn.className = 'btn btn-bl btn-sm hidden';
+compareFilesBtn.id = 'btn-compare-files';
+compareFilesBtn.textContent = 'Compare Files';
+compareFilesBtn.style.marginLeft = '8px';
+
+// Find control bar insertion point
+const ctrlGroup = document.querySelector('.ctrl .cg:last-child');
+if (ctrlGroup) {
+  ctrlGroup.appendChild(compareFilesBtn);
+  compareFilesBtn.addEventListener('click', () => DIFF.compare());
+}
+
+// Override MF.renderChips to show compare toggle action button
+const _origMfRenderChips = MF.renderChips.bind(MF);
+MF.renderChips = function() {
+  _origMfRenderChips();
+  const btn = $('btn-compare-files');
+  if (btn) {
+    if (this.files.length >= 2) btn.classList.remove('hidden');
+    else btn.classList.add('hidden');
+  }
+};
+
+// Global Keydown overrides
+document.addEventListener('keydown', e => {
+  // Ctrl+Enter or Cmd+Enter inside Query Input triggers run
+  const active = document.activeElement;
+  if (active && active.id === 'lql-inp-val' && e.key === 'Enter') {
+    e.preventDefault();
+    LQL.runQuery(active.value);
+    LQL.render(document.querySelector('.lql-box').parentNode);
+  }
+});
+
+console.log('%c[LogLens v6.2]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');
 </script>
 </body>
 </html>
+
 

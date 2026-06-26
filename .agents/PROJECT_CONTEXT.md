@@ -3,19 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 ## Current Status
-- **UI/UX Overhaul (v6.1 — COMPLETED)**:
-  - **Pass 1–6 (Prior)**: Audit, restructure, documentation, verification, top bar command center, collapsed sidebar fix.
-  - **Pass 7 (UI/UX Overhaul + New Features)**: Implemented the approved production-grade overhaul plan:
-    - Added CSS §18–22: Command Palette overlay, Breadcrumb Context Bar, Enhanced Empty State (animated dashed drop zone + feature chips), Settings Section styles (collapsible Performance & Appearance panels with range sliders and toggle switches), and Accessibility Utilities (`sr-only`, `mark.hl` search highlight, `has-query` state, `search-count` chip).
-    - Added HTML: `<h1 class="sr-only">` for WCAG accessibility, Breadcrumb Bar between vtabs and results, Command Palette overlay with full ARIA attributes, enhanced empty state card with feature chips.
-    - Added JS namespaces (additive only):
-      - **CMD** (`§JS-CMD`): Command Palette (Ctrl+K), fuzzy search, categories (View/Export/App/Rule/Thread), keyboard navigation (↑↓/Enter/Esc).
-      - **BCB** (`§JS-BCB`): Breadcrumb Context Bar, auto-updates on thread switch, search, view change.
-      - **GANTT_RESIZE** (`§JS-GANTT_RESIZE`): Drag handle on Gantt label column, `S.ganttLabelWidth`, MutationObserver attachment.
-      - **SEARCH_HL** (`§JS-SEARCH_HL`): `<mark class="hl">` highlighting in tree, match counter chip, `clear()` on empty query.
-      - **SETTINGS_ADDITIONS** (`§JS-SETTINGS_ADDITIONS`): Injects Performance (IDB clear, worker status) and Appearance (animation speed, font density, Gantt bar height, highlight toggle) sections into Settings panel. All prefs in `S.appPrefs`.
-    - Extended keyboard shortcuts: `Ctrl+K` → CMD palette, `/` → focus search, `Ctrl+Shift+E` → export dropdown, `Escape` → cascading close (cmd → search → modal).
-  - **File**: 8,507 lines, 336.4 KB. JS syntax verified clean.
+- **LogLens Feature Overhaul (v6.2 — COMPLETED)**:
+  - **Feature Group A (Intelligence Engine)**: Implemented Pattern Anomalies (`ANOM` namespace - hot paths, rare sequences, unmatched timed blocks), Thread Correlation Matrix (`CORR` namespace - temporal overlap matrix, CSS grid heatmap matrix, split view comparison selection), and Duration Heatmap Calendar (`HEAT` namespace - contribution calendar with quartile opacity, day filter).
+  - **Feature Group B (Live Streaming)**: Added FIFO rolling buffer, pause/resume streaming, pulsing header status badge, scroll-to-bottom controls, and real-time 60s event rate sparkline (1Hz SVG drawing).
+  - **Feature Group C (Multi-File Diff)**: Implemented dual-file Deploy Compare Mode (`DIFF` namespace) with LCS sequence alignment, delta statistics table, and side-by-side git-style red/green diff rows with jump-to-source.
+  - **Feature Group D (LogLens Query Language - LQL)**: Added LQL parsing, evaluation, presets, query history command navigation, and query results table.
+  - **Feature Group E (Smart Rule Assistant)**: Added Regex Explainer (`REX` namespace) tokenized segment editor hover breakdowns and unmatched lines rule suggestion candidate alerts.
+  - **Feature Group F (Timeline Upgrades)**: Added Critical Path Highlighter (dimming, chevron icons, tree highlights), Gantt Zoom/Pan (wheel scaling + grab drag panning), and Swimlane view (draggable lanes, rule grouping).
+  - **Feature Group G/H/I/J (Productivity & Integration)**: Upgraded annotations to threaded comments, added plugin engine hooks (`PLUG`), Deep Link state URL hash sharing, canvas screenshot overlays, rule transaction Undo/Redo stacks (`UNDO`), rule match coverage indicator chips (with unused warning list), recent file load history, and inline Quick Edit popover for rules.
+  - **File**: 12,646 lines, ~499 KB. JS syntax verified clean and validated.
 
 ---
 
