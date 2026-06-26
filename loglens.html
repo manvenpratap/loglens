@@ -2563,6 +2563,178 @@ mark.hl{
 <script>
 'use strict';
 
+/*
+==============================================================================
+LOGICAL ARCHITECTURE GUIDE
+==============================================================================
+This single-file build is intentionally structured as a transportable artifact
+that mirrors a modular multi-file project.
+
+Logical project map:
+/styles/
+  01-tokens.css
+  02-base.css
+  03-layout.css
+  04-components.css
+  05-views.css
+  06-utilities.css
+  07-states.css
+  08-responsive.css
+  09-print.css
+/scripts/
+  00-bootstrap.js
+  01-constants.js
+  02-state.js
+  03-dom.js
+  04-utils.js
+  05-events.js
+  06-worker.js
+  07-config.js
+  08-rules.js
+  09-parser.js
+  10-render-shell.js
+  11-render-gantt.js
+  12-render-tree.js
+  13-render-stats.js
+  14-render-graph.js
+  15-render-3d.js
+  16-annotations.js
+  17-pins.js
+  18-exports.js
+  19-integrations.js
+  20-plugins.js
+  21-versioning.js
+  22-keyboard.js
+  23-router-viewstate.js
+  24-app-init.js
+
+Module interaction rules:
+- state is mutated through module APIs where possible
+- DOM rendering is delegated to renderer modules
+- worker communication flows only through parser orchestration
+- exports rely on normalized view/state selectors
+
+When adding new features:
+- add constants first
+- add selectors/helpers second
+- add state shape intentionally
+- add module API
+- wire events in bootstrap only
+==============================================================================
+*/
+
+/* ==========================================================================
+   §JS-0 CONSTANTS AND ENUMS
+   ========================================================================== */
+const CONSTANTS = {
+  VIEWS: {
+    SPLIT: 'split',
+    GANTT: 'gantt',
+    TREE: 'tree',
+    STATS: 'stats',
+    GRAPH: 'graph',
+    VIEW3D: '3d',
+    QUERY: 'query',
+    DIFF: 'diff'
+  },
+  BEHAVIORS: {
+    PUSH: 'push',
+    POP: 'pop',
+    INLINE: 'inline'
+  },
+  THEMES: {
+    DARK: 'dark',
+    LIGHT: 'light'
+  },
+  STORAGE_KEYS: {
+    THEME: 'll-t',
+    JIRA_URL: 'll-jira-url',
+    JIRA_WEBHOOK: 'll-jira-webhook',
+    DS_TYPE: 'll-ds-type',
+    DS_URL: 'll-ds-url',
+    DS_AUTH: 'll-ds-auth',
+    DS_QUERY: 'll-ds-query',
+    DS_AWS_REGION: 'll-ds-aws-region',
+    DS_AWS_KEY: 'll-ds-aws-key',
+    DS_AWS_SECRET: 'll-ds-aws-secret',
+    DS_AWS_GROUP: 'll-ds-aws-group',
+    WATCH_AUTO_RELOAD: 'll-watch-auto-reload',
+    GIT_URL: 'll-git-url',
+    GIT_TOKEN: 'll-git-token'
+  }
+};
+
+/* ==========================================================================
+   §JS-0b VIRTUAL DOM HELPERS
+   ========================================================================== */
+const DOM = {
+  getById: id => document.getElementById(id),
+  query: (selector, parent = document) => parent.querySelector(selector),
+  queryAll: (selector, parent = document) => parent.querySelectorAll(selector),
+  closest: (element, selector) => element.closest(selector),
+  on: (element, event, handler, options) => {
+    if (element) element.addEventListener(event, handler, options);
+  },
+  off: (element, event, handler, options) => {
+    if (element) element.removeEventListener(event, handler, options);
+  },
+  delegate: (parent, event, selector, handler) => {
+    if (!parent) return;
+    parent.addEventListener(event, e => {
+      const target = e.target.closest(selector);
+      if (target) handler(e, target);
+    });
+  },
+  toggleHidden: (element, force) => {
+    if (element) element.classList.toggle('hidden', force);
+  },
+  setText: (element, text) => {
+    if (element) element.textContent = text;
+  },
+  setHTML: (element, html) => {
+    if (element) element.innerHTML = html;
+  },
+  setDisabled: (element, disabled) => {
+    if (element) element.disabled = disabled;
+  },
+  setValue: (element, value) => {
+    if (element) element.value = value;
+  },
+  readValue: (element) => {
+    return element ? element.value.trim() : '';
+  },
+  renderIf: (condition, element) => {
+    if (element) element.style.display = condition ? '' : 'none';
+  }
+};
+
+/* ==========================================================================
+   §JS-0c VIRTUAL STATE SELECTORS
+   ========================================================================== */
+const SELECTORS = {
+  getActiveThread: () => S.activeThr,
+  getActiveTree: () => S.trees[S.activeThr] || [],
+  getAllEvents: () => {
+    const list = [];
+    const traverse = nodes => {
+      for (const n of nodes) {
+        list.push(n);
+        if (n.events && n.events.length) traverse(n.events);
+      }
+    };
+    for (const tree of Object.values(S.trees)) {
+      traverse(tree);
+    }
+    return list;
+  },
+  getVisibleRules: () => S.cfg?.elementRules?.filter(r => !r.disabled) || [],
+  getPinnedItems: () => Object.keys(S.annotations || {}),
+  getCurrentView: () => S.viewMode,
+  hasParsedResults: () => Object.keys(S.trees).length > 0,
+  canExport: () => S.cfg !== null,
+  canParse: () => S.logFile !== null || (STREAM && STREAM.buffer && STREAM.buffer.length > 0)
+};
+
 /* ================================================================
    §JS-1 APPLICATION STATE
    ================================================================ */
@@ -12638,6 +12810,45 @@ document.addEventListener('keydown', e => {
 
 console.log('%c[LogLens v6.2]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');
+
+/*
+==============================================================================
+DEVELOPER MAINTENANCE NOTES
+==============================================================================
+Naming Conventions:
+- DOM elements: kebab-case (e.g. 'hdr-search', 'btn-compare-files')
+- CSS classes: kebab-case (e.g. 'btn', 'badge', 'rc-nm')
+- JavaScript objects/namespaces: PascalCase/UPPERCASE (e.g. 'SELECTORS', 'DOM', 'CFG', 'PLUG')
+- JavaScript methods/variables: camelCase (e.g. 'handleParseClick', 'outlierCount')
+
+Adding New Features:
+1. New Views:
+   - Expose the view identifier constant inside CONSTANTS.VIEWS.
+   - Design and append CSS classes under view-specific styles layout.
+   - Implement the view-specific renderer module exposing a render() API.
+   - Hook layout view activations inside the UI.svm() navigation controller.
+
+2. New Exports:
+   - Register the export format and icon inside the Exporter dropdown list.
+   - Implement the serialization block within the EXP namespace.
+
+3. New Settings:
+   - Add new preferences to S.appPrefs.
+   - Append field inputs inside the Appearance or Performance section markup.
+   - Register changes within the SETTINGS_ADDITIONS panel listeners.
+
+4. New Integrations:
+   - Wire cloud client fetch triggers inside the Cloud Datasources panel.
+   - Implement the HTTP signing or fetch client logic under the INTEGRATION namespace.
+
+5. New Keyboard Shortcuts:
+   - Register event keys within the global document 'keydown' listener.
+
+6. New Worker Message Types:
+   - Define message labels in worker communication structures.
+   - Handle payload types inside W_SRC onmessage and WM response hooks.
+==============================================================================
+*/
 </script>
 </body>
 </html>

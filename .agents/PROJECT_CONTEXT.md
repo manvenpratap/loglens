@@ -2,16 +2,14 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-## Current Status
-- **LogLens Feature Overhaul (v6.2 — COMPLETED)**:
-  - **Feature Group A (Intelligence Engine)**: Implemented Pattern Anomalies (`ANOM` namespace - hot paths, rare sequences, unmatched timed blocks), Thread Correlation Matrix (`CORR` namespace - temporal overlap matrix, CSS grid heatmap matrix, split view comparison selection), and Duration Heatmap Calendar (`HEAT` namespace - contribution calendar with quartile opacity, day filter).
-  - **Feature Group B (Live Streaming)**: Added FIFO rolling buffer, pause/resume streaming, pulsing header status badge, scroll-to-bottom controls, and real-time 60s event rate sparkline (1Hz SVG drawing).
-  - **Feature Group C (Multi-File Diff)**: Implemented dual-file Deploy Compare Mode (`DIFF` namespace) with LCS sequence alignment, delta statistics table, and side-by-side git-style red/green diff rows with jump-to-source.
-  - **Feature Group D (LogLens Query Language - LQL)**: Added LQL parsing, evaluation, presets, query history command navigation, and query results table.
-  - **Feature Group E (Smart Rule Assistant)**: Added Regex Explainer (`REX` namespace) tokenized segment editor hover breakdowns and unmatched lines rule suggestion candidate alerts.
-  - **Feature Group F (Timeline Upgrades)**: Added Critical Path Highlighter (dimming, chevron icons, tree highlights), Gantt Zoom/Pan (wheel scaling + grab drag panning), and Swimlane view (draggable lanes, rule grouping).
-  - **Feature Group G/H/I/J (Productivity & Integration)**: Upgraded annotations to threaded comments, added plugin engine hooks (`PLUG`), Deep Link state URL hash sharing, canvas screenshot overlays, rule transaction Undo/Redo stacks (`UNDO`), rule match coverage indicator chips (with unused warning list), recent file load history, and inline Quick Edit popover for rules.
-  - **File**: 12,646 lines, ~499 KB. JS syntax verified clean and validated.
+- **LogLens Code Audit & Structural Refactor (v6.3 — COMPLETED)**:
+  - Added Virtual Logical Project Map structure block detailing style layout layers and script namespaces.
+  - Inserted Logical Architecture Guide at the top of the script tag documenting module interaction boundaries.
+  - Standardized enums and constants (`CONSTANTS` object) for layouts, views, storage keys, and behaviors.
+  - Implemented centralized DOM helper utility layer (`DOM` object) providing safe element query, event listeners, class toggle, and value getters.
+  - Implemented selector interface layer (`SELECTORS` object) to retrieve computed state values (active thread, visible rules, events list).
+  - Appended Developer Maintenance Notes documenting code conventions, expansion points, and keyboard bindings.
+  - **File**: 12,860 lines, ~504 KB. JS syntax verified clean and validated.
 
 ---
 
