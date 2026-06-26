@@ -3,13 +3,19 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 ## Current Status
-- **Refactoring & UI Enhancements (v6.1)**:
-  - **Pass 1 (Audit)**: Inspected loglens.html for syntax validity, shadows, and redundant lookups. Verified compiler and parsing tests.
-  - **Pass 2 (Restructure)**: Grouped all helper functions into a centralized `UTILS` namespace, bound global shortcuts, and standardized DOM selections to use the `$()` helper. Decoupled statistical computation structures in `STATS` and `ANOMALY` from HTML rendering.
-  - **Pass 3 (Documentation)**: Added JSDoc header contracts and descriptions for every core system module (`S`, `CFG`, `VER`, `WATCH`, `GIT`, `DS`, `WM`, `TR`, `GR`, `SWIMLANE`, `STATS`, `ANOMALY`, `UI`, `EXP`, `IDB`, `PLUGINS`).
-  - **Pass 4 (Verification)**: Confirmed Node.js script compilation passes cleanly and CLI parsing test suite executes successfully with zero regressions.
-  - **Pass 5 (Top Bar Command Center)**: Restructured the header, bumped the display version to `v6.1`, integrated a global search/filter bar in the center that filters all timeline and tree elements in real-time, wired interactive badge click-through paths (e.g. click File to select, click Config to view sidebar), and added dynamic outlier/SLA breach alarm indicators.
-  - **Pass 6 (Collapsed Sidebar Fix)**: Fixed collapsed sidebar layout preventing tabs from collapsing to 0 height. Set collapsed background to `--bg-0` for a unified activity bar appearance.
+- **UI/UX Overhaul (v6.1 — COMPLETED)**:
+  - **Pass 1–6 (Prior)**: Audit, restructure, documentation, verification, top bar command center, collapsed sidebar fix.
+  - **Pass 7 (UI/UX Overhaul + New Features)**: Implemented the approved production-grade overhaul plan:
+    - Added CSS §18–22: Command Palette overlay, Breadcrumb Context Bar, Enhanced Empty State (animated dashed drop zone + feature chips), Settings Section styles (collapsible Performance & Appearance panels with range sliders and toggle switches), and Accessibility Utilities (`sr-only`, `mark.hl` search highlight, `has-query` state, `search-count` chip).
+    - Added HTML: `<h1 class="sr-only">` for WCAG accessibility, Breadcrumb Bar between vtabs and results, Command Palette overlay with full ARIA attributes, enhanced empty state card with feature chips.
+    - Added JS namespaces (additive only):
+      - **CMD** (`§JS-CMD`): Command Palette (Ctrl+K), fuzzy search, categories (View/Export/App/Rule/Thread), keyboard navigation (↑↓/Enter/Esc).
+      - **BCB** (`§JS-BCB`): Breadcrumb Context Bar, auto-updates on thread switch, search, view change.
+      - **GANTT_RESIZE** (`§JS-GANTT_RESIZE`): Drag handle on Gantt label column, `S.ganttLabelWidth`, MutationObserver attachment.
+      - **SEARCH_HL** (`§JS-SEARCH_HL`): `<mark class="hl">` highlighting in tree, match counter chip, `clear()` on empty query.
+      - **SETTINGS_ADDITIONS** (`§JS-SETTINGS_ADDITIONS`): Injects Performance (IDB clear, worker status) and Appearance (animation speed, font density, Gantt bar height, highlight toggle) sections into Settings panel. All prefs in `S.appPrefs`.
+    - Extended keyboard shortcuts: `Ctrl+K` → CMD palette, `/` → focus search, `Ctrl+Shift+E` → export dropdown, `Escape` → cascading close (cmd → search → modal).
+  - **File**: 8,507 lines, 336.4 KB. JS syntax verified clean.
 
 ---
 
@@ -32,7 +38,7 @@ loglens.html
 ├── CSS §1–16     Design tokens, layout, components, animations, Phase 1 additions
 ├── HTML          Shell: Header, Sidebar (4 panels), Main, Modal, Log4j Sheet, Drop overlay, Context menu
 └── JavaScript §1–31
-    ├── §1  S{}              Application state object
+    ├── §1  S{}              Application state object (+ S.appPrefs, S.ganttLabelWidth)
     ├── §2  DEF_CFG          Default configuration with 8 sample rules
     ├── §3  W_SRC            Web Worker source (blob URL) — the parse engine
     ├── §4  Utilities        esc(), fmtB(), fmtMs(), $(), cnt(), mEnd(), ibg()
@@ -69,7 +75,14 @@ loglens.html
     ├── §32 STATS            Stats Engine: latency stats (P50/P95/P99), inline spark-histograms, comparison
     ├── §33 ANOMALY          Anomaly Engine: outlier tagging, SLA breaches highlight, cause tracking
     ├── §34 GRAPHIFY         Graphify D3 Engine: large histogram modal, transaction dependency graph
-    └── §35 SWIMLANE         Swimlane Timeline: Canvas-based swimlane view with zoom/pan and minimap
+    ├── §35 SWIMLANE         Swimlane Timeline: Canvas-based swimlane view with zoom/pan and minimap
+    │
+    │  ── UI/UX OVERHAUL (v6.1) ──
+    ├── CMD            Command Palette (Ctrl+K): fuzzy search, View/Export/App/Rule/Thread actions
+    ├── BCB            Breadcrumb Context Bar: thread + search + view mode context chips
+    ├── GANTT_RESIZE   Gantt label column drag-resize (100–480px), MutationObserver-attached
+    ├── SEARCH_HL      Tree search highlight (<mark class="hl">) + match counter
+    └── SETTINGS_ADDITIONS  Performance + Appearance settings panels in S.appPrefs
 ```
 
 ### Config Schema (JSON)
