@@ -1,0 +1,1 @@
+LogLens is a zero-install, privacy-first log analysis workbench that runs entirely in the browser. It parses structured/semi-structured log files (Log4j, Spring Boot, JSON, CSV, custom regex) using a Web Worker, then renders results as interactive Gantt timelines, execution trees, statistics panels, 2D/3D force graphs, and shareable HTML reports.
