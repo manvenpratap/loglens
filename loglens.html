@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="LogLens, a privacy-first, zero-install log analysis tool with Gantt timelines and execution trees."/>
-<title>LogLens v2: Metadata-Driven Log Analyzer</title>
+<title>LogLens: Metadata-Driven Log Analyzer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <!-- impeccable-disable-line overused-font -->
@@ -150,7 +150,7 @@ html,body{
    Previously scattered as style="" attributes in HTML and JS.    */
 
 /* Header version label */
-.hdr-ver{font-size:11px;font-weight:400;color:var(--t3)}
+
 
 /* Header live stream indicator */
 .hdr-live{
@@ -2401,7 +2401,7 @@ mark.hl{
 @media (max-width: 480px) {
   .logo-ico { display: none }
   .hdr-slot-badges { display: none }
-  .hdr-ver { display: none }
+
   .btn-exp-menu span:last-child { display: none }  /* hide "Export" text */
   .vtabs { display: none }  /* hide view tabs on tiny screens */
 
@@ -2436,7 +2436,7 @@ mark.hl{
   <!-- Logo -->
   <div class="logo">
     <div class="logo-ico"><span class="ico ico-xl" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></div>
-    <span>Log<span class="acc">Lens</span> <span class="hdr-ver">v6.2</span></span>
+    <span>Log<span class="acc">Lens</span></span>
   </div>
   <div class="hsep" aria-hidden="true"></div>
   <span class="hsub">Metadata-Driven Log Analyzer</span>
@@ -9127,10 +9127,10 @@ UI.render = function(trees, threads, stats) {
 PLUGINS.init();
 $('btn-plugin-add').addEventListener('click', () => PLUGINS.add());
 
-console.log('%c[LogLens v6.4]%c Ready | Phase 5 | Theme: %s | FS API: %s',
+console.log('%c[LogLens]%c Ready | Phase 5 | Theme: %s | FS API: %s',
   'color:#f0883e;font-weight:bold','color:#8b949e',
   document.documentElement.dataset.theme,S.fsOk);
-toast('LogLens v6.4 ready — connect a config or click "New" to start.','info',4200);
+toast('LogLens ready — connect a config or click "New" to start.','info',4200);
 
 /* ================================================================
    §JS-CMD COMMAND PALETTE
@@ -14285,7 +14285,7 @@ const HTIP = (() => {
 // Onboarding — show first-run welcome if user hasn't dismissed
 ONBOARD.check();
 
-console.log('%c[LogLens v6.2]%c Feature Overhaul added successfully.',
+console.log('%c[LogLens]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');
 
 /*
