@@ -7410,9 +7410,6 @@ Theme.init();
 $('btn-theme').addEventListener('click',()=>Theme.toggle());
 $('btn-sb-tog').addEventListener('click',()=>SB.toggle());
 
-// Onboarding — show first-run welcome if user hasn't dismissed
-ONBOARD.check();
-
 // Drag-and-drop
 DD.init();
 
@@ -14236,6 +14233,9 @@ const HTIP = (() => {
     }
   }, { passive: true });
 })();
+
+// Onboarding — show first-run welcome if user hasn't dismissed
+ONBOARD.check();
 
 console.log('%c[LogLens v6.2]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');
