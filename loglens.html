@@ -145,6 +145,77 @@ html,body{
 }
 .hr{margin-left:auto;display:flex;align-items:center;gap:6px}
 
+/* ── Step 4: Migrated inline styles → CSS classes ──
+   Previously scattered as style="" attributes in HTML and JS.    */
+
+/* Header version label */
+.hdr-ver{font-size:11px;font-weight:400;color:var(--t3)}
+
+/* Header live stream indicator */
+.hdr-live{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:11px;
+  color:var(--green);font-weight:700;
+}
+.hdr-live .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);display:inline-block;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+.hdr-exp-caret{font-size:9px;opacity:.7}
+
+/* Badge cursor for clickable status badges */
+.badge[role="button"]{cursor:pointer}
+
+/* ── Header slot system (Step 3) ──
+   Fixed slots prevent unbounded growth as features are added.
+   Slot A: live indicator  Slot B: status badges  Slot C: state chips
+   Slot D: export  Slot E: theme  Slot F: overflow menu            */
+.hdr-slot-badges{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-slot-chips{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-slot-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+
+/* Search bar — shrinks gracefully */
+.hdr-search{
+  width:300px;max-width:300px;font-size:11px;
+  padding:5px 10px;margin-left:16px;
+  border-radius:6px;background:var(--bg-1);
+  border:1px solid var(--bdr);color:var(--t1);
+  font-family:var(--ui);transition:width .2s,border-color .2s;
+  flex-shrink:1;
+}
+.hdr-search:focus{border-color:var(--amber);outline:none;width:340px}
+.hdr-search::placeholder{color:var(--t4)}
+
+/* Overflow menu button */
+.hdr-more{
+  display:none;  /* shown via responsive breakpoints */
+  align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:6px;
+  background:var(--bg-3);border:1px solid var(--bdr);
+  color:var(--t2);cursor:pointer;font-size:16px;
+  transition:background .15s,border-color .15s,color .15s;
+  flex-shrink:0;font-family:var(--ui);
+}
+.hdr-more:hover{background:var(--bg-4);border-color:var(--bdr-h);color:var(--t1)}
+
+/* Overflow dropdown */
+.hdr-overflow-menu{
+  position:absolute;top:calc(var(--hh) - 2px);right:52px;
+  background:var(--bg-2);border:1px solid var(--bdr-h);
+  border-radius:10px;padding:6px;
+  box-shadow:var(--shd-lg);z-index:600;min-width:180px;
+  display:none;flex-direction:column;gap:2px;
+  animation:pop-in .15s var(--ease-out);
+}
+.hdr-overflow-menu.open{display:flex}
+.hdr-overflow-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:6px;font-size:12px;
+  color:var(--t2);cursor:pointer;transition:background .12s,color .12s;
+}
+.hdr-overflow-item:hover{background:var(--glass);color:var(--t1)}
+
 /* Workspace */
 .ws{display:flex;flex:1;overflow:hidden}
 
@@ -1891,6 +1962,460 @@ mark.hl{
   color:var(--amber) !important;
   cursor:pointer;animation:sla-pulse 1.8s ease-in-out infinite;
 }
+
+/* ============================================================
+   CSS §18 · ONBOARDING — first-run welcome screen
+   ============================================================ */
+#ob-ov{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg-0);
+  display:flex;align-items:center;justify-content:center;
+  overflow-y:auto;padding:24px 16px;
+  transition:opacity .3s var(--ease-out),visibility .3s;
+}
+#ob-ov.hidden{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Animated grid background */
+#ob-ov::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,149,0,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,149,0,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black 40%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black 40%,transparent 100%);
+  pointer-events:none;
+}
+[data-theme=light] #ob-ov::before{
+  background-image:
+    linear-gradient(rgba(194,98,10,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(194,98,10,.06) 1px,transparent 1px);
+}
+
+.ob-wrap{
+  position:relative;width:100%;max-width:760px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  padding:0 0 40px;
+}
+
+/* Logo mark */
+.ob-logo{
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.ob-logo-ico{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--grad-amber);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  box-shadow:0 4px 20px rgba(255,149,0,.4),0 0 0 1px rgba(255,149,0,.25);
+}
+.ob-wordmark{
+  font-family:var(--display);font-size:26px;font-weight:800;
+  letter-spacing:-.5px;
+}
+.ob-wordmark .acc{color:var(--amber)}
+.ob-badge{
+  display:inline-block;padding:2px 8px;border-radius:99px;
+  font-size:10px;font-weight:700;letter-spacing:.4px;
+  background:var(--amber-g);color:var(--amber);
+  border:1px solid rgba(255,149,0,.25);
+  font-family:var(--mono);margin-left:6px;vertical-align:middle;
+}
+
+/* Hero headline */
+.ob-headline{
+  font-family:var(--display);font-size:32px;font-weight:800;
+  letter-spacing:-.6px;text-align:center;
+  color:var(--t1);line-height:1.2;margin-bottom:10px;
+}
+.ob-headline em{
+  font-style:normal;
+  background:var(--grad-amber);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.ob-sub{
+  font-size:14px;color:var(--t3);text-align:center;
+  max-width:480px;line-height:1.6;margin-bottom:36px;
+}
+
+/* CTA row */
+.ob-cta{
+  display:flex;gap:10px;margin-bottom:44px;flex-wrap:wrap;justify-content:center;
+}
+.ob-btn-demo{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 22px;border-radius:8px;
+  background:var(--grad-amber);border:none;color:#000;
+  font-family:var(--display);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .18s var(--ease-out);
+  box-shadow:0 4px 16px rgba(255,149,0,.35);
+  letter-spacing:-.1px;
+}
+.ob-btn-demo:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 24px rgba(255,149,0,.45),var(--glow-amber);
+}
+.ob-btn-demo:active{transform:translateY(0) scale(.98)}
+.ob-btn-cfg{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:8px;
+  background:var(--bg-3);border:1px solid var(--bdr-h);color:var(--t1);
+  font-family:var(--display);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s var(--ease-out);
+  box-shadow:var(--shd-xs);
+}
+.ob-btn-cfg:hover{
+  background:var(--bg-4);border-color:var(--amber);
+  transform:translateY(-1px);box-shadow:var(--shd);
+}
+.ob-btn-cfg:active{transform:translateY(0) scale(.98)}
+
+/* Feature cards */
+.ob-features{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;width:100%;margin-bottom:36px;
+}
+@media(max-width:640px){.ob-features{grid-template-columns:1fr}}
+.ob-feat{
+  background:var(--bg-1);
+  border:1px solid var(--bdr);
+  border-radius:12px;padding:16px;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.ob-feat:hover{
+  border-color:var(--amber);
+  transform:translateY(-2px);
+  box-shadow:var(--shd);
+}
+.ob-feat-ico{
+  font-size:24px;margin-bottom:10px;
+  display:block;line-height:1;
+}
+.ob-feat-title{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  color:var(--t1);margin-bottom:5px;letter-spacing:-.1px;
+}
+.ob-feat-desc{
+  font-size:12px;color:var(--t3);line-height:1.55;
+}
+
+/* Steps quickstart */
+.ob-steps{
+  width:100%;background:var(--bg-1);
+  border:1px solid var(--bdr);border-radius:14px;
+  overflow:hidden;margin-bottom:28px;
+}
+.ob-steps-hdr{
+  padding:12px 18px;background:var(--bg-2);
+  border-bottom:1px solid var(--bdr);
+  font-size:9.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.7px;color:var(--t3);
+  font-family:var(--display);
+}
+.ob-steps-body{display:flex}
+@media(max-width:640px){.ob-steps-body{flex-direction:column}}
+.ob-step{
+  flex:1;padding:16px 18px;
+  border-right:1px solid var(--bdr);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.ob-step:last-child{border-right:none}
+.ob-step-n{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  background:var(--grad-amber);color:#000;
+  font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 10px rgba(255,149,0,.25);
+  font-family:var(--display);
+}
+.ob-step-ttl{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:3px;font-family:var(--display)}
+.ob-step-desc{font-size:11px;color:var(--t3);line-height:1.5}
+
+/* Skip link */
+.ob-skip{
+  font-size:11px;color:var(--t4);
+  background:none;border:none;cursor:pointer;
+  padding:0;transition:color .15s;
+  font-family:var(--ui);
+}
+.ob-skip:hover{color:var(--t2);text-decoration:underline}
+
+/* Loading state inside onboarding */
+.ob-loading{
+  display:none;flex-direction:column;align-items:center;gap:12px;
+  padding:24px 0;
+}
+.ob-loading.vis{display:flex}
+.ob-spinner{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--bdr);
+  border-top-color:var(--amber);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ob-loading-txt{font-size:12px;color:var(--t3);font-family:var(--mono)}
+
+/* ============================================================
+   CSS §19 · HELP SYSTEM
+   Tabbed in-panel reference + contextual tooltip popovers
+   ============================================================ */
+
+/* ── Internal tab bar (inside the Help sidebar panel) ── */
+.hlp-tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--bdr);
+  margin:-2px -2px 12px;flex-wrap:wrap;
+}
+.hlp-tab{
+  padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;
+  border-bottom:2px solid transparent;color:var(--t3);
+  transition:color .13s,border-color .13s;background:none;border-top:none;border-left:none;border-right:none;
+  font-family:var(--display);white-space:nowrap;letter-spacing:-.1px;
+}
+.hlp-tab:hover{color:var(--t1)}
+.hlp-tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+/* ── Help content panels ── */
+.hlp-sec{display:none;flex-direction:column;gap:10px}
+.hlp-sec.active{display:flex}
+
+/* ── Section headings inside help ── */
+.hlp-sh{
+  font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.7px;color:var(--t4);
+  font-family:var(--display);margin-top:4px;
+}
+
+/* ── Behavior chips ── */
+.hlp-beh{
+  display:flex;flex-direction:column;gap:6px;
+}
+.hlp-beh-row{
+  display:flex;gap:8px;align-items:flex-start;
+}
+.hlp-beh-badge{
+  flex-shrink:0;padding:2px 7px;border-radius:99px;
+  font-size:10px;font-weight:700;font-family:var(--mono);
+  min-width:46px;text-align:center;
+}
+.hlp-beh-desc{font-size:11px;color:var(--t2);line-height:1.5}
+
+/* ── LQL reference tables ── */
+.hlp-table{
+  width:100%;border-collapse:collapse;font-size:11px;
+}
+.hlp-table th{
+  text-align:left;padding:5px 8px;
+  background:var(--bg-2);color:var(--t3);
+  font-size:9.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.4px;border-bottom:1px solid var(--bdr);
+  font-family:var(--display);
+}
+.hlp-table td{
+  padding:5px 8px;border-bottom:1px solid var(--bdr-d);
+  color:var(--t2);vertical-align:top;line-height:1.5;
+}
+.hlp-table tr:last-child td{border-bottom:none}
+.hlp-table tr:hover td{background:var(--glass)}
+.hlp-table code{
+  font-family:var(--mono);font-size:10px;
+  background:var(--bg-3);padding:1px 4px;border-radius:3px;
+  color:var(--amber);
+}
+
+/* ── LQL query example blocks ── */
+.lql-ex{
+  background:var(--bg-1);border:1px solid var(--bdr);
+  border-radius:6px;padding:8px 10px;
+  font-family:var(--mono);font-size:10.5px;color:var(--t2);
+  line-height:1.6;cursor:pointer;transition:border-color .15s,background .15s;
+  position:relative;
+}
+.lql-ex:hover{border-color:var(--amber);background:var(--amber-d)}
+.lql-ex::after{
+  content:'Click to run';
+  position:absolute;top:5px;right:8px;
+  font-size:9px;color:var(--amber);opacity:0;
+  transition:opacity .15s;font-family:var(--display);
+  font-weight:600;
+}
+.lql-ex:hover::after{opacity:1}
+.lql-kw{color:var(--blue)}
+.lql-val{color:var(--green)}
+.lql-cm{color:var(--t4);font-style:italic}
+
+/* ── Shortcut table ── */
+.kb-row{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 0;border-bottom:1px solid var(--bdr-d);
+  font-size:11px;
+}
+.kb-row:last-child{border-bottom:none}
+.kb-keys{display:flex;gap:3px;flex-shrink:0;min-width:90px}
+.kbd{
+  display:inline-block;padding:2px 5px;border-radius:4px;
+  border:1px solid var(--bdr-h);background:var(--bg-3);
+  font-family:var(--mono);font-size:9.5px;color:var(--t1);
+  box-shadow:0 1px 0 var(--bdr-h);line-height:1.4;
+}
+.kb-desc{color:var(--t2);font-size:11px}
+
+/* ── Capture group field name tags ── */
+.cg-field{
+  display:flex;gap:8px;align-items:flex-start;
+  padding:6px 0;border-bottom:1px solid var(--bdr-d);
+}
+.cg-field:last-child{border-bottom:none}
+.cg-name{
+  flex-shrink:0;width:96px;font-family:var(--mono);
+  font-size:10px;font-weight:700;padding:2px 6px;
+  border-radius:4px;text-align:center;
+}
+.cg-body{flex:1;min-width:0}
+.cg-role{font-size:11px;color:var(--t1);font-weight:500;margin-bottom:2px;font-family:var(--display)}
+.cg-detail{font-size:10.5px;color:var(--t3);line-height:1.5}
+
+/* ── Contextual help (?) button + popover ── */
+.htip-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;border-radius:50%;
+  background:var(--bg-3);border:1px solid var(--bdr);
+  color:var(--t3);font-size:9px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  vertical-align:middle;margin-left:5px;flex-shrink:0;
+  font-family:var(--display);line-height:1;
+}
+.htip-btn:hover{background:var(--amber-d);border-color:var(--amber);color:var(--amber)}
+
+/* Popover container — appended to body, positioned absolutely */
+#htip-pop{
+  position:fixed;z-index:8500;max-width:300px;
+  background:var(--bg-2);border:1px solid var(--bdr-h);
+  border-radius:10px;padding:12px 14px;
+  box-shadow:var(--shd-lg),var(--glow-amber);
+  font-size:12px;color:var(--t2);line-height:1.6;
+  animation:pop-in .15s var(--ease-out);
+  pointer-events:none;
+}
+#htip-pop.visible{pointer-events:all}
+#htip-pop-title{
+  font-family:var(--display);font-size:12px;font-weight:700;
+  color:var(--t1);margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+#htip-pop-close{
+  background:none;border:none;color:var(--t3);cursor:pointer;
+  font-size:14px;line-height:1;padding:0;margin-left:8px;
+  transition:color .12s;
+}
+#htip-pop-close:hover{color:var(--t1)}
+#htip-pop code{
+  font-family:var(--mono);font-size:10.5px;
+  background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--amber);
+}
+@keyframes pop-in{
+  from{opacity:0;transform:translateY(4px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+/* ============================================================
+   CSS §20 · RESPONSIVE BREAKPOINTS (Step 5)
+   1024px — compact sidebar  768px — stack layout  480px — mobile
+   ============================================================ */
+
+/* ── 1024px: sidebar collapses to icon-only by default ── */
+@media (max-width: 1024px) {
+  .sb { width: var(--sw-c, 48px) }
+  .sb:not(.sb-force-open) { --sw: 48px }
+  .sb:not(.sb-force-open) .stab-lbl { display: none }
+  .sb:not(.sb-force-open) .stab {
+    padding: 12px 0; justify-content: center;
+    border-bottom: none; border-left: 2px solid transparent; width: 100%;
+  }
+  .sb:not(.sb-force-open) .stab.active {
+    border-left-color: var(--amber); border-bottom-color: transparent;
+  }
+  .sb:not(.sb-force-open) .stab-ic { font-size: 16px; margin: 0 }
+  .sb:not(.sb-force-open) .stab-ic svg { width: 16px; height: 16px }
+  .sb:not(.sb-force-open) .sb-body { display: none }
+  .sb:not(.sb-force-open) .btn-tog { display: none }
+  /* Show the sidebar when user clicks a tab */
+  .sb.sb-force-open { width: var(--sw) }
+
+  /* Search shrinks a bit */
+  .hdr-search { width: 200px; max-width: 200px }
+  /* State chips hide on narrow screens — in overflow menu */
+  .hdr-slot-chips { display: none }
+  /* Show overflow button */
+  .hdr-more { display: inline-flex }
+}
+
+/* ── 768px: overlay sidebar, hide search, stack layout ── */
+@media (max-width: 768px) {
+  :root { --hh: 48px }
+
+  .hdr-search { display: none }
+  .hsub { display: none }
+  .hdr-slot-badges .badge { font-size: 9px; padding: 2px 5px }
+
+  /* Sidebar overlays the workspace */
+  .sb {
+    position: fixed; left: 0; top: var(--hh); bottom: 0;
+    z-index: 500; box-shadow: var(--shd-lg);
+    transform: translateX(-100%);
+    transition: transform .25s var(--ease-out);
+  }
+  .sb.open {
+    transform: translateX(0);
+    width: var(--sw) !important;
+  }
+  .sb.open .stab-lbl { display: inline }
+  .sb.open .stab { padding: 10px 14px; justify-content: flex-start; border-left: none; border-bottom: 2px solid transparent; width: auto }
+  .sb.open .stab.active { border-bottom-color: var(--amber); border-left-color: transparent }
+  .sb.open .sb-body { display: block }
+  .sb.open .btn-tog { display: flex }
+
+  /* Sidebar backdrop */
+  .sb-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 499;
+    background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+  }
+  .sb-backdrop.vis { display: block }
+
+  /* Main area takes full width */
+  .ws { flex-direction: column }
+  .main { overflow-x: auto }
+
+  /* Control bar wraps */
+  .ctrl { flex-wrap: wrap; gap: 6px; padding: 8px }
+  .cg { flex-shrink: 1 }
+}
+
+/* ── 480px: ultra-compact mobile ── */
+@media (max-width: 480px) {
+  .logo-ico { display: none }
+  .hdr-slot-badges { display: none }
+  .hdr-ver { display: none }
+  .btn-exp-menu span:last-child { display: none }  /* hide "Export" text */
+  .vtabs { display: none }  /* hide view tabs on tiny screens */
+
+  /* View selector falls back to a select dropdown added via JS */
+  .vt-select { display: block !important }
+}
+
+/* ── Focus-visible ring (Step 6 a11y) ── */
+:focus-visible {
+  outline: 2px solid var(--amber) !important;
+  outline-offset: 2px !important;
+}
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) { outline: none }
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 </style>
 
 </head>
@@ -1900,41 +2425,73 @@ mark.hl{
 <!-- ================================================================ HEADER -->
 <header class="hdr">
   <h1 class="sr-only">LogLens — Metadata-Driven Log Analyzer</h1>
+
+  <!-- Logo -->
   <div class="logo">
     <div class="logo-ico"><span class="ico ico-xl" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></div>
-    <span>Log<span class="acc">Lens</span> <span style="font-size:11px;font-weight:400;color:var(--t3)">v6.1</span></span>
+    <span>Log<span class="acc">Lens</span> <span class="hdr-ver">v6.2</span></span>
   </div>
-  <div class="hsep"></div>
+  <div class="hsep" aria-hidden="true"></div>
   <span class="hsub">Metadata-Driven Log Analyzer</span>
-  <input class="inp" id="hdr-search" placeholder="🔍 Filter events (ID, rule, payload...)" style="width:340px; font-size:11px; padding:6px 12px; margin-left:24px; border-radius:6px; background:var(--bg-1); border:1px solid var(--bdr); color:var(--t1);" />
+
+  <!-- Search — shrinks gracefully via .hdr-search class -->
+  <input class="inp hdr-search" id="hdr-search" placeholder="🔍 Filter events (ID, rule, payload…)" aria-label="Filter parsed events"/>
+
+  <!-- Right-side slot system: A=live · B=status badges · C=state chips · D=actions · E=overflow -->
   <div class="hr">
-    <div id="hdr-live-badge" class="hidden" style="display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--green); font-weight:bold; margin-left:8px;" title="Connected to WebSocket log stream">
-      <span class="dot" style="width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block;"></span>
+
+    <!-- Slot A: live stream indicator -->
+    <div id="hdr-live-badge" class="hdr-live hidden" title="Connected to live log stream" aria-label="Live stream active" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
       LIVE <span id="hdr-live-rate">0 ev/s</span>
-      <div class="hdr-spark-wrap" id="hdr-spark-wrap"></div>
+      <div class="hdr-spark-wrap" id="hdr-spark-wrap" aria-hidden="true"></div>
     </div>
-    <span class="badge b-red hidden" id="hdr-unmatched" style="cursor:pointer;" title="Unmatched push blocks. Click to view stats.">⚠️ 0 Unmatched</span>
-    <span class="badge b-red hidden" id="hdr-sla" style="cursor:pointer;" title="SLA Breaches. Click to view stats.">⚠️ 0 SLA</span>
-    <span class="badge b-amber hidden" id="hdr-outliers" style="cursor:pointer;" title="Outliers. Click to view stats.">🔍 0 Outliers</span>
-    <span class="badge b-gray" id="hdr-fs">FS API</span>
-    <span class="badge b-gray" id="hdr-cfg">No Config</span>
-    <span class="badge b-gray" id="hdr-file">No File</span>
-    <div class="exp-wrap">
-      <button class="btn btn-g btn-sm" id="btn-exp-menu" title="Export options" aria-label="Export options" disabled><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export <span style="font-size:9px;opacity:.7">▾</span></button>
-      <div class="exp-menu" id="exp-menu">
-        <div class="exp-mi" data-exp="csv"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> CSV — All Events</div>
-        <div class="exp-mi" data-exp="json"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span> JSON — Event Tree</div>
-        <div class="exp-sep"></div>
-        <div class="exp-mi" data-exp="svg"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> SVG — Gantt Chart</div>
-        <div class="exp-mi" data-exp="png"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> PNG — Gantt Chart</div>
-        <div class="exp-sep"></div>
-        <div class="exp-mi" data-exp="html"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> HTML — Shareable Report</div>
-        <div class="exp-sep"></div>
-        <div class="exp-mi" data-exp="lls"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> LLS — Saved Session (.lls)</div>
+
+    <!-- Slot B: status badges (anomaly/SLA/unmatched counters) -->
+    <div class="hdr-slot-badges" aria-label="Parse status">
+      <span class="badge b-red hidden" id="hdr-unmatched" role="button" tabindex="0" title="Unmatched push blocks — click for details">⚠️ 0 Unmatched</span>
+      <span class="badge b-red hidden" id="hdr-sla" role="button" tabindex="0" title="SLA breaches — click for details">⚠️ 0 SLA</span>
+      <span class="badge b-amber hidden" id="hdr-outliers" role="button" tabindex="0" title="Statistical outliers — click for details">🔍 0 Outliers</span>
+    </div>
+
+    <!-- Slot C: state chips (FS, config, file) -->
+    <div class="hdr-slot-chips">
+      <span class="badge b-gray" id="hdr-fs" title="File System Access API">FS API</span>
+      <span class="badge b-gray" id="hdr-cfg" title="Loaded configuration">No Config</span>
+      <span class="badge b-gray" id="hdr-file" title="Loaded log file">No File</span>
+    </div>
+    <!-- Slot D: actions (export + theme) -->
+    <div class="hdr-slot-actions">
+      <div class="exp-wrap">
+        <button class="btn btn-g btn-sm" id="btn-exp-menu" title="Export options" aria-label="Export options" aria-haspopup="true" disabled>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+          Export <span class="hdr-exp-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="exp-menu" id="exp-menu" role="menu">
+          <div class="exp-mi" data-exp="csv" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> CSV — All Events</div>
+          <div class="exp-mi" data-exp="json" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span> JSON — Event Tree</div>
+          <div class="exp-sep" role="separator"></div>
+          <div class="exp-mi" data-exp="svg" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> SVG — Gantt Chart</div>
+          <div class="exp-mi" data-exp="png" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> PNG — Gantt Chart</div>
+          <div class="exp-sep" role="separator"></div>
+          <div class="exp-mi" data-exp="html" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> HTML — Shareable Report</div>
+          <div class="exp-sep" role="separator"></div>
+          <div class="exp-mi" data-exp="lls" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> LLS — Saved Session (.lls)</div>
+        </div>
       </div>
+
+      <!-- Slot E: theme toggle -->
+      <button class="btn btn-g btn-sm" id="btn-theme" title="Toggle theme" aria-label="Toggle light/dark theme">
+        <span class="ico" aria-hidden="true" id="theme-ico"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+      </button>
     </div>
-    <button class="btn btn-g btn-sm" id="btn-theme" title="Toggle theme" aria-label="Toggle light/dark theme"><span class="ico" aria-hidden="true" id="theme-ico"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
+
+    <!-- Slot F: overflow ⋯ button — displayed via responsive CSS at narrow widths -->
+    <button class="hdr-more" id="hdr-more-btn" aria-label="More options" aria-haspopup="true" title="More">⋯</button>
   </div>
+
+  <!-- Overflow dropdown (positioned relative to header) -->
+  <div class="hdr-overflow-menu" id="hdr-overflow-menu" role="menu" aria-label="Overflow options"></div>
 </header>
 
 <!-- ================================================================ WORKSPACE -->
@@ -2029,7 +2586,7 @@ mark.hl{
         <input class="inp" id="gs-name" placeholder="My Log Analyzer"/>
       </div>
       <div class="f">
-        <div class="fl">Global Timestamp Regex <span class="cm">(group 1 = timestamp string)</span></div>
+        <div class="fl">Global Timestamp Regex <span class="cm">(group 1 = timestamp string)</span><button class="htip-btn" data-htip="timestamp" aria-label="Help: Global Timestamp Regex" type="button">?</button></div>
         <textarea class="inp inp-m" id="gs-ts" rows="3"
           placeholder="(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})"></textarea>
         <div class="fh">Fallback when a rule has no timestamp capture group.</div>
@@ -2178,35 +2735,244 @@ mark.hl{
 
     <!-- HELP -->
     <div class="sp" id="p-hlp">
-      <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> Quick Guide</div>
-      <div style="font-size:11px;color:var(--t2);line-height:1.8;display:flex;flex-direction:column;gap:9px;">
-        <p><strong class="ca">1. Import Log4j XML</strong> — Use the Log4j tab to import your app config. LogLens auto-converts appender patterns to regex templates, giving you the exact line format your app writes.</p>
-        <p><strong class="ca">2. Add Rules — Guided 🧙</strong> — Pick your log format, type keyword markers (e.g. <code>TX-BEGIN</code>), choose what to capture. LogLens generates the regex for you.</p>
-        <p><strong class="ca">3. Add Rules — Advanced ⚙</strong> — Full regex control with a click-to-insert token palette and live color-coded match preview (each capture group highlighted in a distinct color).</p>
-        <p><strong class="ca">4. Stack Behaviors</strong></p>
-        <ul style="padding-left:14px;">
-          <li><span class="badge b-blue">push</span> Opens a timed block</li>
-          <li><span class="badge b-green">pop</span> Closes last block &amp; calculates duration</li>
-          <li><span class="badge b-pur">inline</span> Standalone point event</li>
-        </ul>
-        <p><strong class="ca">5. Hotspots</strong> — Tree nodes show <span class="hb hr-">↑↑80%</span> badges — % of parent time consumed — instantly revealing bottlenecks.</p>
-        <div class="div"></div>
-        <p style="color:var(--t3);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;">Keyboard Shortcuts</p>
-        <ul style="padding-left:14px;font-family:var(--mono);font-size:10px;">
-          <li><span class="ca">Alt+T</span> — Toggle theme</li>
-          <li><span class="ca">Alt+[/]</span> — Prev / next thread</li>
-          <li><span class="ca">Alt+1/2/3</span> — Gantt / Tree / Split view</li>
-          <li><span class="ca">j / k</span> — Navigate tree nodes</li>
-          <li><span class="ca">/</span> — Search tree by name</li>
-          <li><span class="ca">p</span> — Pin focused tree node</li>
-          <li><span class="ca">Esc</span> — Close modal / sheet / menu</li>
-        </ul>
-        <div class="div"></div>
-        <p style="color:var(--t3);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;"><span class="ico" aria-hidden="true" style="display:inline-flex;vertical-align:middle"><svg viewBox="0 0 24 24" width="10" height="10"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Pins <span id="pin-count">0</span></p>
-        <div id="pin-list" style="font-size:11px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet — right-click a tree node or press P.</div>
-        <button class="btn btn-p mt2" id="btn-dl-log"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Download Sample Log</button>
+
+      <!-- Internal tab bar -->
+      <div class="hlp-tabs" role="tablist" aria-label="Help topics">
+        <button class="hlp-tab active" data-hlp="guide" role="tab" aria-selected="true">Guide</button>
+        <button class="hlp-tab" data-hlp="lql" role="tab" aria-selected="false">LQL</button>
+        <button class="hlp-tab" data-hlp="capture" role="tab" aria-selected="false">Captures</button>
+        <button class="hlp-tab" data-hlp="shortcuts" role="tab" aria-selected="false">Shortcuts</button>
       </div>
-    </div>
+
+      <!-- ── GUIDE ── -->
+      <div class="hlp-sec active" id="hlp-guide" role="tabpanel">
+
+        <div class="hlp-sh">How it works</div>
+        <div style="font-size:11.5px;color:var(--t2);line-height:1.65;">
+          LogLens parses log files using <strong style="color:var(--t1)">regex rules</strong> you define.
+          Each rule matches one type of log line and determines how it appears in the Gantt and Tree views.
+        </div>
+
+        <div class="hlp-sh">Stack behaviors</div>
+        <div class="hlp-beh">
+          <div class="hlp-beh-row">
+            <span class="hlp-beh-badge badge b-blue">push</span>
+            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Opens a timed block.</strong> The event goes on the stack; its duration starts here. Pair it with a <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--green)">pop</code> rule that has the same <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--amber)">elementName</code>.</div>
+          </div>
+          <div class="hlp-beh-row">
+            <span class="hlp-beh-badge badge b-green">pop</span>
+            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Closes the last open block</strong> on the same thread and calculates its duration.</div>
+          </div>
+          <div class="hlp-beh-row">
+            <span class="hlp-beh-badge badge b-pur">inline</span>
+            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Point-in-time event.</strong> Appears as a leaf node in the tree — no duration. Use for warnings, errors, and log statements.</div>
+          </div>
+        </div>
+
+        <div class="hlp-sh">Hotspot badges</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6;">
+          Tree nodes show <span class="hb hr-">↑↑80%</span> badges — the percentage of the parent event's duration consumed by this child. Badge color escalates: <span style="color:var(--amber)">25%+</span> → <span style="color:var(--red)">50%+</span> → <span style="color:var(--red);font-weight:700">80%</span> reveals the true bottleneck.
+        </div>
+
+        <div class="hlp-sh">Trace ID correlation</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6;">
+          Map a capture group to <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--red)">correlationId</code> and any distributed trace ID becomes a clickable badge — click to filter all views to just that trace across threads.
+        </div>
+
+        <div class="hlp-sh">SLA breaches</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6;">
+          Set a <strong>SLA Threshold (ms)</strong> on any <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--amber)">push</code> rule. When its closed block exceeds the limit, the counter in the header bar increments and the node is flagged red in the Gantt.
+        </div>
+
+        <div class="hlp-sh">Pins</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6;">
+          Right-click any tree node (or press <span class="kbd">P</span>) to pin it. Pinned events are always visible regardless of the active thread filter.
+        </div>
+        <div style="color:var(--t3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">
+          <span style="display:inline-flex;vertical-align:middle;margin-right:3px"><svg viewBox="0 0 24 24" width="10" height="10"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Pins <span id="pin-count">0</span>
+        </div>
+        <div id="pin-list" style="font-size:11px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet — right-click a tree node or press P.</div>
+
+        <button class="btn btn-p mt2" id="btn-dl-log" style="margin-top:4px">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          Download Sample Log
+        </button>
+      </div>
+
+      <!-- ── LQL REFERENCE ── -->
+      <div class="hlp-sec" id="hlp-lql" role="tabpanel">
+
+        <div class="hlp-sh">Syntax</div>
+        <div class="lql-ex" style="cursor:default;pointer-events:none;" aria-hidden="true">
+          <span class="lql-kw">SELECT</span> field1, field2 <span class="lql-kw">FROM</span> events<br>
+          &nbsp;&nbsp;[<span class="lql-kw">WHERE</span> condition [<span class="lql-kw">AND</span>/<span class="lql-kw">OR</span> condition]]<br>
+          &nbsp;&nbsp;[<span class="lql-kw">GROUP BY</span> field]<br>
+          &nbsp;&nbsp;[<span class="lql-kw">ORDER BY</span> field <span class="lql-kw">DESC</span>]<br>
+          &nbsp;&nbsp;[<span class="lql-kw">LIMIT</span> <span class="lql-val">n</span>]
+        </div>
+
+        <div class="hlp-sh">Queryable fields</div>
+        <table class="hlp-table">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>elementName</code></td><td>string</td><td>Captured identifier (e.g. method or URL)</td></tr>
+            <tr><td><code>ruleName</code></td><td>string</td><td>The rule that matched this event</td></tr>
+            <tr><td><code>thread</code></td><td>string</td><td>Thread ID from capture group</td></tr>
+            <tr><td><code>duration</code></td><td>number (ms)</td><td>Elapsed time for push/pop pairs</td></tr>
+            <tr><td><code>timestamp</code></td><td>number (ms)</td><td>Parsed start timestamp</td></tr>
+            <tr><td><code>payload</code></td><td>string</td><td>Free-text capture from log line</td></tr>
+            <tr><td><code>correlationId</code></td><td>string</td><td>Distributed trace ID</td></tr>
+            <tr><td><code>behavior</code></td><td>push/pop/inline</td><td>Stack behavior of the rule</td></tr>
+            <tr><td><code>sla_breach</code></td><td>boolean</td><td>Duration exceeded SLA threshold</td></tr>
+            <tr><td><code>anomaly</code></td><td>boolean</td><td>Statistical outlier detection flag</td></tr>
+            <tr><td><code>pinned</code></td><td>boolean</td><td>Manually pinned in tree view</td></tr>
+            <tr><td><code>rawLine</code></td><td>string</td><td>Original log line (first 260 chars)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="hlp-sh">WHERE operators</div>
+        <table class="hlp-table">
+          <thead><tr><th>Operator</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>=</code></td><td><code>thread = "main"</code></td></tr>
+            <tr><td><code>!=</code></td><td><code>behavior != "inline"</code></td></tr>
+            <tr><td><code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code></td><td><code>duration &gt; 500</code></td></tr>
+            <tr><td><code>CONTAINS</code></td><td><code>elementName CONTAINS "user"</code></td></tr>
+            <tr><td><code>STARTS_WITH</code></td><td><code>thread STARTS_WITH "http"</code></td></tr>
+            <tr><td><code>ENDS_WITH</code></td><td><code>ruleName ENDS_WITH "Error"</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="hlp-sh">Example queries — click to run</div>
+        <div class="lql-ex" data-lql="SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10">
+          <span class="lql-kw">SELECT</span> elementName, duration, thread<br>
+          <span class="lql-kw">FROM</span> events <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC LIMIT</span> <span class="lql-val">10</span>
+          <br><span class="lql-cm">-- top 10 slowest events</span>
+        </div>
+        <div class="lql-ex" data-lql="SELECT * FROM events WHERE sla_breach = true ORDER BY duration DESC">
+          <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
+          <span class="lql-kw">WHERE</span> sla_breach = <span class="lql-val">true</span> <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC</span>
+          <br><span class="lql-cm">-- all SLA breaches, worst first</span>
+        </div>
+        <div class="lql-ex" data-lql="SELECT thread, COUNT(*) FROM events GROUP BY thread ORDER BY COUNT DESC">
+          <span class="lql-kw">SELECT</span> thread, <span class="lql-kw">COUNT</span>(*) <span class="lql-kw">FROM</span> events<br>
+          <span class="lql-kw">GROUP BY</span> thread <span class="lql-kw">ORDER BY COUNT DESC</span>
+          <br><span class="lql-cm">-- event count per thread</span>
+        </div>
+        <div class="lql-ex" data-lql="SELECT elementName, duration FROM events WHERE duration > 100 AND behavior = &quot;push&quot; ORDER BY duration DESC">
+          <span class="lql-kw">SELECT</span> elementName, duration <span class="lql-kw">FROM</span> events<br>
+          <span class="lql-kw">WHERE</span> duration &gt; <span class="lql-val">100</span> <span class="lql-kw">AND</span> behavior = <span class="lql-val">"push"</span>
+          <br><span class="lql-cm">-- timed events over 100ms</span>
+        </div>
+        <div class="lql-ex" data-lql="SELECT * FROM events WHERE anomaly = true">
+          <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
+          <span class="lql-kw">WHERE</span> anomaly = <span class="lql-val">true</span>
+          <br><span class="lql-cm">-- statistical outliers only</span>
+        </div>
+      </div>
+
+      <!-- ── CAPTURE GROUPS ── -->
+      <div class="hlp-sec" id="hlp-capture" role="tabpanel">
+        <div style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:4px;">
+          In the rule editor, map regex capture groups (1, 2, 3…) to these reserved field names. Only the fields you map are extracted.
+        </div>
+
+        <div class="hlp-sh">Reserved field names</div>
+        <div>
+          <div class="cg-field">
+            <span class="cg-name" style="background:rgba(88,166,255,.12);color:#58a6ff;">timestamp</span>
+            <div class="cg-body">
+              <div class="cg-role">Event start time</div>
+              <div class="cg-detail">Parsed as ISO 8601 or epoch ms. Drives the Gantt x-axis and duration math. Falls back to the global timestamp regex if absent.</div>
+            </div>
+          </div>
+          <div class="cg-field">
+            <span class="cg-name" style="background:rgba(63,185,80,.12);color:#3fb950;">thread</span>
+            <div class="cg-body">
+              <div class="cg-role">Thread / worker identifier</div>
+              <div class="cg-detail">Groups events into swimlanes. Without it, all events land in a single <em>default</em> thread.</div>
+            </div>
+          </div>
+          <div class="cg-field">
+            <span class="cg-name" style="background:rgba(255,149,0,.12);color:var(--amber);">elementName</span>
+            <div class="cg-body">
+              <div class="cg-role">Event label (the "what")</div>
+              <div class="cg-detail">The human-readable name shown in the tree and Gantt bars. For HTTP rules: capture the URL. For method rules: the method name.</div>
+            </div>
+          </div>
+          <div class="cg-field">
+            <span class="cg-name" style="background:rgba(188,123,240,.12);color:#bf5af2;">payload</span>
+            <div class="cg-body">
+              <div class="cg-role">Free-text detail</div>
+              <div class="cg-detail">Shown in the tree tooltip and searchable. Use for SQL query text, HTTP body size, error messages, or any extra context.</div>
+            </div>
+          </div>
+          <div class="cg-field">
+            <span class="cg-name" style="background:rgba(248,81,73,.12);color:#f85149;">correlationId</span>
+            <div class="cg-body">
+              <div class="cg-role">Distributed trace ID</div>
+              <div class="cg-detail">Enables cross-thread filtering. Any value here becomes a clickable badge — click it to isolate that trace across all threads and views.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hlp-sh">Example rule (Advanced mode)</div>
+        <div style="background:var(--bg-1);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--t3);">
+          <span style="color:var(--amber)">Pattern:</span><br>
+          <span style="color:var(--t1)">^(<span style="color:#58a6ff">\d{4}-...\d{3}</span>)\s+\w+\s+[<span style="color:#3fb950">(\S+)</span>].*HTTP-REQ\s+(<span style="color:var(--amber)">\S+</span>)(?:\s+(<span style="color:#bf5af2">.+</span>))?$</span><br>
+          <br>
+          <span style="color:var(--amber)">Mappings:</span><br>
+          group 1 → <span style="color:#58a6ff">timestamp</span><br>
+          group 2 → <span style="color:#3fb950">thread</span><br>
+          group 3 → <span style="color:var(--amber)">elementName</span><br>
+          group 4 → <span style="color:#bf5af2">payload</span>
+        </div>
+      </div>
+
+      <!-- ── SHORTCUTS ── -->
+      <div class="hlp-sec" id="hlp-shortcuts" role="tabpanel">
+
+        <div class="hlp-sh">Global</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span></div><div class="kb-desc">Open command palette</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">T</span></div><div class="kb-desc">Toggle dark / light theme</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close modal / sheet / menu</div></div>
+        </div>
+
+        <div class="hlp-sh" style="margin-top:8px">Views</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">1</span></div><div class="kb-desc">Gantt view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">2</span></div><div class="kb-desc">Tree view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">3</span></div><div class="kb-desc">Split view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">4</span></div><div class="kb-desc">Stats view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">5</span></div><div class="kb-desc">Graph view</div></div>
+        </div>
+
+        <div class="hlp-sh" style="margin-top:8px">Thread navigation</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">[</span></div><div class="kb-desc">Previous thread</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">]</span></div><div class="kb-desc">Next thread</div></div>
+        </div>
+
+        <div class="hlp-sh" style="margin-top:8px">Tree navigation</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">J</span></div><div class="kb-desc">Next tree node</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">K</span></div><div class="kb-desc">Previous tree node</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Search tree by name</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">P</span></div><div class="kb-desc">Pin focused node</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">E</span></div><div class="kb-desc">Expand all nodes</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">C</span></div><div class="kb-desc">Collapse all nodes</div></div>
+        </div>
+
+        <div class="hlp-sh" style="margin-top:8px">Gantt canvas</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Scroll</span></div><div class="kb-desc">Zoom in / out</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Drag</span></div><div class="kb-desc">Pan timeline</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Click bar</span></div><div class="kb-desc">Jump to node in tree</div></div>
+        </div>
+      </div>
+
+    </div><!-- /p-hlp -->
 
   </div>
 </aside>
@@ -2303,7 +3069,7 @@ mark.hl{
         <input class="inp" id="e-name" placeholder="e.g. Transaction Start"/>
       </div>
       <div class="f">
-        <div class="fl">Stack Behavior <span class="ca">*</span></div>
+        <div class="fl">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button">?</button></div>
         <select class="inp" id="e-beh">
           <option value="push">push — opens block</option>
           <option value="pop">pop — closes block</option>
@@ -2420,7 +3186,7 @@ mark.hl{
       </div>
 
       <!-- Capture mappings -->
-      <div class="sh"><span>🗺</span> Capture Group → Field Mapping</div>
+      <div class="sh"><span>🗺</span> Capture Group → Field Mapping<button class="htip-btn" data-htip="capture" aria-label="Help: Capture Groups" type="button" style="margin-left:6px">?</button></div>
       <div class="fh">Enter the capture group index (1, 2, 3…) for each field.</div>
       <div class="g2">
         <div class="f">
@@ -2465,7 +3231,7 @@ mark.hl{
     </div>
 
     <!-- Shared: SLA Settings -->
-    <div class="sh"><span>🚨</span> SLA Settings</div>
+    <div class="sh"><span>🚨</span> SLA Settings<button class="htip-btn" data-htip="sla" aria-label="Help: SLA Threshold" type="button" style="margin-left:6px">?</button></div>
     <div class="g2">
       <div class="f">
         <div class="fl">SLA Threshold (ms) <span class="cm">(optional)</span></div>
@@ -2520,9 +3286,123 @@ mark.hl{
 </div>
 </div>
 
-<div id="toast-r"></div>
+<div id="toast-r" role="status" aria-live="polite"></div>
+
+<!-- ================================================================ ONBOARDING -->
+<div id="ob-ov" role="dialog" aria-modal="true" aria-label="Welcome to LogLens">
+  <div class="ob-wrap">
+
+    <!-- Logo -->
+    <div class="ob-logo">
+      <div class="ob-logo-ico">
+        <span aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+      </div>
+      <div class="ob-wordmark">Log<span class="acc">Lens</span><span class="ob-badge">v6.2</span></div>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="ob-headline">Analyze logs.<br><em>Instantly. Privately.</em></h1>
+    <p class="ob-sub">A zero-install, browser-native log analyzer with Gantt timelines, execution trees, and LQL queries. Your logs never leave your machine.</p>
+
+    <!-- CTAs -->
+    <div class="ob-cta">
+      <button class="ob-btn-demo" id="ob-btn-demo">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Try Demo
+      </button>
+      <button class="ob-btn-cfg" id="ob-btn-cfg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Load Config
+      </button>
+      <button class="ob-btn-cfg" id="ob-btn-drop">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Drop a Log File
+      </button>
+    </div>
+
+    <!-- Loading state (shown during demo load) -->
+    <div class="ob-loading" id="ob-loading">
+      <div class="ob-spinner"></div>
+      <div class="ob-loading-txt" id="ob-loading-txt">Parsing demo log…</div>
+    </div>
+
+    <!-- Feature highlights -->
+    <div class="ob-features" id="ob-features">
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">📊</span>
+        <div class="ob-feat-title">Gantt Timelines</div>
+        <div class="ob-feat-desc">See concurrent threads as swimlanes. Spot SLA breaches, bottlenecks, and timing anomalies at a glance.</div>
+      </div>
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">🌲</span>
+        <div class="ob-feat-title">Execution Trees</div>
+        <div class="ob-feat-desc">Nested push/pop event rules build hierarchical call trees from raw log lines — no code changes needed.</div>
+      </div>
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">🔍</span>
+        <div class="ob-feat-title">LQL Queries</div>
+        <div class="ob-feat-desc">LogLens Query Language lets you filter, search, and correlate events across threads with a SQL-like syntax.</div>
+      </div>
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">🔒</span>
+        <div class="ob-feat-title">100% Private</div>
+        <div class="ob-feat-desc">Everything runs in your browser. No server, no telemetry, no upload. Safe for sensitive production logs.</div>
+      </div>
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">📐</span>
+        <div class="ob-feat-title">Regex Rule Builder</div>
+        <div class="ob-feat-desc">Visual token palette and live preview make it easy to write capture-group patterns for any log format.</div>
+      </div>
+      <div class="ob-feat">
+        <span class="ob-feat-ico" aria-hidden="true">☁️</span>
+        <div class="ob-feat-title">Cloud & Local</div>
+        <div class="ob-feat-desc">Connect to Grafana Loki, Elasticsearch, or AWS CloudWatch — or just drop a .log file from your desktop.</div>
+      </div>
+    </div>
+
+    <!-- Quickstart steps -->
+    <div class="ob-steps">
+      <div class="ob-steps-hdr">Quickstart — 3 steps to your first analysis</div>
+      <div class="ob-steps-body">
+        <div class="ob-step">
+          <div class="ob-step-n" aria-hidden="true">1</div>
+          <div>
+            <div class="ob-step-ttl">Load a config</div>
+            <div class="ob-step-desc">Import a JSON config or create a new one. Define regex rules that match your log format's structure.</div>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-n" aria-hidden="true">2</div>
+          <div>
+            <div class="ob-step-ttl">Drop your log</div>
+            <div class="ob-step-desc">Drag a .log, .txt, or .gz file onto the app — or connect a live cloud source in Settings.</div>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-n" aria-hidden="true">3</div>
+          <div>
+            <div class="ob-step-ttl">Explore views</div>
+            <div class="ob-step-desc">Switch between Gantt, Tree, Stats, Graph, and Query views using the toolbar. Press <kbd style="font-family:var(--mono);font-size:10px;padding:1px 4px;border:1px solid var(--bdr);border-radius:3px;">⌘K</kbd> for commands.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="ob-skip" id="ob-skip">Skip — I know what I'm doing</button>
+  </div>
+</div>
+
 <!-- Drag overlay -->
-<div id="drop-ov"><div id="drop-ov-inner"><div class="di">📂</div>Drop log file or config JSON</div></div>
+<div id="drop-ov" aria-hidden="true"><div id="drop-ov-inner"><div class="di" aria-hidden="true">📂</div>Drop log file or config JSON</div></div>
+<!-- Sidebar backdrop (mobile) -->
+<div class="sb-backdrop" id="sb-backdrop" aria-hidden="true"></div>
+<!-- Contextual help popover (HTIP module) -->
+<div id="htip-pop" role="tooltip" aria-live="polite" hidden>
+  <div id="htip-pop-title"><span id="htip-pop-ttl-text"></span><button id="htip-pop-close" aria-label="Close help tip">✕</button></div>
+  <div id="htip-pop-body"></div>
+</div>
 <!-- Context menu -->
 <div id="ctx-menu"></div>
 <!-- Quick edit popover -->
@@ -6529,6 +7409,9 @@ const SWIMLANE={
 Theme.init();
 $('btn-theme').addEventListener('click',()=>Theme.toggle());
 $('btn-sb-tog').addEventListener('click',()=>SB.toggle());
+
+// Onboarding — show first-run welcome if user hasn't dismissed
+ONBOARD.check();
 
 // Drag-and-drop
 DD.init();
@@ -12807,6 +13690,552 @@ document.addEventListener('keydown', e => {
     LQL.render(document.querySelector('.lql-box').parentNode);
   }
 });
+
+/* ================================================================
+   §JS-25 ONBOARDING MODULE
+   First-run welcome screen with demo log loader.
+   - ONBOARD.check()   — called at init; shows if user has not dismissed
+   - ONBOARD.show()    — renders overlay (focus-trapped)
+   - ONBOARD.dismiss() — hides with fade, sets ll-seen flag
+   - ONBOARD.loadDemo()— bundles sample config + log, triggers full parse
+   ================================================================ */
+const ONBOARD = (() => {
+  /* ── Sample config — uses the built-in DEF_CFG rule vocabulary ── */
+  const DEMO_CFG = {
+    globalSettings: {
+      appName: 'LogLens Demo',
+      globalTimestampPattern: String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`,
+      description: 'Demo config for the LogLens sample log.'
+    },
+    elementRules: [
+      {
+        id: 'dr_hs', name: 'HTTP Request',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
+        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '🌐' }
+      },
+      {
+        id: 'dr_he', name: 'HTTP Response',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-RESP\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        stackBehavior: 'pop', visualStyle: { accentColor: '#4f9eff', icon: '↩' }
+      },
+      {
+        id: 'dr_dbs', name: 'DB Query',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
+        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '🗄' }
+      },
+      {
+        id: 'dr_dbe', name: 'DB Query End',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?DB-QUERY-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        stackBehavior: 'pop', visualStyle: { accentColor: '#f0883e', icon: '✓' }
+      },
+      {
+        id: 'dr_cache', name: 'Cache Op',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?CACHE-(HIT|MISS)\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload', '4': 'elementName' },
+        stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '⚡' }
+      },
+      {
+        id: 'dr_w', name: 'Warning',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+WARN\s+\[([^\]]+)\]\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload' },
+        stackBehavior: 'inline', visualStyle: { accentColor: '#d29922', icon: '⚠' }
+      },
+      {
+        id: 'dr_e', name: 'Error',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+ERROR\s+\[([^\]]+)\]\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload' },
+        stackBehavior: 'inline', visualStyle: { accentColor: '#f85149', icon: '✕' },
+        slaThresholdMs: 0
+      }
+    ]
+  };
+
+  /* ── Sample log — realistic Spring Boot style with 3 concurrent threads ── */
+  const DEMO_LOG = `2024-03-15 10:23:45.001 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-REQ GET /api/users/42
+2024-03-15 10:23:45.003 INFO  [http-nio-8080-exec-2] c.example.RequestFilter - HTTP-REQ POST /api/orders
+2024-03-15 10:23:45.008 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-MISS user:42
+2024-03-15 10:23:45.010 DEBUG [http-nio-8080-exec-2] c.example.OrderValidator - DB-QUERY-START validateStock SELECT p.stock FROM products p WHERE p.id IN (101,205,309)
+2024-03-15 10:23:45.012 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-START fetchUser SELECT * FROM users WHERE id=42
+2024-03-15 10:23:45.013 INFO  [async-worker-1] c.example.MetricsJob - HTTP-REQ GET /internal/metrics/flush
+2024-03-15 10:23:45.019 DEBUG [http-nio-8080-exec-2] c.example.OrderValidator - DB-QUERY-END validateStock
+2024-03-15 10:23:45.025 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-END fetchUser
+2024-03-15 10:23:45.026 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-START fetchPreferences SELECT * FROM user_prefs WHERE user_id=42
+2024-03-15 10:23:45.028 WARN  [http-nio-8080-exec-2] c.example.InventoryService - Item 309 stock below threshold (qty=2, reorder_point=10)
+2024-03-15 10:23:45.031 DEBUG [http-nio-8080-exec-2] c.example.PricingService - DB-QUERY-START applyDiscounts SELECT d.* FROM discounts d WHERE d.user_id=NULL AND d.active=1
+2024-03-15 10:23:45.035 DEBUG [async-worker-1] c.example.MetricsJob - DB-QUERY-START flushMetrics INSERT INTO metrics_buffer SELECT * FROM metrics_staging
+2024-03-15 10:23:45.038 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-END fetchPreferences
+2024-03-15 10:23:45.041 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-HIT session:42:token
+2024-03-15 10:23:45.043 DEBUG [http-nio-8080-exec-2] c.example.PricingService - DB-QUERY-END applyDiscounts
+2024-03-15 10:23:45.052 DEBUG [http-nio-8080-exec-2] c.example.PaymentGateway - DB-QUERY-START reservePayment SELECT * FROM payment_methods WHERE user_id=(SELECT id FROM users WHERE email='user@example.com')
+2024-03-15 10:23:45.061 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-RESP GET /api/users/42
+2024-03-15 10:23:45.067 DEBUG [async-worker-1] c.example.MetricsJob - DB-QUERY-END flushMetrics
+2024-03-15 10:23:45.071 INFO  [http-nio-8080-exec-3] c.example.RequestFilter - HTTP-REQ DELETE /api/sessions/expired
+2024-03-15 10:23:45.073 DEBUG [http-nio-8080-exec-3] c.example.SessionService - DB-QUERY-START deleteExpired DELETE FROM sessions WHERE expires_at < NOW() AND last_active < DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+2024-03-15 10:23:45.078 DEBUG [http-nio-8080-exec-2] c.example.PaymentGateway - DB-QUERY-END reservePayment
+2024-03-15 10:23:45.081 INFO  [async-worker-1] c.example.MetricsJob - HTTP-RESP GET /internal/metrics/flush
+2024-03-15 10:23:45.085 DEBUG [http-nio-8080-exec-2] c.example.AuditService - DB-QUERY-START writeAuditLog INSERT INTO audit_log (user_id, action, payload, created_at) VALUES (NULL, 'order.create', '{"items":3}', NOW())
+2024-03-15 10:23:45.088 DEBUG [http-nio-8080-exec-3] c.example.SessionService - DB-QUERY-END deleteExpired
+2024-03-15 10:23:45.091 DEBUG [http-nio-8080-exec-2] c.example.AuditService - DB-QUERY-END writeAuditLog
+2024-03-15 10:23:45.094 ERROR [http-nio-8080-exec-3] c.example.SessionService - Failed to acquire advisory lock for session cleanup after 3 retries (timeout=5000ms)
+2024-03-15 10:23:45.096 INFO  [http-nio-8080-exec-3] c.example.RequestFilter - HTTP-RESP DELETE /api/sessions/expired
+2024-03-15 10:23:45.101 INFO  [http-nio-8080-exec-2] c.example.RequestFilter - HTTP-RESP POST /api/orders
+2024-03-15 10:23:45.110 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-REQ GET /api/dashboard/summary
+2024-03-15 10:23:45.112 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-HIT dashboard:widgets:layout
+2024-03-15 10:23:45.115 DEBUG [http-nio-8080-exec-1] c.example.DashboardService - DB-QUERY-START fetchKPIs SELECT COUNT(*) as orders, SUM(total) as revenue, AVG(duration_ms) as avg_latency FROM orders WHERE created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+2024-03-15 10:23:45.131 WARN  [http-nio-8080-exec-1] c.example.DashboardService - Slow query detected: fetchKPIs took 16ms (threshold=10ms)
+2024-03-15 10:23:45.133 DEBUG [http-nio-8080-exec-1] c.example.DashboardService - DB-QUERY-END fetchKPIs
+2024-03-15 10:23:45.137 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-RESP GET /api/dashboard/summary
+`.trim();
+
+  /* ── Internal helpers ── */
+  const _ov = () => document.getElementById('ob-ov');
+  const _loading = () => document.getElementById('ob-loading');
+  const _features = () => document.getElementById('ob-features');
+  const _loadingTxt = () => document.getElementById('ob-loading-txt');
+  const SEEN_KEY = 'll-ob-seen';
+
+  return {
+    /**
+     * check — called once at app init.
+     * Shows welcome screen if user has not dismissed it before
+     * and no config is currently stored.
+     */
+    check() {
+      const seen = localStorage.getItem(SEEN_KEY);
+      if (!seen) {
+        this.show();
+      }
+    },
+
+    /** show — make the onboarding overlay visible */
+    show() {
+      const ov = _ov();
+      if (!ov) return;
+      ov.classList.remove('hidden');
+      // Trap focus inside overlay for a11y
+      const firstBtn = ov.querySelector('button');
+      if (firstBtn) setTimeout(() => firstBtn.focus(), 50);
+    },
+
+    /** dismiss — fade out overlay and set seen flag */
+    dismiss() {
+      const ov = _ov();
+      if (!ov) return;
+      ov.classList.add('hidden');
+      localStorage.setItem(SEEN_KEY, '1');
+    },
+
+    /**
+     * loadDemo — bundles the sample config + log text,
+     * feeds them through the normal parse pipeline, then dismisses.
+     */
+    async loadDemo() {
+      const loadingEl = _loading();
+      const featuresEl = _features();
+
+      // Guard flag prevents CFG.load auto-dismiss from firing during demo sequence
+      this._demoInProgress = true;
+
+      // Show loading state
+      if (featuresEl) featuresEl.style.display = 'none';
+      if (loadingEl) loadingEl.classList.add('vis');
+      this._setLoadingText('Loading demo config…');
+
+      await this._delay(220);
+
+      // Step 1: load the demo config through the normal CFG pipeline
+      try {
+        CFG.load(JSON.parse(JSON.stringify(DEMO_CFG)));
+        CFG.stImp();
+      } catch (e) {
+        toast('Demo config error: ' + e.message, 'error');
+        this._resetLoading();
+        return;
+      }
+
+      this._setLoadingText('Parsing demo log…');
+      await this._delay(200);
+
+      // Step 2: create a synthetic File object from the demo log text
+      const blob = new Blob([DEMO_LOG], { type: 'text/plain' });
+      const file = new File([blob], 'demo-springboot.log', { type: 'text/plain' });
+      S.logFile = file;
+
+      // Step 3: update UI state that normally fires after file select
+      if (typeof MF !== 'undefined' && MF.files !== undefined) {
+        // multi-file system present — add as first file
+        try { MF.add(file); } catch (_) { /* graceful */ }
+      }
+      if ($('hdr-file')) {
+        $('hdr-file').textContent = 'demo-springboot.log';
+        $('hdr-file').title = 'demo-springboot.log (demo)';
+      }
+
+      this._setLoadingText('Building timeline…');
+      await this._delay(180);
+
+      // Step 4: trigger parse
+      try {
+        WM.run(S.cfg, file);
+      } catch (e) {
+        toast('Demo parse error: ' + e.message, 'error');
+        this._resetLoading();
+        return;
+      }
+
+      // Step 5: dismiss after brief pause for parse to complete
+      await this._delay(600);
+      this._demoInProgress = false;
+      this.dismiss();
+      toast('Demo loaded — try the Gantt view!', 'success');
+    },
+
+    /* ── Private helpers ── */
+    _setLoadingText(txt) {
+      const el = _loadingTxt();
+      if (el) el.textContent = txt;
+    },
+
+    _resetLoading() {
+      this._demoInProgress = false;
+      const loadingEl = _loading();
+      const featuresEl = _features();
+      if (loadingEl) loadingEl.classList.remove('vis');
+      if (featuresEl) featuresEl.style.display = '';
+    },
+
+    _delay(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+  };
+})();
+
+/* ── Wire onboarding events ── */
+(function wireOnboarding() {
+  const btnDemo = document.getElementById('ob-btn-demo');
+  const btnCfg  = document.getElementById('ob-btn-cfg');
+  const btnDrop = document.getElementById('ob-btn-drop');
+  const btnSkip = document.getElementById('ob-skip');
+
+  // "Try Demo" — load bundled sample
+  if (btnDemo) btnDemo.addEventListener('click', () => ONBOARD.loadDemo());
+
+  // "Load Config" — open config file picker then dismiss
+  if (btnCfg) btnCfg.addEventListener('click', () => {
+    ONBOARD.dismiss();
+    // Slight delay so overlay is gone before file dialog appears
+    setTimeout(() => {
+      const fiCfg = document.getElementById('fi-cfg');
+      if (fiCfg) fiCfg.click();
+    }, 150);
+  });
+
+  // "Drop a Log File" — dismiss and show drop hint
+  if (btnDrop) btnDrop.addEventListener('click', () => {
+    ONBOARD.dismiss();
+    toast('Drop a .log or .txt file anywhere on the screen, or use the sidebar to load a config first.', 'info');
+  });
+
+  // "Skip" — dismiss permanently
+  if (btnSkip) btnSkip.addEventListener('click', () => ONBOARD.dismiss());
+
+  // Escape key dismisses
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const ov = document.getElementById('ob-ov');
+      if (ov && !ov.classList.contains('hidden')) ONBOARD.dismiss();
+    }
+  });
+
+  // Auto-dismiss when a config is successfully loaded through normal flow
+  // Guard flag prevents premature dismiss during loadDemo() which controls its own timing
+  const _origCfgLoad = CFG.load.bind(CFG);
+  CFG.load = function(c) {
+    const result = _origCfgLoad(c);
+    // Dismiss only for user-initiated config loads (not during demo sequence)
+    if (!ONBOARD._demoInProgress) {
+      const ov = document.getElementById('ob-ov');
+      if (ov && !ov.classList.contains('hidden') && c && c !== DEF_CFG) {
+        ONBOARD.dismiss();
+      }
+    }
+    return result;
+  };
+})();
+
+/* ================================================================
+   §JS-26  HELP PANEL — internal tab switching + LQL click-to-run
+   ================================================================ */
+(function wireHelpPanel() {
+  /* ── Internal tab switching ── */
+  const tabs = document.querySelectorAll('.hlp-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.hlp;
+      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.hlp-sec').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      const panel = document.getElementById('hlp-' + target);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  /* ── LQL example click-to-run ──
+     Clicking a .lql-ex block navigates to the Query view and
+     pre-fills the LQL input with the example query.           */
+  document.querySelectorAll('.lql-ex[data-lql]').forEach(ex => {
+    ex.setAttribute('role', 'button');
+    ex.setAttribute('tabindex', '0');
+    ex.setAttribute('aria-label', 'Click to run this query');
+    const run = () => {
+      const q = ex.dataset.lql;
+      // Navigate to LQL view
+      const lqlTab = document.querySelector('[data-v="lql"]');
+      if (lqlTab) lqlTab.click();
+      // Fill input after tab switch settles
+      setTimeout(() => {
+        const inp = document.getElementById('lql-inp');
+        if (inp) {
+          inp.value = q;
+          inp.dispatchEvent(new Event('input'));
+        }
+        const runBtn = document.getElementById('btn-lql-run');
+        if (runBtn) runBtn.click();
+      }, 80);
+      // Switch to Help tab to close it
+      toast('Running LQL query…', 'info');
+    };
+    ex.addEventListener('click', run);
+    ex.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(); } });
+  });
+})();
+
+/* ================================================================
+   §JS-27  HTIP — Contextual Help Tip Popovers
+   Shows a positioned popover when any [data-htip] button is clicked.
+   Content keyed by data-htip attribute value.
+   ================================================================ */
+const HTIP = (() => {
+  /* ── Tip content library ── */
+  const TIPS = {
+    behavior: {
+      title: 'Stack Behavior',
+      body: `Controls how this rule interacts with the event tree:<br><br>
+        <strong>push</strong> — Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
+        <strong>pop</strong> — Closes the last open <code>push</code> block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
+        <strong>inline</strong> — A standalone point event with no duration. Use for log statements, warnings, and errors.`
+    },
+    capture: {
+      title: 'Capture Group Mapping',
+      body: `Maps regex capture group numbers to named fields:<br><br>
+        <code>timestamp</code> — Event start time (ISO 8601 or epoch ms)<br>
+        <code>thread</code> — Thread identifier → Gantt swimlane<br>
+        <code>elementName</code> — Event label shown in tree & Gantt<br>
+        <code>payload</code> — Extra detail (SQL, URL body, error msg)<br>
+        <code>correlationId</code> — Trace ID for cross-thread filtering<br><br>
+        Example: if your regex has <code>timestamp</code> in group 1 and <code>thread</code> in group 2, enter <strong>1</strong> and <strong>2</strong> respectively.`
+    },
+    sla: {
+      title: 'SLA Threshold',
+      body: `Set a maximum acceptable duration in milliseconds for this event type.<br><br>
+        When a <code>push</code>/<code>pop</code> pair completes and the elapsed time exceeds this threshold:<br><br>
+        • The event bar turns <strong style="color:#f85149">red</strong> in the Gantt<br>
+        • The SLA counter in the header increments<br>
+        • The event appears in the LQL query <code>WHERE sla_breach = true</code><br><br>
+        Leave blank to disable SLA tracking for this rule.`
+    },
+    timestamp: {
+      title: 'Global Timestamp Regex',
+      body: `A fallback regex used when a rule doesn't have its own <code>timestamp</code> capture group.<br><br>
+        <strong>Capture group 1</strong> must match the timestamp string.<br><br>
+        Common patterns:<br>
+        <code>(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[.,]\\d{3})</code><br>
+        <code>(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z?)</code><br><br>
+        LogLens supports ISO 8601, epoch milliseconds, and common log date formats.`
+    }
+  };
+
+  let _active = null;
+
+  function show(btn) {
+    const key = btn.dataset.htip;
+    const tip = TIPS[key];
+    if (!tip) return;
+
+    const pop = document.getElementById('htip-pop');
+    const title = document.getElementById('htip-pop-ttl-text');
+    const body = document.getElementById('htip-pop-body');
+    if (!pop || !title || !body) return;
+
+    title.textContent = tip.title;
+    body.innerHTML = tip.body;
+    pop.removeAttribute('hidden');
+    pop.classList.add('visible');
+    _active = btn;
+
+    // Position: prefer below-right of button, clamp to viewport
+    const rect = btn.getBoundingClientRect();
+    const pw = 300, ph = 200;
+    let top = rect.bottom + 8;
+    let left = rect.left;
+    if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+    if (top + ph > window.innerHeight - 12) top = rect.top - ph - 8;
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+
+    btn.setAttribute('aria-expanded', 'true');
+  }
+
+  function hide() {
+    const pop = document.getElementById('htip-pop');
+    if (!pop) return;
+    pop.setAttribute('hidden', '');
+    pop.classList.remove('visible');
+    if (_active) { _active.setAttribute('aria-expanded', 'false'); _active = null; }
+  }
+
+  // Wire all current and future .htip-btn elements via delegation
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.htip-btn');
+    if (btn) { e.stopPropagation(); _active === btn ? hide() : show(btn); return; }
+    if (e.target.id === 'htip-pop-close') { hide(); return; }
+    if (!e.target.closest('#htip-pop')) hide();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hide();
+  });
+
+  return { show, hide };
+})();
+
+/* ================================================================
+   §JS-28  HEADER OVERFLOW MENU
+   Manages the ⋯ overflow button at narrow widths.
+   Items from .hdr-slot-chips are moved into the menu when hidden.
+   ================================================================ */
+(function wireHeaderOverflow() {
+  const moreBtn = document.getElementById('hdr-more-btn');
+  const menu = document.getElementById('hdr-overflow-menu');
+  if (!moreBtn || !menu) return;
+
+  /* Populate overflow menu with state chip items */
+  function buildMenu() {
+    menu.innerHTML = '';
+    const chips = document.querySelectorAll('.hdr-slot-chips .badge');
+    chips.forEach(chip => {
+      const item = document.createElement('div');
+      item.className = 'hdr-overflow-item';
+      item.textContent = chip.textContent;
+      item.title = chip.title;
+      menu.appendChild(item);
+    });
+    // Also offer Help
+    const sep = document.createElement('div');
+    sep.style.cssText = 'height:1px;background:var(--bdr);margin:4px 0';
+    menu.appendChild(sep);
+    const helpItem = document.createElement('div');
+    helpItem.className = 'hdr-overflow-item';
+    helpItem.innerHTML = '<span style="font-size:13px;margin-right:4px">?</span> Open Help';
+    helpItem.addEventListener('click', () => {
+      const helpTab = document.querySelector('[data-panel="p-hlp"]');
+      if (helpTab) helpTab.click();
+      closeMenu();
+    });
+    menu.appendChild(helpItem);
+  }
+
+  function openMenu() {
+    buildMenu();
+    menu.classList.add('open');
+    moreBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeMenu() {
+    menu.classList.remove('open');
+    moreBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  moreBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#hdr-overflow-menu') && !e.target.closest('#hdr-more-btn')) closeMenu();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+})();
+
+/* ================================================================
+   §JS-29  RESPONSIVE SIDEBAR — mobile slide-in with backdrop
+   ================================================================ */
+(function wireResponsiveSidebar() {
+  const sb = document.getElementById('sb');
+  const backdrop = document.getElementById('sb-backdrop');
+  const togBtn = document.getElementById('btn-sb-tog');
+  if (!sb || !backdrop) return;
+
+  function isMobile() { return window.innerWidth <= 768; }
+
+  function openSidebar() {
+    sb.classList.add('open');
+    backdrop.classList.add('vis');
+    backdrop.removeAttribute('aria-hidden');
+    sb.removeAttribute('aria-hidden');
+    togBtn && togBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeSidebar() {
+    sb.classList.remove('open');
+    backdrop.classList.remove('vis');
+    backdrop.setAttribute('aria-hidden', 'true');
+    togBtn && togBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  /* On 1024px: clicking a tab opens sidebar in sb-force-open mode */
+  document.querySelectorAll('.stab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (window.innerWidth <= 1024 && window.innerWidth > 768) {
+        sb.classList.add('sb-force-open');
+      }
+      if (isMobile()) openSidebar();
+    });
+  });
+
+  /* Close on backdrop click */
+  backdrop.addEventListener('click', closeSidebar);
+
+  /* Sidebar toggle button behaviour */
+  if (togBtn) {
+    const _origSBToggle = SB.toggle.bind(SB);
+    togBtn.addEventListener('click', () => {
+      if (isMobile()) {
+        sb.classList.contains('open') ? closeSidebar() : openSidebar();
+      } else if (window.innerWidth <= 1024) {
+        sb.classList.toggle('sb-force-open');
+      } else {
+        _origSBToggle();
+      }
+    }, true); // capture phase to intercept before original listener
+  }
+
+  /* Close sidebar on route changes for mobile */
+  document.querySelectorAll('[data-v]').forEach(vBtn => {
+    vBtn.addEventListener('click', () => { if (isMobile()) closeSidebar(); });
+  });
+
+  /* Resize handler: clean up mobile state when returning to desktop */
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      closeSidebar();
+      sb.classList.remove('open');
+      backdrop.classList.remove('vis');
+    }
+  }, { passive: true });
+})();
 
 console.log('%c[LogLens v6.2]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');

@@ -2,6 +2,15 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **LogLens UI/UX & Responsive Overhaul (v6.4 — COMPLETED)**:
+  - Merged/overwrote UI/UX enhancements bundle onto `loglens.html` as the production release.
+  - Implemented a welcome onboarding overlay (`ONBOARD` module) with a guided quickstart and demo Spring Boot parsing sequence.
+  - Created a contextual help tip popover system (`HTIP` module) for forms (SLA, stack behavior, capture mappings).
+  - Refactored the Quick Guide panel in the sidebar into tabbed sections with interactive LQL click-to-run queries.
+  - Reorganized header layout into a responsive slot structure collapsing badges to a `⋯` menu on compact viewports.
+  - Added CSS media queries for responsive slide-in sidebar navigation drawers with backdrop blurs.
+  - Standardized focus-visible outlining and `.sr-only` accessibility helpers.
+
 - **LogLens Code Audit & Structural Refactor (v6.3 — COMPLETED)**:
   - Added Virtual Logical Project Map structure block detailing style layout layers and script namespaces.
   - Inserted Logical Architecture Guide at the top of the script tag documenting module interaction boundaries.
@@ -71,12 +80,17 @@ loglens.html
     ├── §34 GRAPHIFY         Graphify D3 Engine: large histogram modal, transaction dependency graph
     ├── §35 SWIMLANE         Swimlane Timeline: Canvas-based swimlane view with zoom/pan and minimap
     │
-    │  ── UI/UX OVERHAUL (v6.1) ──
+    │  ── UI/UX OVERHAUL (v6.1/v6.2) ──
     ├── CMD            Command Palette (Ctrl+K): fuzzy search, View/Export/App/Rule/Thread actions
     ├── BCB            Breadcrumb Context Bar: thread + search + view mode context chips
     ├── GANTT_RESIZE   Gantt label column drag-resize (100–480px), MutationObserver-attached
     ├── SEARCH_HL      Tree search highlight (<mark class="hl">) + match counter
-    └── SETTINGS_ADDITIONS  Performance + Appearance settings panels in S.appPrefs
+    ├── SETTINGS_ADDITIONS  Performance + Appearance settings panels in S.appPrefs
+    ├── ONBOARD        Onboarding Module: welcome overlay + demo Spring Boot parser sequence
+    ├── HELP_WIRE      Help Panel tab switching & LQL click-to-run queries
+    ├── HTIP           Contextual Help Tip Popover component
+    ├── OVR_MENU       Header Overflow Menu for compact viewports
+    └── RESP_SB        Responsive Sidebar drawer + mobile triggers
 ```
 
 ### Config Schema (JSON)
@@ -315,5 +329,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-06-25*  
-*Updated By: Antigravity (initial context creation)*
+*Last Updated: 2026-06-27*  
+*Updated By: Antigravity (merged v6.2 Overhaul & updated architecture details)*
