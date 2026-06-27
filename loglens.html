@@ -13886,20 +13886,31 @@ const ONBOARD = (() => {
       this._setLoadingText('Building timeline…');
       await this._delay(180);
 
-      // Step 4: trigger parse
-      try {
-        WM.run(S.cfg, file);
-      } catch (e) {
-        toast('Demo parse error: ' + e.message, 'error');
-        this._resetLoading();
-        return;
-      }
-
-      // Step 5: dismiss after brief pause for parse to complete
-      await this._delay(600);
+      // Step 4: dismiss the overlay so the user sees the app immediately
       this._demoInProgress = false;
       this.dismiss();
-      toast('Demo loaded — try the Gantt view!', 'success');
+
+      // Step 5: run the parse using WM.parse (the correct API; WM.run does not exist)
+      try {
+        $('btn-parse').disabled = true;
+        $('btn-abort').disabled = false;
+        $('emp')?.classList.add('hidden');
+        const { trees, threads, stats } = await WM.parse(file, S.cfg, '');
+        ANOMALY.analyze(trees);
+        UI.render(trees, threads, stats);
+        UI.hprog();
+        PIN.clear();
+        const tot = Object.values(trees).reduce((s, t) => s + cnt(t), 0);
+        IDB.save(file, S.cfg, trees, threads, stats).catch(() => {});
+        S.lastParsedFile = { name: file.name, size: file.size, lastModified: file.lastModified };
+        toast(`Demo loaded — ${tot.toLocaleString()} nodes parsed. Try the Gantt view!`, 'success');
+      } catch (e) {
+        toast('Demo parse error: ' + e.message, 'error');
+      } finally {
+        $('btn-parse').disabled = false;
+        $('btn-abort').disabled = true;
+        UI.ub();
+      }
     },
 
     /* ── Private helpers ── */
