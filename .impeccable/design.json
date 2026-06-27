@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-27T01:32:00Z",
+  "title": "Design System: LogLens",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Console Amber", "canonical": "oklch(74% 0.16 48)" },
+      "secondary": { "role": "info", "displayName": "Diagnostics Blue", "canonical": "oklch(72% 0.14 250)" },
+      "tertiary": { "role": "success", "displayName": "Success Green", "canonical": "oklch(72% 0.17 142)" },
+      "bg-dark": { "role": "neutral", "displayName": "Deep Void", "canonical": "oklch(15% 0.02 240)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Title", "purpose": "App branding banner only." },
+      "body": { "displayName": "Interface Body", "purpose": "Navigation tabs, parameter controls, settings inputs." },
+      "mono": { "displayName": "Console Monospace", "purpose": "Trace timestamps, log table rows, raw code parameters." }
+    },
+    "shadows": [
+      { "name": "ambient-popover", "value": "0 4px 24px rgba(0,0,0,0.15)", "purpose": "Floating context tooltips and dropdown overlay menus." }
+    ],
+    "motion": [
+      { "name": "standard-fade", "value": "all 0.15s ease-in-out", "purpose": "Interaction response for hover/focus transitions." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Standard action triggers, configurations load, or sessions exports.",
+      "html": "<button class=\"ds-btn-primary\">LOAD LOGS</button>",
+      "css": ".ds-btn-primary { background: #f0883e; color: #060a0f; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s ease-in-out; } .ds-btn-primary:hover { background: #f5a36c; } .ds-btn-primary:focus-visible { outline: 2px solid #f0883e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Regex capture fields, SLA timers, search inputs, and filters text box.",
+      "html": "<input type=\"text\" class=\"ds-input-text\" placeholder=\"Enter query...\" />",
+      "css": ".ds-input-text { background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px; font-family: Inter, system-ui, sans-serif; font-size: 12px; padding: 6px 10px; width: 100%; box-sizing: border-box; transition: border-color 0.15s ease-in-out; } .ds-input-text::placeholder { color: #8b949e; } .ds-input-text:focus { border-color: #f0883e; outline: none; }"
+    },
+    {
+      "name": "View Selector Tab",
+      "kind": "chip",
+      "description": "Interactive selectors toggling between Gantt, Tree, Stats, and Swimlane layouts.",
+      "html": "<div class=\"ds-tab-container\"><button class=\"ds-tab active\">Gantt</button><button class=\"ds-tab\">Tree</button></div>",
+      "css": ".ds-tab-container { display: inline-flex; gap: 2px; padding: 2px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; } .ds-tab { background: transparent; color: #8b949e; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 500; border: none; border-radius: 5px; padding: 4px 12px; cursor: pointer; transition: all 0.15s ease-in-out; } .ds-tab.active { background: #161b22; color: #f0f6fc; } .ds-tab:hover:not(.active) { color: #f0f6fc; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Developer's Console",
+    "overview": "LogLens is built to look like a terminal-adjacent, low-chrome dark dashboard focused entirely on high information density, clear grids, and immediate utility. Visual styling should be highly professional, avoiding decorative elements and emphasizing a private, local-first environment for developers and SREs.",
+    "keyCharacteristics": [
+      "Zero Decorative Noise: Every border, outline, and background shift must serve a structural or interactive purpose.",
+      "High Information Density: Sizing and spacing are compact, designed to display thousands of log messages and complex Gantt timelines without wasting vertical viewport space.",
+      "Theme-Agnostic Structure: Dark mode is the primary console layout, but the visual hierarchy maps 1:1 onto a clean, high-contrast light mode."
+    ],
+    "rules": [
+      { "name": "The 10% Accent Rule", "body": "Accent colors (Amber, Blue, Green, Red) must never cover more than 10% of any given viewport surface area. Their primary purpose is diagnostic feedback.", "section": "colors" },
+      { "name": "The Monospace Code Rule", "body": "Any string output that originates from a log stream, regex pattern, or LQL query statement must be strictly wrapped in a monospaced font block to preserve horizontal indentation and parsing alignment.", "section": "typography" },
+      { "name": "The Flat-First Rule", "body": "Surfaces are completely flat at rest. Drop shadows are only permitted on floating elements, such as dropdown menus, help popovers, and modal dialog overlays.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do respect the 10% accent rule: keep visual prominence focused on log data rows, not colored header panels.",
+      "Do use strict variable mappings (var(--bg-0) to var(--bg-4)) to ensure instant theme toggling works reliably.",
+      "Do outline form items with visible keyboard focus rings."
+    ],
+    "donts": [
+      "Don't use glowing neon gradients, purple shadows, or frosted glass panels that evoke a generic consumer-facing SaaS layout.",
+      "Don't insert margin spacing exceeding 16px around log panels, as space must be optimized for developer timeline density.",
+      "Don't hide critical help hints inside submenus; use inline context tooltips (?) beside controls."
+    ]
+  }
+}
