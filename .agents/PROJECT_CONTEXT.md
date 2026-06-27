@@ -12,6 +12,7 @@
   - Standardized remaining custom radii (3px, 9px, 12px, 16px) and light theme color overrides in documentation.
   - Eliminated user guide em-dashes (—) to resolve AI writing cadence tell warning, and converted modal form label divs to accessible `<label>` tags with matching `for` and `id` input selectors.
   - Replaced legacy emoji visual indicators (📁, 🔄, 🔍, 🧙, ⚙, 🎨, 🚨, 🗺, 📋, 📊, 📝) across buttons, headings, and tab selectors with high-fidelity vector outline SVGs, creating a clean, consistent developer-console visual language.
+  - Completed a comprehensive `/frontend-design` visual sweep of the application, removing all remaining emoji icons inside the onboarding modal highlights, empty state drop zone panels, thread/pin tabs, settings headers, and LQL query dropdown lists, substituting them with elegant vector SVGs and monospace console glyphs.
   - Bumped project version to `v6.5` in console startup logging and info banner.
 
 - **LogLens UI/UX & Responsive Overhaul (v6.4 — COMPLETED)**:
