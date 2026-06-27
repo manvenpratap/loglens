@@ -16,18 +16,39 @@ colors:
   text-dark-secondary: "#c9d1d9"
   text-light: "#1c1b1a"
   text-light-secondary: "#403f3d"
+  # Light theme variables
+  light-primary: "#c2620a"
+  light-primary-grad: "#a35000"
+  light-bg-0: "#f2efea"
+  light-bg-1: "#faf8f5"
+  light-bg-2: "#f0ede8"
+  light-bg-3: "#e8e4dd"
+  light-bg-4: "#dad6cf"
+  light-bdr: "#cac5bc"
+  light-bdr-d: "#e0dbd3"
+  light-bdr-h: "#a9a49b"
+  light-t1: "#18181b"
+  light-t2: "#27272a"
+  light-t3: "#52525b"
+  light-t4: "#a1a1aa"
+  light-blue: "#2563eb"
+  light-green: "#16a34a"
+  light-red: "#dc2626"
+  light-yellow: "#b45309"
+  light-purple: "#7c3aed"
+  light-cyan: "#0891b2"
 typography:
   display:
-    fontFamily: "Inter, system-ui, -apple-system, sans-serif"
+    fontFamily: "Inter, Geist, system-ui, -apple-system, sans-serif"
     fontSize: "32px"
     fontWeight: 800
     letterSpacing: "-0.6px"
   body:
-    fontFamily: "Inter, system-ui, -apple-system, sans-serif"
+    fontFamily: "Inter, Geist, system-ui, -apple-system, sans-serif"
     fontSize: "12px"
     lineHeight: 1.6
   mono:
-    fontFamily: "JetBrains Mono, monospace"
+    fontFamily: "JetBrains Mono, Geist Mono, monospace"
     fontSize: "10.5px"
 rounded:
   sm: "6px"

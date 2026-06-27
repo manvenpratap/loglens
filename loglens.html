@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="LogLens — Privacy-first, zero-install log analysis tool with Gantt timelines and execution trees."/>
-<title>LogLens v2 — Metadata-Driven Log Analyzer</title>
+<meta name="description" content="LogLens, a privacy-first, zero-install log analysis tool with Gantt timelines and execution trees."/>
+<title>LogLens v2: Metadata-Driven Log Analyzer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <!-- impeccable-disable-line overused-font -->
 <style>
 /* ============================================================
    CSS §1 · DESIGN TOKENS — DARK THEME (default) · Obsidian Terminal
@@ -630,7 +630,7 @@ select.inp{cursor:pointer}
 .g-tick{position:absolute;top:2px;bottom:2px;width:3px;border-radius:var(--rounded-sm)}
 .g-self{
   position:absolute;right:0;top:0;bottom:0;width:5px;
-  background:rgba(255,255,255,.25);border-radius:0 3px 3px 0;
+  background:rgba(255,255,255,.25);border-radius:0 var(--rounded-sm) var(--rounded-sm) 0;
 }
 
 /* ============================================================
@@ -1552,7 +1552,7 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
   height:100%;min-height:340px;
 }
 .emp-drop-zone{
-  width:200px;height:140px;border-radius:16px;
+  width:200px;height:140px;border-radius:var(--rounded-lg);
   border:2px dashed var(--bdr-h);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:10px;
@@ -1585,7 +1585,7 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
 .settings-section{
   background:var(--bg-0);
   border:1px solid var(--bdr);
-  border-radius:9px;overflow:hidden;
+  border-radius:var(--rounded-md);overflow:hidden;
 }
 .settings-section-hdr{
   display:flex;align-items:center;gap:8px;
@@ -1690,7 +1690,7 @@ mark.hl{
 }
 .g-lbl-resize:hover,.g-lbl-resize.dragging{
   background:var(--amber);
-  border-radius:0 2px 2px 0;
+  border-radius:0 var(--rounded-sm) var(--rounded-sm) 0;
 }
 /* Gantt SLA pulsing animation */
 @keyframes sla-pulse{
@@ -2004,7 +2004,7 @@ mark.hl{
   display:flex;align-items:center;gap:10px;margin-bottom:20px;
 }
 .ob-logo-ico{
-  width:42px;height:42px;border-radius:12px;
+  width:42px;height:42px;border-radius:var(--rounded-lg);
   background:var(--grad-amber);
   display:flex;align-items:center;justify-content:center;
   font-size:20px;
@@ -2081,7 +2081,7 @@ mark.hl{
 .ob-feat{
   background:var(--bg-1);
   border:1px solid var(--bdr);
-  border-radius:12px;padding:16px;
+  border-radius:var(--rounded-lg);padding:16px;
   transition:border-color .2s,transform .2s,box-shadow .2s;
 }
 .ob-feat:hover{
@@ -2425,7 +2425,7 @@ mark.hl{
 
 <!-- ================================================================ HEADER -->
 <header class="hdr">
-  <h1 class="sr-only">LogLens — Metadata-Driven Log Analyzer</h1>
+  <h1 class="sr-only">LogLens: Metadata-Driven Log Analyzer</h1>
 
   <!-- Logo -->
   <div class="logo">
@@ -2469,15 +2469,15 @@ mark.hl{
           Export <span class="hdr-exp-caret" aria-hidden="true">▾</span>
         </button>
         <div class="exp-menu" id="exp-menu" role="menu">
-          <div class="exp-mi" data-exp="csv" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> CSV — All Events</div>
-          <div class="exp-mi" data-exp="json" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span> JSON — Event Tree</div>
+          <div class="exp-mi" data-exp="csv" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> CSV: All Events</div>
+          <div class="exp-mi" data-exp="json" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span> JSON: Event Tree</div>
           <div class="exp-sep" role="separator"></div>
-          <div class="exp-mi" data-exp="svg" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> SVG — Gantt Chart</div>
-          <div class="exp-mi" data-exp="png" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> PNG — Gantt Chart</div>
+          <div class="exp-mi" data-exp="svg" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> SVG: Gantt Chart</div>
+          <div class="exp-mi" data-exp="png" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> PNG: Gantt Chart</div>
           <div class="exp-sep" role="separator"></div>
-          <div class="exp-mi" data-exp="html" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> HTML — Shareable Report</div>
+          <div class="exp-mi" data-exp="html" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> HTML: Shareable Report</div>
           <div class="exp-sep" role="separator"></div>
-          <div class="exp-mi" data-exp="lls" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> LLS — Saved Session (.lls)</div>
+          <div class="exp-mi" data-exp="lls" role="menuitem"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> LLS: Saved Session (.lls)</div>
         </div>
       </div>
 
@@ -2713,7 +2713,7 @@ mark.hl{
         <strong>logback.xml</strong> file. LogLens parses every
         <code style="color:var(--amber)">PatternLayout</code> /
         <code style="color:var(--amber)">ConversionPattern</code> and generates
-        ready-to-use base regex patterns — no regex knowledge needed.
+        ready-to-use base regex patterns (no regex knowledge needed).
       </div>
       <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
       <div id="lj-res" class="fcol gap2"></div>
@@ -2758,7 +2758,7 @@ mark.hl{
         <div class="hlp-beh">
           <div class="hlp-beh-row">
             <span class="hlp-beh-badge badge b-blue">push</span>
-            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Opens a timed block.</strong> The event goes on the stack; its duration starts here. Pair it with a <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--green)">pop</code> rule that has the same <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--amber)">elementName</code>.</div>
+            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Opens a timed block.</strong> The event goes on the stack; its duration starts here. Pair it with a <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--green)">pop</code> rule that has the same <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--amber)">elementName</code>.</div>
           </div>
           <div class="hlp-beh-row">
             <span class="hlp-beh-badge badge b-green">pop</span>
@@ -2766,23 +2766,23 @@ mark.hl{
           </div>
           <div class="hlp-beh-row">
             <span class="hlp-beh-badge badge b-pur">inline</span>
-            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Point-in-time event.</strong> Appears as a leaf node in the tree — no duration. Use for warnings, errors, and log statements.</div>
+            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Point-in-time event.</strong> Appears as a leaf node in the tree (no duration). Use for warnings, errors, and log statements.</div>
           </div>
         </div>
 
         <div class="hlp-sh">Hotspot badges</div>
         <div style="font-size:11px;color:var(--t2);line-height:1.6;">
-          Tree nodes show <span class="hb hr-">↑↑80%</span> badges — the percentage of the parent event's duration consumed by this child. Badge color escalates: <span style="color:var(--amber)">25%+</span> → <span style="color:var(--red)">50%+</span> → <span style="color:var(--red);font-weight:700">80%</span> reveals the true bottleneck.
+          Tree nodes show <span class="hb hr-">↑↑80%</span> badges: the percentage of the parent event's duration consumed by this child. Badge color escalates: <span style="color:var(--amber)">25%+</span> → <span style="color:var(--red)">50%+</span> → <span style="color:var(--red);font-weight:700">80%</span> reveals the true bottleneck.
         </div>
 
         <div class="hlp-sh">Trace ID correlation</div>
         <div style="font-size:11px;color:var(--t2);line-height:1.6;">
-          Map a capture group to <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--red)">correlationId</code> and any distributed trace ID becomes a clickable badge — click to filter all views to just that trace across threads.
+          Map a capture group to <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--red)">correlationId</code> and any distributed trace ID becomes a clickable badge (click to filter) all views to just that trace across threads.
         </div>
 
         <div class="hlp-sh">SLA breaches</div>
         <div style="font-size:11px;color:var(--t2);line-height:1.6;">
-          Set a <strong>SLA Threshold (ms)</strong> on any <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:3px;color:var(--amber)">push</code> rule. When its closed block exceeds the limit, the counter in the header bar increments and the node is flagged red in the Gantt.
+          Set a <strong>SLA Threshold (ms)</strong> on any <code style="font-family:var(--mono);font-size:10px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--amber)">push</code> rule. When its closed block exceeds the limit, the counter in the header bar increments and the node is flagged red in the Gantt.
         </div>
 
         <div class="hlp-sh">Pins</div>
@@ -2792,7 +2792,7 @@ mark.hl{
         <div style="color:var(--t3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">
           <span style="display:inline-flex;vertical-align:middle;margin-right:3px"><svg viewBox="0 0 24 24" width="10" height="10"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Pins <span id="pin-count">0</span>
         </div>
-        <div id="pin-list" style="font-size:11px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet — right-click a tree node or press P.</div>
+        <div id="pin-list" style="font-size:11px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet. Right-click a tree node or press P.</div>
 
         <button class="btn btn-p mt2" id="btn-dl-log" style="margin-top:4px">
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
@@ -2844,7 +2844,7 @@ mark.hl{
           </tbody>
         </table>
 
-        <div class="hlp-sh">Example queries — click to run</div>
+        <div class="hlp-sh">Example queries (click to run)</div>
         <div class="lql-ex" data-lql="SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10">
           <span class="lql-kw">SELECT</span> elementName, duration, thread<br>
           <span class="lql-kw">FROM</span> events <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC LIMIT</span> <span class="lql-val">10</span>
@@ -2912,7 +2912,7 @@ mark.hl{
             <span class="cg-name" style="background:rgba(248,81,73,.12);color:#f85149;">correlationId</span>
             <div class="cg-body">
               <div class="cg-role">Distributed trace ID</div>
-              <div class="cg-detail">Enables cross-thread filtering. Any value here becomes a clickable badge — click it to isolate that trace across all threads and views.</div>
+              <div class="cg-detail">Enables cross-thread filtering. Any value here becomes a clickable badge (click it to isolate) that trace across all threads and views.</div>
             </div>
           </div>
         </div>
@@ -3023,7 +3023,7 @@ mark.hl{
     <div class="vt" data-v="stats"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
     <div class="vt" data-v="graph"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
     <div class="vt" data-v="3d"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
-    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" style="width:130px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:4px;display:none;"/>
+    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" style="width:130px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
     <div class="vt-gap"></div>
     <div class="vt-chips" id="vt-chips"></div>
   </div>
@@ -3035,7 +3035,7 @@ mark.hl{
         <div class="emp-drop-label">Drop log file or click Select</div>
       </div>
       <div style="font-size:13px;font-weight:700;color:var(--t3);font-family:var(--display)">Nothing parsed yet</div>
-      <div style="font-size:12px;color:var(--t4);max-width:310px;line-height:1.7">Connect a config, select a log file, and click ▶ Parse — or drag &amp; drop a .log/.gz file anywhere.</div>
+      <div style="font-size:12px;color:var(--t4);max-width:310px;line-height:1.7">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
       <div class="emp-features">
         <div class="emp-feat-chip"><span class="efc-ico">⚡</span>Zero install</div>
         <div class="emp-feat-chip"><span class="efc-ico">🔒</span>100% private</div>
@@ -3066,15 +3066,15 @@ mark.hl{
     <!-- Shared: name + behavior -->
     <div class="g2">
       <div class="f">
-        <div class="fl">Rule Name <span class="ca">*</span></div>
+        <label class="fl" for="e-name">Rule Name <span class="ca">*</span></label>
         <input class="inp" id="e-name" placeholder="e.g. Transaction Start"/>
       </div>
       <div class="f">
-        <div class="fl">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button">?</button></div>
+        <label class="fl" for="e-beh">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button">?</button></label>
         <select class="inp" id="e-beh">
-          <option value="push">push — opens block</option>
-          <option value="pop">pop — closes block</option>
-          <option value="inline">inline — point event</option>
+          <option value="push">push: opens block</option>
+          <option value="pop">pop: closes block</option>
+          <option value="inline">inline: point event</option>
         </select>
       </div>
     </div>
@@ -3084,12 +3084,12 @@ mark.hl{
       <div class="ws-step">
         <div class="ws-hdr"><div class="ws-num">1</div><span>Select Log Format</span></div>
         <select class="inp" id="wf-sel">
-          <option value="java_std">Java Standard — Log4j / Logback  (ts level [thread] logger - msg)</option>
+          <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
           <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
           <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
           <option value="json">JSON Structured  ({"timestamp":…,"thread":…,"message":…})</option>
           <option value="csv">CSV / Pipe-delimited  (ts|level|thread|msg)</option>
-          <option value="custom">Custom — see Log4j tab or use Advanced mode</option>
+          <option value="custom">Custom: see Log4j tab or use Advanced mode</option>
         </select>
         <div id="wf-ex" class="grx" style="color:var(--t4);font-size:9px;"></div>
       </div>
@@ -3098,7 +3098,7 @@ mark.hl{
         <div class="ws-hdr">
           <div class="ws-num">2</div>
           <span>Keywords / Markers</span>
-          <span class="cm" style="font-size:10px;font-weight:400;margin-left:4px;">— exact strings this rule looks for</span>
+          <span class="cm" style="font-size:10px;font-weight:400;margin-left:4px;">(exact strings this rule looks for)</span>
         </div>
         <div class="kw-row">
           <input class="inp" id="kw-inp" placeholder="e.g.  TX-BEGIN  or  entering method" style="flex:1"/>
@@ -3126,15 +3126,15 @@ mark.hl{
 
       <div class="ws-step">
         <div class="ws-hdr"><div class="ws-num">3</div><span>Generated Pattern Preview</span></div>
-        <div class="grx-l">Regex (auto-generated — switch to Advanced to edit manually)</div>
-        <div id="g-rx-out" class="grx">— add keywords above to generate —</div>
+        <div class="grx-l">Regex (auto-generated: switch to Advanced to edit manually)</div>
+        <div id="g-rx-out" class="grx">add keywords above to generate</div>
         <div class="g2" style="margin-top:6px;">
           <div class="f">
             <div class="fl">Capture Mappings</div>
-            <div id="g-cm-prev" style="font-size:10px;font-family:var(--mono);color:var(--t3);line-height:1.8;">—</div>
+            <div id="g-cm-prev" style="font-size:10px;font-family:var(--mono);color:var(--t3);line-height:1.8;">-</div>
           </div>
           <div class="f">
-            <div class="fl">Quick Test</div>
+            <label class="fl" for="g-tl">Quick Test</label>
             <input class="inp inp-m" id="g-tl" placeholder="Paste sample line…"/>
             <div id="g-to" style="font-size:11px;margin-top:3px;"></div>
           </div>
@@ -3145,9 +3145,9 @@ mark.hl{
     <!-- ADVANCED -->
     <div id="a-body" class="hidden">
       <div class="f">
-        <div class="fl">Pattern Template <span class="cm">(optional — loads a preset base)</span></div>
+        <label class="fl" for="tmpl-sel">Pattern Template <span class="cm">(optional: loads a preset base)</span></label>
         <select class="inp" id="tmpl-sel">
-          <option value="">— none —</option>
+          <option value="">- none -</option>
           <option value="java_std">Java Standard (Log4j): ts level [thread] logger - </option>
           <option value="spring">Spring Boot: ts level PID --- [thread] logger : </option>
           <option value="log4j2">Log4j2 Time: HH:mm:ss.SSS [thread] level logger - </option>
@@ -3157,7 +3157,7 @@ mark.hl{
       </div>
       <div class="f">
         <div class="fl" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></span>
+          <label for="e-rx">Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></label>
           <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
         </div>
         <textarea class="inp inp-m" id="e-rx" rows="3"
@@ -3170,7 +3170,7 @@ mark.hl{
       <div class="rxb">
         <div class="rxb-hdr" id="rxb-hdr">
           <span>🧩</span><span>Pattern Token Builder</span>
-          <span style="font-size:10px;color:var(--t4);margin-left:4px;">— click to insert at cursor</span>
+          <span style="font-size:10px;color:var(--t4);margin-left:4px;">(click to insert at cursor)</span>
           <span class="chev">▶</span>
         </div>
         <div class="rxb-bd" id="rxb-bd"></div>
@@ -3178,9 +3178,9 @@ mark.hl{
 
       <!-- Live preview -->
       <div class="f">
-        <div class="fl">Live Match Preview</div>
+        <label class="fl" for="a-tl">Live Match Preview</label>
         <input class="inp inp-m" id="a-tl"
-          placeholder="Paste a sample log line — preview updates as you type…"/>
+          placeholder="Paste a sample log line. Preview updates as you type…"/>
         <div class="rx-pre" id="rx-pre">
           <span class="rx-em">Type a sample line above to see live match highlighting.</span>
         </div>
@@ -3191,23 +3191,23 @@ mark.hl{
       <div class="fh">Enter the capture group index (1, 2, 3…) for each field.</div>
       <div class="g2">
         <div class="f">
-          <div class="fl">Group # → <span style="color:var(--blue)">timestamp</span></div>
+          <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
           <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
         </div>
         <div class="f">
-          <div class="fl">Group # → <span style="color:var(--green)">thread</span></div>
+          <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
           <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
         </div>
         <div class="f">
-          <div class="fl">Group # → <span style="color:var(--amber)">elementName</span></div>
+          <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
           <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
         </div>
         <div class="f">
-          <div class="fl">Group # → <span style="color:var(--purple)">payload</span></div>
+          <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
           <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
         </div>
         <div class="f">
-          <div class="fl">Group # → <span style="color:var(--red)">correlationId</span></div>
+          <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
           <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
         </div>
       </div>
@@ -3217,16 +3217,16 @@ mark.hl{
     <div class="sh"><span>🎨</span> Visual Style</div>
     <div class="g2">
       <div class="f">
-        <div class="fl">Accent Color</div>
+        <label class="fl" for="e-col">Accent Color</label>
         <div class="flex gap1 ic">
           <input type="color" id="e-col" value="#58a6ff"
-            style="width:32px;height:28px;border:1px solid var(--bdr);border-radius:4px;
+            style="width:32px;height:28px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);
             background:transparent;cursor:pointer;padding:1px;flex-shrink:0;"/>
           <input class="inp inp-m" id="e-hex" placeholder="#58a6ff" style="flex:1"/>
         </div>
       </div>
       <div class="f">
-        <div class="fl">Icon <span class="cm">(emoji or symbol)</span></div>
+        <label class="fl" for="e-ico">Icon <span class="cm">(emoji or symbol)</span></label>
         <input class="inp" id="e-ico" placeholder="▶ 🌐 🗄 ⚠ ✕" style="font-size:15px;"/>
       </div>
     </div>
@@ -3235,7 +3235,7 @@ mark.hl{
     <div class="sh"><span>🚨</span> SLA Settings<button class="htip-btn" data-htip="sla" aria-label="Help: SLA Threshold" type="button" style="margin-left:6px">?</button></div>
     <div class="g2">
       <div class="f">
-        <div class="fl">SLA Threshold (ms) <span class="cm">(optional)</span></div>
+        <label class="fl" for="e-sla">SLA Threshold (ms) <span class="cm">(optional)</span></label>
         <input class="inp" id="e-sla" type="number" min="0" placeholder="e.g. 500"/>
       </div>
     </div>
@@ -3261,7 +3261,7 @@ mark.hl{
     </div>
     <div class="f">
       <div class="fl" style="font-size:10px;color:var(--t3);margin-top:8px;">Live Preview</div>
-      <div id="ann-preview" style="background:var(--bg-1);border:1px solid var(--bdr);border-radius:4px;padding:10px;min-height:60px;font-size:11px;line-height:1.4;overflow-y:auto;max-height:150px;color:var(--t2);word-break:break-word;"></div>
+      <div id="ann-preview" style="background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:10px;min-height:60px;font-size:11px;line-height:1.4;overflow-y:auto;max-height:150px;color:var(--t2);word-break:break-word;"></div>
     </div>
   </div>
   <div class="m-ftr">
@@ -3339,7 +3339,7 @@ mark.hl{
       <div class="ob-feat">
         <span class="ob-feat-ico" aria-hidden="true">🌲</span>
         <div class="ob-feat-title">Execution Trees</div>
-        <div class="ob-feat-desc">Nested push/pop event rules build hierarchical call trees from raw log lines — no code changes needed.</div>
+        <div class="ob-feat-desc">Nested push/pop event rules build hierarchical call trees from raw log lines (no code changes needed).</div>
       </div>
       <div class="ob-feat">
         <span class="ob-feat-ico" aria-hidden="true">🔍</span>
@@ -3359,13 +3359,13 @@ mark.hl{
       <div class="ob-feat">
         <span class="ob-feat-ico" aria-hidden="true">☁️</span>
         <div class="ob-feat-title">Cloud & Local</div>
-        <div class="ob-feat-desc">Connect to Grafana Loki, Elasticsearch, or AWS CloudWatch — or just drop a .log file from your desktop.</div>
+        <div class="ob-feat-desc">Connect to Grafana Loki, Elasticsearch, or AWS CloudWatch, or just drop a .log file from your desktop.</div>
       </div>
     </div>
 
     <!-- Quickstart steps -->
     <div class="ob-steps">
-      <div class="ob-steps-hdr">Quickstart — 3 steps to your first analysis</div>
+      <div class="ob-steps-hdr">Quickstart: 3 steps to your first analysis</div>
       <div class="ob-steps-body">
         <div class="ob-step">
           <div class="ob-step-n" aria-hidden="true">1</div>
@@ -3378,20 +3378,20 @@ mark.hl{
           <div class="ob-step-n" aria-hidden="true">2</div>
           <div>
             <div class="ob-step-ttl">Drop your log</div>
-            <div class="ob-step-desc">Drag a .log, .txt, or .gz file onto the app — or connect a live cloud source in Settings.</div>
+            <div class="ob-step-desc">Drag a .log, .txt, or .gz file onto the app, or connect a live cloud source in Settings.</div>
           </div>
         </div>
         <div class="ob-step">
           <div class="ob-step-n" aria-hidden="true">3</div>
           <div>
             <div class="ob-step-ttl">Explore views</div>
-            <div class="ob-step-desc">Switch between Gantt, Tree, Stats, Graph, and Query views using the toolbar. Press <kbd style="font-family:var(--mono);font-size:10px;padding:1px 4px;border:1px solid var(--bdr);border-radius:3px;">⌘K</kbd> for commands.</div>
+            <div class="ob-step-desc">Switch between Gantt, Tree, Stats, Graph, and Query views using the toolbar. Press <kbd style="font-family:var(--mono);font-size:10px;padding:1px 4px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);">⌘K</kbd> for commands.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <button class="ob-skip" id="ob-skip">Skip — I know what I'm doing</button>
+    <button class="ob-skip" id="ob-skip">Skip (I know what I'm doing)</button>
   </div>
 </div>
 
@@ -4216,14 +4216,14 @@ const RXB={
           if(g.s>cur)lh+=`<span style="color:var(--t3);">${esc(line.slice(cur,g.s))}</span>`;
           const col=C[(g.i-1)%C.length];
           const fn=cm[String(g.i)]?FL[cm[String(g.i)]]||cm[String(g.i)]:`g${g.i}`;
-          lh+=`<span style="background:${col}28;color:${col};border-radius:2px;padding:0 2px;border-bottom:2px solid ${col};"
+          lh+=`<span style="background:${col}28;color:${col};border-radius:var(--rounded-sm);padding:0 2px;border-bottom:2px solid ${col};"
             title="Group ${g.i}: ${fn}">${esc(line.slice(g.s,g.e))}</span>`;
           cur=g.e;
         }
         lh+=`<span style="color:var(--t4);">${esc(line.slice(cur))}</span>`;
       } else {
         lh=`<span style="color:var(--t4);">${esc(line.slice(0,m.index))}</span>`+
-           `<span style="background:var(--amber-g);color:var(--amber);border-radius:2px;">${esc(m[0])}</span>`+
+           `<span style="background:var(--amber-g);color:var(--amber);border-radius:var(--rounded-sm);">${esc(m[0])}</span>`+
            `<span style="color:var(--t4);">${esc(line.slice(m.index+m[0].length))}</span>`;
       }
 
@@ -4272,7 +4272,7 @@ const WIZ={
     const fid=$('wf-sel').value;
     const fmt=WIZ_FMTS[fid]||WIZ_FMTS.java_std;
     const kws=S.wizKw,mode=$('kw-mode').value,cap=$('kw-cap').value;
-    if(fid==='custom'){$('g-rx-out').textContent='Switch to Advanced mode to write a custom pattern.';$('g-cm-prev').textContent='—';return;}
+    if(fid==='custom'){$('g-rx-out').textContent='Switch to Advanced mode to write a custom pattern.';$('g-cm-prev').textContent='-';return;}
     let rx=fmt.base;const cm={...fmt.cm};let ng=fmt.ng;
     if(kws.length>0){
       const esc2=kws.map(k=>escRx(k));
@@ -4655,7 +4655,7 @@ const GR={
       else if (n._isSlaBreach) barCls += ' g-sla-breach';
       if (n._isCriticalPath) barCls += ' g-critical';
 
-      let tooltip = `${esc(n.elementName || n.ruleName)} — ${esc(dur)}`;
+      let tooltip = `${esc(n.elementName || n.ruleName)}: ${esc(dur)}`;
       if (n._isOutlier) tooltip += ` [OUTLIER]`;
       if (n._isSlaBreach) tooltip += ` [SLA BREACH (Limit: ${n.slaThresholdMs}ms)]`;
       if (S.annotations && S.annotations[n.id]) tooltip += ` \nNote: ${esc(S.annotations[n.id])}`;
@@ -4879,7 +4879,7 @@ const TR={
     return `
       <div class="tree-row${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px; display:flex; align-items:center; padding-left:${indent}px; border-bottom:1px solid var(--bdr-d); font-size:12px; white-space:nowrap; overflow:hidden; user-select:none; cursor:pointer;">
         ${chev}
-        <div class="tico" style="background:${bg}; color:${col}; width:16px; height:16px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:10px; margin-right:6px; flex-shrink:0;">${ico}</div>
+        <div class="tico" style="background:${bg}; color:${col}; width:16px; height:16px; border-radius:var(--rounded-sm); display:flex; align-items:center; justify-content:center; font-size:10px; margin-right:6px; flex-shrink:0;">${ico}</div>
         <div class="tbd" style="display:flex; align-items:center; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;">
           <span class="tnm" style="color:${col}; font-weight:bold; margin-right:6px;">${esc(n.ruleName)}</span>
           ${elB}
@@ -4956,7 +4956,7 @@ const UI={
   prog(p,l,n){
     $('prog').classList.remove('hidden');
     $('prog-f').style.width=p+'%';$('prog-p').textContent=p+'%';
-    $('prog-l').textContent=`${l||'…'} — ${(n||0).toLocaleString()} lines`;
+    $('prog-l').textContent=`${l||'…'}: ${(n||0).toLocaleString()} lines`;
   },
   hprog(){setTimeout(()=>{$('prog').classList.add('hidden');$('prog-f').style.width='0%';},500);},
 
@@ -5225,7 +5225,7 @@ const UI={
         </div>`;
       }).join('');
     }
-    $('sh-ttl').textContent=`Log4j / Logback — ${appenders.length} Appender${appenders.length!==1?'s':''} Found`;
+    $('sh-ttl').textContent=`Log4j / Logback: ${appenders.length} Appender${appenders.length!==1?'s':''} Found`;
     $('sh-ov').classList.remove('hidden');
   },
   impSheet(){
@@ -5233,7 +5233,7 @@ const UI={
     document.querySelectorAll('[id^="ap"]').forEach((chk,i)=>{
       if(!chk.checked)return;const a=S.ljAppenders[i];if(!a||!a._c)return;
       const{regex,captureMapping,tsPattern}=a._c;
-      CFG.up({id:gid(),name:`${a.name} — Start (Log4j import)`,regexPattern:regex,
+      CFG.up({id:gid(),name:`${a.name}: Start (Log4j import)`,regexPattern:regex,
         captureMapping,stackBehavior:'push',visualStyle:{accentColor:'#58a6ff',icon:'▶'}});
       if(tsPattern&&S.cfg.globalSettings&&!S.cfg.globalSettings.globalTimestampPattern){
         S.cfg.globalSettings.globalTimestampPattern=tsPattern;CFG.sgs();
@@ -5417,7 +5417,7 @@ const EXP={
     const style=document.querySelector('style').textContent;
     const report=`<!DOCTYPE html>
 <html lang="en" data-theme="${isDark?'dark':'light'}">
-<head><meta charset="UTF-8"/><title>LogLens Interactive Report — ${esc(fn)}</title>
+<head><meta charset="UTF-8"/><title>LogLens Interactive Report: ${esc(fn)}</title>
 <style>${style}
 body{overflow:auto!important}
 .hdr,.ctrl,#prog,.vtabs,.sp-hdl,button{display:none!important}
@@ -5844,7 +5844,7 @@ const RTS={
         <div class="f">
           <div class="fl">Sample Log Lines <span class="cm">(one per line)</span></div>
           <textarea class="inp inp-m" id="rts-inp" rows="8"
-            placeholder="Paste sample log lines here — one per line…"></textarea>
+            placeholder="Paste sample log lines here (one per line)…"></textarea>
         </div>
         <button class="btn btn-p" onclick="RTS.run()">▶ Test All Rules</button>
         <div id="rts-out" class="fcol gap1" style="margin-top:8px;"></div>
@@ -5872,7 +5872,7 @@ const RTS={
       ).join('')||
         `<div class="test-line"><span class="test-no">✕</span><span style="color:var(--t4);font-size:10px;">No matches in sample lines</span></div>`;
       out.insertAdjacentHTML('beforeend',
-        `<div style="background:var(--bg-3);border:1px solid var(--bdr-d);border-radius:4px;padding:8px 10px;">
+        `<div style="background:var(--bg-3);border:1px solid var(--bdr-d);border-radius:var(--rounded-sm);padding:8px 10px;">
           <div class="flex ic gap2" style="margin-bottom:5px;">
             <span>${esc(ico)}</span>
             <span class="rn" style="color:${scol(r.visualStyle?.accentColor||'#8b949e')};">${esc(r.name)}</span>
@@ -5982,7 +5982,7 @@ const PIN={
     if(cntEl){cntEl.textContent=cnt;cntEl.style.display=cnt?'inline':'none';}
     const list=$('pin-list');
     if(!list)return;
-    if(!cnt){list.textContent='No pins yet — right-click a tree node or press P.';return;}
+    if(!cnt){list.textContent='No pins yet. Right-click a tree node or press P.';return;}
     list.innerHTML=[...this._pins.values()].map(({node:n})=>{
       const col=scol(n.visualStyle?.accentColor||'#8b949e');
       return`<div style="display:flex;align-items:center;gap:5px;padding:3px 0;">
@@ -6084,7 +6084,7 @@ const VER={
               <span style="font-family:var(--mono); font-size:10px; color:var(--t4);">${esc(id)}</span>
             </div>
             <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t1);">${esc(newR.name)}</div>
-            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; word-break:break-all; border:1px solid var(--bdr);">${esc(newR.regexPattern)}</div>
+            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.2); padding:6px; border-radius:var(--rounded-sm); word-break:break-all; border:1px solid var(--bdr);">${esc(newR.regexPattern)}</div>
             <div style="margin-top:6px; font-size:10px; color:var(--t3);">
               Stack: <span class="badge b-gray">${esc(newR.stackBehavior)}</span> | Icon: ${esc(newR.visualStyle?.icon || '')}
             </div>
@@ -6099,7 +6099,7 @@ const VER={
               <span style="font-family:var(--mono); font-size:10px; color:var(--t4); text-decoration:line-through;">${esc(id)}</span>
             </div>
             <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t3); text-decoration:line-through;">${esc(oldR.name)}</div>
-            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.1); padding:6px; border-radius:4px; word-break:break-all; border:1px solid var(--bdr); text-decoration:line-through; color:var(--t4);">${esc(oldR.regexPattern)}</div>
+            <div style="font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.1); padding:6px; border-radius:var(--rounded-sm); word-break:break-all; border:1px solid var(--bdr); text-decoration:line-through; color:var(--t4);">${esc(oldR.regexPattern)}</div>
           </div>
         `;
       } else if (oldR && newR) {
@@ -6140,9 +6140,9 @@ const VER={
               <div style="margin-top:6px; font-size:11px;">
                 <span style="font-weight:bold; color:var(--t2);">${esc(c.prop)}:</span>
                 <div style="display:flex; align-items:center; gap:8px; margin-top:2px; flex-wrap:wrap;">
-                  <span style="background:rgba(220,38,38,0.15); color:var(--red); padding:1px 4px; border-radius:3px; font-family:var(--mono); text-decoration:line-through; word-break:break-all;">${esc(c.oldVal)}</span>
+                  <span style="background:rgba(220,38,38,0.15); color:var(--red); padding:1px 4px; border-radius:var(--rounded-sm); font-family:var(--mono); text-decoration:line-through; word-break:break-all;">${esc(c.oldVal)}</span>
                   <span style="color:var(--t4);">➔</span>
-                  <span style="background:rgba(22,163,74,0.15); color:var(--green); padding:1px 4px; border-radius:3px; font-family:var(--mono); word-break:break-all;">${esc(c.newVal)}</span>
+                  <span style="background:rgba(22,163,74,0.15); color:var(--green); padding:1px 4px; border-radius:var(--rounded-sm); font-family:var(--mono); word-break:break-all;">${esc(c.newVal)}</span>
                 </div>
               </div>
             `;
@@ -6179,9 +6179,9 @@ const VER={
           </div>
           <div class="m-body" style="flex:1; overflow-y:auto; padding:16px;">
             <div style="display:flex; gap:10px; margin-bottom:12px; font-size:11px; justify-content:center;">
-              <span style="background:rgba(22,163,74,0.15); color:var(--green); border:1px solid var(--green); padding:2px 6px; border-radius:4px;">${addedCount} Added</span>
-              <span style="background:rgba(220,38,38,0.15); color:var(--red); border:1px solid var(--red); padding:2px 6px; border-radius:4px;">${deletedCount} Deleted</span>
-              <span style="background:rgba(255,149,0,0.1); color:var(--amber); border:1px solid var(--amber); padding:2px 6px; border-radius:4px;">${modifiedCount} Modified</span>
+              <span style="background:rgba(22,163,74,0.15); color:var(--green); border:1px solid var(--green); padding:2px 6px; border-radius:var(--rounded-sm);">${addedCount} Added</span>
+              <span style="background:rgba(220,38,38,0.15); color:var(--red); border:1px solid var(--red); padding:2px 6px; border-radius:var(--rounded-sm);">${deletedCount} Deleted</span>
+              <span style="background:rgba(255,149,0,0.1); color:var(--amber); border:1px solid var(--amber); padding:2px 6px; border-radius:var(--rounded-sm);">${modifiedCount} Modified</span>
             </div>
             ${diffHtml}
           </div>
@@ -6304,7 +6304,7 @@ const STATS={
         <td style="padding:10px; text-align:right;">${fmtMs(s.p99)}</td>
         <td style="padding:10px; text-align:right; color:var(--red);">${s.outliers}</td>
         <td style="padding:10px; text-align:center;">
-          <canvas class="spark-hist" data-rid="${s.ruleId}" width="120" height="24" style="border:1px solid var(--bdr); border-radius:3px; background:var(--bg-1);"></canvas>
+          <canvas class="spark-hist" data-rid="${s.ruleId}" width="120" height="24" style="border:1px solid var(--bdr); border-radius:var(--rounded-sm); background:var(--bg-1);"></canvas>
         </td>
       </tr>`;
     }).join('');
@@ -6451,7 +6451,7 @@ const STATS={
     }
 
     container.innerHTML = `<div style="background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; padding:12px;">
-      <div style="font-weight:bold; font-size:11px; text-transform:uppercase; color:var(--t3); margin-bottom:8px;">📊 Latency Comparison — P95 Benchmark vs ${esc(prevSession.fileName)}</div>
+      <div style="font-weight:bold; font-size:11px; text-transform:uppercase; color:var(--t3); margin-bottom:8px;">📊 Latency Comparison: P95 Benchmark vs ${esc(prevSession.fileName)}</div>
       <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <thead>
           <tr style="border-bottom:1px solid var(--bdr); color:var(--t4);">
@@ -6639,7 +6639,7 @@ const UNPARSED = {
       const escSig = esc(c.sig);
       const rawSigForRegex = c.sig.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
       html += `
-        <div style="background:var(--bg-1); border:1px solid var(--bdr-d); border-radius:4px; padding:6px; margin-bottom:4px;">
+        <div style="background:var(--bg-1); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); padding:6px; margin-bottom:4px;">
           <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--amber); margin-bottom:2px;">
             <span>Pattern #${idx + 1}</span>
             <span>${c.count} occurrence${c.count!==1?'s':''}</span>
@@ -6669,7 +6669,7 @@ const GRAPHIFY={
     const html = `<div class="mm" id="${modalId}" style="z-index:700">
       <div class="modal" style="width:650px; background:var(--bg-1);">
         <div class="m-hdr">
-          <div class="m-title">📊 Latency Histogram — ${esc(s.ruleName)}</div>
+          <div class="m-title">📊 Latency Histogram: ${esc(s.ruleName)}</div>
           <button class="btn btn-g btn-sm" onclick="document.getElementById('${modalId}').remove()" aria-label="Close dialog">✕</button>
         </div>
         <div class="m-body" style="padding:20px 10px;">
@@ -7707,7 +7707,7 @@ $('btn-parse').addEventListener('click',async()=>{
     UI.render(trees,threads,stats);UI.hprog();
     PIN.clear();
     const tot=Object.values(trees).reduce((s,t)=>s+cnt(t),0);
-    toast(`Parse complete — ${tot.toLocaleString()} nodes across ${threads.length} thread(s).`,'success');
+    toast(`Parse complete: ${tot.toLocaleString()} nodes across ${threads.length} thread(s).`,'success');
     IDB.save(cacheTarget,S.cfg,trees,threads,stats).catch(()=>{});
     
     S.lastParsedFile = {
@@ -8498,7 +8498,7 @@ const PLUGINS = {
       return;
     }
     container.innerHTML = this._list.map((p, idx) => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px;border:1px solid var(--bdr);border-radius:4px;background:var(--bg-1);margin-bottom:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);background:var(--bg-1);margin-bottom:4px;">
         <span style="font-family:var(--mono);font-size:10px;">Plugin #${idx + 1} (${p.id})</span>
         <button class="btn btn-d btn-sm" onclick="PLUGINS.remove('${p.id}')" style="padding:2px 6px;font-size:9px;">Remove</button>
       </div>
@@ -11807,9 +11807,9 @@ UNPARSED.render = function() {
   Object.entries(clusters).forEach(([sig, cLines], idx) => {
     const list = cLines.slice(0, 5).map(l => `<div class="trunc mono" style="font-size:11px; padding:2px 0;">${esc(l)}</div>`).join('');
     clusterHtml += `
-      <details style="margin-top:4px; padding:4px 6px; border:1px solid var(--bdr-d); border-radius:4px;">
-        <summary style="font-size:11px; font-weight:bold; cursor:pointer;">Cluster ${idx+1} (${cLines.length} lines) — sig: ${esc(sig || 'plaintext')}</summary>
-        <div style="padding-left:12px; margin-top:4px; background:var(--bg-0); border-radius:4px; padding:6px;">
+      <details style="margin-top:4px; padding:4px 6px; border:1px solid var(--bdr-d); border-radius:var(--rounded-sm);">
+        <summary style="font-size:11px; font-weight:bold; cursor:pointer;">Cluster ${idx+1} (${cLines.length} lines). Sig: ${esc(sig || 'plaintext')}</summary>
+        <div style="padding-left:12px; margin-top:4px; background:var(--bg-0); border-radius:var(--rounded-sm); padding:6px;">
           ${list}
           <button class="btn btn-xs btn-g btn-cluster-add" data-rx="${esc(suggestedRx)}" style="margin-top:6px;">Add Rule for this cluster</button>
         </div>
@@ -12098,7 +12098,7 @@ SWIMLANE.init = function(el) {
       
       const style = n.behavior === 'inline'
         ? `left:calc(${sp.toFixed(2)}% - 1px); width:3px; background:${col}; height:100%;`
-        : `left:${sp.toFixed(2)}%; width:${wp.toFixed(2)}%; background:${col}; opacity:0.8; height:18px; border-radius:3px;`;
+        : `left:${sp.toFixed(2)}%; width:${wp.toFixed(2)}%; background:${col}; opacity:0.8; height:18px; border-radius:var(--rounded-sm);`;
       
       return `<div style="position:absolute; top:calc(50% - 9px); ${style}" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
     }).join('');
@@ -12261,7 +12261,7 @@ UI.openAnn = function(node) {
   
   modal.innerHTML = `
     <div style="position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;">
-      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:480px; max-width:100%; display:flex; flex-direction:column; max-height:86vh; box-shadow:var(--shd-lg); overflow:hidden;">
+      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:var(--rounded-lg); width:480px; max-width:100%; display:flex; flex-direction:column; max-height:86vh; box-shadow:var(--shd-lg); overflow:hidden;">
         <div style="padding:12px; border-bottom:1px solid var(--bdr); display:flex; justify-content:space-between; align-items:center;">
           <div>
             <div style="font-weight:bold; font-size:13px; font-family:var(--display);">${esc(node.elementName || node.ruleName)}</div>
@@ -12397,7 +12397,7 @@ const ANNOTATIONS_SUMMARY = {
     
     // Export notes as markdown download
     listCont.querySelector('#btn-export-notes-md')?.addEventListener('click', () => {
-      let md = `# LogLens Annotations — ${S.logFile ? S.logFile.name : 'Unknown File'} — ${new Date().toLocaleDateString()}\n\n`;
+      let md = `# LogLens Annotations: ${S.logFile ? S.logFile.name : 'Unknown File'} — ${new Date().toLocaleDateString()}\n\n`;
       items.forEach(item => {
         md += `## ${esc(item.node.thread)} › ${esc(item.node.elementName || item.node.ruleName)}\n`;
         const ann = S.annotations[item.node.id];
@@ -12627,7 +12627,7 @@ const PLUG = {
       if (p.onContextMenu) hookCount++;
       
       return `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:4px; padding:4px 6px; font-size:11px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); padding:4px 6px; font-size:11px;">
           <div>
             <b>${esc(p.name)}</b> <span style="font-size:9px; color:var(--t4);">v${esc(p.version || '1.0.0')} (${hookCount} hooks)</span>
           </div>
@@ -13015,7 +13015,7 @@ const RCONF = {
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;';
     modal.innerHTML = `
-      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:440px; max-width:100%; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
+      <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:var(--rounded-lg); width:440px; max-width:100%; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
         <div style="font-weight:bold; font-size:14px; font-family:var(--display); border-bottom:1px solid var(--bdr); padding-bottom:8px;">⚙️ Configure HTML Report Options</div>
         
         <div class="f">
@@ -13045,7 +13045,7 @@ const RCONF = {
             <input type="checkbox" id="r-chk-ann" ${this.options.annotations?'checked':''}> Include Annotations
           </label>
           <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
-            <input type="checkbox" id="r-chk-raw" ${this.options.rawLines?'checked':''}> Include raw log lines (large files — opt-in)
+            <input type="checkbox" id="r-chk-raw" ${this.options.rawLines?'checked':''}> Include raw log lines (large files: opt-in)
           </label>
           <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
             <input type="checkbox" id="r-chk-rules" ${this.options.rules?'checked':''}> Include config rules summary
@@ -13596,7 +13596,7 @@ UI.sw = function(tid) {
           const modal = document.createElement('div');
           modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:12px;';
           modal.innerHTML = `
-            <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:12px; width:340px; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
+            <div style="background:var(--bg-2); border:1px solid var(--bdr-h); border-radius:var(--rounded-lg); width:340px; box-shadow:var(--shd-lg); padding:16px; display:flex; flex-direction:column; gap:12px;">
               <div style="font-weight:bold; font-size:13px; font-family:var(--display); border-bottom:1px solid var(--bdr); padding-bottom:6px;">⚠️ Zero-Hit Rules list</div>
               <div style="max-height:220px; overflow-y:auto;">${listHtml}</div>
               <button class="btn btn-sm btn-g" id="btn-zero-modal-close" style="align-self:flex-end;">Close</button>
@@ -13697,10 +13697,10 @@ document.addEventListener('keydown', e => {
 /* ================================================================
    §JS-25 ONBOARDING MODULE
    First-run welcome screen with demo log loader.
-   - ONBOARD.check()   — called at init; shows if user has not dismissed
-   - ONBOARD.show()    — renders overlay (focus-trapped)
-   - ONBOARD.dismiss() — hides with fade, sets ll-seen flag
-   - ONBOARD.loadDemo()— bundles sample config + log, triggers full parse
+   - ONBOARD.check() (called at app init); shows if user has not dismissed
+   - ONBOARD.show() (renders overlay) (focus-trapped)
+   - ONBOARD.dismiss() (hides with fade), sets ll-seen flag
+   - ONBOARD.loadDemo() (bundles sample) config + log, triggers full parse
    ================================================================ */
 const ONBOARD = (() => {
   /* ── Sample config — uses the built-in DEF_CFG rule vocabulary ── */
@@ -14029,18 +14029,18 @@ const HTIP = (() => {
     behavior: {
       title: 'Stack Behavior',
       body: `Controls how this rule interacts with the event tree:<br><br>
-        <strong>push</strong> — Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
-        <strong>pop</strong> — Closes the last open <code>push</code> block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
-        <strong>inline</strong> — A standalone point event with no duration. Use for log statements, warnings, and errors.`
+        <strong>push</strong>: Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
+        <strong>pop</strong>: Closes the last open <code>push</code> block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
+        <strong>inline</strong>: A standalone point event with no duration. Use for log statements, warnings, and errors.`
     },
     capture: {
       title: 'Capture Group Mapping',
       body: `Maps regex capture group numbers to named fields:<br><br>
-        <code>timestamp</code> — Event start time (ISO 8601 or epoch ms)<br>
-        <code>thread</code> — Thread identifier → Gantt swimlane<br>
-        <code>elementName</code> — Event label shown in tree & Gantt<br>
-        <code>payload</code> — Extra detail (SQL, URL body, error msg)<br>
-        <code>correlationId</code> — Trace ID for cross-thread filtering<br><br>
+        <code>timestamp</code>: Event start time (ISO 8601 or epoch ms)<br>
+        <code>thread</code>: Thread identifier → Gantt swimlane<br>
+        <code>elementName</code>: Event label shown in tree & Gantt<br>
+        <code>payload</code>: Extra detail (SQL, URL body, error msg)<br>
+        <code>correlationId</code>: Trace ID for cross-thread filtering<br><br>
         Example: if your regex has <code>timestamp</code> in group 1 and <code>thread</code> in group 2, enter <strong>1</strong> and <strong>2</strong> respectively.`
     },
     sla: {
