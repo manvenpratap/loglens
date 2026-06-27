@@ -2458,6 +2458,156 @@ mark.hl{
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
+
+/* ================================================================
+   §CSS-OVERDRIVE  View Transitions | Minimap | Scroll Scrubber
+   ================================================================ */
+
+/* --- 1. Node Detail Overlay (View Transition morph target) --- */
+#od-overlay {
+  position: fixed; inset: 0; z-index: 9800;
+  display: flex; align-items: center; justify-content: center;
+  background: oklch(0% 0 0 / 0.6);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+#od-overlay.open { opacity: 1; pointer-events: auto; }
+#od-card {
+  view-transition-name: od-card;
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-lg);
+  padding: 24px 28px;
+  min-width: 420px; max-width: 680px; width: 90vw;
+  max-height: 80vh; overflow-y: auto;
+  box-shadow: 0 24px 64px oklch(0% 0 0 / 0.55);
+  position: relative;
+  transform: translateY(0) scale(1);
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
+}
+#od-card::-webkit-scrollbar { width: 4px; }
+#od-card::-webkit-scrollbar-thumb { background: var(--bdr); border-radius: 4px; }
+#od-hdr { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+#od-ico {
+  width: 32px; height: 32px; border-radius: var(--rounded-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; margin-top: 2px;
+}
+#od-title { font-size: 15px; font-weight: 700; color: var(--t1); letter-spacing: -0.02em; margin: 0; }
+#od-el { font-size: 12px; color: var(--t3); margin-top: 2px; font-family: var(--mono); }
+#od-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; color: var(--t4); cursor: pointer;
+  font-size: 18px; line-height: 1; padding: 4px; border-radius: var(--rounded-sm);
+  transition: color 0.15s, background 0.15s;
+}
+#od-close:hover { color: var(--t1); background: var(--bg-3); }
+.od-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px 16px; margin-bottom: 16px;
+}
+.od-stat {
+  background: var(--bg-1); border: 1px solid var(--bdr-d);
+  border-radius: var(--rounded-md); padding: 10px 12px;
+}
+.od-stat-label { font-size: 10px; color: var(--t4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.od-stat-value { font-size: 14px; font-weight: 600; font-family: var(--mono); color: var(--t1); }
+.od-badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.od-payload {
+  background: var(--bg-0); border: 1px solid var(--bdr-d); border-radius: var(--rounded-md);
+  padding: 10px 12px; font-family: var(--mono); font-size: 11px; color: var(--t2);
+  white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto;
+}
+.od-section-label { font-size: 10px; color: var(--t4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.od-progress-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--bdr);
+  margin-top: 8px; overflow: hidden;
+}
+.od-progress-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--amber);
+  transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* View Transitions keyframes */
+@keyframes od-in  { from { opacity:0; transform:translateY(10px) scale(.97) } to { opacity:1; transform:none } }
+@keyframes od-out { from { opacity:1 } to { opacity:0; transform:translateY(6px) scale(.98) } }
+
+@supports (view-transition-name: od-card) {
+  ::view-transition-old(od-card) { animation: od-out 0.2s cubic-bezier(0.4,0,1,1) both; }
+  ::view-transition-new(od-card) { animation: od-in  0.28s cubic-bezier(0.16,1,0.3,1) both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #od-overlay, #od-card { transition: none; }
+  ::view-transition-old(od-card), ::view-transition-new(od-card) { animation: none; }
+}
+
+/* --- 2. Canvas Minimap --- */
+#ll-minimap-wrap {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 56px; z-index: 20;
+  display: flex; flex-direction: column;
+  background: var(--bg-0); border-left: 1px solid var(--bdr-d);
+  pointer-events: auto;
+  user-select: none;
+}
+#ll-minimap {
+  flex: 1; width: 100%; cursor: crosshair;
+  display: block;
+}
+#ll-minimap-thumb {
+  position: absolute; left: 0; right: 0;
+  background: var(--amber); opacity: 0.18;
+  border-top: 1px solid var(--amber); border-bottom: 1px solid var(--amber);
+  pointer-events: none;
+  will-change: top, height;
+  transition: top 0.04s linear, height 0.04s linear;
+}
+#ll-minimap-label {
+  font-size: 8px; text-align: center; color: var(--t4);
+  padding: 3px 0 3px; letter-spacing: 0.05em; flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* Make tree-vscroll leave room for minimap */
+.has-minimap > #tree-vscroll,
+.has-minimap > .vscroll-container { padding-right: 56px; }
+
+/* --- 3. Scroll-Driven Time Scrubber --- */
+#ll-scrubber {
+  position: absolute; top: 0; bottom: 0; width: 2px; left: 0;
+  pointer-events: none; z-index: 10;
+  background: var(--amber); opacity: 0.75;
+  border-radius: 1px;
+  box-shadow: 0 0 6px var(--amber);
+  will-change: left;
+}
+#ll-scrubber-tip {
+  position: absolute; top: 0; left: 4px;
+  font-size: 9px; font-family: var(--mono);
+  color: var(--amber); white-space: nowrap;
+  background: var(--bg-1); padding: 1px 4px;
+  border-radius: 2px; border: 1px solid var(--amber);
+  opacity: 0.9; pointer-events: none;
+}
+
+/* Scroll-driven animation when supported */
+@supports (animation-timeline: scroll()) {
+  #ll-scrubber.scroll-driven {
+    animation: scrubber-move linear both;
+    animation-timeline: scroll(var(--scrubber-scroller, nearest) y);
+  }
+}
+@keyframes scrubber-move {
+  from { left: 0%; }
+  to   { left: calc(100% - 2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ll-scrubber { display: none; }
+}
 </style>
 
 </head>
@@ -3073,7 +3223,7 @@ mark.hl{
     <div class="emp-card" id="emp">
       <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
         <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-        <div class="emp-drop-label">Drop log file or click Select</div>
+        <div class="emp-drop-label">Ready for telemetry. Drop log to begin.</div>
       </div>
       <div style="font-size:13px;font-weight:700;color:var(--t3);font-family:var(--display)">Nothing parsed yet</div>
       <div style="font-size:12px;color:var(--t4);max-width:310px;line-height:1.7">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
@@ -3436,8 +3586,32 @@ mark.hl{
   </div>
 </div>
 
+<!-- Overdrive: Node Detail Overlay -->
+<div id="od-overlay" role="dialog" aria-modal="true" aria-labelledby="od-title">
+  <div id="od-card">
+    <div id="od-hdr">
+      <div id="od-ico"></div>
+      <div><div id="od-title"></div><div id="od-el"></div></div>
+    </div>
+    <button id="od-close" aria-label="Close detail">&times;</button>
+    <div class="od-grid" id="od-grid"></div>
+    <div id="od-badges-wrap">
+      <div class="od-section-label" id="od-badges-label" style="display:none;">Flags</div>
+      <div class="od-badge-row" id="od-badges"></div>
+    </div>
+    <div id="od-payload-wrap" style="display:none;">
+      <div class="od-section-label">Payload</div>
+      <pre class="od-payload" id="od-payload"></pre>
+    </div>
+    <div id="od-hotspot-wrap" style="display:none; margin-top:12px;">
+      <div class="od-section-label">Time Share of Parent</div>
+      <div class="od-progress-bar"><div class="od-progress-fill" id="od-progress-fill"></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- Drag overlay -->
-<div id="drop-ov" aria-hidden="true"><div id="drop-ov-inner"><div class="di" aria-hidden="true">📂</div>Drop log file or config JSON</div></div>
+<div id="drop-ov" aria-hidden="true"><div id="drop-ov-inner"><div class="di" aria-hidden="true" style="margin-bottom:12px;opacity:0.8"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>Ready for telemetry. Drop to parse.</div></div>
 <!-- Sidebar backdrop (mobile) -->
 <div class="sb-backdrop" id="sb-backdrop" aria-hidden="true"></div>
 <!-- Contextual help popover (HTIP module) -->
@@ -4679,7 +4853,7 @@ const GR={
   },
   render(tree,el){
     if(!tree||!tree.length){
-      el.innerHTML='<div class="emp" style="padding:26px"><div class="emp-ico">📭</div><div class="emp-sub">No events for this thread.</div></div>';return;
+      el.innerHTML='<div class="emp" style="padding:26px"><div class="emp-ico"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div><div class="emp-sub">Inbox zero, but for logs. No events matched the rules.</div></div>';return;
     }
     HS.ann(tree,null);
     const rs=tree[0].timestamp??0,re=mEnd(tree),rd=Math.max(1,re-rs);
@@ -5002,6 +5176,11 @@ const TR={
 const UI={
   ub(){const can=!!(S.cfg&&S.logFile);$('btn-parse').disabled=!can;$('btn-disc').disabled=!can;},
   prog(p,l,n){
+    if (l === 'Parsing…') {
+      const msgs = ['Crunching telemetry...', 'Unraveling the threads...', 'Reconstructing timeline...', 'Almost there...'];
+      const idx = Math.floor((p || 0) / 30);
+      l = msgs[Math.min(idx, msgs.length - 1)];
+    }
     $('prog').classList.remove('hidden');
     $('prog-f').style.width=p+'%';$('prog-p').textContent=p+'%';
     $('prog-l').textContent=`${l||'…'}: ${(n||0).toLocaleString()} lines`;
@@ -13251,6 +13430,418 @@ const UNDO = {
 };
 
 UNDO.init();
+
+console.log("%c🔍 LogLens", "font-weight:bold; font-size:24px; color:var(--amber); letter-spacing:-0.02em");
+console.log("%cIf you're reading this, you're the kind of person who opens the DevTools to see how things work. We like you.", "color:var(--t3); font-size:12px;");
+
+/* ================================================================
+   §JS-39 OVERDRIVE ENGINE
+   Features:
+     1. View Transitions — cinematic node detail morph overlay
+     2. Canvas Minimap + Spring Physics scroll
+     3. Scroll-Driven Time Scrubber in Gantt
+   ================================================================ */
+const OVERDRIVE = (() => {
+  'use strict';
+
+  /* ── 1. NODE DETAIL OVERLAY (View Transitions) ─────────────────── */
+  const OD = {
+    _open: false,
+    _node: null,
+
+    open(n) {
+      if (!n) return;
+      this._node = n;
+      this._fill(n);
+
+      const overlay = $('od-overlay');
+      const doOpen = () => {
+        overlay.classList.add('open');
+        this._open = true;
+        $('od-close').focus();
+      };
+
+      if (document.startViewTransition) {
+        document.startViewTransition(doOpen);
+      } else {
+        doOpen();
+      }
+    },
+
+    close() {
+      const overlay = $('od-overlay');
+      const doClose = () => {
+        overlay.classList.remove('open');
+        this._open = false;
+        this._node = null;
+      };
+      if (document.startViewTransition) {
+        document.startViewTransition(doClose);
+      } else {
+        doClose();
+      }
+    },
+
+    _fill(n) {
+      const col = scol(n.visualStyle?.accentColor || 'var(--blue)');
+      const ico = esc(n.visualStyle?.icon || '•');
+      const icoEl = $('od-ico');
+      icoEl.textContent = n.visualStyle?.icon || '•';
+      icoEl.style.cssText = `background:${ibg(col)};color:${col};width:32px;height:32px;border-radius:var(--rounded-md);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;`;
+
+      $('od-title').textContent = n.ruleName || 'Event';
+      $('od-title').style.color = col;
+      $('od-el').textContent = n.elementName && n.elementName !== n.ruleName ? n.elementName : '';
+
+      // Stats grid
+      const stats = [];
+      if (n.duration != null) stats.push({ label: 'Duration', value: fmtMs(n.duration), accent: true });
+      if (n.timestamp != null) stats.push({ label: 'Timestamp', value: new Date(n.timestamp).toISOString().replace('T', ' ').slice(0, 23) });
+      if (n._hp != null) stats.push({ label: 'Hotspot', value: n._hp.toFixed(1) + '% of parent' });
+      if (n._sm != null && n._sm !== n.duration) stats.push({ label: 'Self Time', value: fmtMs(n._sm) });
+      if (n.behavior) stats.push({ label: 'Behavior', value: n.behavior });
+      if (n.events?.length) stats.push({ label: 'Children', value: String(n.events.length) });
+      if (n.thread) stats.push({ label: 'Thread', value: n.thread });
+      if (n.correlationId) stats.push({ label: 'Trace ID', value: n.correlationId });
+
+      $('od-grid').innerHTML = stats.map(s =>
+        `<div class="od-stat">
+          <div class="od-stat-label">${esc(s.label)}</div>
+          <div class="od-stat-value" style="${s.accent ? `color:${col}` : ''}">${esc(s.value)}</div>
+        </div>`
+      ).join('');
+
+      // Badges
+      const badges = [];
+      if (n._isSlaBreach) badges.push(`<span class="badge b-red">SLA BREACH</span>`);
+      if (n._isOutlier) badges.push(`<span class="badge b-red">OUTLIER</span>`);
+      if (n._isCriticalPath) badges.push(`<span class="badge b-amber">CRITICAL PATH</span>`);
+      if (n._isQuietPeriod) badges.push(`<span class="badge b-amber">GAP: ${esc(fmtMs(n._quietGap))}</span>`);
+      if (n._cause) badges.push(`<span class="badge b-amber" title="${esc(n._cause)}">⚠ ${esc(n._cause.slice(0,28))}${n._cause.length>28?'…':''}</span>`);
+      $('od-badges').innerHTML = badges.join('');
+      $('od-badges-label').style.display = badges.length ? '' : 'none';
+
+      // Payload
+      const pw = $('od-payload-wrap');
+      if (n.payload) {
+        $('od-payload').textContent = n.payload;
+        pw.style.display = '';
+      } else {
+        pw.style.display = 'none';
+      }
+
+      // Hotspot bar
+      const hw = $('od-hotspot-wrap');
+      if (n._hp != null) {
+        $('od-progress-fill').style.width = Math.min(100, n._hp) + '%';
+        $('od-progress-fill').style.background = n._hp > 70 ? 'var(--red)' : n._hp > 40 ? 'var(--amber)' : 'var(--green)';
+        hw.style.display = '';
+      } else {
+        hw.style.display = 'none';
+      }
+    },
+
+    init() {
+      $('od-close').addEventListener('click', () => this.close());
+      $('od-overlay').addEventListener('click', e => {
+        if (e.target === $('od-overlay')) this.close();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && this._open) { this.close(); e.stopPropagation(); }
+      }, true);
+    }
+  };
+
+  /* ── 2. CANVAS MINIMAP + SPRING PHYSICS SCROLL ──────────────────── */
+  const MINIMAP = {
+    _canvas: null, _ctx: null, _thumb: null, _wrap: null,
+    _nodes: [], _totalHeight: 0, _container: null,
+    _spring: { pos: 0, vel: 0, target: 0, running: false },
+    _dragging: false,
+
+    attach(container, visibleNodes, totalHeight, rowHeight) {
+      this._container = container;
+      this._nodes = visibleNodes || [];
+      this._totalHeight = totalHeight;
+      this._rowHeight = rowHeight || 24;
+
+      // Remove old
+      const old = document.getElementById('ll-minimap-wrap');
+      if (old) old.remove();
+
+      // Wrap container relatively
+      const parent = container.parentElement;
+      if (!parent) return;
+      parent.style.position = 'relative';
+      parent.classList.add('has-minimap');
+
+      // Build minimap DOM
+      this._wrap = document.createElement('div');
+      this._wrap.id = 'll-minimap-wrap';
+
+      const label = document.createElement('div');
+      label.id = 'll-minimap-label';
+      label.textContent = 'MAP';
+
+      this._canvas = document.createElement('canvas');
+      this._canvas.id = 'll-minimap';
+      this._canvas.width = 56;
+
+      this._thumb = document.createElement('div');
+      this._thumb.id = 'll-minimap-thumb';
+
+      this._wrap.append(label, this._canvas, this._thumb);
+      parent.appendChild(this._wrap);
+
+      this._ctx = this._canvas.getContext('2d');
+      this._paint();
+      this._updateThumb();
+
+      // Drag to scroll on minimap
+      this._canvas.addEventListener('mousedown', e => {
+        this._dragging = true;
+        this._jumpTo(e);
+      });
+      document.addEventListener('mousemove', e => {
+        if (!this._dragging) return;
+        this._jumpTo(e);
+      });
+      document.addEventListener('mouseup', () => { this._dragging = false; });
+
+      // Update thumb on container scroll
+      container.addEventListener('scroll', () => this._updateThumb(), { passive: true });
+
+      // Spring loop
+      this._spring.pos = container.scrollTop;
+      this._spring.target = container.scrollTop;
+    },
+
+    _jumpTo(e) {
+      const rect = this._canvas.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+      const target = ratio * (this._container.scrollHeight - this._container.clientHeight);
+      this._springTo(target);
+    },
+
+    _springTo(target) {
+      this._spring.target = target;
+      if (!this._spring.running) {
+        this._spring.running = true;
+        this._springStep();
+      }
+    },
+
+    _springStep() {
+      const s = this._spring;
+      // Spring constants: stiffness=200, damping=26, mass=1
+      const k = 200, d = 26;
+      const dt = 1 / 60;
+      const force = -k * (s.pos - s.target) - d * s.vel;
+      s.vel += force * dt;
+      s.pos += s.vel * dt;
+
+      if (this._container) {
+        this._container.scrollTop = s.pos;
+      }
+      this._updateThumb();
+
+      const settled = Math.abs(s.pos - s.target) < 0.5 && Math.abs(s.vel) < 0.5;
+      if (!settled) {
+        requestAnimationFrame(() => this._springStep());
+      } else {
+        s.pos = s.target;
+        s.vel = 0;
+        s.running = false;
+        if (this._container) this._container.scrollTop = s.target;
+      }
+    },
+
+    _paint() {
+      if (!this._canvas || !this._ctx) return;
+      const nodes = this._nodes;
+      const total = nodes.length;
+      if (!total) return;
+
+      const W = 56, H = this._canvas.height;
+      this._ctx.clearRect(0, 0, W, H);
+
+      // Dark bg
+      this._ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-0').trim() || '#0e1117';
+      this._ctx.fillRect(0, 0, W, H);
+
+      const rowH = Math.max(1, H / total);
+
+      nodes.forEach((n, i) => {
+        const y = i * rowH;
+        let color;
+        if (n._isSlaBreach) color = '#f85149';
+        else if (n._isOutlier) color = '#f0883e';
+        else if (n._isCriticalPath) color = '#bc8cff';
+        else {
+          const col = n.visualStyle?.accentColor;
+          color = col && col !== 'var(--blue)' ? col : '#4f9eff';
+        }
+        const alpha = n.duration ? Math.min(1, 0.3 + (n.duration / 5000) * 0.7) : 0.25;
+        this._ctx.globalAlpha = alpha;
+        this._ctx.fillStyle = color;
+        this._ctx.fillRect(n.depth * 3, y, W - n.depth * 3, Math.max(1, rowH));
+      });
+      this._ctx.globalAlpha = 1;
+    },
+
+    _updateThumb() {
+      if (!this._container || !this._canvas || !this._thumb) return;
+      const scrollTop = this._container.scrollTop;
+      const scrollH = this._container.scrollHeight;
+      const viewH = this._container.clientHeight;
+      if (scrollH <= viewH) { this._thumb.style.display = 'none'; return; }
+      const canvasH = this._canvas.height;
+      const thumbTop = (scrollTop / scrollH) * canvasH;
+      const thumbH = Math.max(8, (viewH / scrollH) * canvasH);
+      this._thumb.style.top = thumbTop + 'px';
+      this._thumb.style.height = thumbH + 'px';
+      this._thumb.style.display = '';
+    },
+
+    refresh(visibleNodes, totalHeight) {
+      this._nodes = visibleNodes || [];
+      this._totalHeight = totalHeight;
+      if (this._canvas) {
+        this._canvas.height = this._canvas.parentElement?.clientHeight || 400;
+        this._paint();
+        this._updateThumb();
+      }
+    },
+
+    detach() {
+      const w = document.getElementById('ll-minimap-wrap');
+      if (w) { w.parentElement?.classList.remove('has-minimap'); w.remove(); }
+      this._canvas = null; this._ctx = null; this._container = null;
+    }
+  };
+
+  /* ── 3. SCROLL-DRIVEN GANTT SCRUBBER ────────────────────────────── */
+  const SCRUBBER = {
+    _el: null, _tip: null, _gw: null,
+    _totalDuration: 0, _startTs: 0,
+    _rafId: null,
+
+    attach(ganttWrapper, startTs, totalDuration) {
+      this._gw = ganttWrapper;
+      this._startTs = startTs;
+      this._totalDuration = totalDuration;
+
+      const old = document.getElementById('ll-scrubber');
+      if (old) old.remove();
+
+      ganttWrapper.style.position = 'relative';
+
+      this._el = document.createElement('div');
+      this._el.id = 'll-scrubber';
+
+      this._tip = document.createElement('div');
+      this._tip.id = 'll-scrubber-tip';
+      this._tip.textContent = '0ms';
+      this._el.appendChild(this._tip);
+
+      // Check scroll-driven animations support
+      if (CSS.supports('animation-timeline', 'scroll()') && false) {
+        // Pure CSS mode (disabled: Gantt doesn't fill viewport scroll, JS is better)
+        this._el.classList.add('scroll-driven');
+      }
+      ganttWrapper.appendChild(this._el);
+
+      // JS fallback: track parent container scroll
+      const scrollParent = ganttWrapper.closest('.vscroll-container, [style*="overflow"]') || ganttWrapper.parentElement;
+      if (scrollParent) {
+        scrollParent.addEventListener('scroll', () => this._update(scrollParent), { passive: true });
+        this._update(scrollParent);
+      }
+    },
+
+    _update(scroller) {
+      if (!this._el || !this._gw) return;
+      const scrollTop = scroller.scrollTop;
+      const scrollH = scroller.scrollHeight;
+      const ratio = scrollH > scroller.clientHeight ? scrollTop / (scrollH - scroller.clientHeight) : 0;
+      const pct = ratio * 100;
+      this._el.style.left = `calc(${pct}% - 1px)`;
+      const ms = ratio * this._totalDuration;
+      this._tip.textContent = fmtMs(ms);
+    },
+
+    detach() {
+      const el = document.getElementById('ll-scrubber');
+      if (el) el.remove();
+      this._el = null; this._gw = null;
+    }
+  };
+
+  /* ── PUBLIC API ──────────────────────────────────────────────────── */
+  return {
+    OD,
+    MINIMAP,
+    SCRUBBER,
+
+    init() {
+      OD.init();
+    },
+
+    /** Call after every TR.render() or GR.render() to refresh overlays */
+    afterRender() {
+      // Minimap: attach to tree virtual scroll container
+      const treeContainer = document.getElementById('tree-vscroll');
+      const TR_ref = typeof TR !== 'undefined' ? TR : null;
+      if (treeContainer && TR_ref?._visibleNodes?.length > 0) {
+        const totalH = TR_ref._visibleNodes.length * (TR_ref._rowHeight || 24);
+        MINIMAP.attach(treeContainer, TR_ref._visibleNodes, totalH, TR_ref._rowHeight || 24);
+        MINIMAP.refresh(TR_ref._visibleNodes, totalH);
+      }
+
+      // Scrubber: attach to Gantt wrapper
+      const gw = document.querySelector('.gw');
+      if (gw && typeof S !== 'undefined' && S.trees) {
+        const thread = S.activeThread || S.threads?.[0];
+        const tree = thread ? S.trees?.[thread] : Object.values(S.trees || {})[0];
+        if (tree?.length) {
+          const rs = tree[0].timestamp ?? 0;
+          const re = typeof mEnd === 'function' ? mEnd(tree) : rs;
+          SCRUBBER.attach(gw, rs, Math.max(1, re - rs));
+        }
+      }
+    }
+  };
+})();
+
+// Wire into tree click: open detail overlay on non-chevron click
+const _origTrHandleClick = TR.handleClick.bind(TR);
+TR.handleClick = function(e) {
+  const row = e.target.closest('.tree-row');
+  // Chevron still expands/collapses, everything else opens the detail panel
+  if (row && !e.target.classList.contains('tchev')) {
+    const idx = parseInt(row.dataset.idx, 10);
+    const n = this._visibleNodes[idx];
+    if (n) {
+      OVERDRIVE.OD.open(n);
+      // Also keep the kb-focus highlight
+      this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
+      row.classList.add('kb-focus');
+    }
+    return; // swallow — chevron expand handled below
+  }
+  _origTrHandleClick(e);
+};
+
+// Patch TR.updateLayout to also refresh minimap
+const _origTrUpdateLayout = TR.updateLayout.bind(TR);
+TR.updateLayout = function() {
+  _origTrUpdateLayout();
+  setTimeout(() => OVERDRIVE.afterRender(), 40);
+};
+
+OVERDRIVE.init();
+
+
 
 // Hook rule modifications to save state to undo stack
 const _origCfgPersist = CFG.persist ? CFG.persist.bind(CFG) : null;
