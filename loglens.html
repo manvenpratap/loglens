@@ -15,18 +15,36 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* Obsidian depth system — cooler, richer, more dimensional */
-  --bg-0:#07090d;--bg-1:#0c0f15;--bg-2:#131720;--bg-3:#1a1f2c;--bg-4:#222839;
-  --bdr-d:#1a1f2c;--bdr:#252c3d;--bdr-h:#363e55;
-  /* Text — warm whites, not cold blue */
-  --t1:#eef0f5;--t2:#c4c9d8;--t3:#7a8299;--t4:#40475e;
-  /* Accent palette — premium, warm amber signal */
-  --amber:#ff9500;   --amber-g:rgba(255,149,0,.13);  --amber-d:rgba(255,149,0,.06);
-  --blue:#4f9eff;    --blue-g:rgba(79,158,255,.12);
-  --green:#30d158;   --green-g:rgba(48,209,88,.11);
-  --red:#ff453a;     --red-g:rgba(255,69,58,.11);
-  --yellow:#ffd60a;  --yellow-g:rgba(255,214,10,.10);
-  --purple:#bf5af2;  --purple-g:rgba(191,90,242,.11);
-  --cyan:#32ade6;    --cyan-g:rgba(50,173,230,.11);
+  /* OKLCH depth system — tinted toward Amber (Hue 55) for brand cohesion */
+  --bg-0: oklch(14% 0.008 55);
+  --bg-1: oklch(17% 0.009 55);
+  --bg-2: oklch(20% 0.010 55);
+  --bg-3: oklch(24% 0.011 55);
+  --bg-4: oklch(29% 0.012 55);
+  --bdr-d: oklch(24% 0.011 55);
+  --bdr: oklch(28% 0.012 55);
+  --bdr-h: oklch(35% 0.013 55);
+  /* Text — warm whites */
+  --t1: oklch(95% 0.005 55);
+  --t2: oklch(85% 0.01 55);
+  --t3: oklch(70% 0.015 55);
+  --t4: oklch(50% 0.015 55);
+  /* Accent palette — semantic and restricted */
+  --amber: oklch(67% 0.16 55);
+  --amber-g: oklch(67% 0.16 55 / 0.13);
+  --amber-d: oklch(67% 0.16 55 / 0.06);
+  --blue: oklch(70% 0.12 250);
+  --blue-g: oklch(70% 0.12 250 / 0.12);
+  --green: oklch(68% 0.14 140);
+  --green-g: oklch(68% 0.14 140 / 0.11);
+  --red: oklch(62% 0.18 25);
+  --red-g: oklch(62% 0.18 25 / 0.11);
+  --yellow: oklch(78% 0.15 85);
+  --yellow-g: oklch(78% 0.15 85 / 0.10);
+  --purple: oklch(65% 0.18 310);
+  --purple-g: oklch(65% 0.18 310 / 0.11);
+  --cyan: oklch(72% 0.11 210);
+  --cyan-g: oklch(72% 0.11 210 / 0.11);
   /* Layout */
   --sw:322px;--hh:50px;
   --rounded-sm:6px;--rounded-md:8px;--rounded-lg:10px;--rounded-full:99px;
@@ -57,16 +75,33 @@
    ============================================================ */
 [data-theme=light]{
   /* Warm cream — not flat white */
-  --bg-0:#f2efea;--bg-1:#faf8f5;--bg-2:#f0ede8;--bg-3:#e8e4dd;--bg-4:#dad6cf;
-  --bdr-d:#e0dbd3;--bdr:#cac5bc;--bdr-h:#a9a49b;
-  --t1:#18181b;--t2:#27272a;--t3:#52525b;--t4:#a1a1aa;
-  --amber:#c2620a;   --amber-g:rgba(194,98,10,.09);  --amber-d:rgba(194,98,10,.04);
-  --blue:#2563eb;    --blue-g:rgba(37,99,235,.09);
-  --green:#16a34a;   --green-g:rgba(22,163,74,.09);
-  --red:#dc2626;     --red-g:rgba(220,38,38,.09);
-  --yellow:#b45309;  --yellow-g:rgba(180,83,9,.09);
-  --purple:#7c3aed;  --purple-g:rgba(124,58,237,.09);
-  --cyan:#0891b2;    --cyan-g:rgba(8,145,178,.09);
+  --bg-0: oklch(96% 0.01 55);
+  --bg-1: oklch(98% 0.005 55);
+  --bg-2: oklch(94% 0.012 55);
+  --bg-3: oklch(91% 0.015 55);
+  --bg-4: oklch(86% 0.018 55);
+  --bdr-d: oklch(88% 0.015 55);
+  --bdr: oklch(80% 0.02 55);
+  --bdr-h: oklch(70% 0.02 55);
+  --t1: oklch(25% 0.015 55);
+  --t2: oklch(35% 0.015 55);
+  --t3: oklch(45% 0.015 55);
+  --t4: oklch(65% 0.01 55);
+  --amber: oklch(60% 0.18 55);
+  --amber-g: oklch(60% 0.18 55 / 0.15);
+  --amber-d: oklch(60% 0.18 55 / 0.08);
+  --blue: oklch(55% 0.16 250);
+  --blue-g: oklch(55% 0.16 250 / 0.15);
+  --green: oklch(55% 0.16 140);
+  --green-g: oklch(55% 0.16 140 / 0.15);
+  --red: oklch(50% 0.18 25);
+  --red-g: oklch(50% 0.18 25 / 0.15);
+  --yellow: oklch(65% 0.18 85);
+  --yellow-g: oklch(65% 0.18 85 / 0.15);
+  --purple: oklch(55% 0.20 310);
+  --purple-g: oklch(55% 0.20 310 / 0.15);
+  --cyan: oklch(60% 0.15 210);
+  --cyan-g: oklch(60% 0.15 210 / 0.15);
   --glass:rgba(0,0,0,.03);
   --glass-bdr:rgba(0,0,0,.07);
   --bar-t:rgba(0,0,0,.88);
@@ -3684,11 +3719,11 @@ const DEF_CFG={
     {id:'r_txs',name:'Transaction Begin',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?TX-BEGIN\s+(\S+)`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
-     stackBehavior:'push',visualStyle:{accentColor:'#58a6ff',icon:'▶'}},
+     stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'}},
     {id:'r_txe',name:'Transaction End',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?TX-END\s+(\S+)`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
-     stackBehavior:'pop',visualStyle:{accentColor:'#58a6ff',icon:'◀'}},
+     stackBehavior:'pop',visualStyle:{accentColor:'var(--blue)',icon:'◀'}},
     {id:'r_hs',name:'HTTP Request',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName','4':'payload'},
@@ -3841,7 +3876,9 @@ const UTILS={
     return 'r_'+Math.random().toString(36).slice(2,9);
   },
   scol(c){
-    return /^#[0-9a-fA-F]{3,8}$/.test(String(c).trim())?String(c).trim():'#8b949e';
+    const s = String(c).trim();
+    if (s.startsWith('var(') || s.startsWith('oklch(')) return s;
+    return /^#[0-9a-fA-F]{3,8}$/.test(s) ? s : 'var(--t3)';
   },
   escRx(s){
     return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,'\\$&');
@@ -4203,7 +4240,7 @@ const RXB={
 
   _hl(line,rxStr,cm){
     /* Color palette for capture groups */
-    const C=['#58a6ff','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
+    const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
     const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay'};
     try{
       let rx,hasIdx=false;
@@ -4345,7 +4382,7 @@ const CFG={
       el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">📐</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';return;
     }
     el.innerHTML=c.elementRules.map((r,i)=>{
-      const col=scol(r.visualStyle?.accentColor||'#8b949e');
+      const col=scol(r.visualStyle?.accentColor||'var(--t4)');
       const ico=esc(r.visualStyle?.icon||'•');
       const beh=r.stackBehavior||'inline';
       const bc={push:'b-blue',pop:'b-green',inline:'b-pur'}[beh]||'b-gray';
@@ -4650,7 +4687,11 @@ const GR={
     const PCT=[0,25,50,75,100];
     const ax=PCT.map(p=>`<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(rd*p/100))}</div></div>`).join('');
     const rh=rows.map(({n,d,sp,wp,sfp})=>{
-      const col=scol(n.visualStyle?.accentColor||'#58a6ff');
+      let col = scol(n.visualStyle?.accentColor||'var(--blue)');
+      if (n._isSlaBreach) col = 'var(--red)';
+      else if (n._isOutlier) col = 'var(--amber)';
+      else if (n._isCriticalPath) col = 'var(--purple)';
+
       const ico=esc(n.visualStyle?.icon||'•');
       const ind=6+d*10,dur=n.behavior!=='inline'&&n.duration!=null?fmtMs(n.duration):'';
       const il=n.behavior==='inline';
@@ -4669,9 +4710,10 @@ const GR={
       let inlineTooltip = `${esc(n.ruleName)}: ${esc(n.payload||n.elementName)}`;
       if (S.annotations && S.annotations[n.id]) inlineTooltip += ` \nNote: ${esc(S.annotations[n.id])}`;
 
+      const barOpacity = il ? 1 : Math.min(1, 0.4 + (wp / 50) * 0.6).toFixed(2);
       const bar=il
         ?`<div class="g-tick" style="left:calc(${sp.toFixed(2)}% - 1.5px);background:${col};" title="${inlineTooltip}"></div>`
-        :wp>0?`<div class="${barCls}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:.84;" title="${tooltip}">
+        :wp>0?`<div class="${barCls}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:${barOpacity};" title="${tooltip}">
           <span class="g-bl">${esc(dur)}</span>
           ${sfp>0&&sfp<98?`<div class="g-self" style="width:${sfp.toFixed(1)}%;"></div>`:''}
         </div>`:'';
@@ -4740,7 +4782,7 @@ const TR={
   },
 
   _nd(n,d){
-    const col=scol(n.visualStyle?.accentColor||'#8b949e');
+    const col=scol(n.visualStyle?.accentColor||'var(--t4)');
     const ico=esc(n.visualStyle?.icon||'•');
     const kids=n.events&&n.events.length>0;
     const dur=n.duration!=null?fmtMs(n.duration):null;
@@ -4854,7 +4896,7 @@ const TR={
   },
 
   renderRow(n, idx) {
-    const col = scol(n.visualStyle?.accentColor || '#8b949e');
+    const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
     const ico = esc(n.visualStyle?.icon || '•');
     const kids = n.hasChildren;
     const dur = n.duration != null ? fmtMs(n.duration) : null;
@@ -5136,7 +5178,7 @@ const UI={
     $('m-ttl').textContent=isN?'Add New Rule':'Edit Rule';
     $('e-id').value=rule?.id||gid();
     $('e-name').value=rule?.name||'';$('e-beh').value=rule?.stackBehavior||'push';
-    const col=rule?.visualStyle?.accentColor||'#58a6ff';
+    const col=rule?.visualStyle?.accentColor||'var(--blue)';
     $('e-col').value=col;$('e-hex').value=col;$('e-ico').value=rule?.visualStyle?.icon||'';
     $('e-rx').value=rule?.regexPattern||'';
     const cm=rule?.captureMapping||{};
@@ -5240,7 +5282,7 @@ const UI={
       if(!chk.checked)return;const a=S.ljAppenders[i];if(!a||!a._c)return;
       const{regex,captureMapping,tsPattern}=a._c;
       CFG.up({id:gid(),name:`${a.name}: Start (Log4j import)`,regexPattern:regex,
-        captureMapping,stackBehavior:'push',visualStyle:{accentColor:'#58a6ff',icon:'▶'}});
+        captureMapping,stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'}});
       if(tsPattern&&S.cfg.globalSettings&&!S.cfg.globalSettings.globalTimestampPattern){
         S.cfg.globalSettings.globalTimestampPattern=tsPattern;CFG.sgs();
       }
@@ -5347,7 +5389,7 @@ const EXP={
     const rows=GR._fl(tree,0,rs,rd);
     const isDark=document.documentElement.dataset.theme==='dark';
     const bg=isDark?'#0d1117':'#f8f7f5',fg=isDark?'#e6edf3':'#1c1917',
-      fg3=isDark?'#8b949e':'#57534e',bdr=isDark?'#30363d':'#c8c5bf';
+      fg3=isDark?'var(--t4)':'#57534e',bdr=isDark?'#30363d':'#c8c5bf';
     const h=PAD*2+rows.length*ROW+30;
     let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${h}" font-family="JetBrains Mono,monospace" font-size="11">`;
     svg+=`<rect width="${W}" height="${h}" fill="${bg}"/>`;
@@ -5360,7 +5402,7 @@ const EXP={
     });
     rows.forEach(({n,d,sp,wp,sfp},i)=>{
       const y=PAD+30+i*ROW;
-      const col=scol(n.visualStyle?.accentColor||'#58a6ff');
+      const col=scol(n.visualStyle?.accentColor||'var(--blue)');
       const ico=n.visualStyle?.icon||'•';
       const ind=6+d*10;
       svg+=`<text x="${PAD+ind+18}" y="${y+15}" fill="${fg}" font-size="11" clip-path="url(#lc)">${esc(ico)} ${esc(n.elementName||n.ruleName)}</text>`;
@@ -5881,7 +5923,7 @@ const RTS={
         `<div style="background:var(--bg-3);border:1px solid var(--bdr-d);border-radius:var(--rounded-sm);padding:8px 10px;">
           <div class="flex ic gap2" style="margin-bottom:5px;">
             <span>${esc(ico)}</span>
-            <span class="rn" style="color:${scol(r.visualStyle?.accentColor||'#8b949e')};">${esc(r.name)}</span>
+            <span class="rn" style="color:${scol(r.visualStyle?.accentColor||'var(--t4)')};">${esc(r.name)}</span>
             <span class="badge ${bc}">${esc(beh)}</span>
             <span class="badge ${ok?'b-green':'b-gray'} mla">${matched.length} match${matched.length!==1?'es':''}</span>
           </div>
@@ -5990,7 +6032,7 @@ const PIN={
     if(!list)return;
     if(!cnt){list.textContent='No pins yet. Right-click a tree node or press P.';return;}
     list.innerHTML=[...this._pins.values()].map(({node:n})=>{
-      const col=scol(n.visualStyle?.accentColor||'#8b949e');
+      const col=scol(n.visualStyle?.accentColor||'var(--t4)');
       return`<div style="display:flex;align-items:center;gap:5px;padding:3px 0;">
         <span style="color:${col};">${esc(n.visualStyle?.icon||'•')}</span>
         <span style="flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2);">${esc(n.elementName||n.ruleName)}</span>
@@ -6237,7 +6279,7 @@ const STATS={
           map[n.ruleId] = {
             ruleId: n.ruleId,
             ruleName: n.ruleName,
-            color: n.visualStyle?.accentColor || '#58a6ff',
+            color: n.visualStyle?.accentColor || 'var(--blue)',
             sla: n.slaThresholdMs || null,
             durations: []
           };
@@ -6782,7 +6824,7 @@ const GRAPHIFY={
         if (n.behavior === 'push') {
           const name = n.elementName || n.ruleName;
           if (!nodesMap[name]) {
-            nodesMap[name] = { id: name, color: n.visualStyle?.accentColor || '#58a6ff', selfTime: 0, count: 0 };
+            nodesMap[name] = { id: name, color: n.visualStyle?.accentColor || 'var(--blue)', selfTime: 0, count: 0 };
           }
           nodesMap[name].count++;
           if (n._sm != null) nodesMap[name].selfTime += n._sm;
@@ -7167,7 +7209,7 @@ const SWIMLANE={
     const bg2 = isDark ? '#161b22' : '#f0ede9';
     const bdr = isDark ? '#30363d' : '#e0dbd3';
     const t1 = isDark ? '#e6edf3' : '#1c1917';
-    const t3 = isDark ? '#8b949e' : '#57534e';
+    const t3 = isDark ? 'var(--t4)' : '#57534e';
 
     const threads = S.threads || [];
     const activeHeight = H - this.miniMapHeight - 30;
@@ -7229,7 +7271,7 @@ const SWIMLANE={
         const drawX = Math.max(this.labelWidth, x1);
         const drawW = w - (drawX - x1);
 
-        const col = n.visualStyle?.accentColor || '#58a6ff';
+        const col = n.visualStyle?.accentColor || 'var(--blue)';
         ctx.fillStyle = col;
         ctx.globalAlpha = 0.7;
 
@@ -7316,7 +7358,7 @@ const SWIMLANE={
     const sW = Math.max(10, (ePct - sPct) * (W - this.labelWidth));
 
     ctx.fillStyle = 'rgba(88, 166, 255, 0.25)';
-    ctx.strokeStyle = '#58a6ff';
+    ctx.strokeStyle = 'var(--blue)';
     ctx.lineWidth = 1.5;
     ctx.fillRect(sX, mY + 2, sW, this.miniMapHeight - 4);
     ctx.strokeRect(sX, mY + 2, sW, this.miniMapHeight - 4);
@@ -10004,7 +10046,7 @@ UI.rv = function() {
     // Helper to render tree with diff rules highlighted
     const renderDiffTree = (nodes, isFileB) => {
       const render = (n, d) => {
-        const col = scol(n.visualStyle?.accentColor || '#8b949e');
+        const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
         const ico = esc(n.visualStyle?.icon || '•');
         const kids = n.events && n.events.length > 0;
         const dur = n.duration != null ? fmtMs(n.duration) : null;
@@ -10998,7 +11040,7 @@ const DIFF = {
           n = d.nodeA;
         }
         
-        const col = scol(n.visualStyle?.accentColor || '#8b949e');
+        const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
         const ico = esc(n.visualStyle?.icon || '•');
         const elName = esc((n.elementName || '').slice(0, 24));
         const dur = n.duration != null ? fmtMs(n.duration) : '';
@@ -11543,7 +11585,7 @@ const REX = {
     const len = pattern.length;
     let groupCount = 0;
     
-    const colors = ['#ffe3b3', '#a5d6ff', '#85ea9a', '#ff7b72', '#f0883e', '#58a6ff', '#56d364'];
+    const colors = ['#ffe3b3', '#a5d6ff', '#85ea9a', '#ff7b72', '#f0883e', 'var(--blue)', '#56d364'];
     
     while (i < len) {
       const char = pattern[i];
@@ -11574,7 +11616,7 @@ const REX = {
             end: i + 3,
             fragment: '(?:',
             description: 'Non-capturing group start',
-            color: '#8b949e'
+            color: 'var(--t4)'
           });
           i += 3;
           continue;
@@ -11596,7 +11638,7 @@ const REX = {
           end: i + 1,
           fragment: ')',
           description: 'Group end',
-          color: '#8b949e'
+          color: 'var(--t4)'
         });
         i++;
         continue;
@@ -11651,7 +11693,7 @@ const REX = {
             end,
             fragment,
             description: desc,
-            color: '#58a6ff'
+            color: 'var(--blue)'
           });
           i = end;
           continue;
@@ -11692,7 +11734,7 @@ const REX = {
             end: closeBrace + 1,
             fragment: content,
             description: `Repetition: matches ${content.slice(1, -1)} times`,
-            color: '#58a6ff'
+            color: 'var(--blue)'
           });
           i = closeBrace + 1;
           continue;
@@ -11727,7 +11769,7 @@ const REX = {
         end: i,
         fragment: literals,
         description: `Literal text: "${esc(literals)}"`,
-        color: '#8b949e'
+        color: 'var(--t4)'
       });
     }
     return segments;
@@ -12073,7 +12115,7 @@ SWIMLANE.init = function(el) {
   if (SWIM.groupByRule) {
     // Group all events by rule type
     const rules = S.cfg?.elementRules || [];
-    swimlanes = rules.map(r => ({ id: r.id, name: r.name, color: r.visualStyle?.accentColor || '#58a6ff', events: [] }));
+    swimlanes = rules.map(r => ({ id: r.id, name: r.name, color: r.visualStyle?.accentColor || 'var(--blue)', events: [] }));
     
     for (const tree of Object.values(trees)) {
       const traverse = (nodes) => {
@@ -12242,7 +12284,7 @@ UI.openAnn = function(node) {
       const initial = esc(c.author.slice(0, 1).toUpperCase());
       // Coloured circle hash
       const hash = c.author.split('').reduce((s, ch) => s + ch.charCodeAt(0), 0);
-      const cols = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+      const cols = ['#f0883e', 'var(--blue)', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
       const avatarCol = cols[hash % cols.length];
       
       const relativeTime = Math.max(0, Math.round((Date.now() - c.ts) / (1000 * 60))); // minutes ago
@@ -12378,7 +12420,7 @@ const ANNOTATIONS_SUMMARY = {
     }
     
     const rows = items.map(item => {
-      const col = scol(item.node.visualStyle?.accentColor || '#8b949e');
+      const col = scol(item.node.visualStyle?.accentColor || 'var(--t4)');
       const ico = esc(item.node.visualStyle?.icon || '•');
       return `
         <div class="ann-summary-row" data-id="${esc(item.node.id)}" style="cursor:pointer; padding:6px; border-bottom:1px solid var(--bdr-d); display:flex; flex-direction:column; gap:2px;">
@@ -12904,7 +12946,7 @@ const SCREEN = {
     ctx.font = 'bold 22px Geist, sans-serif';
     ctx.fillText('LogLens Workbench Export Summary', 40, 50);
     
-    ctx.fillStyle = '#8b949e';
+    ctx.fillStyle = 'var(--t4)';
     ctx.font = '13px Geist Mono, monospace';
     const filename = S.logFile ? S.logFile.name : 'Log File';
     ctx.fillText(`File: ${filename} | Date: ${new Date().toLocaleString()}`, 40, 76);
@@ -12932,7 +12974,7 @@ const SCREEN = {
       
       ctx.fillStyle = '#21262d';
       ctx.fillRect(40, 116, W - 80, 24);
-      ctx.fillStyle = '#8b949e';
+      ctx.fillStyle = 'var(--t4)';
       ctx.font = '11px Geist Mono';
       ctx.fillText(new Date(rs).toLocaleTimeString(), 45, 132);
       ctx.fillText(new Date(re).toLocaleTimeString(), W - 140, 132);
@@ -12944,7 +12986,7 @@ const SCREEN = {
         const sp = n.timestamp ? (n.timestamp - rs) / rd : 0;
         const wp = n.duration ? n.duration / rd : 0.05;
         
-        const col = n.visualStyle?.accentColor || '#58a6ff';
+        const col = n.visualStyle?.accentColor || 'var(--blue)';
         
         ctx.fillStyle = '#161b22';
         ctx.fillRect(40, y, W - 80, 30);
@@ -13000,7 +13042,7 @@ const SCREEN = {
         y += 36;
       });
     } else {
-      ctx.fillStyle = '#8b949e';
+      ctx.fillStyle = 'var(--t4)';
       ctx.font = '14px Geist';
       ctx.fillText('No tree operations to draw.', W/2 - 80, H/2);
     }
@@ -13265,7 +13307,7 @@ PIN.render = function() {
   let html = '';
   for (const [groupName, groupData] of Object.entries(this.groups)) {
     const list = Object.entries(groupData).map(([id, val]) => {
-      const col = scol(val.node.visualStyle?.accentColor || '#8b949e');
+      const col = scol(val.node.visualStyle?.accentColor || 'var(--t4)');
       const ico = esc(val.node.visualStyle?.icon || '•');
       return `
         <div class="pin-item" data-id="${esc(id)}" data-g="${esc(groupName)}" style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:4px 0; border-bottom:1px solid var(--bdr-d); cursor:pointer;">
@@ -13277,7 +13319,7 @@ PIN.render = function() {
     
     // Hash group name to colour
     const hash = groupName.split('').reduce((s,ch)=>s+ch.charCodeAt(0), 0);
-    const cols = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+    const cols = ['#f0883e', 'var(--blue)', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
     const circleCol = cols[hash % cols.length];
     
     html += `
@@ -13465,7 +13507,7 @@ const QUICK_EDIT = {
     pop.style.top = (rect.bottom + window.scrollY) + 'px';
     pop.style.left = (rect.left + window.scrollX) + 'px';
     
-    const colors = ['#f0883e', '#58a6ff', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
+    const colors = ['#f0883e', 'var(--blue)', '#56d364', '#ff7b72', '#d29922', '#a5d6ff', '#ff9500'];
     const swatchHtml = colors.map(col => {
       const activeClass = rule.visualStyle?.accentColor === col ? ' selected' : '';
       return `<div class="color-swatch${activeClass}" style="background:${col};" data-col="${col}"></div>`;
@@ -13488,7 +13530,7 @@ const QUICK_EDIT = {
     `;
     
     // Wire Quick Edit events
-    let selectedCol = rule.visualStyle?.accentColor || '#58a6ff';
+    let selectedCol = rule.visualStyle?.accentColor || 'var(--blue)';
     pop.querySelectorAll('.color-swatch').forEach(sw => {
       sw.addEventListener('click', () => {
         pop.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
