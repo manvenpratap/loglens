@@ -227,6 +227,7 @@ html,body{
   border-right:1px solid var(--bdr);
   display:flex;flex-direction:column;
   overflow:hidden;
+  transition:width .25s var(--ease-snap),background .25s var(--ease-snap);
 }
 .sb.collapsed{width:44px;background:var(--bg-0)}
 .sb.collapsed .sb-top{flex-direction:column-reverse;align-items:center;border-bottom:none}
@@ -7437,10 +7438,10 @@ const SWIMLANE={
    §JS-19 EVENT WIRING
    ================================================================ */
 
-// Theme & Sidebar
+// Theme
 Theme.init();
 $('btn-theme').addEventListener('click',()=>Theme.toggle());
-$('btn-sb-tog').addEventListener('click',()=>SB.toggle());
+// Sidebar toggle — handled exclusively by wireResponsiveSidebar (capture phase) to avoid double-fire
 
 // Drag-and-drop
 DD.init();
