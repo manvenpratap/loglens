@@ -8521,430 +8521,455 @@ const PLUGINS = {
 };
 
 /* ================================================================
-   §JS-38 3D LOG LANDSCAPE
+   §JS-38 3D LOG LANDSCAPE  — Three.js WebGL Edition
+   Design: DESIGN.md tokens · Obsidian Depth · Safety Amber Primary
    ================================================================ */
 /**
  * @namespace LANDSCAPE3D
- * @description Core interactive 3D Canvas 2D engine visualizing log execution trees as 3D bar landscapes, with mouse yaw/pitch rotations, scroll zooming, and hover depth query tooltips.
+ * @description Three.js WebGL 3D visualizer for log execution trees as an
+ * animated "Log Forest" bar landscape. Lazy-loads Three.js at first render.
+ * Follows DESIGN.md: amber point light, obsidian radial gradient, Space Grotesk
+ * headlines, Geist Mono data labels, glassmorphism control overlay.
  */
 const LANDSCAPE3D = {
-  canvas: null,
-  ctx: null,
+  /* ── state ─────────────────────────────────────────────── */
+  _scene: null,
+  _camera: null,
+  _renderer: null,
+  _forest: null,           // THREE.Group containing all bars
+  _rafId: null,
+  _container: null,
+  _canvas: null,
+  _tooltip: null,
+  _resizeObs: null,
+  _raycaster: null,
+  _mouse: null,
+  _bars: [],               // { mesh, node } pairs for raycasting
+  _autoRotate: true,
+  _initialized: false,
   tree: null,
-  container: null,
-  yaw: -0.6,
-  pitch: 0.5,
-  zoom: 1.0,
-  fov: 600,
-  showGrid: true,
-  isDrag: false,
-  lastX: 0,
-  lastY: 0,
-  bars: [],
-  hoveredBar: null,
 
+  /* ── public entry point ─────────────────────────────────── */
   init(tree, container) {
-    this.tree = tree;
-    this.container = container;
-    this.yaw = -0.6;
-    this.pitch = 0.5;
-    this.zoom = 1.0;
-    this.showGrid = true;
-    this.hoveredBar = null;
+    this.tree   = tree;
+    this._container = container;
 
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.cssText = 'display:block; width:100%; height:100%; cursor:grab;';
-    container.appendChild(this.canvas);
-    this.ctx = this.canvas.getContext('2d');
-
-    let tooltip = $('landscape-tooltip');
-    if (!tooltip) {
-      tooltip = document.createElement('div');
-      tooltip.id = 'landscape-tooltip';
-      tooltip.className = 'tooltip hidden';
-      tooltip.style.cssText = 'position:absolute; pointer-events:none; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:10px 14px; font-size:11px; z-index:1000; box-shadow:var(--shd); color:var(--t1); backdrop-filter:blur(8px);';
-      document.body.appendChild(tooltip);
-    }
-
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:absolute; top:12px; left:12px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:12px; font-size:11px; color:var(--t2); pointer-events:auto; max-width:240px; box-shadow:var(--shd); backdrop-filter:blur(8px);';
-    overlay.innerHTML = `
-      <div style="font-weight:bold; margin-bottom:6px; color:var(--amber);">3D Log Landscape</div>
-      <div style="margin-bottom:8px; line-height:1.4; color:var(--t3);">
-        • Left-click + drag to rotate<br>
-        • Scroll wheel to zoom in/out<br>
-        • Hover bars to view event details
+    // Show branded loading screen immediately
+    container.style.cssText = 'position:relative;width:100%;height:100%;background:#07090d;overflow:hidden;';
+    container.innerHTML = `
+      <div id="ld3-loading" style="
+        position:absolute;inset:0;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;gap:16px;
+        background:radial-gradient(ellipse at 50% 60%,#0c1017 0%,#05070a 100%);
+        font-family:'Space Grotesk','Geist',sans-serif;
+      ">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:ld3-spin 2s linear infinite;">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+        </svg>
+        <div style="color:#ff9500;font-weight:700;font-size:14px;letter-spacing:.05em;">3D LOG LANDSCAPE</div>
+        <div style="color:#7a8299;font-size:11px;font-family:'Geist Mono',monospace;">Loading Three.js engine…</div>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-g btn-sm" id="btn-3d-reset" style="padding:3px 6px; font-size:9px;">↺ Reset</button>
-        <button class="btn btn-g btn-sm" id="btn-3d-grid" style="padding:3px 6px; font-size:9px;">Grid: On</button>
-      </div>
+      <style>
+        @keyframes ld3-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes ld3-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+      </style>
     `;
-    container.appendChild(overlay);
 
-    this.resize();
-    this.buildBars();
-
-    this._onResize = () => this.resize();
-    window.addEventListener('resize', this._onResize);
-
-    this.canvas.addEventListener('mousedown', e => {
-      if (e.button !== 0) return;
-      this.isDrag = true;
-      this.canvas.style.cursor = 'grabbing';
-      this.lastX = e.clientX;
-      this.lastY = e.clientY;
+    this._loadThreeJS().then(() => this._build()).catch(err => {
+      container.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;font-family:'Geist',sans-serif;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff453a" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div style="color:#ff453a;font-size:13px;font-weight:600;">3D engine unavailable offline</div>
+          <div style="color:#7a8299;font-size:11px;">Three.js requires an internet connection to load</div>
+        </div>`;
+      toast('3D Landscape unavailable offline — Three.js requires internet.', 'warn');
     });
+  },
 
-    this._onMouseMove = e => {
-      const rect = this.canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-      
-      if (this.isDrag) {
-        const dx = e.clientX - this.lastX;
-        const dy = e.clientY - this.lastY;
-        this.yaw += dx * 0.007;
-        this.pitch += dy * 0.007;
-        this.pitch = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, this.pitch));
-        this.lastX = e.clientX;
-        this.lastY = e.clientY;
-        this.hoveredBar = null;
-        this.hideTooltip();
-        this.draw();
-      } else {
-        if (mx >= 0 && mx <= rect.width && my >= 0 && my <= rect.height) {
-          this.handleHover(mx, my, e.clientX, e.clientY);
-        }
+  /* ── Three.js lazy loader ───────────────────────────────── */
+  _loadThreeJS() {
+    if (window.THREE) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  },
+
+  /* ── build the full Three.js scene ─────────────────────── */
+  _build() {
+    const THREE = window.THREE;
+    const container = this._container;
+    container.innerHTML = '';   // clear loading screen
+
+    /* ─ Renderer ─ */
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+    this._renderer = renderer;
+    container.appendChild(renderer.domElement);
+    renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;';
+
+    /* ─ Radial gradient background canvas ─ */
+    const bgCanvas = document.createElement('canvas');
+    bgCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+    container.insertBefore(bgCanvas, renderer.domElement);
+    this._bgCanvas = bgCanvas;
+    this._drawBg();
+
+    /* ─ Scene ─ */
+    const scene = new THREE.Scene();
+    this._scene = scene;
+
+    /* ─ Camera ─ */
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 2000);
+    camera.position.set(20, 22, 22);
+    camera.lookAt(0, 0, 0);
+    this._camera = camera;
+
+    /* ─ Lights — DESIGN.md amber primary + cool fill ─ */
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+
+    const keyLight = new THREE.PointLight(0xff9500, 2.8, 200); // Safety Amber
+    keyLight.position.set(12, 28, 18);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.PointLight(0x4f9eff, 0.9, 200); // Cool Blue
+    fillLight.position.set(-20, 10, -10);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.35);
+    rimLight.position.set(0, 50, -30);
+    scene.add(rimLight);
+
+    /* ─ Grid floor — obsidian muted ─ */
+    const gridHelper = new THREE.GridHelper(60, 30, 0x252c3d, 0x1a1f2c);
+    gridHelper.position.y = -6;
+    scene.add(gridHelper);
+
+    /* ─ Build bar forest from tree data ─ */
+    const forest = new THREE.Group();
+    this._forest = forest;
+    scene.add(forest);
+    this._bars = [];
+
+    const PALETTE = [0xff9500, 0x4f9eff, 0x30d158, 0xff453a, 0xbf5af2, 0x32ade6, 0xffd60a];
+    const flat = this._flatten(this.tree);
+    const count = Math.min(flat.length > 0 ? flat.length : 60, 300);
+
+    if (flat.length === 0) {
+      // No data — render decorative demo forest (matches code.html reference)
+      for (let i = 0; i < 60; i++) {
+        const h = Math.random() * 12 + 2;
+        const geo = new THREE.BoxGeometry(0.65, h, 0.65);
+        const mat = new THREE.MeshPhongMaterial({
+          color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+          transparent: true, opacity: 0.82, shininess: 120
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        const angle = (i / 60) * Math.PI * 2;
+        const r = 5 + Math.random() * 16;
+        mesh.position.set(Math.cos(angle) * r, h / 2 - 6, Math.sin(angle) * r);
+        mesh.rotation.y = Math.random() * Math.PI;
+        mesh.userData = { baseH: h, idx: i };
+        forest.add(mesh);
       }
-    };
-    document.addEventListener('mousemove', this._onMouseMove);
-
-    this._onMouseUp = () => {
-      if (this.isDrag) {
-        this.isDrag = false;
-        this.canvas.style.cursor = 'grab';
-      }
-    };
-    document.addEventListener('mouseup', this._onMouseUp);
-
-    this.canvas.addEventListener('wheel', e => {
-      e.preventDefault();
-      this.zoom += e.deltaY * 0.001;
-      this.zoom = Math.max(0.2, Math.min(3.0, this.zoom));
-      this.hoveredBar = null;
-      this.hideTooltip();
-      this.draw();
-    }, { passive: false });
-
-    container.querySelector('#btn-3d-reset').addEventListener('click', () => {
-      this.yaw = -0.6;
-      this.pitch = 0.5;
-      this.zoom = 1.0;
-      this.draw();
-    });
-
-    const gridBtn = container.querySelector('#btn-3d-grid');
-    gridBtn.addEventListener('click', () => {
-      this.showGrid = !this.showGrid;
-      gridBtn.textContent = `Grid: ${this.showGrid ? 'On' : 'Off'}`;
-      this.draw();
-    });
-
-    this.draw();
-  },
-
-  destroy() {
-    if (this._onResize) {
-      window.removeEventListener('resize', this._onResize);
-    }
-    if (this._onMouseMove) {
-      document.removeEventListener('mousemove', this._onMouseMove);
-    }
-    if (this._onMouseUp) {
-      document.removeEventListener('mouseup', this._onMouseUp);
-    }
-    this.hideTooltip();
-  },
-
-  resize() {
-    if (!this.canvas) return;
-    const rect = this.canvas.parentElement.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
-    this.ctx.scale(dpr, dpr);
-    this.canvas.style.width = rect.width + 'px';
-    this.canvas.style.height = rect.height + 'px';
-    this.draw();
-  },
-
-  flatten(nodes, depth = 0, flat = []) {
-    for (const n of (nodes || [])) {
-      flat.push({ node: n, depth });
-      if (n.events?.length) {
-        this.flatten(n.events, depth + 1, flat);
-      }
-    }
-    return flat;
-  },
-
-  buildBars() {
-    const flat = this.flatten(this.tree);
-    const maxNodes = 1200;
-    const displayNodes = flat.length > maxNodes ? flat.slice(0, maxNodes) : flat;
-
-    let minT = Infinity, maxT = -Infinity;
-    for (const item of displayNodes) {
-      const t = item.node.timestamp || 0;
-      if (t < minT) minT = t;
-      if (t > maxT) maxT = t;
-      const et = item.node.endTimestamp || t;
-      if (et > maxT) maxT = et;
-    }
-    if (minT === Infinity) { minT = 0; maxT = 1; }
-    const range = maxT - minT || 1;
-
-    this.bars = displayNodes.map(item => {
-      const n = item.node;
-      const t = n.timestamp || 0;
-      const et = n.endTimestamp || t;
-      const xStart = ((t - minT) / range) * 500 - 250;
-      const xEnd = ((et - minT) / range) * 500 - 250;
-      const w = Math.max(8, xEnd - xStart);
-      
-      const z = -120 + item.depth * 35;
-      const d = 12;
-      
-      const dur = n.duration || 0;
-      const h = n.behavior === 'inline' ? 6 : Math.min(160, Math.log10(dur + 1) * 30 + 4);
-
-      return {
-        node: n,
-        x: xStart + w / 2,
-        y: h / 2,
-        z: z,
-        w: w,
-        h: h,
-        d: d,
-        color: n.visualStyle?.accentColor || '#58a6ff'
-      };
-    });
-  },
-
-  draw() {
-    if (!this.canvas || !this.ctx) return;
-    const rect = this.canvas.getBoundingClientRect();
-    const W = rect.width, H = rect.height;
-    const ctx = this.ctx;
-
-    const isDark = document.documentElement.dataset.theme === 'dark';
-    ctx.clearRect(0, 0, W, H);
-    
-    const cx = W / 2, cy = H / 2 + 50;
-    const fov = this.fov;
-    const yaw = this.yaw;
-    const pitch = this.pitch;
-    const zoom = this.zoom;
-
-    const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(W, H));
-    if (isDark) {
-      bgGrad.addColorStop(0, '#0c1017');
-      bgGrad.addColorStop(1, '#05070a');
     } else {
-      bgGrad.addColorStop(0, '#faf8f5');
-      bgGrad.addColorStop(1, '#f2efea');
-    }
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, W, H);
-
-    const project = (x, y, z) => {
-      const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
-      const xRot = x * cosY - z * sinY;
-      const zRot = x * sinY + z * cosY;
-      
-      const cosX = Math.cos(pitch), sinX = Math.sin(pitch);
-      const yRot = y * cosX - zRot * sinX;
-      const zProj = y * sinX + zRot * cosX;
-      
-      const scale = (fov * zoom) / (fov + zProj);
-      return {
-        x: cx + xRot * scale,
-        y: cy - yRot * scale,
-        zDepth: zProj
-      };
-    };
-
-    if (this.showGrid) {
-      ctx.strokeStyle = isDark ? 'rgba(37, 44, 61, 0.4)' : 'rgba(202, 197, 188, 0.4)';
-      ctx.lineWidth = 1;
-      
-      for (let x = -250; x <= 250; x += 50) {
-        const p1 = project(x, 0, -150);
-        const p2 = project(x, 0, 150);
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+      // Real data — position bars in timeline × depth grid
+      let minT = Infinity, maxT = -Infinity;
+      for (const { node: n } of flat) {
+        const t = n.timestamp || 0, et = n.endTimestamp || t;
+        if (t < minT) minT = t;
+        if (et > maxT) maxT = et;
       }
-      for (let z = -150; z <= 150; z += 50) {
-        const p1 = project(-250, 0, z);
-        const p2 = project(250, 0, z);
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+      if (minT === Infinity) { minT = 0; maxT = 1; }
+      const range = maxT - minT || 1;
+
+      for (let i = 0; i < count; i++) {
+        const { node: n, depth } = flat[i];
+        const t  = n.timestamp || 0;
+        const et = n.endTimestamp || t;
+        const xPos = ((t  - minT) / range) * 50 - 25;
+        const xEnd = ((et - minT) / range) * 50 - 25;
+        const barW = Math.max(0.3, xEnd - xPos);
+        const dur  = n.duration || 0;
+        const barH = n.behavior === 'inline' ? 0.5 : Math.min(16, Math.log10(dur + 1) * 3 + 0.4);
+        const zPos = -12 + depth * 3.5;
+
+        const color = n.visualStyle?.accentColor
+          ? parseInt(n.visualStyle.accentColor.replace('#', ''), 16)
+          : PALETTE[i % PALETTE.length];
+
+        const geo = new THREE.BoxGeometry(barW, barH, 1.1);
+        const mat = new THREE.MeshPhongMaterial({
+          color, transparent: true, opacity: 0.85, shininess: 110
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(xPos + barW / 2, barH / 2 - 6, zPos);
+        mesh.userData = { baseH: barH, idx: i, node: n };
+        forest.add(mesh);
+        this._bars.push({ mesh, node: n });
       }
     }
 
-    this.bars.forEach(bar => {
-      const w2 = bar.w / 2;
-      const d2 = bar.d / 2;
-      const h = bar.h;
+    /* ─ Raycaster for hover ─ */
+    this._raycaster = new THREE.Raycaster();
+    this._mouse = new THREE.Vector2(-99, -99);
 
-      const v0 = project(bar.x - w2, 0, bar.z - d2);
-      const v1 = project(bar.x + w2, 0, bar.z - d2);
-      const v2 = project(bar.x + w2, 0, bar.z + d2);
-      const v3 = project(bar.x - w2, 0, bar.z + d2);
+    /* ─ Resize handling ─ */
+    this._resize();
+    this._resizeObs = new ResizeObserver(() => this._resize());
+    this._resizeObs.observe(container);
 
-      const v4 = project(bar.x - w2, h, bar.z - d2);
-      const v5 = project(bar.x + w2, h, bar.z - d2);
-      const v6 = project(bar.x + w2, h, bar.z + d2);
-      const v7 = project(bar.x - w2, h, bar.z + d2);
+    /* ─ Controls overlay ─ */
+    this._buildOverlay(container);
 
-      bar.projVerts = [v0, v1, v2, v3, v4, v5, v6, v7];
+    /* ─ Tooltip ─ */
+    this._buildTooltip();
 
-      const centerProj = project(bar.x, h / 2, bar.z);
-      bar.centerZDepth = centerProj.zDepth;
-    });
+    /* ─ Mouse interaction ─ */
+    this._wireEvents(renderer.domElement);
 
-    this.bars.sort((a, b) => b.centerZDepth - a.centerZDepth);
-
-    const shade = (color, factor) => {
-      let c = color.trim();
-      if (c.startsWith('#')) c = c.slice(1);
-      if (c.length === 3) c = c.split('').map(x => x+x).join('');
-      let r = parseInt(c.slice(0, 2), 16);
-      let g = parseInt(c.slice(2, 4), 16);
-      let b = parseInt(c.slice(4, 6), 16);
-      
-      r = Math.min(255, Math.max(0, Math.round(r * factor)));
-      g = Math.min(255, Math.max(0, Math.round(g * factor)));
-      b = Math.min(255, Math.max(0, Math.round(b * factor)));
-      
-      return `rgb(${r}, ${g}, ${b})`;
-    };
-
-    const drawFace = (p0, p1, p2, p3, fill, stroke) => {
-      ctx.beginPath();
-      ctx.moveTo(p0.x, p0.y);
-      ctx.lineTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.lineTo(p3.x, p3.y);
-      ctx.closePath();
-      if (fill) {
-        ctx.fillStyle = fill;
-        ctx.fill();
-      }
-      if (stroke) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-      }
-    };
-
-    const strokeCol = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-    this.bars.forEach(bar => {
-      const [v0, v1, v2, v3, v4, v5, v6, v7] = bar.projVerts;
-      
-      const isHovered = this.hoveredBar === bar;
-      const baseCol = bar.color;
-      
-      const fillTop = isHovered ? shade(baseCol, 1.2) : baseCol;
-      const fillFront = isHovered ? shade(baseCol, 1.0) : shade(baseCol, 0.85);
-      const fillSide = isHovered ? shade(baseCol, 0.85) : shade(baseCol, 0.7);
-
-      drawFace(v0, v1, v5, v4, fillSide, strokeCol);
-      drawFace(v0, v3, v7, v4, fillSide, strokeCol);
-      drawFace(v1, v2, v6, v5, fillSide, strokeCol);
-      drawFace(v3, v2, v6, v7, fillFront, strokeCol);
-      drawFace(v4, v5, v6, v7, fillTop, strokeCol);
-
-      if (isHovered) {
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(v4.x, v4.y);
-        ctx.lineTo(v5.x, v5.y);
-        ctx.lineTo(v6.x, v6.y);
-        ctx.lineTo(v7.x, v7.y);
-        ctx.closePath();
-        ctx.stroke();
-      }
-    });
+    /* ─ Animation loop ─ */
+    this._autoRotate = true;
+    this._animate();
   },
 
-  handleHover(mx, my, clientX, clientY) {
-    let hovered = null;
-    let closestZ = Infinity;
-
-    for (const bar of this.bars) {
-      if (!bar.projVerts) continue;
-      
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      for (const v of bar.projVerts) {
-        if (v.x < minX) minX = v.x;
-        if (v.x > maxX) maxX = v.x;
-        if (v.y < minY) minY = v.y;
-        if (v.y > maxY) maxY = v.y;
-      }
-
-      if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
-        if (bar.centerZDepth < closestZ) {
-          closestZ = bar.centerZDepth;
-          hovered = bar;
-        }
-      }
-    }
-
-    if (hovered !== this.hoveredBar) {
-      this.hoveredBar = hovered;
-      this.draw();
-      
-      if (hovered) {
-        this.showTooltip(hovered.node, clientX, clientY);
-      } else {
-        this.hideTooltip();
-      }
-    }
+  _drawBg() {
+    const c = this._bgCanvas;
+    const w = this._container.clientWidth  || 800;
+    const h = this._container.clientHeight || 600;
+    c.width  = w; c.height = h;
+    const ctx = c.getContext('2d');
+    const grad = ctx.createRadialGradient(w * 0.5, h * 0.6, 20, w * 0.5, h * 0.6, Math.max(w, h));
+    grad.addColorStop(0, '#0c1017');
+    grad.addColorStop(1, '#05070a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
   },
 
-  showTooltip(node, x, y) {
-    const tooltip = $('landscape-tooltip');
-    if (!tooltip) return;
-    
-    tooltip.innerHTML = `
-      <div style="font-weight:bold; margin-bottom:4px; color:${node.visualStyle?.accentColor || 'var(--t1)'};">${esc(node.elementName || node.ruleName)}</div>
-      <div style="font-size:10px; color:var(--t3); font-family:var(--mono); margin-bottom:6px;">Rule: ${esc(node.ruleName)}</div>
-      <div style="display:flex; justify-content:space-between; gap:16px;">
-        <span style="color:var(--t2);">Duration:</span>
-        <span style="font-weight:bold; color:var(--amber);">${fmtMs(node.duration)}</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; gap:16px; margin-top:2px;">
-        <span style="color:var(--t2);">Timestamp:</span>
-        <span style="font-family:var(--mono);">${node.timestamp ? new Date(node.timestamp).toLocaleTimeString() : '—'}</span>
-      </div>
-      ${node.payload ? `<div style="margin-top:6px; padding-top:4px; border-top:1px solid var(--bdr); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--t3); font-size:10px;">${esc(node.payload)}</div>` : ''}
+  _buildOverlay(container) {
+    const ov = document.createElement('div');
+    ov.id = 'ld3-overlay';
+    ov.style.cssText = `
+      position:absolute;top:14px;left:14px;z-index:10;
+      background:rgba(12,15,21,0.78);
+      border:1px solid rgba(255,149,0,0.18);
+      border-radius:8px;padding:14px 16px;
+      font-family:'Space Grotesk','Geist',sans-serif;
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      box-shadow:0 0 24px rgba(255,149,0,0.10),0 4px 20px rgba(0,0,0,0.55);
+      min-width:200px;animation:ld3-fadein .35s var(--ease-snap,cubic-bezier(.16,1,.3,1));
     `;
-    
-    tooltip.classList.remove('hidden');
-    tooltip.style.left = (x + 12) + 'px';
-    tooltip.style.top = (y + 12) + 'px';
+    ov.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+        </svg>
+        <span style="color:#ff9500;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;">3D Log Landscape</span>
+      </div>
+      <div style="color:#7a8299;font-size:10.5px;line-height:1.6;font-family:'Geist',sans-serif;margin-bottom:12px;">
+        <span style="color:#a3b0cc;">Drag</span> to orbit &nbsp;·&nbsp; <span style="color:#a3b0cc;">Scroll</span> to zoom<br>
+        <span style="color:#a3b0cc;">Hover</span> bars for event details
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button id="btn-3d-rotate" style="
+          display:inline-flex;align-items:center;gap:5px;
+          padding:5px 10px;border-radius:6px;border:1px solid rgba(255,149,0,0.35);
+          background:rgba(255,149,0,0.10);color:#ff9500;
+          font-family:'Geist',sans-serif;font-size:10px;font-weight:600;cursor:pointer;
+          transition:all .18s;
+        ">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.17"/></svg>
+          Auto-Rotate: On
+        </button>
+        <button id="btn-3d-reset" style="
+          padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.10);
+          background:rgba(255,255,255,0.04);color:#c4c9d8;
+          font-family:'Geist',sans-serif;font-size:10px;font-weight:600;cursor:pointer;
+          transition:all .18s;
+        ">↺ Reset</button>
+      </div>
+      <div id="ld3-node-count" style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);font-family:'Geist Mono',monospace;font-size:9px;color:#40475e;"></div>
+    `;
+    container.appendChild(ov);
+
+    // Wire overlay button events
+    ov.querySelector('#btn-3d-rotate').addEventListener('click', (e) => {
+      this._autoRotate = !this._autoRotate;
+      e.currentTarget.textContent = `Auto-Rotate: ${this._autoRotate ? 'On' : 'Off'}`;
+      e.currentTarget.style.color = this._autoRotate ? '#ff9500' : '#7a8299';
+      e.currentTarget.style.borderColor = this._autoRotate ? 'rgba(255,149,0,0.35)' : 'rgba(255,255,255,0.10)';
+    });
+    ov.querySelector('#btn-3d-reset').addEventListener('click', () => {
+      if (this._camera) {
+        this._camera.position.set(20, 22, 22);
+        this._camera.lookAt(0, 0, 0);
+      }
+      if (this._forest) this._forest.rotation.y = 0;
+    });
+
+    // Show node count
+    const nodeCount = this._forest ? this._forest.children.length : 0;
+    const countEl = ov.querySelector('#ld3-node-count');
+    if (countEl) countEl.textContent = `${nodeCount} node(s) rendered`;
   },
 
-  hideTooltip() {
-    const tooltip = $('landscape-tooltip');
-    if (tooltip) tooltip.classList.add('hidden');
+  _buildTooltip() {
+    let tip = document.getElementById('ld3-tooltip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.id = 'ld3-tooltip';
+      tip.style.cssText = `
+        position:fixed;pointer-events:none;z-index:9999;
+        background:rgba(12,15,21,0.92);
+        border:1px solid rgba(255,149,0,0.28);
+        border-radius:8px;padding:12px 14px;
+        font-family:'Geist',sans-serif;font-size:11px;
+        box-shadow:0 0 14px rgba(255,149,0,0.18),0 4px 20px rgba(0,0,0,0.6);
+        backdrop-filter:blur(12px);
+        color:#eef0f5;max-width:240px;
+        transition:opacity .12s;opacity:0;
+      `;
+      document.body.appendChild(tip);
+    }
+    this._tooltip = tip;
+  },
+
+  _wireEvents(canvas) {
+    // Orbit drag
+    let isDrag = false, lastX = 0, lastY = 0;
+    canvas.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      isDrag = true;
+      lastX = e.clientX; lastY = e.clientY;
+      canvas.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mouseup', () => {
+      isDrag = false;
+      canvas.style.cursor = 'grab';
+    });
+    window.addEventListener('mousemove', e => {
+      if (isDrag && this._forest) {
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        this._forest.rotation.y += dx * 0.008;
+        this._camera.position.y = Math.max(2, Math.min(50, this._camera.position.y - dy * 0.08));
+        this._camera.lookAt(0, 0, 0);
+        lastX = e.clientX; lastY = e.clientY;
+      }
+      // Raycasting for hover tooltip
+      const rect = canvas.getBoundingClientRect();
+      this._mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+      this._mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+      this._raycast(e.clientX, e.clientY);
+    });
+
+    // Zoom
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const dist = this._camera.position.length();
+      const factor = 1 + e.deltaY * 0.001;
+      const newDist = Math.max(8, Math.min(80, dist * factor));
+      this._camera.position.normalize().multiplyScalar(newDist);
+      this._camera.lookAt(0, 0, 0);
+    }, { passive: false });
+  },
+
+  _raycast(clientX, clientY) {
+    if (!this._raycaster || !this._bars.length) return;
+    const THREE = window.THREE;
+    this._raycaster.setFromCamera(this._mouse, this._camera);
+    const meshes = this._bars.map(b => b.mesh);
+    const hits = this._raycaster.intersectObjects(meshes);
+
+    if (hits.length > 0) {
+      const hit = hits[0];
+      const entry = this._bars.find(b => b.mesh === hit.object);
+      if (entry) this._showTip(entry.node, clientX, clientY);
+    } else {
+      this._hideTip();
+    }
+  },
+
+  _showTip(node, x, y) {
+    if (!this._tooltip) return;
+    this._tooltip.innerHTML = `
+      <div style="font-weight:700;margin-bottom:4px;color:${node.visualStyle?.accentColor || '#ff9500'};font-size:12px;font-family:'Space Grotesk',sans-serif;">${esc(node.elementName || node.ruleName)}</div>
+      <div style="color:#7a8299;font-family:'Geist Mono',monospace;font-size:9.5px;margin-bottom:8px;">${esc(node.ruleName)}</div>
+      <div style="display:flex;justify-content:space-between;gap:14px;">
+        <span style="color:#c4c9d8;">Duration</span>
+        <span style="font-weight:700;color:#ff9500;font-family:'Geist Mono',monospace;">${fmtMs(node.duration)}</span>
+      </div>
+      ${node.timestamp ? `<div style="display:flex;justify-content:space-between;gap:14px;margin-top:3px;">
+        <span style="color:#c4c9d8;">Time</span>
+        <span style="font-family:'Geist Mono',monospace;color:#a3b0cc;font-size:10px;">${new Date(node.timestamp).toLocaleTimeString()}</span>
+      </div>` : ''}
+      ${node.payload ? `<div style="margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.07);color:#7a8299;font-size:9.5px;font-family:'Geist Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(node.payload.slice(0, 60))}</div>` : ''}
+    `;
+    this._tooltip.style.left  = (x + 14) + 'px';
+    this._tooltip.style.top   = (y + 14) + 'px';
+    this._tooltip.style.opacity = '1';
+  },
+
+  _hideTip() {
+    if (this._tooltip) this._tooltip.style.opacity = '0';
+  },
+
+  _resize() {
+    const c = this._container;
+    if (!c || !this._renderer || !this._camera) return;
+    const w = c.clientWidth, h = c.clientHeight;
+    if (w === 0 || h === 0) return;
+    this._renderer.setSize(w, h);
+    this._camera.aspect = w / h;
+    this._camera.updateProjectionMatrix();
+    this._drawBg();
+  },
+
+  /* ── flat tree helper ───────────────────────────────────── */
+  _flatten(nodes, depth = 0, out = []) {
+    for (const n of (nodes || [])) {
+      out.push({ node: n, depth });
+      if (n.events?.length) this._flatten(n.events, depth + 1, out);
+    }
+    return out;
+  },
+
+  /* ── animation loop ─────────────────────────────────────── */
+  _animate() {
+    this._rafId = requestAnimationFrame(() => this._animate());
+    const t = Date.now() * 0.001;
+
+    // Auto-rotate the log forest
+    if (this._autoRotate && this._forest) {
+      this._forest.rotation.y += 0.0008;
+    }
+
+    // Sine-wave breathing scale on each bar (matches code.html reference)
+    if (this._forest) {
+      this._forest.children.forEach((mesh, idx) => {
+        const baseH = mesh.userData.baseH || 1;
+        const pulse = 1 + Math.sin(t + idx * 0.35) * 0.12;
+        mesh.scale.y = pulse;
+      });
+    }
+
+    if (this._renderer && this._scene && this._camera) {
+      this._renderer.render(this._scene, this._camera);
+    }
+  },
+
+  /* ── cleanup when view is switched ─────────────────────── */
+  destroy() {
+    if (this._rafId) { cancelAnimationFrame(this._rafId); this._rafId = null; }
+    if (this._resizeObs) { this._resizeObs.disconnect(); this._resizeObs = null; }
+    if (this._renderer) { this._renderer.dispose(); this._renderer = null; }
+    if (this._tooltip) { this._tooltip.style.opacity = '0'; }
+    this._scene = null; this._camera = null; this._forest = null; this._bars = [];
   }
 };
 
