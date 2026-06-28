@@ -3326,17 +3326,6 @@ textarea.inp { line-height: 1.55 !important; }
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
 
-/* FIX: Remove conflicting hex-based light theme bg overrides from overhaul block.
-   These selectors force specificity to restore the OKLCH token system. */
-[data-theme=light] .inp,
-[data-theme=light] .modal,
-[data-theme=light] .cmd-box,
-[data-theme=light] .toast,
-[data-theme=light] .rc,
-[data-theme=light] .ap-card {
-  /* Let OKLCH tokens from [data-theme=light] at line 76 control backgrounds */
-  /* No override needed — this block just prevents hex overrides from winning */
-}
 
 /* Gantt selected row: neutral outline instead of left-border accent */
 .g-row.g-selected {
