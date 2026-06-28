@@ -2592,26 +2592,50 @@ mark.hl{
   position: absolute; top: 0; right: 0; bottom: 0;
   width: 56px; z-index: 20;
   display: flex; flex-direction: column;
-  background: var(--bg-0); border-left: 1px solid var(--bdr-d);
+  background: oklch(from var(--bg-0) l c h / 0.85);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid var(--bdr);
   pointer-events: auto;
   user-select: none;
+  box-shadow: -4px 0 16px oklch(0% 0 0 / 0.2);
 }
 #ll-minimap {
-  flex: 1; width: 100%; cursor: crosshair;
+  flex: 1; width: 100%; cursor: pointer;
   display: block;
 }
 #ll-minimap-thumb {
   position: absolute; left: 0; right: 0;
-  background: var(--amber); opacity: 0.18;
-  border-top: 1px solid var(--amber); border-bottom: 1px solid var(--amber);
+  background: oklch(from var(--amber) l c h / 0.12);
+  border-left: 2px solid var(--amber);
+  border-top: 1px solid oklch(from var(--amber) l c h / 0.3);
+  border-bottom: 1px solid oklch(from var(--amber) l c h / 0.3);
   pointer-events: none;
   will-change: top, height;
-  transition: top 0.04s linear, height 0.04s linear;
+  transition: top 0.05s ease-out, height 0.05s ease-out;
+  box-shadow: inset 2px 0 8px oklch(from var(--amber) l c h / 0.08);
 }
 #ll-minimap-label {
-  font-size: 8px; text-align: center; color: var(--t4);
-  padding: 3px 0 3px; letter-spacing: 0.05em; flex-shrink: 0;
+  font-size: 8px; text-align: center; color: var(--t3);
+  font-weight: 700;
+  padding: 5px 0; letter-spacing: 0.1em; flex-shrink: 0;
   text-transform: uppercase;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--bdr-d);
+  font-family: var(--display);
+}
+
+#mm-tooltip {
+  position: fixed; z-index: 10000;
+  background: var(--bg-2); border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md); padding: 6px 10px;
+  font-size: 10px; font-family: var(--mono); color: var(--t1);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.4);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translate(-10px, -50%);
+  white-space: nowrap;
+  line-height: 1.4;
+  border-left: 3px solid var(--amber);
 }
 
 /* Make tree-vscroll leave room for minimap */
@@ -13649,7 +13673,7 @@ const OVERDRIVE = (() => {
     _canvas: null, _ctx: null, _thumb: null, _wrap: null,
     _nodes: [], _totalHeight: 0, _container: null,
     _spring: { pos: 0, vel: 0, target: 0, running: false },
-    _dragging: false,
+    _dragging: false, _hoverY: null, _tooltip: null,
 
     attach(container, visibleNodes, totalHeight, rowHeight) {
       this._container = container;
@@ -13689,6 +13713,15 @@ const OVERDRIVE = (() => {
       this._paint();
       this._updateThumb();
 
+      // Tooltip creation
+      let mmt = document.getElementById('mm-tooltip');
+      if (!mmt) {
+        mmt = document.createElement('div');
+        mmt.id = 'mm-tooltip';
+        document.body.appendChild(mmt);
+      }
+      this._tooltip = mmt;
+
       // Drag to scroll on minimap
       this._canvas.addEventListener('mousedown', e => {
         this._dragging = true;
@@ -13699,6 +13732,49 @@ const OVERDRIVE = (() => {
         this._jumpTo(e);
       });
       document.addEventListener('mouseup', () => { this._dragging = false; });
+
+      // Hover and tooltip update
+      this._hoverY = null;
+      this._canvas.addEventListener('mousemove', e => {
+        const rect = this._canvas.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        this._hoverY = y;
+        this._paint();
+
+        const total = this._nodes.length;
+        if (total > 0 && this._tooltip) {
+          const ratio = Math.max(0, Math.min(1, y / rect.height));
+          const idx = Math.floor(ratio * total);
+          const n = this._nodes[Math.min(total - 1, idx)];
+          if (n) {
+            let info = `<strong>${esc(n.elementName || n.ruleName)}</strong>`;
+            if (n.duration != null) info += ` (${fmtMs(n.duration)})`;
+            if (n._isSlaBreach) info += ` <span style="color:#f85149;margin-left:4px;font-weight:bold;">[SLA BREACH]</span>`;
+            else if (n._isOutlier) info += ` <span style="color:#f0883e;margin-left:4px;font-weight:bold;">[OUTLIER]</span>`;
+            else if (n._isCriticalPath) info += ` <span style="color:#bc8cff;margin-left:4px;font-weight:bold;">[CRITICAL]</span>`;
+            if (n.payload) {
+              const snippet = n.payload.length > 40 ? n.payload.slice(0, 40) + '...' : n.payload;
+              info += `<br><span style="color:var(--t3);font-size:9px;">${esc(snippet)}</span>`;
+            }
+            this._tooltip.innerHTML = info;
+            this._tooltip.style.opacity = '1';
+            this._tooltip.style.left = (rect.left - 12) + 'px';
+            this._tooltip.style.top = e.clientY + 'px';
+            this._tooltip.style.transform = 'translate(-100%, -50%) scale(1)';
+            const borderCol = n._isSlaBreach ? '#f85149' : n._isOutlier ? '#f0883e' : n._isCriticalPath ? '#bc8cff' : '#4f9eff';
+            this._tooltip.style.borderLeftColor = borderCol;
+          }
+        }
+      });
+
+      this._canvas.addEventListener('mouseleave', () => {
+        this._hoverY = null;
+        this._paint();
+        if (this._tooltip) {
+          this._tooltip.style.opacity = '0';
+          this._tooltip.style.transform = 'translate(-100%, -50%) scale(0.95)';
+        }
+      });
 
       // Update thumb on container scroll
       container.addEventListener('scroll', () => this._updateThumb(), { passive: true });
@@ -13725,7 +13801,6 @@ const OVERDRIVE = (() => {
 
     _springStep() {
       const s = this._spring;
-      // Spring constants: stiffness=200, damping=26, mass=1
       const k = 200, d = 26;
       const dt = 1 / 60;
       const force = -k * (s.pos - s.target) - d * s.vel;
@@ -13776,9 +13851,23 @@ const OVERDRIVE = (() => {
         const alpha = n.duration ? Math.min(1, 0.3 + (n.duration / 5000) * 0.7) : 0.25;
         this._ctx.globalAlpha = alpha;
         this._ctx.fillStyle = color;
-        this._ctx.fillRect(n.depth * 3, y, W - n.depth * 3, Math.max(1, rowH));
+        const widthFactor = (n._isSlaBreach || n._isOutlier) ? 1.2 : 1.0;
+        const rectW = Math.min(W, (W - n.depth * 3) * widthFactor);
+        this._ctx.fillRect(n.depth * 3, y, rectW, Math.max(1, rowH));
       });
       this._ctx.globalAlpha = 1;
+
+      // Draw hover line helper
+      if (this._hoverY != null) {
+        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        this._ctx.fillRect(0, this._hoverY - 1, W, 2);
+        this._ctx.strokeStyle = 'var(--amber)';
+        this._ctx.lineWidth = 1;
+        this._ctx.beginPath();
+        this._ctx.moveTo(0, this._hoverY);
+        this._ctx.lineTo(W, this._hoverY);
+        this._ctx.stroke();
+      }
     },
 
     _updateThumb() {
@@ -13808,6 +13897,7 @@ const OVERDRIVE = (() => {
     detach() {
       const w = document.getElementById('ll-minimap-wrap');
       if (w) { w.parentElement?.classList.remove('has-minimap'); w.remove(); }
+      if (this._tooltip) { this._tooltip.remove(); this._tooltip = null; }
       this._canvas = null; this._ctx = null; this._container = null;
     }
   };
@@ -13881,13 +13971,15 @@ const OVERDRIVE = (() => {
 
     /** Call after every TR.render() or GR.render() to refresh overlays */
     afterRender() {
-      // Minimap: attach to tree virtual scroll container
+      // Minimap: attach to tree virtual scroll container only in tree mode (not in split mode or others)
       const treeContainer = document.getElementById('tree-vscroll');
       const TR_ref = typeof TR !== 'undefined' ? TR : null;
-      if (treeContainer && TR_ref?._visibleNodes?.length > 0) {
+      if (treeContainer && TR_ref?._visibleNodes?.length > 0 && typeof S !== 'undefined' && S.viewMode === 'tree') {
         const totalH = TR_ref._visibleNodes.length * (TR_ref._rowHeight || 24);
         MINIMAP.attach(treeContainer, TR_ref._visibleNodes, totalH, TR_ref._rowHeight || 24);
         MINIMAP.refresh(TR_ref._visibleNodes, totalH);
+      } else {
+        MINIMAP.detach();
       }
 
       // Scrubber: attach to Gantt wrapper
@@ -13929,6 +14021,15 @@ const _origTrUpdateLayout = TR.updateLayout.bind(TR);
 TR.updateLayout = function() {
   _origTrUpdateLayout();
   setTimeout(() => OVERDRIVE.afterRender(), 40);
+};
+
+// Patch UI.rv to refresh overlays when view mode changes
+const _origUiRv = UI.rv.bind(UI);
+UI.rv = function() {
+  _origUiRv();
+  setTimeout(() => {
+    if (typeof OVERDRIVE !== 'undefined') OVERDRIVE.afterRender();
+  }, 50);
 };
 
 OVERDRIVE.init();
