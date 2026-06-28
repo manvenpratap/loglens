@@ -3138,10 +3138,12 @@ mark.hl{
 .mm {
   position: fixed !important;
   inset: 0 !important;
-  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   z-index: 9500 !important;
+}
+.mm:not(.hidden) {
+  display: flex !important;
 }
 
 /* 2. SPACING GRID (4px) */
