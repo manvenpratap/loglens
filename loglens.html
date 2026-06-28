@@ -3066,6 +3066,374 @@ mark.hl{
   box-shadow: 0 1px 1px rgba(0,0,0,0.15) !important;
   display: inline-block;
 }
+
+/* ================================================================
+   /* VISUAL AUDIT FIXES */
+   ================================================================ */
+
+/* 1. ALIGNMENT */
+.hdr-search-container {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  margin-left: 16px !important;
+}
+.hdr-search-icon {
+  position: absolute !important;
+  left: 10px !important;
+  color: var(--t4) !important;
+  font-size: 14px !important;
+  pointer-events: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+}
+.hdr-search {
+  margin-left: 0 !important;
+  padding-left: 28px !important;
+  padding-right: 48px !important;
+  height: 28px !important;
+}
+.hdr-search-shortcut {
+  position: absolute !important;
+  right: 10px !important;
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  background: var(--bg-3) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 1px 5px !important;
+  pointer-events: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+}
+.btn-search-clear {
+  position: absolute !important;
+  right: 28px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--t3) !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  font-size: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+  transition: color 0.2s !important;
+}
+.btn-search-clear:hover {
+  color: var(--t1) !important;
+}
+.ico {
+  vertical-align: middle !important;
+}
+.ico + span, .ico + div, span + .ico, div + .ico {
+  vertical-align: middle !important;
+}
+.mm {
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9500 !important;
+}
+
+/* 2. SPACING GRID (4px) */
+.btn {
+  padding: 6px 12px !important;
+  gap: 6px !important;
+}
+.btn-sm {
+  padding: 4px 8px !important;
+}
+.btn-xs {
+  padding: 2px 8px !important;
+}
+.inp {
+  padding: 8px 12px !important;
+}
+.ap-pat, .ap-rx {
+  padding: 6px 8px !important;
+}
+.vtabs {
+  padding: 0 16px !important;
+}
+.vt {
+  padding: 8px 16px !important;
+}
+.prog {
+  padding: 4px 16px !important;
+}
+.stats {
+  padding: 12px 16px !important;
+}
+.sc {
+  padding: 12px 16px !important;
+  gap: 4px !important;
+}
+.pt {
+  padding: 12px 16px !important;
+}
+.t-list {
+  gap: 8px !important;
+  padding: 4px 0 !important;
+}
+.tc {
+  padding: 4px 12px !important;
+}
+.emp {
+  gap: 12px !important;
+  padding: 48px 20px !important;
+}
+.rxb-bd {
+  padding: 12px !important;
+  gap: 12px !important;
+}
+.tok {
+  padding: 4px 8px !important;
+}
+.grx {
+  padding: 8px 12px !important;
+}
+.m-hdr {
+  gap: 12px !important;
+  padding: 16px 20px !important;
+}
+.m-body {
+  padding: 16px 20px !important;
+  gap: 16px !important;
+}
+.m-ftr {
+  padding: 16px 20px !important;
+}
+.sh-hdr {
+  gap: 12px !important;
+  padding: 16px 16px !important;
+}
+.ap-card {
+  padding: 12px 16px !important;
+}
+#toast-r {
+  bottom: 20px !important;
+  right: 20px !important;
+  gap: 8px !important;
+}
+.toast {
+  padding: 12px 16px !important;
+}
+.fchip {
+  padding: 4px 12px !important;
+  gap: 6px !important;
+}
+.fchip-add {
+  padding: 4px 12px !important;
+}
+.exp-mi, .ctx-mi {
+  padding: 8px 16px !important;
+  gap: 8px !important;
+}
+.g-ch {
+  padding: 8px 12px !important;
+}
+.g-lbl {
+  padding: 4px 12px !important;
+}
+.g-bar {
+  padding: 0 8px !important;
+}
+.g-tick {
+  width: 4px !important;
+}
+summary.ts {
+  padding: 8px 12px !important;
+}
+.tico {
+  margin-right: 8px !important;
+}
+.thr {
+  gap: 8px !important;
+}
+.tpy {
+  margin-top: 4px !important;
+}
+.tch {
+  margin-left: 24px !important;
+}
+.hb {
+  margin-left: 4px !important;
+}
+.pin-badge {
+  margin-left: 4px !important;
+}
+#pin-count {
+  padding: 2px 6px !important;
+  margin-left: 4px !important;
+}
+.test-line {
+  padding: 8px 0 !important;
+}
+.ob-logo {
+  gap: 8px !important;
+}
+.ob-btn-demo {
+  padding: 12px 24px !important;
+  gap: 8px !important;
+}
+.ob-btn-cfg {
+  padding: 12px 20px !important;
+  gap: 8px !important;
+}
+.ob-feat {
+  padding: 16px !important;
+}
+.ob-steps-hdr {
+  padding: 12px 16px !important;
+}
+.ob-step {
+  padding: 16px 16px !important;
+}
+.ob-step-ttl {
+  margin-bottom: 4px !important;
+}
+.gap2 {
+  gap: 8px !important;
+}
+.gap3 {
+  gap: 12px !important;
+}
+.mt2 {
+  margin-top: 8px !important;
+}
+#drop-ov {
+  margin: 12px !important;
+}
+
+/* 3. TYPOGRAPHY */
+.ann-h3, .ann-h4, .m-title, .sh-ttl, .emp-ttl {
+  line-height: 1.2 !important;
+}
+.emp-sub, .tpy, .tnt {
+  line-height: 1.55 !important;
+}
+.fchip {
+  max-width: 180px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+}
+
+/* 4. COLOR AND CONTRAST */
+[data-theme=light] {
+  --t4: oklch(50% 0.01 55) !important;
+}
+[data-theme=light] .hdr {
+  background: rgba(242,239,234,.75) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+.g-row.g-selected {
+  background: var(--amber-d) !important;
+  border-left: none !important;
+  outline: 1px solid var(--amber) !important;
+  outline-offset: -1px !important;
+}
+#drop-ov {
+  background: var(--amber-d) !important;
+  border-color: oklch(from var(--amber) l c h / 0.5) !important;
+}
+.toast {
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
+}
+.t-ok { border-color: rgba(48,209,88,.25) !important; }
+.t-er { border-color: rgba(255,69,58,.25) !important; }
+.t-in { border-color: rgba(79,158,255,.25) !important; }
+.t-wa { border-color: rgba(255,214,10,.22) !important; }
+.mm, .cmd-ov, .sh-ov {
+  background: var(--bg-overlay) !important;
+}
+input:disabled, select:disabled, textarea:disabled, button:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 5. BORDERS AND RADIUS */
+.m-btn {
+  border-radius: calc(var(--rounded-sm) - 2px) !important;
+}
+.tnt {
+  border-left: 1px solid var(--bdr) !important;
+  background: var(--bg-3) !important;
+  margin-top: 8px !important;
+  padding: 8px 12px !important;
+}
+
+/* 6. SHADOWS AND ELEVATION */
+.rc, .ap-card, .ws-step {
+  box-shadow: var(--shd-xs) !important;
+}
+.sb, .ctrl, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, #file-chips, .breadcrumb {
+  box-shadow: var(--shd) !important;
+}
+#od-card, #g-tooltip, #mm-tooltip {
+  box-shadow: var(--shd-lg) !important;
+}
+
+/* 7. ICONS */
+.btn, .fchip, .exp-mi, .ctx-mi {
+  gap: 6px !important;
+}
+
+/* 8. INTERACTIVE STATES */
+.btn:active,
+.stab:active,
+.vt:active,
+.tc:active,
+.fchip-add:active,
+.exp-mi:active,
+.ctx-mi:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.08s var(--ease-out) !important;
+}
+.ob-feat:hover {
+  border-color: var(--bdr) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 9. RESPONSIVE INTEGRITY */
+.ob-features {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+@media (max-width: 640px) {
+  .ob-features {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 768px) {
+  .stats {
+    flex-wrap: wrap !important;
+  }
+  .sc {
+    flex: 0 0 50% !important;
+    border-right: 1px solid var(--bdr) !important;
+    border-bottom: 1px solid var(--bdr) !important;
+  }
+  .sc:nth-child(2n) {
+    border-right: none !important;
+  }
+  .sc:nth-last-child(-n+2) {
+    border-bottom: none !important;
+  }
+}
 </style>
 
 </head>
