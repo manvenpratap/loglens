@@ -615,7 +615,8 @@ select.inp{cursor:pointer}
 .g-hdr{
   display:grid;grid-template-columns:250px 1fr;
   background:var(--bg-1);
-  border-bottom:1px solid var(--bdr);
+  border-bottom:2px solid var(--bdr);
+  position:sticky;top:0;z-index:5;
 }
 .g-ch{
   padding:5px 10px;font-size:9px;font-weight:700;
@@ -623,18 +624,34 @@ select.inp{cursor:pointer}
   font-family:var(--display);
 }
 .g-ch:first-child{border-right:1px solid var(--bdr)}
-.g-ax{position:relative;height:24px}
+.g-ax{position:relative;height:28px}
+/* Major tick marks */
 .g-at{position:absolute;display:flex;flex-direction:column;
   align-items:center;justify-content:flex-end;padding-bottom:3px}
-.g-al{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);opacity:.7}
-.g-am{font-size:9px;font-family:var(--mono);color:var(--t4);white-space:nowrap}
-.g-rows{overflow-y:auto;max-height:340px;background:var(--bg-0)}
+.g-al{
+  position:absolute;top:0;bottom:0;width:1px;
+  background:linear-gradient(to bottom, var(--amber) 0%, var(--bdr-d) 40%);
+  opacity:.6;
+}
+.g-am{
+  font-size:9px;font-family:var(--mono);color:var(--t4);white-space:nowrap;
+  background:var(--bg-1);padding:0 2px;border-radius:2px;
+}
+/* Minor tick marks between majors (injected by JS) */
+.g-al-minor{
+  position:absolute;top:60%;bottom:0;width:1px;
+  background:var(--bdr-d);opacity:.4;
+  pointer-events:none;
+}
+.g-rows{overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
 .g-row{
   display:grid;grid-template-columns:250px 1fr;
-  border-bottom:1px solid var(--bdr-d);min-height:26px;
+  border-bottom:1px solid var(--bdr-d);min-height:30px;
+  transition:background .1s ease;
 }
 .g-row:last-child{border-bottom:none}
 .g-row:hover{background:var(--glass)}
+.g-row.g-selected{background:rgba(255,149,0,0.08);border-left:2px solid var(--amber);}
 .g-lbl{
   padding:4px 9px;border-right:1px solid var(--bdr-d);
   display:flex;align-items:center;gap:5px;overflow:hidden;
@@ -644,29 +661,45 @@ select.inp{cursor:pointer}
 .g-trk{position:relative;background:var(--bg-0)}
 .g-gl{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);pointer-events:none;opacity:.6}
 .g-bar{
-  position:absolute;top:4px;bottom:4px;
+  position:absolute;top:5px;bottom:5px;
   border-radius:var(--rounded-sm);
   display:flex;align-items:center;
   padding:0 6px;overflow:hidden;
   min-width:4px;
-  cursor:default;
-  transition:filter .14s,box-shadow .14s;
+  cursor:pointer;
+  transition:filter .14s,box-shadow .14s,transform .12s;
   /* Subtle inner highlight — glass shine */
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.15);
 }
 .g-bar:hover{
-  filter:brightness(1.25);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 8px rgba(0,0,0,.3);
+  filter:brightness(1.15);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 0 12px var(--hover-glow, rgba(79,158,255,.45));
 }
 .g-bl{
   font-family:var(--mono);font-size:9px;font-weight:700;
   color:var(--bar-t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   text-shadow:0 1px 2px rgba(0,0,0,.4);
 }
-.g-tick{position:absolute;top:2px;bottom:2px;width:3px;border-radius:var(--rounded-sm)}
+.g-tick{position:absolute;top:2px;bottom:2px;width:3px;border-radius:var(--rounded-sm);cursor:pointer;transition:transform 0.12s;}
+.g-tick:hover{transform:scaleY(1.3) scaleX(1.5);}
 .g-self{
-  position:absolute;right:0;top:0;bottom:0;width:5px;
-  background:rgba(255,255,255,.25);border-radius:0 var(--rounded-sm) var(--rounded-sm) 0;
+  position:absolute;left:0;top:0;bottom:0;
+  background:repeating-linear-gradient(45deg, rgba(255,255,255,0.08), rgba(255,255,255,0.08) 4px, rgba(255,255,255,0.18) 4px, rgba(255,255,255,0.18) 8px);
+  border-radius:var(--rounded-sm) 0 0 var(--rounded-sm);
+  pointer-events:none;
+}
+
+/* Custom Gantt Tooltip */
+#g-tooltip {
+  position: fixed; z-index: 10000;
+  background: var(--bg-2); border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md); padding: 8px 12px;
+  font-size: 11px; font-family: var(--mono); color: var(--t1);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.5);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.1s ease;
+  line-height: 1.5; max-width: 320px;
+  white-space: pre-wrap;
 }
 
 /* ============================================================
@@ -4858,9 +4891,14 @@ const GR={
     HS.ann(tree,null);
     const rs=tree[0].timestamp??0,re=mEnd(tree),rd=Math.max(1,re-rs);
     const rows=this._fl(tree,0,rs,rd);
+    this._activeRows=rows;
+    this._rd=rd; this._rs=rs;
     const PCT=[0,25,50,75,100];
-    const ax=PCT.map(p=>`<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(rd*p/100))}</div></div>`).join('');
-    const rh=rows.map(({n,d,sp,wp,sfp})=>{
+    // Major ticks at 0,25,50,75,100% + minor ticks every 5%
+    const MINOR=[5,10,15,20,30,35,40,45,55,60,65,70,80,85,90,95];
+    const minorTicks=MINOR.map(p=>`<div class="g-al-minor" style="left:${p}%;"></div>`).join('');
+    const ax=PCT.map(p=>`<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(rd*p/100))}</div></div>`).join('')+minorTicks;
+    const rh=rows.map(({n,d,sp,wp,sfp}, idx)=>{
       let col = scol(n.visualStyle?.accentColor||'var(--blue)');
       if (n._isSlaBreach) col = 'var(--red)';
       else if (n._isOutlier) col = 'var(--amber)';
@@ -4886,12 +4924,12 @@ const GR={
 
       const barOpacity = il ? 1 : Math.min(1, 0.4 + (wp / 50) * 0.6).toFixed(2);
       const bar=il
-        ?`<div class="g-tick" style="left:calc(${sp.toFixed(2)}% - 1.5px);background:${col};" title="${inlineTooltip}"></div>`
-        :wp>0?`<div class="${barCls}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:${barOpacity};" title="${tooltip}">
+        ?`<div class="g-tick" data-idx="${idx}" style="left:calc(${sp.toFixed(2)}% - 1.5px);background:${col};" data-gtooltip="${inlineTooltip}"></div>`
+        :wp>0?`<div class="${barCls}" data-idx="${idx}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:${barOpacity};--hover-glow:${col};" data-gtooltip="${tooltip}">
           <span class="g-bl">${esc(dur)}</span>
           ${sfp>0&&sfp<98?`<div class="g-self" style="width:${sfp.toFixed(1)}%;"></div>`:''}
         </div>`:'';
-      return`<div class="g-row">
+      return`<div class="g-row" data-idx="${idx}">
         <div class="g-lbl" style="padding-left:${ind}px;">
           <span class="g-li" style="color:${col};">${ico}</span>
           <span class="g-lt">${esc(n.elementName||n.ruleName)}</span>
@@ -4900,9 +4938,11 @@ const GR={
       </div>`;
     }).join('');
     el.innerHTML=`<div class="gw">
-      <div class="pt" style="display:flex; align-items:center;">
-        <span>📊</span> Waterfall Timeline <span class="badge b-gray mla">Total: ${esc(fmtMs(rd))}</span>
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">Show Swimlane View</button>
+      <div class="pt" style="display:flex; align-items:center; gap:8px;">
+        <span>📊</span> Waterfall Timeline
+        <span class="badge b-gray mla">Total: ${esc(fmtMs(rd))}</span>
+        <span class="badge b-gray">${rows.length} spans</span>
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle">Swimlane View</button>
       </div>
       <div class="g-hdr"><div class="g-ch">Element</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div class="g-rows">${rh}</div>
@@ -11014,8 +11054,61 @@ const _origGrRender = GR.render.bind(GR);
 GR.render = function(tree, el) {
   _origGrRender(tree, el);
   
-  // If streaming and scroll is away from bottom, display banner
   const rowsCont = el.querySelector('.g-rows');
+  
+  // Custom tooltips and detail morph delegation
+  if (rowsCont && !rowsCont._ganttWired) {
+    rowsCont._ganttWired = true;
+    
+    let tt = document.getElementById('g-tooltip');
+    if (!tt) {
+      tt = document.createElement('div');
+      tt.id = 'g-tooltip';
+      document.body.appendChild(tt);
+    }
+    
+    rowsCont.addEventListener('mouseover', e => {
+      const target = e.target.closest('[data-gtooltip]');
+      if (target) {
+        tt.innerHTML = target.dataset.gtooltip.replace(/\n/g, '<br>');
+        tt.style.opacity = '1';
+      }
+    });
+    
+    rowsCont.addEventListener('mousemove', e => {
+      const target = e.target.closest('[data-gtooltip]');
+      if (target) {
+        tt.style.left = (e.clientX + 12) + 'px';
+        tt.style.top = (e.clientY + 12) + 'px';
+      }
+    });
+    
+    rowsCont.addEventListener('mouseout', e => {
+      const target = e.target.closest('[data-gtooltip]');
+      if (target) {
+        tt.style.opacity = '0';
+      }
+    });
+    
+    rowsCont.addEventListener('click', e => {
+      const bar = e.target.closest('[data-idx][class]');
+      const row = e.target.closest('.g-row[data-idx]');
+      const target = bar || row;
+      if (target && GR._activeRows) {
+        const idx = parseInt(target.dataset.idx, 10);
+        const rowData = GR._activeRows[idx];
+        if (rowData && rowData.n) {
+          // Highlight selected row
+          rowsCont.querySelectorAll('.g-row.g-selected').forEach(r => r.classList.remove('g-selected'));
+          const rowEl = rowsCont.querySelector(`.g-row[data-idx="${idx}"]`);
+          if (rowEl) rowEl.classList.add('g-selected');
+          OVERDRIVE.OD.open(rowData.n);
+        }
+      }
+    });
+  }
+
+  // If streaming and scroll is away from bottom, display banner
   if (rowsCont && STREAM.ws && STREAM.ws.readyState === WebSocket.OPEN) {
     rowsCont.addEventListener('scroll', () => {
       const diff = rowsCont.scrollHeight - rowsCont.scrollTop - rowsCont.clientHeight;
