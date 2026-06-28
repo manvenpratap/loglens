@@ -2640,7 +2640,7 @@ mark.hl{
 
 /* Make tree-vscroll leave room for minimap */
 .has-minimap > #tree-vscroll,
-.has-minimap > .vscroll-container { padding-right: 56px; }
+.has-minimap > .vscroll-container { margin-right: 56px; }
 
 /* --- 3. Scroll-Driven Time Scrubber --- */
 #ll-scrubber {
@@ -5077,9 +5077,11 @@ const TR={
           <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px;">Expand All</button>
           <button class="btn btn-g btn-xs" id="btn-tree-col">Collapse All</button>
         </div>
-        <div class="vscroll-container" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
-          <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
-          <div class="vscroll-content" id="tree-content" style="position:absolute; left:0; top:0; right:0; will-change:transform;"></div>
+        <div id="tree-scroll-wrap" style="flex:1; position:relative; min-height:0; display:flex; flex-direction:column;">
+          <div class="vscroll-container" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
+            <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
+            <div class="vscroll-content" id="tree-content" style="position:absolute; left:0; top:0; right:0; will-change:transform;"></div>
+          </div>
         </div>
       </div>
     `;
