@@ -2674,6 +2674,384 @@ mark.hl{
 @media (prefers-reduced-motion: reduce) {
   #ll-scrubber { display: none; }
 }
+
+/* ================================================================ CSS 27 — DESIGN SYSTEM & OVERHAUL OVERLAYS ================================================================ */
+:root {
+  /* Radii */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-pill: 9999px;
+  
+  /* Z-indices */
+  --z-base: 1;
+  --z-sidebar: 100;
+  --z-header: 200;
+  --z-overlay: 500;
+  --z-modal: 800;
+  --z-command: 900;
+  --z-toast: 1000;
+  
+  /* Easings */
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Extra colors/gradients */
+  --bg-overlay: rgba(22, 27, 34, 0.72);
+}
+
+/* Light Theme Variables Adaptation */
+[data-theme="light"] {
+  --bg-overlay: rgba(246, 248, 250, 0.72);
+  --bg-2: #f6f8fa;
+  --bg-3: #eaeef2;
+  --bg-4: #d0d7de;
+}
+
+/* Base Utility Mapping */
+.badge {
+  border-radius: var(--radius-pill);
+}
+.inp, .btn, .rc, .fchip, .modal, .cmd-box, .toast {
+  border-radius: var(--radius-md);
+  transition: all 0.22s var(--ease-spring);
+}
+
+/* Number features settings */
+.tts, .tdr, .ts-b, .stats-card-value, .g-am, #cfg-meta, #stream-progress-label, .cm {
+  font-family: var(--mono);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* Gliding indicator underlines and tabs */
+.sb-tabs {
+  position: relative;
+}
+.vtabs {
+  position: relative;
+}
+
+/* Collapsible Section Chevrons */
+.sh {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.sh::after {
+  content: '▸';
+  margin-left: auto;
+  font-size: 8px;
+  color: var(--t4);
+  transition: transform 0.2s var(--ease-spring);
+}
+.sh:not(:has(+ .hidden))::after {
+  transform: rotate(90deg);
+}
+
+/* Sidebar Resize Handle */
+.sb-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  z-index: 10;
+}
+.sb-resize-handle:hover {
+  background: var(--amber-g);
+}
+
+/* Header badge pulses */
+.badge.b-red:not(.hidden) {
+  animation: badge-pulse-red 2s infinite;
+}
+.badge.b-amber:not(.hidden) {
+  animation: badge-pulse-amber 2s infinite;
+}
+@keyframes badge-pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(248, 81, 73, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+}
+@keyframes badge-pulse-amber {
+  0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 149, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); }
+}
+
+/* Slide-up animations */
+@keyframes fade-up-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Token accordion */
+.tok-accordion-body {
+  transition: max-height 0.22s var(--ease-spring);
+}
+.tok:hover {
+  border-color: var(--amber) !important;
+  background: var(--amber-d) !important;
+  transform: translateY(-1px);
+}
+
+/* Drag overlay and bounce arrow */
+#drop-ov-inner svg {
+  animation: bounce-up-down 0.8s ease-in-out infinite alternate;
+}
+@keyframes bounce-up-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+#drop-ov-inner {
+  border: 2px dashed var(--amber) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: 40px !important;
+  background: var(--bg-overlay) !important;
+  backdrop-filter: blur(12px) saturate(150%) !important;
+  animation: border-pulse-glow 1.5s ease-in-out infinite alternate;
+}
+@keyframes border-pulse-glow {
+  from { box-shadow: 0 0 4px rgba(255, 149, 0, 0.2); border-color: rgba(255, 149, 0, 0.4) !important; }
+  to { box-shadow: 0 0 20px rgba(255, 149, 0, 0.5); border-color: var(--amber) !important; }
+}
+
+/* Floating legends card & radial vignette */
+#d3-graph-canvas-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, transparent 65%, rgba(0, 0, 0, 0.35) 100%);
+  z-index: 5;
+}
+.graph-legend-card {
+  box-shadow: var(--shd-lg);
+}
+
+/* Vertical Text Label */
+.diff-divider-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--t4);
+  opacity: 0.7;
+}
+
+/* Quick edit popover z-index */
+#quick-edit-pop {
+  z-index: calc(var(--z-modal) + 10) !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr-h) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shd-lg) !important;
+  padding: 10px !important;
+  width: 170px !important;
+}
+
+/* Context menu */
+#ctx-menu {
+  background: var(--bg-overlay) !important;
+  backdrop-filter: blur(8px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(140%) !important;
+  border: 1px solid var(--bdr-h) !important;
+  box-shadow: var(--shd-lg) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 4px !important;
+  min-width: 175px;
+  transform: scale(0.96);
+  opacity: 0;
+  transition: opacity 0.16s var(--ease-spring), transform 0.16s var(--ease-spring) !important;
+}
+#ctx-menu.vis {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+/* Command Palette categories split and labels */
+.cmd-group-lbl {
+  font-size: 9px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.2px !important;
+  color: var(--t4) !important;
+  padding: 6px 12px 4px !important;
+  font-weight: bold !important;
+  font-family: var(--mono) !important;
+  border-top: 1px solid var(--bdr-d) !important;
+  margin-top: 4px !important;
+}
+.cmd-group-lbl:first-child {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+.cmd-item {
+  border-radius: var(--radius-sm) !important;
+  transition: all 0.1s var(--ease-spring);
+}
+.cmd-item.cmd-active {
+  background: var(--bg-3) !important;
+  color: var(--t1) !important;
+  border-left: 3px solid var(--amber) !important;
+}
+.cmd-item-hint {
+  font-family: var(--mono) !important;
+  font-size: 9px !important;
+  background: var(--bg-3) !important;
+  border: 1px solid var(--bdr-h) !important;
+  padding: 1px 4px !important;
+  border-radius: var(--radius-xs) !important;
+  color: var(--amber) !important;
+}
+
+/* Interactive cell clicks on Stats */
+.stats-row:hover {
+  background: var(--bg-3) !important;
+}
+
+/* Dynamic dot animation */
+@keyframes live-dot-pulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Progress bar shimmer effect */
+.prog-tr {
+  height: 3px !important;
+  background: var(--bg-3) !important;
+  border-radius: var(--radius-pill) !important;
+  overflow: hidden !important;
+}
+.prog-f {
+  background: linear-gradient(90deg, var(--amber) 0%, var(--amber-g) 50%, var(--amber) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: progress-shimmer-sweep 1.2s infinite linear;
+}
+@keyframes progress-shimmer-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Gantt timeline row left amber accent on hover */
+.g-row {
+  border-left: 2px solid transparent;
+  transition: border-left-color 0.15s var(--ease-spring);
+}
+.g-row:hover {
+  border-left-color: var(--amber) !important;
+}
+
+/* Swimlane mode writing-mode */
+.swim-lane-hdr {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--mono);
+  font-size: 9px !important;
+  text-transform: uppercase;
+  color: var(--t3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--bdr) !important;
+  cursor: grab;
+  padding: 0 4px;
+}
+
+/* Gantt bar container query */
+.g-bar {
+  container-type: inline-size;
+}
+@container (max-width: 40px) {
+  .g-bl {
+    display: none !important;
+  }
+}
+
+/* Multi-file chips add button */
+.fchip-add:hover {
+  background: var(--bg-3) !important;
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+}
+
+/* Search Backdrop Highlights */
+.g-tl-backdrop {
+  box-sizing: border-box;
+}
+
+/* Print Stylesheet Overrides */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .hdr, .sb, .ctrl, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, #file-chips, .breadcrumb, #quick-edit-pop, #ctx-menu, #cmd-ov {
+    display: none !important;
+  }
+  .main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  #res {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .g-trk, .g-row {
+    page-break-inside: avoid;
+  }
+  .tree-row {
+    page-break-inside: avoid;
+    border-bottom: 1px solid #ddd !important;
+  }
+}
+
+/* Mobile bottom-sheet layout for Log4j XML importer */
+@media (max-width: 480px) {
+  #p-lj {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 70vh !important;
+    background: var(--bg-1) !important;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(100%);
+    transition: transform 0.28s var(--ease-spring) !important;
+    z-index: var(--z-modal) !important;
+    padding-top: 24px !important;
+    display: none;
+  }
+  #p-lj.active {
+    display: block !important;
+    transform: translateY(0) !important;
+  }
+  #p-lj::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    background: var(--bdr-h);
+    border-radius: var(--radius-pill);
+  }
+}
 </style>
 
 </head>
@@ -2687,13 +3065,18 @@ mark.hl{
   <!-- Logo -->
   <div class="logo">
     <div class="logo-ico"><span class="ico ico-xl" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></div>
-    <span>Log<span class="acc">Lens</span></span>
+    <span>Log<span class="acc">Lens</span> <span class="v-badge">v6.1</span></span>
   </div>
   <div class="hsep" aria-hidden="true"></div>
   <span class="hsub">Metadata-Driven Log Analyzer</span>
 
   <!-- Search — shrinks gracefully via .hdr-search class -->
-  <input class="inp hdr-search" id="hdr-search" placeholder="🔍 Filter events (ID, rule, payload…)" aria-label="Filter parsed events"/>
+  <div class="hdr-search-container">
+    <span class="hdr-search-icon" aria-hidden="true">⌕</span>
+    <input class="inp hdr-search" id="hdr-search" placeholder="Filter events (ID, rule, payload…)" aria-label="Filter parsed events" autocomplete="off" spellcheck="false"/>
+    <span class="hdr-search-shortcut" id="hdr-search-shortcut">/</span>
+    <button id="btn-search-clear" class="btn-search-clear" type="button" style="display:none;" title="Clear search">✕</button>
+  </div>
 
   <!-- Right-side slot system: A=live · B=status badges · C=state chips · D=actions · E=overflow -->
   <div class="hr">
@@ -2853,7 +3236,7 @@ mark.hl{
         <div class="fl">Notes</div>
         <textarea class="inp" id="gs-desc" rows="2" placeholder="Optional notes…"></textarea>
       </div>
-      <button class="btn btn-p" id="btn-sgs"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
+      <button class="btn" id="btn-sgs"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
       <div class="div" style="margin: 12px 0;"></div>
       <div class="sh" id="hdr-ds" style="cursor:pointer;" onclick="$('p-ds-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></span> Cloud Datasources <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
@@ -3244,12 +3627,14 @@ mark.hl{
       <button class="btn btn-sm" id="btn-add-file" title="Add another log file (multi-file session)" aria-label="Add log file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></span></button>
       <span id="lfname" class="cm mono trunc" style="font-size:10px;max-width:130px;"></span>
     </div>
+    <div class="hsep" aria-hidden="true"></div>
     <div class="cg" style="flex:1">
       <span class="cl">Thread</span>
       <input class="inp" id="thr-in" placeholder="all threads" style="width:170px;" list="thr-dl"/>
       <datalist id="thr-dl"></datalist>
       <button class="btn btn-sm" id="btn-disc" disabled title="Scan first 200 KB for thread IDs" aria-label="Scan for threads"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></button>
     </div>
+    <div class="hsep" aria-hidden="true"></div>
     <div class="cg">
       <button class="btn btn-p" id="btn-parse" disabled>▶ Parse</button>
       <button class="btn btn-d btn-sm" id="btn-abort" disabled>■ Abort</button>
@@ -3264,6 +3649,7 @@ mark.hl{
   <div class="prog hidden" id="prog">
     <div class="prog-h"><span id="prog-l">Parsing…</span><span id="prog-p">0%</span></div>
     <div class="prog-tr"><div class="prog-f" id="prog-f"></div></div>
+    <div class="prog-details" id="prog-details" style="font-size:10px; color:var(--t4); font-family:var(--mono); margin-top:4px; text-align:left;"></div>
   </div>
 
   <!-- Breadcrumb Context Bar -->
@@ -4066,7 +4452,7 @@ function run(files,cfg,tf,scan){
       const percent = isArray
         ? Math.round(((fileIdx + fileFraction) / fileList.length) * 100)
         : Math.min(99, Math.round(fileFraction * 100));
-      self.postMessage({type:'progress',percent,linesProcessed:totalProcessed+n});
+      self.postMessage({type:'progress',percent,linesProcessed:totalProcessed+n,matchedLines});
     }
     if(buf&&buf.trim()){
       const tr=buf.trim();
@@ -4626,17 +5012,21 @@ const CFG={
       const ico=esc(r.visualStyle?.icon||'•');
       const beh=r.stackBehavior||'inline';
       const bc={push:'b-blue',pop:'b-green',inline:'b-pur'}[beh]||'b-gray';
-      return`<div class="rc" draggable="true" data-ri="${i}">
+      const styleAttr = `border-color:${col}60 !important; box-shadow:0 0 8px ${col}25 !important;`;
+      return`<div class="rc" draggable="true" data-ri="${i}" data-tip="Pattern: ${esc(r.regexPattern || '')}" style="${styleAttr}">
         <div class="rh" title="Drag to reorder">⠿</div>
         <div class="ric" style="background:${col}1e;color:${col};">${ico}</div>
         <div style="flex:1;min-width:0;">
           <div class="rn">${esc(r.name||'Unnamed')}</div>
           <div class="rm"><span class="badge ${bc}" style="font-size:9px;">${esc(beh)}</span></div>
         </div>
-        <div style="display:flex;gap:2px;flex-shrink:0;">
-          <button class="btn btn-g btn-xs" data-a="share" data-i="${i}" title="Export this rule as JSON">📤</button>
-          <button class="btn btn-g btn-xs" data-a="edit" data-i="${i}" title="Edit">✏</button>
-          <button class="btn btn-g btn-xs" data-a="del" data-i="${i}" title="Delete" aria-label="Delete rule" style="color:var(--red);">✕</button>
+        <div class="rc-more-menu-wrapper" style="position:relative; flex-shrink:0;">
+          <button class="btn btn-g btn-xs rc-more-btn" type="button">⋯</button>
+          <div class="rc-more-dropdown hidden">
+            <button class="rc-dropdown-item" data-a="edit" data-i="${i}" type="button">✏ Edit</button>
+            <button class="rc-dropdown-item" data-a="share" data-i="${i}" type="button">📤 Export JSON</button>
+            <button class="rc-dropdown-item" data-a="del" data-i="${i}" style="color:var(--red);" type="button">✕ Delete</button>
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -4875,7 +5265,7 @@ const WM={
     return new Promise((res,rej)=>{
       const w=this._mk();
       w.onmessage=({data})=>{
-        if(data.type==='progress')UI.prog(data.percent,'Scanning…',data.linesProcessed);
+        if(data.type==='progress')UI.prog(data.percent,'Scanning…',data.linesProcessed,data.matchedLines);
         else if(data.type==='scan_done'){this.kill();res(data.threads);}
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
       };
@@ -4887,7 +5277,7 @@ const WM={
     return new Promise((res,rej)=>{
       const w=this._mk();S.parseStart=performance.now();
       w.onmessage=({data})=>{
-        if(data.type==='progress')UI.prog(data.percent,'Parsing…',data.linesProcessed);
+        if(data.type==='progress')UI.prog(data.percent,'Parsing…',data.linesProcessed,data.matchedLines);
         else if(data.type==='done'){this.kill();res(data);}
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
       };
@@ -4959,7 +5349,7 @@ const GR={
       const bar=il
         ?`<div class="g-tick" data-idx="${idx}" style="left:calc(${sp.toFixed(2)}% - 1.5px);background:${col};" data-gtooltip="${inlineTooltip}"></div>`
         :wp>0?`<div class="${barCls}" data-idx="${idx}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:${barOpacity};--hover-glow:${col};" data-gtooltip="${tooltip}">
-          <span class="g-bl">${esc(dur)}</span>
+          <span class="g-bl">${n._isSlaBreach ? '⚠️ ' : ''}${esc(dur)}</span>
           ${sfp>0&&sfp<98?`<div class="g-self" style="width:${sfp.toFixed(1)}%;"></div>`:''}
         </div>`:'';
       return`<div class="g-row" data-idx="${idx}">
@@ -4996,7 +5386,7 @@ const TR={
   _content: null,
   _visibleNodes: [],
   _activeTree: null,
-  _rowHeight: 32,
+  _rowHeight: 28,
   
   flatten(nodes, depth = 0, parent = null, flatList = []) {
     for (const n of (nodes || [])) {
@@ -5166,7 +5556,7 @@ const TR={
 
     const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
     const payB = n.payload ? `<span class="tpy" style="margin-left:8px; color:var(--t3);">${esc(n.payload)}</span>` : '';
-    const noteB = (S.annotations && S.annotations[n.id]) ? `<span class="tnt" style="margin-left:8px; color:var(--amber);">📝 ${esc(S.annotations[n.id].slice(0,30))}</span>` : '';
+    const noteB = (S.annotations && S.annotations[n.id]) ? `<span class="tnt" data-tip="Note: ${esc(S.annotations[n.id])}" style="margin-left:8px; color:var(--amber); display:inline-flex; align-items:center; cursor:help;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px; flex-shrink:0;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> ${esc(S.annotations[n.id].slice(0,15))}${S.annotations[n.id].length > 15 ? '…' : ''}</span>` : '';
     
     const chev = kids ? `<span class="tchev ${n.expanded ? 'expanded' : ''}" style="display:inline-block; transition:transform 0.15s; cursor:pointer; font-size:9px; margin-right:4px; color:var(--t4);">${n.expanded ? '▼' : '▶'}</span>` : '<span style="display:inline-block; width:13px;"></span>';
     
@@ -11313,64 +11703,112 @@ const DIFF = {
           📈 ${incCount} rules increased · 📉 ${decCount} rules decreased · ⚖️ ${eqCount} unchanged
         </div>
       `;
-    } else {
-      // Sequence Diff view (LCS)
-      // Get standard comparison thread (first key in both)
-      const thr = Object.keys(this.treeA)[0];
-      const seqA = this.getSequence(this.treeA[thr] || []);
-      const seqB = this.getSequence(this.treeB[thr] || []);
-      
-      // Limit sequence elements to 300 to avoid browser hangs
-      const limSeqA = seqA.slice(0, 300);
-      const limSeqB = seqB.slice(0, 300);
-      
-      const diffs = this.lcsDiff(limSeqA, limSeqB);
-      
       const diffRows = diffs.map(d => {
-        let cls = 'seq-row-match';
-        let prefix = ' ';
-        let n = d.node;
-        let btn = '';
+        let leftCol = '';
+        let rightCol = '';
         
-        if (d.type === 'add') {
-          cls = 'seq-row-add';
-          prefix = '+';
-          btn = `<button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(n.id)}">Jump B</button>`;
-        } else if (d.type === 'remove') {
-          cls = 'seq-row-rem';
-          prefix = '-';
-          n = d.node;
-          btn = `<button class="btn btn-xs btn-d btn-seq-jump" data-side="A" data-id="${esc(n.id)}">Jump A</button>`;
-        } else {
-          btn = `
-            <button class="btn btn-xs btn-g btn-seq-jump" data-side="A" data-id="${esc(d.nodeA.id)}" style="margin-right:2px;">A</button>
-            <button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(d.nodeB.id)}">B</button>
+        if (d.type === 'remove') {
+          // Deletion (File A only)
+          const n = d.node;
+          const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
+          const ico = esc(n.visualStyle?.icon || '•');
+          const dur = n.duration != null ? fmtMs(n.duration) : '';
+          const ts = n.timestamp ? new Date(n.timestamp).toLocaleTimeString() : '';
+          const btn = `<button class="btn btn-xs btn-d btn-seq-jump" data-side="A" data-id="${esc(n.id)}">Jump A</button>`;
+          
+          leftCol = `
+            <div class="seq-col-item seq-row-rem" style="display:flex; align-items:center; width:100%; padding:6px; font-size:11px; font-family:var(--mono);">
+              <span style="color:var(--red); font-weight:bold; margin-right:6px; flex-shrink:0;">-</span>
+              <span style="color:${col}; margin-right:6px; flex-shrink:0;">${ico}</span>
+              <span class="trunc" style="font-weight:bold; flex:1; color:var(--red);">${esc(n.ruleName)}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-size:9px;">${ts}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-weight:bold;">${dur}</span>
+              <span style="margin-left:8px; flex-shrink:0;">${btn}</span>
+            </div>
           `;
-          n = d.nodeA;
+          rightCol = `<div style="background:rgba(0,0,0,0.05); height:100%; min-height:28px;"></div>`;
+        } else if (d.type === 'add') {
+          // Addition (File B only)
+          const n = d.node;
+          const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
+          const ico = esc(n.visualStyle?.icon || '•');
+          const dur = n.duration != null ? fmtMs(n.duration) : '';
+          const ts = n.timestamp ? new Date(n.timestamp).toLocaleTimeString() : '';
+          const btn = `<button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(n.id)}">Jump B</button>`;
+          
+          leftCol = `<div style="background:rgba(0,0,0,0.05); height:100%; min-height:28px;"></div>`;
+          rightCol = `
+            <div class="seq-col-item seq-row-add" style="display:flex; align-items:center; width:100%; padding:6px; font-size:11px; font-family:var(--mono);">
+              <span style="color:var(--green); font-weight:bold; margin-right:6px; flex-shrink:0;">+</span>
+              <span style="color:${col}; margin-right:6px; flex-shrink:0;">${ico}</span>
+              <span class="trunc" style="font-weight:bold; flex:1; color:var(--green);">${esc(n.ruleName)}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-size:9px;">${ts}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-weight:bold;">${dur}</span>
+              <span style="margin-left:8px; flex-shrink:0;">${btn}</span>
+            </div>
+          `;
+        } else {
+          // Match / Modify
+          const nA = d.nodeA;
+          const nB = d.nodeB;
+          const col = scol(nA.visualStyle?.accentColor || 'var(--t4)');
+          const ico = esc(nA.visualStyle?.icon || '•');
+          const durA = nA.duration != null ? fmtMs(nA.duration) : '';
+          const durB = nB.duration != null ? fmtMs(nB.duration) : '';
+          const tsA = nA.timestamp ? new Date(nA.timestamp).toLocaleTimeString() : '';
+          const tsB = nB.timestamp ? new Date(nB.timestamp).toLocaleTimeString() : '';
+          
+          const isMod = nA.duration != null && nB.duration != null && Math.abs(nA.duration - nB.duration) > 5;
+          const rowClass = isMod ? 'seq-row-mod' : 'seq-row-match';
+          const btn = `
+            <button class="btn btn-xs btn-g btn-seq-jump" data-side="A" data-id="${esc(nA.id)}" style="margin-right:2px;">A</button>
+            <button class="btn btn-xs btn-g btn-seq-jump" data-side="B" data-id="${esc(nB.id)}">B</button>
+          `;
+          
+          leftCol = `
+            <div class="seq-col-item ${rowClass}" style="display:flex; align-items:center; width:100%; padding:6px; font-size:11px; font-family:var(--mono);">
+              <span style="opacity:0.3; margin-right:6px; flex-shrink:0;">•</span>
+              <span style="color:${col}; margin-right:6px; flex-shrink:0;">${ico}</span>
+              <span class="trunc" style="flex:1;">${esc(nA.ruleName)}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-size:9px;">${tsA}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-weight:bold;">${durA}</span>
+              <span style="margin-left:8px; flex-shrink:0; opacity:0; pointer-events:none;">${btn}</span>
+            </div>
+          `;
+          rightCol = `
+            <div class="seq-col-item ${rowClass}" style="display:flex; align-items:center; width:100%; padding:6px; font-size:11px; font-family:var(--mono);">
+              <span style="opacity:0.3; margin-right:6px; flex-shrink:0;">•</span>
+              <span style="color:${col}; margin-right:6px; flex-shrink:0;">${ico}</span>
+              <span class="trunc" style="flex:1;">${esc(nB.ruleName)}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-size:9px;">${tsB}</span>
+              <span style="color:var(--t4); margin-left:6px; flex-shrink:0; font-weight:bold;">${durB}</span>
+              <span style="margin-left:8px; flex-shrink:0;">${btn}</span>
+            </div>
+          `;
         }
         
-        const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
-        const ico = esc(n.visualStyle?.icon || '•');
-        const elName = esc((n.elementName || '').slice(0, 24));
-        const dur = n.duration != null ? fmtMs(n.duration) : '';
-        const ts = n.timestamp ? new Date(n.timestamp).toLocaleTimeString() : '';
-        
-        return `<div class="seq-row ${cls}">
-          <span style="width:20px; font-weight:bold; opacity:0.6;">${prefix}</span>
-          <span style="width:22px; text-align:center; color:${col};">${ico}</span>
-          <span style="width:110px; font-weight:bold; color:${col};" class="trunc">${esc(n.ruleName)}</span>
-          <span style="flex:1; color:var(--t3);" class="trunc">${elName}</span>
-          <span style="width:90px; color:var(--t4);">${ts}</span>
-          <span style="width:70px; text-align:right; font-weight:bold; color:${col};">${dur}</span>
-          <span style="margin-left:12px;">${btn}</span>
-        </div>`;
+        return `
+          <div style="display:contents;">
+            ${leftCol}
+            <div style="background:transparent; min-height:28px;"></div>
+            ${rightCol}
+          </div>
+        `;
       }).join('');
       
       subContent = `
         <div style="font-size:11px; color:var(--t3); margin-bottom:6px; font-weight:bold; display:flex; align-items:center; gap:5px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 22V4c0-1.1.9-2 2-2h14"/><circle cx="18" cy="12" r="3"/><circle cx="6" cy="12" r="3"/></svg></span> Thread LCS Sequence Comparison: "${esc(thr)}"</div>
-        <div class="seq-diff-box">
-          <div style="max-height:360px; overflow-y:auto;">
-            ${diffRows || '<div style="padding:20px; text-align:center;">No sequence to diff.</div>'}
+        <div style="display:grid; grid-template-columns:1fr 24px 1fr; background:var(--bg-2); border:1px solid var(--bdr); border-bottom:none; font-weight:bold; font-size:9px; text-transform:uppercase; color:var(--t4); padding:6px; font-family:var(--mono); border-radius:var(--radius-md) var(--radius-md) 0 0;">
+          <div>Before (File A)</div>
+          <div style="text-align:center;">/</div>
+          <div style="padding-left:12px;">After (File B)</div>
+        </div>
+        <div class="seq-diff-box" style="position:relative; border:1px solid var(--bdr); border-radius:0 0 var(--radius-md) var(--radius-md); background:var(--bg-1); overflow:hidden;">
+          <div style="position:absolute; left:calc(50% - 12px); top:0; bottom:0; width:24px; background:var(--bg-2); border-left:1px solid var(--bdr-d); border-right:1px solid var(--bdr-d); display:flex; align-items:center; justify-content:center; z-index:10; pointer-events:none;">
+            <span class="diff-divider-text">DIFF</span>
+          </div>
+          <div style="max-height:360px; overflow-y:auto; display:grid; grid-template-columns:1fr 24px 1fr; gap:1px 0; background:var(--bdr-d);">
+            ${diffRows || '<div style="grid-column: span 3; padding:20px; text-align:center;">No sequence to diff.</div>'}
           </div>
         </div>
       `;
@@ -15112,6 +15550,1018 @@ const HTIP = (() => {
 
 // Onboarding — show first-run welcome if user hasn't dismissed
 ONBOARD.check();
+
+/* ================================================================
+   §JS-33 ADVANCED UI/UX INTERACTION OVERLAYS
+   ================================================================ */
+(function() {
+  // 1. Tooltip System
+  window.TIP = {
+    el: null,
+    timer: null,
+    init() {
+      const convert = (root) => {
+        root.querySelectorAll('[title]').forEach(node => {
+          if (!node.dataset.tip) node.dataset.tip = node.getAttribute('title');
+          node.removeAttribute('title');
+        });
+      };
+      convert(document);
+      const obs = new MutationObserver(muts => {
+        muts.forEach(m => {
+          m.addedNodes.forEach(node => {
+            if (node.nodeType === 1) {
+              if (node.hasAttribute('title')) {
+                node.dataset.tip = node.getAttribute('title');
+                node.removeAttribute('title');
+              }
+              convert(node);
+            }
+          });
+        });
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+
+      this.el = document.createElement('div');
+      this.el.id = 'g-tooltip';
+      this.el.className = 'hidden';
+      this.el.style.cssText = 'position:absolute; background:var(--bg-overlay); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid var(--bdr-h); color:var(--t1); padding:6px 10px; font-size:11px; font-family:var(--ui); border-radius:var(--radius-sm); pointer-events:none; z-index:1000; box-shadow:var(--shd); max-width:280px; white-space:pre-wrap;';
+      document.body.appendChild(this.el);
+
+      document.addEventListener('mouseover', e => {
+        const target = e.target.closest('[data-tip]');
+        if (!target) return;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => { this.show(target); }, 120);
+      });
+      document.addEventListener('mouseout', e => {
+        const target = e.target.closest('[data-tip]');
+        if (!target) return;
+        clearTimeout(this.timer);
+        this.hide();
+      });
+      document.addEventListener('mousemove', e => {
+        if (this.el && !this.el.classList.contains('hidden')) {
+          this.position(e.clientX, e.clientY);
+        }
+      });
+    },
+    show(target) {
+      if (!this.el) return;
+      this.el.textContent = target.dataset.tip;
+      this.el.classList.remove('hidden');
+    },
+    hide() {
+      if (this.el) this.el.classList.add('hidden');
+    },
+    position(x, y) {
+      if (!this.el) return;
+      const offset = 12;
+      let left = x + offset;
+      let top = y + offset;
+      const rect = this.el.getBoundingClientRect();
+      if (left + rect.width > window.innerWidth) left = x - rect.width - offset;
+      if (top + rect.height > window.innerHeight) top = y - rect.height - offset;
+      this.el.style.left = (left + window.scrollX) + 'px';
+      this.el.style.top = (top + window.scrollY) + 'px';
+    }
+  };
+  setTimeout(() => TIP.init(), 100);
+
+  // 2. CountUp Animation
+  window.countUp = function(el, target, suffix = '') {
+    if (!el) return;
+    const start = parseInt(el.textContent, 10) || 0;
+    if (start === target) {
+      el.textContent = target.toLocaleString() + suffix;
+      return;
+    }
+    const duration = 800;
+    const startTime = performance.now();
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = progress * (2 - progress);
+      const current = Math.floor(start + (target - start) * ease);
+      el.textContent = current.toLocaleString() + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target.toLocaleString() + suffix;
+      }
+    }
+    requestAnimationFrame(update);
+  };
+
+  // Wrap countUp on header count updates
+  const origRender = UI.render.bind(UI);
+  UI.render = function(trees, threads, stats) {
+    const prevSla = S.slaBreachCount || 0;
+    const prevOut = S.outlierCount || 0;
+    
+    // Calculate new counts
+    let newSla = 0;
+    let newOut = 0;
+    Object.values(trees || {}).forEach(t => {
+      const scan = nodes => {
+        nodes.forEach(n => {
+          if (n._isSlaBreach) newSla++;
+          if (n._isOutlier) newOut++;
+          if (n.events?.length) scan(n.events);
+        });
+      };
+      scan(t);
+    });
+    S.slaBreachCount = newSla;
+    S.outlierCount = newOut;
+
+    origRender(trees, threads, stats);
+
+    // Animate numbers
+    const slaEl = $('hdr-sla');
+    if (slaEl && newSla > 0) {
+      countUp(slaEl.querySelector('.txt'), newSla, ' SLA');
+    }
+    const outEl = $('hdr-outliers');
+    if (outEl && newOut > 0) {
+      countUp(outEl.querySelector('.txt'), newOut, ' Outliers');
+    }
+  };
+
+  // 3. Sidebar Resize Handle Dragging
+  const sb = document.querySelector('.sb');
+  if (sb) {
+    const handle = document.createElement('div');
+    handle.className = 'sb-resize-handle';
+    sb.appendChild(handle);
+
+    let isDragging = false;
+    handle.addEventListener('mousedown', e => {
+      isDragging = true;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const newWidth = Math.max(180, Math.min(450, e.clientX));
+      document.documentElement.style.setProperty('--sw', newWidth + 'px');
+      localStorage.setItem('ll-sidebar-width', newWidth + 'px');
+    });
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+    handle.addEventListener('dblclick', () => {
+      document.documentElement.style.setProperty('--sw', '240px');
+      localStorage.removeItem('ll-sidebar-width');
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    const savedWidth = localStorage.getItem('ll-sidebar-width');
+    if (savedWidth) {
+      document.documentElement.style.setProperty('--sw', savedWidth);
+    }
+  }
+
+  // 4. Keyboard Shortcuts: Ctrl+D, Ctrl+Z, Home, End, PageUp, PageDown
+  const origCfgDel = CFG.del.bind(CFG);
+  CFG.del = function(idx) {
+    if (!S.cfg) return;
+    const r = S.cfg.elementRules[idx];
+    if (r) {
+      CFG._deletedRule = { ...r };
+      CFG._deletedRuleIdx = idx;
+    }
+    origCfgDel(idx);
+  };
+
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement?.tagName;
+    const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    if (inInput) return;
+
+    // Ctrl+Z Undo rule delete
+    if (e.ctrlKey && e.key === 'z') {
+      if (CFG._deletedRule && $('mm').classList.contains('hidden')) {
+        e.preventDefault();
+        const idx = CFG._deletedRuleIdx;
+        S.cfg.elementRules.splice(idx, 0, CFG._deletedRule);
+        CFG.pers();
+        CFG.rl();
+        toast(`Restored deleted rule: ${CFG._deletedRule.name}`, 'success');
+        CFG._deletedRule = null;
+      }
+    }
+
+    // Ctrl+D Duplicate rule
+    if (e.ctrlKey && e.key === 'd') {
+      const activeCard = document.querySelector('.rc:hover');
+      if (activeCard) {
+        e.preventDefault();
+        const idx = +activeCard.dataset.ri;
+        const rule = S.cfg.elementRules[idx];
+        if (rule) {
+          const copy = JSON.parse(JSON.stringify(rule));
+          copy.id = gid();
+          copy.name += ' (Copy)';
+          S.cfg.elementRules.push(copy);
+          CFG.pers();
+          CFG.rl();
+          toast(`Duplicated rule: ${rule.name}`, 'success');
+        }
+      }
+    }
+
+    // Home / End / PgUp / PgDn tree navigation overrides
+    if (S.viewMode === 'tree' || S.viewMode === 'split') {
+      if (e.key === 'Home') {
+        e.preventDefault();
+        KBN.move(-KBN._idx);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        if (TR._visibleNodes) KBN.move(TR._visibleNodes.length - 1 - KBN._idx);
+      } else if (e.key === 'PageUp') {
+        e.preventDefault();
+        KBN.move(-10);
+      } else if (e.key === 'PageDown') {
+        e.preventDefault();
+        KBN.move(10);
+      }
+    }
+  });
+
+  // 5. Settings Dirty State Checking
+  window.SETTINGS_DIRTY = {
+    isDirty: false,
+    originalValues: {},
+    init() {
+      const inputs = ['gs-name', 'gs-ts', 'gs-desc'];
+      const checkInputs = () => {
+        inputs.forEach(id => {
+          const el = $(id);
+          if (el && !(id in this.originalValues)) {
+            this.originalValues[id] = el.value;
+          }
+        });
+      };
+      document.addEventListener('click', e => {
+        const tab = e.target.closest('.stab');
+        if (tab && tab.dataset.panel === 'p-gs') {
+          setTimeout(checkInputs, 120);
+        }
+      });
+      inputs.forEach(id => {
+        document.addEventListener('input', e => {
+          if (e.target && e.target.id === id) {
+            checkInputs();
+            this.checkDirty();
+          }
+        });
+      });
+      const saveBtn = $('btn-sgs');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+          this.isDirty = false;
+          inputs.forEach(id => {
+            const el = $(id);
+            if (el) this.originalValues[id] = el.value;
+          });
+          this.updateUI();
+        });
+      }
+    },
+    checkDirty() {
+      let dirty = false;
+      for (const [id, orig] of Object.entries(this.originalValues)) {
+        const el = $(id);
+        if (el && el.value !== orig) {
+          dirty = true;
+          break;
+        }
+      }
+      this.isDirty = dirty;
+      this.updateUI();
+    },
+    updateUI() {
+      const btn = $('btn-sgs');
+      if (!btn) return;
+      if (this.isDirty) {
+        btn.classList.add('btn-p');
+        btn.style.boxShadow = '0 0 8px var(--amber-g)';
+      } else {
+        btn.classList.remove('btn-p');
+        btn.style.boxShadow = '';
+      }
+    }
+  };
+  setTimeout(() => SETTINGS_DIRTY.init(), 300);
+
+  // 6. Search Debounce & Clear Button
+  const searchInput = $('hdr-search');
+  if (searchInput) {
+    const clone = searchInput.cloneNode(true);
+    searchInput.parentNode.replaceChild(clone, searchInput);
+    
+    let debounceTimer = null;
+    clone.addEventListener('input', e => {
+      clearTimeout(debounceTimer);
+      const val = e.target.value;
+      const clearBtn = $('btn-search-clear');
+      if (clearBtn) clearBtn.style.cssText = val ? 'display:flex;' : 'display:none;';
+      
+      debounceTimer = setTimeout(() => {
+        S.searchQuery = val;
+        UI.rv();
+      }, 150);
+    });
+
+    // Wire Clear Button
+    const clearBtn = $('btn-search-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        clone.value = '';
+        clearBtn.style.display = 'none';
+        S.searchQuery = '';
+        UI.rv();
+        clone.focus();
+      });
+    }
+
+    // '/' shortcut focuses search
+    document.addEventListener('keydown', e => {
+      const tag = document.activeElement?.tagName;
+      if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        e.preventDefault();
+        clone.focus();
+      }
+    });
+  }
+
+  // 7. Parse Button State Machine
+  window.PARSEBTN = {
+    set(state) {
+      const btn = $('btn-parse');
+      if (!btn) return;
+      btn.dataset.state = state;
+      const labels = { idle: '▶ Parse', parsing: 'Parsing…', done: 'Done ✓', error: 'Error ✕' };
+      if (state === 'parsing') {
+        btn.innerHTML = `<span class="btn-spinner" style="display:inline-block; width:10px; height:10px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:progress-shimmer-sweep 0.8s infinite linear; margin-right:4px;"></span> Parsing…`;
+      } else {
+        btn.textContent = labels[state] || '▶ Parse';
+      }
+      if (state === 'done') setTimeout(() => this.set('idle'), 1500);
+      if (state === 'error') setTimeout(() => this.set('idle'), 2000);
+    }
+  };
+
+  const originalWmParse = WM.parse.bind(WM);
+  WM.parse = async function(file, cfg, tf) {
+    PARSEBTN.set('parsing');
+    try {
+      const res = await originalWmParse(file, cfg, tf);
+      PARSEBTN.set('done');
+      return res;
+    } catch (e) {
+      PARSEBTN.set('error');
+      throw e;
+    }
+  };
+
+  // 8. Dynamic preset color swatches in modal
+  const visualStyleRow = $('e-hex')?.parentElement;
+  if (visualStyleRow) {
+    const presets = [
+      { name: 'amber', hex: '#f0883e' },
+      { name: 'blue', hex: '#58a6ff' },
+      { name: 'green', hex: '#3fb950' },
+      { name: 'red', hex: '#f85149' },
+      { name: 'yellow', hex: '#f2c94c' },
+      { name: 'purple', hex: '#db84ec' },
+      { name: 'cyan', hex: '#56d3ff' },
+      { name: 'teal', hex: '#2eaf9b' }
+    ];
+    const swatchContainer = document.createElement('div');
+    swatchContainer.className = 'color-swatch-row';
+    swatchContainer.style.cssText = 'display:flex; gap:6px; margin-top:8px;';
+    swatchContainer.innerHTML = presets.map(p => `
+      <div class="color-swatch" data-col="${p.hex}" title="${p.name}" style="background:${p.hex}; width:16px; height:16px; border-radius:50%; cursor:pointer; border:1px solid rgba(255,255,255,0.2); transition:transform 0.1s;"></div>
+    `).join('');
+    
+    visualStyleRow.parentElement.appendChild(swatchContainer);
+    swatchContainer.addEventListener('click', e => {
+      const sw = e.target.closest('.color-swatch');
+      if (sw) {
+        const col = sw.dataset.col;
+        $('e-col').value = col;
+        $('e-hex').value = col;
+        $('e-col').dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  // 9. JIRA preflight connection tester
+  const jiraRow = $('jira-webhook')?.parentElement;
+  if (jiraRow) {
+    const testBtn = document.createElement('button');
+    testBtn.id = 'btn-jira-test-conn';
+    testBtn.className = 'btn btn-sm btn-g';
+    testBtn.type = 'button';
+    testBtn.textContent = 'Test';
+    testBtn.style.marginLeft = '6px';
+    
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'display:flex; align-items:center; width:100%;';
+    
+    const input = $('jira-webhook');
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+    wrapper.appendChild(testBtn);
+
+    testBtn.addEventListener('click', async () => {
+      const url = input.value.trim();
+      if (!url) return toast('Please enter a Webhook URL first.', 'warn');
+      toast('Testing JIRA connection...', 'info');
+      try {
+        await fetch(url, { method: 'POST', body: JSON.stringify({ test: true }), headers: { 'Content-Type': 'application/json' }, mode: 'no-cors' });
+        toast('JIRA Webhook connection test completed.', 'success');
+      } catch (e) {
+        toast('Connection failed or blocked by CORS.', 'warn');
+      }
+    });
+  }
+
+  // 10. Rules coverage + threads card grid & Stats clicks
+  const origStatsRender = STATS.render;
+  STATS.render = async function(tree, container) {
+    await origStatsRender.call(STATS, tree, container);
+    
+    const stats = STATS.compute(tree);
+    const statsValues = Object.values(stats);
+    
+    let slowestName = 'None';
+    let slowestVal = 0;
+    let slowestSla = 0;
+    let slowestCol = 'var(--blue)';
+    if (statsValues.length > 0) {
+      const s = statsValues.reduce((a, b) => (a.max > b.max ? a : b));
+      slowestName = s.ruleName;
+      slowestVal = s.max;
+      slowestSla = s.sla || s.max;
+      slowestCol = s.color || 'var(--blue)';
+    }
+    const slowestBarWidth = slowestVal > 0 ? Math.min(100, (slowestVal / slowestSla) * 100) : 0;
+    
+    const totalRules = S.cfg?.elementRules?.length || 0;
+    const matchedRules = statsValues.length;
+    const coveragePct = totalRules > 0 ? Math.round((matchedRules / totalRules) * 100) : 0;
+    const totalThreads = S.threads?.length || 0;
+    
+    const gridHtml = `
+      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
+        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Slowest Operation</div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="stats-card-value trunc" style="max-width:180px; font-size:14px; font-weight:bold; color:${slowestCol};" title="${esc(slowestName)}">${esc(slowestName)}</div>
+          <svg width="40" height="6" style="background:var(--bg-3); border-radius:3px; margin-left:6px; flex-shrink:0;">
+            <rect width="${slowestBarWidth}%" height="100%" fill="var(--red)"></rect>
+          </svg>
+        </div>
+        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">Max Latency: ${fmtMs(slowestVal)}</div>
+      </div>
+      
+      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
+        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Rules Coverage</div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="stats-card-value" style="font-size:14px; font-weight:bold;">${coveragePct}%</div>
+          <svg width="16" height="16" viewBox="0 0 16 16" style="transform: rotate(-90deg); margin-left:6px; flex-shrink:0;">
+            <circle cx="8" cy="8" r="6" fill="transparent" stroke="var(--bg-3)" stroke-width="2"></circle>
+            <circle cx="8" cy="8" r="6" fill="transparent" stroke="var(--green)" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="${37.7 - (37.7 * coveragePct / 100)}"></circle>
+          </svg>
+        </div>
+        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">${matchedRules} of ${totalRules} rules matched</div>
+      </div>
+      
+      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
+        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Active Threads</div>
+        <div class="stats-card-value" style="font-size:14px; font-weight:bold;">${totalThreads}</div>
+        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">Total threads parsed in session</div>
+      </div>
+    `;
+    
+    let grid = container.querySelector('#stats-card-grid');
+    if (!grid) {
+      grid = document.createElement('div');
+      grid.id = 'stats-card-grid';
+      grid.className = 'stats-card-grid';
+      grid.style.cssText = 'display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;';
+      const tw = container.querySelector('.tw');
+      if (tw) tw.insertBefore(grid, tw.firstChild);
+    }
+    grid.innerHTML = gridHtml;
+    
+    // Trigger countUp on stats cards
+    setTimeout(() => {
+      document.querySelectorAll('.stats-card-value').forEach(el => {
+        const txt = el.textContent;
+        if (txt.endsWith('%')) {
+          const val = parseInt(txt, 10) || 0;
+          el.textContent = '0%';
+          countUp(el, val, '%');
+        } else if (/^\d+$/.test(txt)) {
+          const val = parseInt(txt, 10) || 0;
+          el.textContent = '0';
+          countUp(el, val);
+        }
+      });
+    }, 100);
+
+    // Click statistics row to filter in tree view
+    container.querySelectorAll('.stats-row').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', () => {
+        const rid = row.dataset.rid;
+        const s = stats[rid];
+        if (s) {
+          $('hdr-search').value = s.ruleName;
+          $('hdr-search').dispatchEvent(new Event('input'));
+          UI.svm('tree');
+          toast(`Filtered tree view to: ${s.ruleName}`, 'info');
+        }
+      });
+    });
+  };
+
+  // 11. Custom plugins list override & status trackers
+  const originalRenderList = PLUGINS._renderList;
+  PLUGINS._renderList = function() {
+    const container = $('plugin-list');
+    if (!container) return;
+    if (PLUGINS._list.length === 0) {
+      container.innerHTML = '<div style="color:var(--t3);font-style:italic;">No plugins loaded.</div>';
+      return;
+    }
+    container.innerHTML = PLUGINS._list.map((p, idx) => {
+      const isError = p.isError || false;
+      const lastRun = p.lastRun ? new Date(p.lastRun).toLocaleTimeString() : 'Never run';
+      const statusText = isError ? 'Error' : 'Active';
+      const statusClass = isError ? 'b-red' : 'b-green';
+      const icon = '🔌';
+      return `
+        <div class="rc" style="margin-bottom:6px; background:var(--bg-2); border:1px solid var(--bdr);">
+          <div class="ric" style="background:var(--blue-g);color:var(--blue);">${icon}</div>
+          <div style="flex:1;min-width:0;padding-left:6px;">
+            <div class="rn trunc">${esc(p.id)}</div>
+            <div class="rm" style="display:flex; gap:6px; align-items:center; margin-top:2px;">
+              <span class="badge ${statusClass}" style="font-size:8px; padding:1px 4px;">${statusText}</span>
+              <span style="font-size:9px; color:var(--t4);">${lastRun}</span>
+            </div>
+          </div>
+          <div style="flex-shrink:0;">
+            <button class="btn btn-g btn-xs" onclick="PLUGINS.remove('${p.id}')" title="Remove plugin" style="color:var(--red);" type="button">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  const originalPluginsRun = PLUGINS.run.bind(PLUGINS);
+  PLUGINS.run = function(hook, payload) {
+    const sandbox = $('plugin-sandbox');
+    if (!sandbox || !sandbox.contentWindow) return;
+    this._list.forEach(p => {
+      p.lastRun = Date.now();
+      sandbox.contentWindow.postMessage({ type: 'run', id: p.id, hook, payload }, '*');
+    });
+    this._renderList();
+  };
+
+  // 12. D3 Graph vignettes floating legends card
+  const originalGraphRender = GRAPHIFY.render.bind(GRAPHIFY);
+  GRAPHIFY.render = async function(trees, container) {
+    await originalGraphRender(trees, container);
+    const canvasContainer = $('d3-graph-canvas-container');
+    if (!canvasContainer) return;
+    
+    const data = GRAPHIFY.buildGraph(trees);
+    const activeRules = {};
+    data.nodes.forEach(n => { activeRules[n.id] = n.color; });
+
+    let legend = canvasContainer.querySelector('.graph-legend-card');
+    if (!legend) {
+      legend = document.createElement('div');
+      legend.className = 'graph-legend-card';
+      legend.style.cssText = 'position:absolute; bottom:12px; right:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:8px 12px; z-index:10; max-width:220px; font-size:10px; font-family:var(--ui); display:flex; flex-direction:column; gap:4px; box-shadow:var(--shd);';
+      canvasContainer.appendChild(legend);
+    }
+    
+    legend.innerHTML = `
+      <div style="font-weight:bold; text-transform:uppercase; color:var(--t3); margin-bottom:4px;">Legend</div>
+      ${Object.entries(activeRules).map(([name, col]) => `
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="width:8px; height:8px; border-radius:50%; background:${col}; display:inline-block; border:1px solid rgba(255,255,255,0.1);"></span>
+          <span class="trunc" style="color:var(--t2); font-weight:600;">${esc(name)}</span>
+        </div>
+      `).join('')}
+    `;
+  };
+
+  // 13. Gliding view modes tab indicator
+  window.updateVtabsPill = function() {
+    const activeTab = document.querySelector(`.vt[data-v="${S.viewMode}"]`);
+    const container = $('vtabs');
+    if (!activeTab || !container) return;
+    
+    let pill = $('vtabs-pill');
+    if (!pill) {
+      pill = document.createElement('div');
+      pill.id = 'vtabs-pill';
+      pill.style.cssText = 'position:absolute; background:rgba(255,149,0,0.1); border:1px solid var(--amber-g); border-radius:var(--radius-md); transition:left 0.22s var(--ease-spring), width 0.22s var(--ease-spring); z-index:0; pointer-events:none; top:4px; bottom:4px;';
+      container.appendChild(pill);
+    }
+    const rect = activeTab.getBoundingClientRect();
+    const parentRect = container.getBoundingClientRect();
+    pill.style.left = (rect.left - parentRect.left + container.scrollLeft) + 'px';
+    pill.style.width = rect.width + 'px';
+  };
+  
+  const originalUiSvm = UI.svm.bind(UI);
+  UI.svm = function(vm) {
+    originalUiSvm(vm);
+    updateVtabsPill();
+  };
+  window.addEventListener('resize', updateVtabsPill);
+  setTimeout(updateVtabsPill, 400);
+
+  // 14. Quick edit modal close button
+  const originalQeOpen = QUICK_EDIT.open.bind(QUICK_EDIT);
+  QUICK_EDIT.open = function(rule, targetCard) {
+    originalQeOpen(rule, targetCard);
+    const pop = $('quick-edit-pop');
+    if (pop) {
+      const titleDiv = pop.querySelector('div[style*="uppercase"]');
+      if (titleDiv) {
+        titleDiv.style.cssText = 'font-weight:bold; font-size:10px; text-transform:uppercase; color:var(--t3); display:flex; justify-content:space-between; align-items:center;';
+        titleDiv.innerHTML = `<span>Quick Edit Rule</span><button class="btn btn-g btn-xs" id="btn-qe-close" style="padding:0 4px; line-height:1; font-size:11px; margin-top:-2px;" type="button">✕</button>`;
+        pop.querySelector('#btn-qe-close').addEventListener('click', () => {
+          pop.classList.add('hidden');
+        });
+      }
+    }
+  };
+
+  // 15. Integration Hub Status Badges Updater
+  window.updateIntegrationStatus = function() {
+    // Loki/ES/AWS
+    const dsBadge = $('hdr-ds')?.querySelector('.mla');
+    if (dsBadge) {
+      const activeDS = S.appPrefs?.DS_TYPE || localStorage.getItem('ll-ds-type') || 'none';
+      dsBadge.textContent = activeDS.toUpperCase();
+      dsBadge.className = 'mla badge b-gray';
+    }
+    // WS stream
+    const wsBadge = $('p-stream-body')?.previousElementSibling?.querySelector('.mla');
+    const isConn = STREAM.ws && STREAM.ws.readyState === 1;
+    if (wsBadge) {
+      wsBadge.textContent = isConn ? 'LIVE' : 'OFFLINE';
+      wsBadge.className = isConn ? 'mla badge b-green' : 'mla badge b-gray';
+    }
+  };
+  setInterval(updateIntegrationStatus, 1000);
+
+  // 17. Wrap UI.prog and UI.hprog for details and green checkmark
+  const originalUiProg = UI.prog.bind(UI);
+  UI.prog = function(p, l, n, m) {
+    originalUiProg(p, l, n, m);
+    const details = $('prog-details');
+    if (details) {
+      const matched = m || 0;
+      const processed = n || 0;
+      details.textContent = `${matched.toLocaleString()} events matched / ${processed.toLocaleString()} lines processed`;
+    }
+  };
+
+  const originalUiHprog = UI.hprog.bind(UI);
+  UI.hprog = function() {
+    const label = $('prog-l');
+    if (label) {
+      label.innerHTML += ' <span style="color:var(--green); font-weight:bold; margin-left:6px;">✓</span>';
+    }
+    const fill = $('prog-f');
+    if (fill) {
+      fill.style.width = '100%';
+      fill.style.background = 'var(--green)';
+    }
+    setTimeout(() => {
+      originalUiHprog();
+      setTimeout(() => {
+        if (fill) fill.style.background = '';
+        const details = $('prog-details');
+        if (details) details.textContent = '';
+      }, 550);
+    }, 1200);
+  };
+
+  // 18. Wrap WIZ.test backdrop highlights
+  const originalWizTest = WIZ.test.bind(WIZ);
+  WIZ.test = function() {
+    originalWizTest();
+    const line = $('g-tl').value;
+    const rx = S._wizRx;
+    let backdrop = $('g-tl-backdrop');
+    if (!backdrop) {
+      const container = document.createElement('div');
+      container.className = 'g-tl-container';
+      container.style.cssText = 'position:relative; width:100%;';
+      
+      const input = $('g-tl');
+      input.parentNode.insertBefore(container, input);
+      
+      backdrop = document.createElement('div');
+      backdrop.id = 'g-tl-backdrop';
+      backdrop.className = 'g-tl-backdrop';
+      backdrop.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; font-family:var(--mono); font-size:11px; padding:6px 10px; border:1px solid transparent; white-space:pre; color:var(--t1); background:var(--bg-1); overflow:hidden; border-radius:var(--radius-sm);';
+      
+      container.appendChild(backdrop);
+      container.appendChild(input);
+      input.style.cssText = 'position:relative; background:transparent !important; color:transparent !important; caret-color:var(--t1) !important; width:100%;';
+      
+      input.addEventListener('scroll', () => {
+        backdrop.scrollLeft = input.scrollLeft;
+      });
+    }
+
+    if (!line || !rx) {
+      backdrop.textContent = line;
+      return;
+    }
+    try {
+      const m = new RegExp(rx).exec(line);
+      if (m) {
+        const matchText = m[0];
+        const start = m.index;
+        const end = start + matchText.length;
+        const before = line.slice(0, start);
+        const matched = line.slice(start, end);
+        const after = line.slice(end);
+        backdrop.innerHTML = esc(before) + '<mark style="background:rgba(255,149,0,0.3); color:var(--amber); border-radius:2px;">' + esc(matched) + '</mark>' + esc(after);
+      } else {
+        backdrop.textContent = line;
+      }
+    } catch(e) {
+      backdrop.textContent = line;
+    }
+  };
+
+  // 19. Categorized Accordion Palette in Regex Builder (RXB)
+  const originalRxbInit = RXB.init.bind(RXB);
+  RXB.init = function() {
+    const bd = $('rxb-bd');
+    if (!bd) return;
+    bd.innerHTML = TOKS.map((cat, idx) => `
+      <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
+        <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:var(--text-sm); font-weight:600; color:var(--t2);">
+          <span>${esc(cat.cat)}</span>
+          <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
+        </div>
+        <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
+          <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            ${cat.toks.map(tk => `
+              <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
+                <span class="tok-n" style="font-size:var(--text-sm); font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
+                <span class="tok-ex" style="font-family:var(--mono); font-size:var(--text-xs); color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    bd.querySelectorAll('.tok-accordion-hdr').forEach(hdr => {
+      hdr.addEventListener('click', () => {
+        const sec = hdr.parentElement;
+        const isOpen = sec.classList.toggle('open');
+        const body = sec.querySelector('.tok-accordion-body');
+        const arrow = sec.querySelector('.tok-accordion-arrow');
+        body.style.maxHeight = isOpen ? '500px' : '0px';
+        arrow.textContent = isOpen ? '▼' : '▶';
+      });
+    });
+
+    bd.addEventListener('click', e => {
+      const tk = e.target.closest('.tok'); if (!tk) return;
+      this.ins('e-rx', tk.dataset.s); this.update();
+    });
+
+    $('rxb-hdr').addEventListener('click', () => {
+      const open = $('rxb-bd').classList.toggle('vis');
+      $('rxb-hdr').classList.toggle('open', open);
+    });
+    $('tmpl-sel').addEventListener('change', e => {
+      const tmpl = TMPLS[e.target.value]; if (!tmpl) return;
+      $('e-rx').value = tmpl.rx;
+      const fg = f => Object.entries(tmpl.cm).find(([,v]) => v === f)?.[0] || '';
+      $('cm-ts').value = fg('timestamp'); $('cm-th').value = fg('thread');
+      $('cm-el').value = ''; $('cm-py').value = '';
+      this.update(); toast('Template applied.', 'info');
+    });
+    $('e-rx').addEventListener('input', () => this.update());
+    $('a-tl').addEventListener('input', () => this.update());
+  };
+
+  // 20. Explainer color-coding logic
+  const originalRexExplain = REX.explain.bind(REX);
+  REX.explain = function(pattern) {
+    const segments = originalRexExplain(pattern);
+    segments.forEach(seg => {
+      const f = seg.fragment;
+      const desc = seg.description ? seg.description.toLowerCase() : '';
+      if (f === '^' || f === '$' || f.includes('\\b') || f.includes('\\B') || desc.includes('anchor') || desc.includes('boundary') || desc.includes('start of') || desc.includes('end of')) {
+        seg.color = 'var(--red)';
+      } else if (f === '+' || f === '*' || f === '?' || f.startsWith('{') || desc.includes('quantifier') || desc.includes('repetition') || desc.includes('zero or more') || desc.includes('one or more') || desc.includes('optional')) {
+        seg.color = 'var(--blue)';
+      } else if (f.startsWith('(') || f.endsWith(')') || desc.includes('group') || desc.includes('capturing')) {
+        seg.color = 'var(--amber)';
+      } else {
+        seg.color = 'var(--green)';
+      }
+    });
+    return segments;
+  };
+
+  // 21. Dynamic Preset Legend capture mapping visual diagram
+  const capHeader = document.querySelector('button[data-htip="capture"]')?.closest('.sh');
+  if (capHeader) {
+    const parent = capHeader.nextElementSibling;
+    if (parent) {
+      const diag = document.createElement('div');
+      diag.className = 'cap-diagram';
+      diag.style.cssText = 'margin-top:12px; padding:10px; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--radius-md); font-family:var(--mono); font-size:10px; line-height:1.5; color:var(--t3);';
+      diag.innerHTML = `
+        <div style="font-size:9px; text-transform:uppercase; color:var(--t4); font-weight:bold; margin-bottom:6px;">Visual Group Mapping Guide</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; font-family:var(--mono);">
+          <span style="background:rgba(88,166,255,0.12); color:var(--blue); border:1px solid var(--blue-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 1: timestamp]</span>
+          <span style="background:rgba(63,185,80,0.12); color:var(--green); border:1px solid var(--green-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 2: thread]</span>
+          <span style="background:rgba(255,149,0,0.12); color:var(--amber); border:1px solid var(--amber-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 3: elementName]</span>
+          <span style="background:rgba(220,38,38,0.12); color:var(--red); border:1px solid var(--red-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 4: payload]</span>
+          <span style="background:rgba(197,130,255,0.12); color:var(--purple); border:1px solid var(--purple-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 5: correlationId]</span>
+        </div>
+      `;
+      parent.appendChild(diag);
+    }
+  }
+
+  // 22. Preset SLA Threshold helper text in guided wizard
+  const slaInput = $('e-sla');
+  if (slaInput) {
+    const helper = document.createElement('div');
+    helper.className = 'field-helper';
+    helper.style.cssText = 'font-size:10px; color:var(--t4); margin-top:4px; font-family:var(--ui);';
+    helper.textContent = 'Events exceeding this duration will be flagged SLA BREACH in the tree view';
+    slaInput.parentElement.appendChild(helper);
+  }
+
+  // 23. Thread Chips scroll wrapper layout
+  const chips = $('vt-chips');
+  if (chips) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'vt-chips-wrapper';
+    wrapper.style.cssText = 'position:relative; display:flex; align-items:center; overflow:hidden; max-width:320px;';
+    chips.parentNode.insertBefore(wrapper, chips);
+    
+    const leftBtn = document.createElement('button');
+    leftBtn.id = 'btn-chips-left';
+    leftBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
+    leftBtn.textContent = '◂';
+    leftBtn.style.cssText = 'position:absolute; left:0; z-index:10; height:100%; border-radius:0; background:var(--bg-3); border:none;';
+    
+    const rightBtn = document.createElement('button');
+    rightBtn.id = 'btn-chips-right';
+    rightBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
+    rightBtn.textContent = '▸';
+    rightBtn.style.cssText = 'position:absolute; right:0; z-index:10; height:100%; border-radius:0; background:var(--bg-3); border:none;';
+    
+    wrapper.appendChild(leftBtn);
+    wrapper.appendChild(chips);
+    wrapper.appendChild(rightBtn);
+    
+    leftBtn.addEventListener('click', () => { chips.scrollBy({ left: -100, behavior: 'smooth' }); });
+    rightBtn.addEventListener('click', () => { chips.scrollBy({ left: 100, behavior: 'smooth' }); });
+    
+    const updateArrows = () => {
+      const hasOverflow = chips.scrollWidth > chips.clientWidth;
+      leftBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft <= 2);
+      rightBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft >= chips.scrollWidth - chips.clientWidth - 2);
+    };
+    chips.addEventListener('scroll', updateArrows);
+    new MutationObserver(updateArrows).observe(chips, { childList: true });
+    window.addEventListener('resize', updateArrows);
+    setTimeout(updateArrows, 400);
+  }
+
+  // 24. Loki/ES/AWS segmented control configuration binding
+  const typeSelect = $('ds-type');
+  if (typeSelect) {
+    typeSelect.style.display = 'none';
+    const segmented = document.createElement('div');
+    segmented.className = 'ds-type-segmented';
+    segmented.innerHTML = `
+      <button type="button" class="ds-segment-btn" data-val="loki">Loki</button>
+      <button type="button" class="ds-segment-btn" data-val="elastic">ES</button>
+      <button type="button" class="ds-segment-btn" data-val="aws">AWS</button>
+    `;
+    typeSelect.parentNode.insertBefore(segmented, typeSelect);
+
+    const updateSeg = () => {
+      const val = typeSelect.value;
+      segmented.querySelectorAll('.ds-segment-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.val === val);
+      });
+    };
+    segmented.addEventListener('click', e => {
+      const btn = e.target.closest('.ds-segment-btn');
+      if (btn) {
+        typeSelect.value = btn.dataset.val;
+        typeSelect.dispatchEvent(new Event('change'));
+      }
+    });
+    typeSelect.addEventListener('change', updateSeg);
+    setTimeout(updateSeg, 200);
+  }
+
+  // 25. Custom overlay for toast system count downs
+  const origToast = UTILS.toast;
+  UTILS.toast = function(msg, type='info', d=3200) {
+    const el = document.createElement('div');
+    el.className = 'toast t-' + (type==='success'?'ok':type==='error'?'er':type==='warn'?'wa':'in');
+    el.style.position = 'relative';
+    el.style.overflow = 'hidden';
+    el.style.borderLeftWidth = '3px';
+    el.textContent = msg;
+    
+    const progress = document.createElement('div');
+    progress.className = 'toast-progress';
+    progress.style.cssText = `position:absolute; bottom:0; left:0; height:2px; width:100%; background:currentColor; opacity:0.4; transition:width ${d}ms linear;`;
+    el.appendChild(progress);
+    
+    const container = $('toast-r');
+    if (container) container.appendChild(el);
+    
+    requestAnimationFrame(() => { progress.style.width = '0%'; });
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(10px) scale(0.95)';
+      el.style.transition = 'all 0.22s var(--ease-out)';
+      setTimeout(() => el.remove(), 220);
+    }, d);
+  };
+  window.toast = UTILS.toast;
+
+  // Sync WebSocket stream stats to mini progress card
+  setInterval(() => {
+    const isConn = STREAM.ws && STREAM.ws.readyState === 1;
+    let card = $('stream-prog-card');
+    if (isConn && STREAM.buffer) {
+      if (!card) {
+        const streamBody = $('p-stream-body');
+        if (streamBody) {
+          card = document.createElement('div');
+          card.id = 'stream-prog-card';
+          card.style.cssText = 'margin-top: 8px; padding: 10px; background: var(--bg-2); border: 1px solid var(--bdr); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 6px;';
+          card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; color:var(--t1);">
+              <span class="dot" style="width:6px; height:6px; background:var(--green); border-radius:50%; box-shadow:0 0 8px var(--green); display:inline-block; animation:live-dot-pulse 1.2s infinite alternate;"></span>
+              Connected to stream
+            </div>
+            <div style="font-size:10px; color:var(--t3); display:flex; justify-content:space-between;">
+              <span>Buffer Fill</span>
+              <span id="stream-progress-label">0 / 2000</span>
+            </div>
+            <div style="height:4px; background:var(--bg-3); border-radius:var(--radius-pill); overflow:hidden;">
+              <div id="stream-progress-fill" style="height:100%; width:0%; background:var(--amber); transition:width 0.2s;"></div>
+            </div>
+          `;
+          streamBody.insertBefore(card, $('btn-stream-clear'));
+        }
+      }
+      if (card) {
+        const fill = $('stream-progress-fill');
+        const label = $('stream-progress-label');
+        if (fill && label) {
+          const len = STREAM.buffer.length;
+          const pct = Math.min(100, (len / 2000) * 100);
+          fill.style.width = pct + '%';
+          label.textContent = `${len} / 2000`;
+        }
+      }
+    } else {
+      if (card) card.remove();
+    }
+  }, 500);
+
+})();
 
 console.log('%c[LogLens]%c Feature Overhaul added successfully.',
   'color:#ff9500;font-weight:bold','color:#7a8299');
