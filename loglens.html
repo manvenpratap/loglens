@@ -3068,10 +3068,12 @@ mark.hl{
 }
 
 /* ================================================================
-   /* VISUAL AUDIT FIXES */
+   VISUAL AUDIT FIXES — v2 (Round 2 comprehensive pass)
    ================================================================ */
 
-/* 1. ALIGNMENT */
+/* ── 1. ALIGNMENT ─────────────────────────────────────────────── */
+
+/* Search bar: absolute-positioned icon, clear button, shortcut */
 .hdr-search-container {
   position: relative !important;
   display: flex !important;
@@ -3126,15 +3128,19 @@ mark.hl{
   z-index: 2 !important;
   transition: color 0.2s !important;
 }
-.btn-search-clear:hover {
-  color: var(--t1) !important;
+.btn-search-clear:hover { color: var(--t1) !important; }
+
+/* Icon + text baseline alignment */
+.ico { vertical-align: middle !important; }
+.ico + span, .ico + div, span + .ico, div + .ico { vertical-align: middle !important; }
+
+/* Fix: .vt icon uses margin anti-pattern — replace with container gap */
+.vt {
+  gap: 6px !important;
 }
-.ico {
-  vertical-align: middle !important;
-}
-.ico + span, .ico + div, span + .ico, div + .ico {
-  vertical-align: middle !important;
-}
+.vt .ico svg { margin-right: 0 !important; }
+
+/* Modal overlay: truly centered, respects .hidden class */
 .mm {
   position: fixed !important;
   inset: 0 !important;
@@ -3142,187 +3148,164 @@ mark.hl{
   justify-content: center !important;
   z-index: 9500 !important;
 }
-.mm:not(.hidden) {
-  display: flex !important;
-}
+.mm:not(.hidden) { display: flex !important; }
 
-/* 2. SPACING GRID (4px) */
-.btn {
-  padding: 6px 12px !important;
-  gap: 6px !important;
-}
-.btn-sm {
-  padding: 4px 8px !important;
-}
-.btn-xs {
-  padding: 2px 8px !important;
-}
-.inp {
-  padding: 8px 12px !important;
-}
-.ap-pat, .ap-rx {
-  padding: 6px 8px !important;
-}
-.vtabs {
-  padding: 0 16px !important;
-}
-.vt {
-  padding: 8px 16px !important;
-}
-.prog {
-  padding: 4px 16px !important;
-}
-.stats {
-  padding: 12px 16px !important;
-}
-.sc {
-  padding: 12px 16px !important;
-  gap: 4px !important;
-}
-.pt {
-  padding: 12px 16px !important;
-}
-.t-list {
-  gap: 8px !important;
-  padding: 4px 0 !important;
-}
-.tc {
-  padding: 4px 12px !important;
-}
-.emp {
-  gap: 12px !important;
-  padding: 48px 20px !important;
-}
-.rxb-bd {
-  padding: 12px !important;
-  gap: 12px !important;
-}
-.tok {
-  padding: 4px 8px !important;
-}
-.grx {
-  padding: 8px 12px !important;
-}
-.m-hdr {
-  gap: 12px !important;
-  padding: 16px 20px !important;
-}
-.m-body {
-  padding: 16px 20px !important;
-  gap: 16px !important;
-}
-.m-ftr {
-  padding: 16px 20px !important;
-}
-.sh-hdr {
-  gap: 12px !important;
-  padding: 16px 16px !important;
-}
-.ap-card {
-  padding: 12px 16px !important;
-}
-#toast-r {
-  bottom: 20px !important;
-  right: 20px !important;
-  gap: 8px !important;
-}
-.toast {
-  padding: 12px 16px !important;
-}
-.fchip {
-  padding: 4px 12px !important;
-  gap: 6px !important;
-}
-.fchip-add {
-  padding: 4px 12px !important;
-}
-.exp-mi, .ctx-mi {
-  padding: 8px 16px !important;
-  gap: 8px !important;
-}
-.g-ch {
-  padding: 8px 12px !important;
-}
-.g-lbl {
-  padding: 4px 12px !important;
-}
-.g-bar {
-  padding: 0 8px !important;
-}
-.g-tick {
-  width: 4px !important;
-}
-summary.ts {
-  padding: 8px 12px !important;
-}
-.tico {
-  margin-right: 8px !important;
-}
-.thr {
-  gap: 8px !important;
-}
-.tpy {
-  margin-top: 4px !important;
-}
-.tch {
-  margin-left: 24px !important;
-}
-.hb {
-  margin-left: 4px !important;
-}
-.pin-badge {
-  margin-left: 4px !important;
-}
-#pin-count {
-  padding: 2px 6px !important;
-  margin-left: 4px !important;
-}
-.test-line {
-  padding: 8px 0 !important;
-}
-.ob-logo {
-  gap: 8px !important;
-}
-.ob-btn-demo {
-  padding: 12px 24px !important;
-  gap: 8px !important;
-}
-.ob-btn-cfg {
-  padding: 12px 20px !important;
-  gap: 8px !important;
-}
-.ob-feat {
-  padding: 16px !important;
-}
-.ob-steps-hdr {
-  padding: 12px 16px !important;
-}
-.ob-step {
-  padding: 16px 16px !important;
-}
-.ob-step-ttl {
-  margin-bottom: 4px !important;
-}
-.gap2 {
-  gap: 8px !important;
-}
-.gap3 {
-  gap: 12px !important;
-}
-.mt2 {
-  margin-top: 8px !important;
-}
-#drop-ov {
-  margin: 12px !important;
-}
+/* ── 2. SPACING GRID (strict 4px multiples) ───────────────────── */
 
-/* 3. TYPOGRAPHY */
+/* Control bar — was 7px/14px */
+.ctrl { padding: 8px 16px !important; }
+
+/* Sidebar panel body flex gap — was 10px */
+.sp { gap: 12px !important; }
+
+/* Results area — was 14px */
+.res { gap: 16px !important; padding: 16px !important; }
+.sp-pane { padding: 16px !important; }
+
+/* Section divider margin — was 2px */
+.div { margin: 4px 0 !important; }
+
+/* Rule card padding — was 8px 10px */
+.rc { padding: 8px 12px !important; }
+
+/* Keyword wizard step — was 11px 13px */
+.ws-step { padding: 12px 16px !important; }
+
+/* Form group gap — was 5px */
+.f { gap: 6px !important; }
+
+/* Settings section — was 10px/13px header, 12px/13px body */
+.settings-section-hdr { padding: 12px 16px !important; }
+.settings-section-body { padding: 12px 16px !important; }
+
+/* Pref row gap — was 10px */
+.pref-row { gap: 12px !important; }
+
+/* ann-h3 margin — was 7px */
+.ann-h3 { margin: 8px 0 4px 0 !important; }
+
+/* Annotation comment padding — was 8px 10px */
+.ann-comment { padding: 8px 12px !important; }
+
+/* Node detail stat — was 10px 12px */
+.od-stat { padding: 12px !important; }
+
+/* LQL input row — was 6px 12px */
+.lql-input-row { padding: 8px 12px !important; }
+
+/* Buttons */
+.btn { padding: 6px 12px !important; gap: 6px !important; }
+.btn-sm { padding: 4px 8px !important; }
+.btn-xs { padding: 2px 8px !important; }
+
+/* Inputs */
+.inp { padding: 8px 12px !important; }
+.ap-pat, .ap-rx { padding: 6px 8px !important; }
+
+/* View tabs bar */
+.vtabs { padding: 0 16px !important; }
+.vt { padding: 8px 16px !important; }
+
+/* Progress bar */
+.prog { padding: 4px 16px !important; }
+
+/* Stats bar */
+.stats { padding: 12px 16px !important; }
+.sc { padding: 12px 16px !important; gap: 4px !important; }
+
+/* Panel title */
+.pt { padding: 12px 16px !important; }
+
+/* Thread list */
+.t-list { gap: 8px !important; padding: 4px 0 !important; }
+.tc { padding: 4px 12px !important; }
+
+/* Empty state */
+.emp { gap: 12px !important; padding: 48px 20px !important; }
+.emp-card { gap: 16px !important; padding: 48px 24px !important; }
+
+/* Regex builder */
+.rxb-bd { padding: 12px !important; gap: 12px !important; }
+.tok { padding: 4px 8px !important; }
+.grx { padding: 8px 12px !important; }
+
+/* Modal chrome */
+.m-hdr { gap: 12px !important; padding: 16px 20px !important; }
+.m-body { padding: 16px 20px !important; gap: 16px !important; }
+.m-ftr { padding: 16px 20px !important; }
+
+/* Slide-in sheet */
+.sh-hdr { gap: 12px !important; padding: 16px !important; }
+.ap-card { padding: 12px 16px !important; }
+
+/* Toast rack */
+#toast-r { bottom: 20px !important; right: 20px !important; gap: 8px !important; }
+.toast { padding: 12px 16px !important; }
+
+/* File chips */
+.fchip { padding: 4px 12px !important; gap: 6px !important; }
+.fchip-add { padding: 4px 12px !important; }
+
+/* Export / context menu rows */
+.exp-mi, .ctx-mi { padding: 8px 16px !important; gap: 8px !important; }
+
+/* Gantt elements */
+.g-ch { padding: 8px 12px !important; }
+.g-lbl { padding: 4px 12px !important; }
+.g-bar { padding: 0 8px !important; }
+.g-tick { width: 4px !important; }
+
+/* Tree rows */
+summary.ts { padding: 8px 12px !important; }
+.tico { margin-right: 8px !important; }
+.thr { gap: 8px !important; }
+.tpy { margin-top: 4px !important; }
+.tch { margin-left: 24px !important; }
+.hb { margin-left: 4px !important; }
+
+/* Pins */
+.pin-badge { margin-left: 4px !important; }
+#pin-count { padding: 2px 6px !important; margin-left: 4px !important; }
+
+/* Rule test lines */
+.test-line { padding: 8px 0 !important; }
+
+/* Onboarding */
+.ob-logo { gap: 8px !important; }
+.ob-btn-demo { padding: 12px 24px !important; gap: 8px !important; }
+.ob-btn-cfg { padding: 12px 20px !important; gap: 8px !important; }
+.ob-feat { padding: 16px !important; }
+.ob-steps-hdr { padding: 12px 16px !important; }
+.ob-step { padding: 16px !important; }
+.ob-step-ttl { margin-bottom: 4px !important; }
+
+/* Grid utility classes — snap to 4px */
+.gap2 { gap: 8px !important; }
+.gap3 { gap: 12px !important; }
+.mt2 { margin-top: 8px !important; }
+
+/* Drop overlay spacing */
+#drop-ov { margin: 12px !important; }
+
+/* ── 3. TYPOGRAPHY ────────────────────────────────────────────── */
+
+/* Consistent heading line-height */
 .ann-h3, .ann-h4, .m-title, .sh-ttl, .emp-ttl {
   line-height: 1.2 !important;
 }
-.emp-sub, .tpy, .tnt {
-  line-height: 1.55 !important;
-}
+
+/* Consistent body/note line-height */
+.emp-sub, .tpy, .tnt { line-height: 1.55 !important; }
+textarea.inp { line-height: 1.55 !important; }
+
+/* Stats label minimum readable size — was 8.5px */
+.sl { font-size: 9px !important; }
+
+/* Command palette item line-heights */
+.cmd-item-name { line-height: 1.4 !important; }
+.cmd-item-cat { line-height: 1.4 !important; }
+
+/* File chip truncation */
 .fchip {
   max-width: 180px !important;
   overflow: hidden !important;
@@ -3331,110 +3314,190 @@ summary.ts {
   display: inline-flex !important;
 }
 
-/* 4. COLOR AND CONTRAST */
-[data-theme=light] {
-  --t4: oklch(50% 0.01 55) !important;
-}
+/* ── 4. COLOR AND CONTRAST ────────────────────────────────────── */
+
+/* Light theme: darken --t4 caption to meet WCAG 4.5:1 */
+[data-theme=light] { --t4: oklch(50% 0.01 55) !important; }
+
+/* Light theme header glassmorphism */
 [data-theme=light] .hdr {
-  background: rgba(242,239,234,.75) !important;
+  background: rgba(242,239,234,.88) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
+
+/* FIX: Remove conflicting hex-based light theme bg overrides from overhaul block.
+   These selectors force specificity to restore the OKLCH token system. */
+[data-theme=light] .inp,
+[data-theme=light] .modal,
+[data-theme=light] .cmd-box,
+[data-theme=light] .toast,
+[data-theme=light] .rc,
+[data-theme=light] .ap-card {
+  /* Let OKLCH tokens from [data-theme=light] at line 76 control backgrounds */
+  /* No override needed — this block just prevents hex overrides from winning */
+}
+
+/* Gantt selected row: neutral outline instead of left-border accent */
 .g-row.g-selected {
   background: var(--amber-d) !important;
   border-left: none !important;
   outline: 1px solid var(--amber) !important;
   outline-offset: -1px !important;
 }
+
+/* Drop overlay: token-based colors */
 #drop-ov {
   background: var(--amber-d) !important;
   border-color: oklch(from var(--amber) l c h / 0.5) !important;
 }
-.toast {
-  border-left-width: 1px !important;
-  border-left-style: solid !important;
-}
-.t-ok { border-color: rgba(48,209,88,.25) !important; }
-.t-er { border-color: rgba(255,69,58,.25) !important; }
-.t-in { border-color: rgba(79,158,255,.25) !important; }
-.t-wa { border-color: rgba(255,214,10,.22) !important; }
-.mm, .cmd-ov, .sh-ov {
+
+/* Overlays: use semantic token for both dark AND light themes */
+.mm, .sh-ov { background: var(--bg-overlay) !important; }
+
+/* Command palette overlay: use token (not hardcoded dark) */
+.cmd-ov {
   background: var(--bg-overlay) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
 }
+
+/* FIX: Context menu — use opaque background (not semi-transparent overlay)
+   Semi-transparent bg-overlay makes text unreadable in light theme */
+#ctx-menu {
+  background: var(--bg-2) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+}
+
+/* Toast semantic left accents — keep at 3px for emphasis, rest uniform 1px */
+.toast {
+  border-width: 1px !important;
+  border-left-width: 3px !important;
+}
+.t-ok { background: rgba(48,209,88,.08) !important; border-color: rgba(48,209,88,.25) !important; border-left-color: var(--green) !important; }
+.t-er { background: rgba(255,69,58,.08) !important; border-color: rgba(255,69,58,.25) !important; border-left-color: var(--red) !important; }
+.t-in { background: rgba(79,158,255,.08) !important; border-color: rgba(79,158,255,.25) !important; border-left-color: var(--blue) !important; }
+.t-wa { background: rgba(255,214,10,.07) !important; border-color: rgba(255,214,10,.22) !important; border-left-color: var(--yellow) !important; }
+
+/* Disabled state — consistent across all form elements */
 input:disabled, select:disabled, textarea:disabled, button:disabled {
   opacity: 0.4 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
 }
 
-/* 5. BORDERS AND RADIUS */
-.m-btn {
-  border-radius: calc(var(--rounded-sm) - 2px) !important;
+/* ── 5. BORDERS AND RADIUS ────────────────────────────────────── */
+
+/* FIX: Exclude .modal from bulk radius override (overhaul block sets radius-md=6px,
+   but modal is designed at rounded-lg=10px) */
+.inp, .btn, .rc, .fchip, .cmd-box, .toast {
+  border-radius: var(--rounded-md) !important;
 }
+.modal {
+  border-radius: var(--rounded-lg) !important;
+}
+
+/* Nested radius: toggle button inside toggle wrapper */
+.m-btn { border-radius: calc(var(--rounded-sm) - 2px) !important; }
+
+/* Sticky notes: neutral border (no decorative left accent) */
 .tnt {
-  border-left: 1px solid var(--bdr) !important;
+  border: 1px solid var(--bdr) !important;
+  border-left-color: var(--bdr) !important;
   background: var(--bg-3) !important;
   margin-top: 8px !important;
   padding: 8px 12px !important;
 }
 
-/* 6. SHADOWS AND ELEVATION */
-.rc, .ap-card, .ws-step {
-  box-shadow: var(--shd-xs) !important;
+/* FIX: mm-tooltip decorative left accent → neutral elevation treatment */
+#mm-tooltip {
+  border-left-width: 1px !important;
+  border-left-color: var(--bdr) !important;
 }
-.sb, .ctrl, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, #file-chips, .breadcrumb {
+
+/* FIX: Toggle thumb — correct top to sit on 4px grid (was 3px) */
+.toggle-thumb { top: 4px !important; }
+
+/* ── 6. SHADOWS AND ELEVATION ─────────────────────────────────── */
+
+/* Flat cards */
+.rc, .ap-card, .ws-step { box-shadow: var(--shd-xs) !important; }
+
+/* Raised surfaces — NOTE: Sidebar omitted (has border-right, no shadow needed) */
+.ctrl, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, #file-chips, .breadcrumb {
   box-shadow: var(--shd) !important;
 }
-#od-card, #g-tooltip, #mm-tooltip {
+
+/* Floating modals, overlays, and tooltips */
+#od-card, #g-tooltip, #mm-tooltip, .cmd-box, .exp-menu, #ctx-menu {
   box-shadow: var(--shd-lg) !important;
 }
 
-/* 7. ICONS */
-.btn, .fchip, .exp-mi, .ctx-mi {
-  gap: 6px !important;
-}
+/* ── 7. ICONS ─────────────────────────────────────────────────── */
 
-/* 8. INTERACTIVE STATES */
+/* Consistent icon + label gap across interactive elements */
+.btn, .fchip, .exp-mi, .ctx-mi { gap: 6px !important; }
+
+/* Fix: cmd-item-ic SVG size to match inline icon convention (14px) */
+.cmd-item-ic svg { width: 14px !important; height: 14px !important; }
+
+/* ── 8. INTERACTIVE STATES ────────────────────────────────────── */
+
+/* Tactile press scale on all pressable elements */
 .btn:active,
 .stab:active,
 .vt:active,
 .tc:active,
 .fchip-add:active,
 .exp-mi:active,
-.ctx-mi:active {
+.ctx-mi:active,
+.rc:active,
+.cmd-item:active,
+.lql-preset-btn:active,
+.hdr-more:active,
+.tok:active {
   transform: scale(0.96) !important;
   transition: transform 0.08s var(--ease-out) !important;
 }
+
+/* Non-interactive onboarding feature cards: no hover lift */
 .ob-feat:hover {
   border-color: var(--bdr) !important;
   transform: none !important;
   box-shadow: none !important;
 }
 
-/* 9. RESPONSIVE INTEGRITY */
-.ob-features {
-  grid-template-columns: repeat(2, 1fr) !important;
+/* lql-preset-btn: explicit hover state (was only background change) */
+.lql-preset-btn:hover {
+  background: var(--bg-3) !important;
+  border-color: var(--bdr-h) !important;
+  color: var(--t1) !important;
 }
+
+/* Header overflow button: hover and active */
+.hdr-more:hover { background: var(--bg-4) !important; border-color: var(--bdr-h) !important; }
+
+/* ── 9. RESPONSIVE INTEGRITY ──────────────────────────────────── */
+
+/* Onboarding features: balanced 2×2 grid (not 3-col with orphan) */
+.ob-features { grid-template-columns: repeat(2, 1fr) !important; }
 @media (max-width: 640px) {
-  .ob-features {
-    grid-template-columns: 1fr !important;
-  }
+  .ob-features { grid-template-columns: 1fr !important; }
 }
+
+/* Stats bar: wrap on mobile with neat borders */
 @media (max-width: 768px) {
-  .stats {
-    flex-wrap: wrap !important;
-  }
+  .stats { flex-wrap: wrap !important; }
   .sc {
     flex: 0 0 50% !important;
     border-right: 1px solid var(--bdr) !important;
     border-bottom: 1px solid var(--bdr) !important;
   }
-  .sc:nth-child(2n) {
-    border-right: none !important;
-  }
-  .sc:nth-last-child(-n+2) {
-    border-bottom: none !important;
-  }
+  .sc:nth-child(2n) { border-right: none !important; }
+  .sc:nth-last-child(-n+2) { border-bottom: none !important; }
+  /* Control bar on mobile — keep 4px-grid padding */
+  .ctrl { padding: 8px !important; }
 }
 </style>
 

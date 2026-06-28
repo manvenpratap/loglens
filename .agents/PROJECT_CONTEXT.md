@@ -2,7 +2,21 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Visual Audit Round 2 — Comprehensive Production Polish (v6.9.1 — COMPLETED)**:
+  - Fixed 15 spacing violations — brought `.ctrl`, `.sp`, `.res`, `.rc`, `.ws-step`, `.f`, `.settings-section-*`, `.pref-row`, `.ann-h3`, `.ann-comment`, `.od-stat`, `.lql-input-row`, `.sp-pane`, `.emp-card` to strict 4px grid.
+  - Fixed light-theme overlay readability — `#ctx-menu` now uses `var(--bg-2)` (opaque) instead of semi-transparent `--bg-overlay` which rendered text illegible.
+  - Fixed `.cmd-ov` and `.sh-ov` to use `var(--bg-overlay)` token instead of hardcoded dark `rgba(0,0,0,.72)` for light-theme correctness.
+  - Fixed `.modal` incorrectly included in bulk `border-radius: var(--radius-md)` override; modal now correctly uses `var(--rounded-lg)` (10px).
+  - Fixed icon gap anti-pattern on `.vt` — replaced `margin-right:4px` on SVG with `gap:6px` on the flex container.
+  - Added `:active` press states to `.rc`, `.cmd-item`, `.lql-preset-btn`, `.hdr-more`, `.tok` (previously missing).
+  - Fixed `toggle-thumb { top:3px }` to `top:4px` to sit on the 4px grid.
+  - Restored toast semantic left accents at `3px` (with `1px` on remaining sides) — correct per UX design spec.
+  - Neutralized `#mm-tooltip` decorative left amber border; replaced with uniform `var(--bdr)`.
+  - Removed sidebar from raised-element shadow list (sidebar already has `border-right`; double elevation was visual noise).
+  - Typography: added `line-height:1.55` to `textarea.inp`, bumped stats `.sl` from 8.5px→9px (readability floor), propagated `line-height:1.4` to `cmd-item-name` and `cmd-item-cat`.
+
 - **Visual Audit and Aesthetic Alignment (v6.9 — COMPLETED)**:
+
   - Standardized all paddings, margins, and gaps to the 4px spacing grid across buttons, inputs, panels, stats, empty states, modals, and list rows.
   - Aligned search input with absolute positioned search icon, clear button, and shortcut `/` badge, resolving all horizontal spacing misalignment.
   - Solved light theme contrast deficiency by darkening the `--t4` caption color token to `oklch(50% 0.01 55)`, achieving a WCAG AA-compliant 4.5:1 ratio.
