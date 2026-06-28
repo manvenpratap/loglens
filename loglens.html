@@ -613,17 +613,23 @@ select.inp{cursor:pointer}
   color:var(--t3);font-family:var(--display);
 }
 .g-hdr{
-  display:grid;grid-template-columns:250px 1fr;
+  display:flex;flex-direction:row;
   background:var(--bg-1);
   border-bottom:2px solid var(--bdr);
   position:sticky;top:0;z-index:5;
+  min-width:100%;
 }
 .g-ch{
   padding:5px 10px;font-size:9px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;color:var(--t4);
   font-family:var(--display);
 }
-.g-ch:first-child{border-right:1px solid var(--bdr)}
+.g-ch:first-child{
+  border-right:1px solid var(--bdr);
+  flex:0 0 250px;width:250px;
+  position:sticky;left:0;z-index:3;background:var(--bg-1);
+}
+.g-ch:last-child{flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);}
 .g-ax{position:relative;height:28px}
 /* Major tick marks */
 .g-at{position:absolute;display:flex;flex-direction:column;
@@ -643,11 +649,12 @@ select.inp{cursor:pointer}
   background:var(--bdr-d);opacity:.4;
   pointer-events:none;
 }
-.g-rows{overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
+.g-rows{overflow-x:auto;overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
 .g-row{
-  display:grid;grid-template-columns:250px 1fr;
+  display:flex;flex-direction:row;
   border-bottom:1px solid var(--bdr-d);min-height:30px;
   transition:background .1s ease;
+  min-width:100%;
 }
 .g-row:last-child{border-bottom:none}
 .g-row:hover{background:var(--glass)}
@@ -655,10 +662,12 @@ select.inp{cursor:pointer}
 .g-lbl{
   padding:4px 9px;border-right:1px solid var(--bdr-d);
   display:flex;align-items:center;gap:5px;overflow:hidden;
+  flex:0 0 250px;width:250px;
+  position:sticky;left:0;z-index:2;background:var(--bg-0);
 }
 .g-li{font-size:11px;flex-shrink:0}
 .g-lt{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.g-trk{position:relative;background:var(--bg-0)}
+.g-trk{position:relative;background:var(--bg-0);flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);}
 .g-gl{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);pointer-events:none;opacity:.6}
 .g-bar{
   position:absolute;top:5px;bottom:5px;
@@ -11056,10 +11065,8 @@ GR.render = function(tree, el) {
   
   const rowsCont = el.querySelector('.g-rows');
   
-  // Custom tooltips and detail morph delegation
-  if (rowsCont && !rowsCont._ganttWired) {
-    rowsCont._ganttWired = true;
-    
+  // Custom tooltips and detail morph delegation — re-wire on every render
+  if (rowsCont) {
     let tt = document.getElementById('g-tooltip');
     if (!tt) {
       tt = document.createElement('div');
@@ -11085,9 +11092,7 @@ GR.render = function(tree, el) {
     
     rowsCont.addEventListener('mouseout', e => {
       const target = e.target.closest('[data-gtooltip]');
-      if (target) {
-        tt.style.opacity = '0';
-      }
+      if (target) tt.style.opacity = '0';
     });
     
     rowsCont.addEventListener('click', e => {
@@ -11098,17 +11103,23 @@ GR.render = function(tree, el) {
         const idx = parseInt(target.dataset.idx, 10);
         const rowData = GR._activeRows[idx];
         if (rowData && rowData.n) {
-          // Highlight selected row
           rowsCont.querySelectorAll('.g-row.g-selected').forEach(r => r.classList.remove('g-selected'));
           const rowEl = rowsCont.querySelector(`.g-row[data-idx="${idx}"]`);
           if (rowEl) rowEl.classList.add('g-selected');
-          OVERDRIVE.OD.open(rowData.n);
+          if (typeof OVERDRIVE !== 'undefined' && OVERDRIVE.OD) OVERDRIVE.OD.open(rowData.n);
         }
       }
     });
   }
 
-  // If streaming and scroll is away from bottom, display banner
+  // Apply current zoom and rebind drag/wheel to the fresh container
+  if (typeof GANTT_ZOOM_PAN !== 'undefined') {
+    GANTT_ZOOM_PAN.rebind();
+    if (S.ganttZoom && S.ganttZoom !== 1) {
+      const rows = el.querySelector('.g-rows');
+      if (rows) rows.style.setProperty('--g-zoom', S.ganttZoom);
+    }
+  }
   if (rowsCont && STREAM.ws && STREAM.ws.readyState === WebSocket.OPEN) {
     rowsCont.addEventListener('scroll', () => {
       const diff = rowsCont.scrollHeight - rowsCont.scrollTop - rowsCont.clientHeight;
@@ -12207,59 +12218,90 @@ const GANTT_ZOOM_PAN = {
   isPanned: false,
   
   initEvents() {
+    // ── 1. Inject zoom control bar into a STABLE wrapper (not .gw which is rebuilt on every render)
+    const gw = document.querySelector('.gw');
+    if (!gw) return;
+    let zoomBar = $('g-zoom-ctrl-row');
+    if (!zoomBar) {
+      // Create a stable container sibling of .gw inside its parent
+      const stableWrap = gw.parentElement;
+      zoomBar = document.createElement('div');
+      zoomBar.id = 'g-zoom-ctrl-row';
+      zoomBar.style.cssText = 'display:flex; align-items:center; gap:8px; background:var(--bg-2); padding:6px 12px; border-bottom:1px solid var(--bdr); font-size:11px; flex-shrink:0;';
+      zoomBar.innerHTML = `
+        <span style="display:inline-flex; align-items:center; gap:4px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom}" style="width:120px; accent-color:var(--amber);">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px;">×${S.ganttZoom.toFixed(1)}</span>
+        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit Window</button>
+        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
+        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 4px;"></div>
+        <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
+          🔥 Critical Path
+        </label>
+      `;
+      // Insert BEFORE .gw inside the parent
+      stableWrap.insertBefore(zoomBar, gw);
+      zoomBar.querySelector('#gantt-zoom-slider').addEventListener('input', e => {
+        this.applyZoom(parseFloat(e.target.value));
+      });
+      zoomBar.querySelector('#btn-zoom-reset').addEventListener('click', () => this.applyZoom(1));
+      zoomBar.querySelector('#btn-zoom-fit').addEventListener('click', () => this.fitWindow());
+      zoomBar.querySelector('#gantt-crit-chk').addEventListener('change', e => {
+        S.criticalPathOn = e.target.checked;
+        UI.rv();
+      });
+    }
+
+    // ── 2. Always rebind drag / wheel to the current live .g-rows
+    this.rebind();
+  },
+
+
+
+  applyZoom(z) {
+    S.ganttZoom = z;
+    const slider = $('gantt-zoom-slider');
+    if (slider) slider.value = z;
+    const lbl = $('gantt-zoom-val');
+    if (lbl) lbl.textContent = `×${z.toFixed(1)}`;
+    document.documentElement.style.setProperty('--g-zoom', z);
+    // Also apply to live .g-rows so tracks scale without full re-render
+    const rows = document.querySelector('.g-rows');
+    if (rows) rows.style.setProperty('--g-zoom', z);
+  },
+  
+  fitWindow() {
     const container = document.querySelector('.g-rows');
     if (!container) return;
-    
-    // Zoom control bar
-    if (!$('g-zoom-ctrl-row')) {
-      const parent = document.querySelector('.gw');
-      if (parent) {
-        const row = document.createElement('div');
-        row.id = 'g-zoom-ctrl-row';
-        row.style.cssText = 'display:flex; align-items:center; gap:8px; background:var(--bg-2); padding:6px 12px; border-bottom:1px solid var(--bdr); font-size:11px;';
-        row.innerHTML = `
-          <span style="display:inline-flex; align-items:center; gap:4px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
-          <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.5" value="${S.ganttZoom}" style="width:120px; accent-color:var(--amber);">
-          <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold;">×${S.ganttZoom.toFixed(1)}</span>
-          <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit Window</button>
-          <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
-          <div style="border-left:1px solid var(--bdr); height:16px; margin:0 4px;"></div>
-          <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-            <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
-            🔥 Highlight Critical Path
-          </label>
-        `;
-        parent.insertBefore(row, parent.querySelector('.g-hdr'));
-        
-        // Wire events
-        row.querySelector('#gantt-zoom-slider').addEventListener('input', e => {
-          this.applyZoom(parseFloat(e.target.value));
-        });
-        row.querySelector('#btn-zoom-reset').addEventListener('click', () => {
-          this.applyZoom(1);
-        });
-        row.querySelector('#btn-zoom-fit').addEventListener('click', () => {
-          this.fitWindow();
-        });
-        row.querySelector('#gantt-crit-chk').addEventListener('change', e => {
-          S.criticalPathOn = e.target.checked;
-          UI.rv();
-        });
-      }
-    }
-    
-    // Horizontal click-and-drag pan
+    // Target: all tracks should fit in the visible g-trk width
+    const trk = container.querySelector('.g-trk');
+    const containerW = container.clientWidth;
+    const labelW = 250; // matches CSS grid 250px column
+    const viewportW = containerW - labelW;
+    if (!trk || viewportW <= 0) { this.applyZoom(1); return; }
+    // At zoom=1 the track is 100% of its column; we want it to fit exactly 1x
+    this.applyZoom(1);
+    // Reset scroll
+    container.scrollLeft = 0;
+  },
+
+  /** Re-bind drag/scroll/wheel events to the current live .g-rows element */
+  rebind() {
+    const container = document.querySelector('.g-rows');
+    if (!container || container === this._lastContainer) return;
+    this._lastContainer = container;
+
     let isDown = false;
     let startX, scrollLeft;
-    
+
     container.addEventListener('mousedown', e => {
-      if (e.altKey) return; // let Alt+drag do range select
+      if (e.altKey) return;
       isDown = true;
       container.classList.add('grabbing');
       startX = e.pageX - container.offsetLeft;
       scrollLeft = container.scrollLeft;
     });
-    
     container.addEventListener('mouseleave', () => {
       isDown = false;
       container.classList.remove('grabbing');
@@ -12268,7 +12310,6 @@ const GANTT_ZOOM_PAN = {
       isDown = false;
       container.classList.remove('grabbing');
     });
-    
     container.addEventListener('mousemove', e => {
       if (!isDown) return;
       e.preventDefault();
@@ -12276,8 +12317,6 @@ const GANTT_ZOOM_PAN = {
       const walk = (x - startX) * 1.5;
       container.scrollLeft = scrollLeft - walk;
     });
-    
-    // Mouse wheel zoom centered on cursor
     container.addEventListener('wheel', e => {
       if (e.ctrlKey) {
         e.preventDefault();
@@ -12286,85 +12325,45 @@ const GANTT_ZOOM_PAN = {
         this.applyZoom(newZoom);
       }
     }, { passive: false });
-    
-    // Alt+drag time range selection
-    let dragBox = null;
-    let startDragX = 0;
-    
+
+    // Alt+drag: select a time range
+    let dragBox = null, startDragX = 0;
     container.addEventListener('mousedown', e => {
       if (!e.altKey) return;
       e.preventDefault();
       const rect = container.getBoundingClientRect();
       startDragX = e.clientX - rect.left + container.scrollLeft;
-      
       dragBox = document.createElement('div');
-      dragBox.style.cssText = 'position:absolute; top:0; bottom:0; background:rgba(255,149,0,0.25); border-left:1px dashed var(--amber); border-right:1px dashed var(--amber); pointer-events:none; z-index:100;';
+      dragBox.style.cssText = 'position:absolute;top:0;bottom:0;background:rgba(255,149,0,.25);border-left:1px dashed var(--amber);border-right:1px dashed var(--amber);pointer-events:none;z-index:100;';
       dragBox.style.left = startDragX + 'px';
-      dragBox.style.width = '0px';
+      dragBox.style.width = '0';
       container.appendChild(dragBox);
-      
       const onMove = ev => {
         const curX = ev.clientX - rect.left + container.scrollLeft;
-        const left = Math.min(startDragX, curX);
-        const width = Math.abs(curX - startDragX);
-        dragBox.style.left = left + 'px';
-        dragBox.style.width = width + 'px';
+        dragBox.style.left = Math.min(startDragX, curX) + 'px';
+        dragBox.style.width = Math.abs(curX - startDragX) + 'px';
       };
-      
       const onUp = ev => {
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
-        
         const curX = ev.clientX - rect.left + container.scrollLeft;
         const left = Math.min(startDragX, curX);
         const width = Math.abs(curX - startDragX);
         dragBox.remove();
-        
         if (width > 20) {
-          // Map left/right positions back to event timestamps
-          const trackWidth = container.querySelector('.g-trk').clientWidth;
+          const trk = container.querySelector('.g-trk');
+          const trackWidth = trk ? trk.clientWidth : 0;
           const tree = S.trees[S.activeThr] || [];
           if (tree.length > 0 && trackWidth > 0) {
-            const rs = tree[0].timestamp || 0;
-            const re = mEnd(tree);
-            const rd = re - rs;
-            
-            const startRatio = left / trackWidth;
-            const endRatio = (left + width) / trackWidth;
-            
-            S.timeFilterRange = {
-              start: rs + startRatio * rd,
-              end: rs + endRatio * rd
-            };
-            UI.rv();
-            BCB.render();
+            const rs = tree[0].timestamp || 0, rd = mEnd(tree) - rs;
+            S.timeFilterRange = { start: rs + (left/trackWidth)*rd, end: rs + ((left+width)/trackWidth)*rd };
+            UI.rv(); BCB.render();
           }
         }
       };
-      
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     });
-  },
-  
-  applyZoom(z) {
-    S.ganttZoom = z;
-    const slider = $('gantt-zoom-slider');
-    if (slider) slider.value = z;
-    const lbl = $('gantt-zoom-val');
-    if (lbl) lbl.textContent = `×${z.toFixed(1)}`;
-    document.documentElement.style.setProperty('--g-zoom', z);
-  },
-  
-  fitWindow() {
-    const container = document.querySelector('.g-rows');
-    if (container) {
-      const viewportW = container.clientWidth - 270; // sub label width
-      const track = container.querySelector('.g-trk');
-      if (track) {
-        this.applyZoom(1);
-      }
-    }
   }
 };
 
