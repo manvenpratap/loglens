@@ -7489,7 +7489,7 @@ const UI={
     btn.id = 'vt-chips-select';
     btn.type = 'button';
     btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;min-width:90px;max-width:180px;font-size:10px;font-family:var(--mono);font-weight:700;padding:2px 6px;height:22px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);cursor:pointer;outline:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
-    btn.innerHTML = `<span id="vt-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;">${esc(S.activeThr||threads[0]||'')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;"><path d="M1 1l4 4 4-4"/></svg>`;
+    btn.innerHTML = `<span id="vt-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;pointer-events:none;">${esc(S.activeThr||threads[0]||'')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;pointer-events:none;"><path d="M1 1l4 4 4-4"/></svg>`;
 
     const menu = document.createElement('ul');
     menu.id = 'vt-chips-menu';
