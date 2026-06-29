@@ -4101,12 +4101,14 @@ label[for="watch-auto-reload"] {
 
 /* ── J. HELP PANEL ──────────────────────────────────────────────── */
 
-/* Help panel layout */
+/* Help panel layout — only override display when panel is active */
 #p-hlp {
-  display: flex !important;
   flex-direction: column !important;
   min-height: 0 !important;
   overflow: hidden !important;
+}
+#p-hlp.active {
+  display: flex !important;
 }
 
 /* Internal tab bar */
@@ -17990,9 +17992,6 @@ const HTIP = (() => {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') hide();
   });
-  document.addEventListener('scroll', () => {
-    if (_active) hide();
-  }, { capture: true, passive: true });
 
   return { show, hide };
 })();
