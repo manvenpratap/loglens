@@ -12087,17 +12087,25 @@ const handleSearchInputDebounced = debounce((val) => {
   UI.rv();
 }, 250);
 
-$('hdr-search').addEventListener('input', e => {
-  const val = e.target.value;
-  
-  // Instant visual updates to preserve typing responsiveness
+// Sync search controls visual state (icons, buttons, shortcuts)
+function updateSearchUIState() {
+  const inp = $('hdr-search');
+  if (!inp) return;
+  const val = inp.value;
   const clearBtn = $('btn-search-clear');
+  const shortcut = $('hdr-search-shortcut');
+  const isFocused = document.activeElement === inp;
   if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
-  $('hdr-search').classList.toggle('has-query', !!val.trim());
+  if (shortcut) {
+    shortcut.style.display = (isFocused || val) ? 'none' : 'flex';
+  }
+  inp.classList.toggle('has-query', !!val.trim());
+}
+
+$('hdr-search').addEventListener('input', e => {
+  updateSearchUIState();
   BCB.render();
-  
-  // Debounced search query update & view re-render
-  handleSearchInputDebounced(val);
+  handleSearchInputDebounced(e.target.value);
 });
 
 $('hdr-cfg').style.cursor = 'pointer';
@@ -12487,6 +12495,7 @@ const BCB = (() => {
         clr.addEventListener('click', e => {
           e.stopPropagation();
           $('hdr-search').value = '';
+          updateSearchUIState();
           S.searchQuery = '';
           UI.rv();
           BCB.render();
@@ -18256,13 +18265,16 @@ ONBOARD.check();
   // 6. Search Controls & Clear Button
   const searchInput = $('hdr-search');
   if (searchInput) {
+    searchInput.addEventListener('focus', updateSearchUIState);
+    searchInput.addEventListener('blur', updateSearchUIState);
+    updateSearchUIState();
+
     // Wire Clear Button
     const clearBtn = $('btn-search-clear');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
         searchInput.value = '';
-        clearBtn.style.display = 'none';
-        searchInput.classList.remove('has-query');
+        updateSearchUIState();
         BCB.render();
         S.searchQuery = '';
         UI.rv();
