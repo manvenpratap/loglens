@@ -3,6 +3,7 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 - **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
+  - Fixed Swimlane zoom visible range boundary persistence by resetting `S.visibleStart = null` and `S.visibleEnd = null` in `UI.render()` when a new log file is loaded, preventing outdated range bounds from causing `0.00ms` calculations.
   - Resolved global search overlapping layout bugs by changing class selector `.hdr-search` to ID selector `#hdr-search` in all CSS rules (including the initial rule block, media query breakpoints, and audit override rules).
   - Implemented a centralized JS-driven state toggle (`updateSearchUIState()`) bound to input, focus, and blur events to dynamically hide the `/` shortcut key helper whenever the input is focused or has text, preventing any overlap with the clear button `✕`.
   - Fixed text overlapping magnifying glass search icon by setting left padding to `34px !important` on the input, and positioning the icon at `left: 12px` with explicit `13px x 13px` dimensions.
