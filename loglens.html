@@ -1762,10 +1762,19 @@ mark.hl{
   border-radius:var(--rounded-sm);padding:0 1px;
   font-style:normal;
 }
-/* Result count badge beside search */
+/* Result count badge inside search */
 .search-count{
-  font-size:11px;font-family:var(--mono);color:var(--t3);
-  white-space:nowrap;flex-shrink:0;
+  position: absolute !important;
+  right: 28px !important;
+  font-size: 10px !important;
+  font-family: var(--mono) !important;
+  color: var(--t4) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  white-space: nowrap !important;
 }
 /* Gantt resize handle on label column */
 .g-lbl-resize{
@@ -3099,8 +3108,13 @@ mark.hl{
 .hdr-search {
   margin-left: 0 !important;
   padding-left: 28px !important;
-  padding-right: 48px !important;
+  padding-right: 32px !important;
   height: 28px !important;
+  transition: border-color 0.2s, box-shadow 0.2s, padding-right 0.15s !important;
+}
+.hdr-search:focus,
+.hdr-search.has-query {
+  padding-right: 90px !important;
 }
 .hdr-search-shortcut {
   position: absolute !important;
@@ -3117,10 +3131,16 @@ mark.hl{
   align-items: center !important;
   justify-content: center !important;
   z-index: 2 !important;
+  transition: opacity 0.15s !important;
+}
+.hdr-search:focus ~ .hdr-search-shortcut,
+.hdr-search.has-query ~ .hdr-search-shortcut {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 .btn-search-clear {
   position: absolute !important;
-  right: 28px !important;
+  right: 10px !important;
   background: transparent !important;
   border: none !important;
   color: var(--t3) !important;
@@ -3130,7 +3150,7 @@ mark.hl{
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 2 !important;
+  z-index: 3 !important;
   transition: color 0.2s !important;
 }
 .btn-search-clear:hover { color: var(--t1) !important; }

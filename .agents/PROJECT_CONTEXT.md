@@ -2,9 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Thread Selector Conversion to Dropdown & 16-Thread Support (v6.9.10 — COMPLETED)**:
-  - Converted the thread selector pills into a premium dropdown select element in the view tabs bar (`vt-chips-select`).
-  - Added value sync in `UI.sw(tid)` to update the dropdown's selected value when navigating threads programmatically via hotkeys or trace link clicks.
+- **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
+  - Resolved global search overlapping layout bug by placing the shortcut badge `/`, clear button `✕`, and search matches count inside the search container with absolute positioning.
+  - Implemented dynamic focus/query padding-right on the input field (`90px`) to prevent typed text from overlaying the buttons and counts.
+  - Added CSS sibling selector rule to fade out the `/` shortcut helper when the input is active (focused/has query).
+  - Converted the thread selector pills into a premium dropdown select element in the view tabs bar (`vt-chips-select`) with active state value sync.
   - Removed the horizontal scroll buttons and wrapper helper block from script setup as they are no longer required.
   - Aligned onboarding demo sequence (`ONBOARD.loadDemo`) to parse and display the same 16-thread log sample dynamically generated via a shared `getSampleLogLines()` helper.
   - Added transaction tracking rules (`dr_txs` / `dr_txe`) to onboarding `DEMO_CFG` to properly render the transaction begins/ends.
@@ -455,4 +457,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Thread Selector Conversion to Dropdown & 16-Thread Support v6.9.10)*
+*Updated By: Antigravity (Search Layout Fix & Thread Selector Dropdown Conversion v6.9.10)*
