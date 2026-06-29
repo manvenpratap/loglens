@@ -15,15 +15,15 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* Obsidian depth system — cooler, richer, more dimensional */
-  /* OKLCH depth system — tinted toward Amber (Hue 55) for brand cohesion */
-  --bg-0: oklch(14% 0.008 55);
-  --bg-1: oklch(17% 0.009 55);
-  --bg-2: oklch(20% 0.010 55);
-  --bg-3: oklch(24% 0.011 55);
-  --bg-4: oklch(29% 0.012 55);
-  --bdr-d: oklch(24% 0.011 55);
-  --bdr: oklch(28% 0.012 55);
-  --bdr-h: oklch(35% 0.013 55);
+  /* OKLCH depth system — tinted toward cool slate blue-gray (Hue 240) for Obsidian Amber theme */
+  --bg-0: oklch(12% 0.012 240);
+  --bg-1: oklch(15% 0.014 240);
+  --bg-2: oklch(18% 0.016 240);
+  --bg-3: oklch(22% 0.018 240);
+  --bg-4: oklch(27% 0.020 240);
+  --bdr-d: oklch(20% 0.016 240);
+  --bdr: oklch(24% 0.018 240);
+  --bdr-h: oklch(32% 0.022 240);
   /* Text — warm whites */
   --t1: oklch(95% 0.005 55);
   --t2: oklch(85% 0.01 55);
@@ -146,7 +146,7 @@ html,body{
 /* Header — glassmorphic dark bar */
 .hdr{
   height:var(--hh);flex-shrink:0;
-  background:rgba(7,9,13,.85);
+  background:rgba(9,13,22,.85);
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
   border-bottom:1px solid var(--glass-bdr);
@@ -11473,8 +11473,8 @@ const LANDSCAPE3D = {
 
     const grad = ctx.createRadialGradient(w * 0.5, h * 0.6, 20, w * 0.5, h * 0.6, Math.max(w, h));
     if (isDark) {
-      grad.addColorStop(0, '#0c1017');
-      grad.addColorStop(1, '#05070a');
+      grad.addColorStop(0, '#0d1321');
+      grad.addColorStop(1, '#070a12');
     } else {
       grad.addColorStop(0, '#faf8f5');
       grad.addColorStop(1, '#edecea');
@@ -15901,7 +15901,7 @@ const SCREEN = {
     canvas.width = W; canvas.height = H;
     
     // 1. Draw solid dark background
-    ctx.fillStyle = '#0d1117'; // Matches dark theme --bg-0
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-0').trim() || '#070a12';
     ctx.fillRect(0,0,W,H);
     
     // 2. Draw report header title

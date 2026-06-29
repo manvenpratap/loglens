@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Obsidian Amber Theme Implementation (v6.9.6 — COMPLETED)**:
+  - Shifted the dark theme background colors from a warm mud-gray hue to a deep obsidian-slate blue-gray (Hue 240) while preserving warm telemetry highlighting lights.
+  - Aligned header elements and backgrounds to match glassmorphic dark-slate tints.
+  - Synced 3D visualizer canvas backgrounds and exported summary canvas panels to pull from the same cool obsidian slate palette.
+
 - **Frontend Guidelines Search Refactor (v6.9.5 — COMPLETED)**:
   - Audited search listeners and eliminated the fragile `cloneNode` hack that stripped custom event listeners from `hdr-search`.
   - Added a reusable, performance-safe `UTILS.debounce` helper for debouncing heavy DOM-rendering and state updates.
@@ -425,4 +430,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Frontend Guidelines Search Refactor v6.9.5)*
+*Updated By: Antigravity (Obsidian Amber Theme Implementation v6.9.6)*
