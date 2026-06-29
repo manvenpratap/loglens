@@ -113,6 +113,226 @@
   --grad-amber:linear-gradient(135deg,#c2620a,#a35000);
   --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
 }
+/* Ivory = explicit name for light theme (backwards-compat alias) */
+[data-theme=ivory]{
+  --bg-0: oklch(96% 0.01 55);
+  --bg-1: oklch(98% 0.005 55);
+  --bg-2: oklch(94% 0.012 55);
+  --bg-3: oklch(91% 0.015 55);
+  --bg-4: oklch(86% 0.018 55);
+  --bdr-d: oklch(88% 0.015 55);
+  --bdr: oklch(80% 0.02 55);
+  --bdr-h: oklch(70% 0.02 55);
+  --t1: oklch(25% 0.015 55);
+  --t2: oklch(35% 0.015 55);
+  --t3: oklch(45% 0.015 55);
+  --t4: oklch(65% 0.01 55);
+  --amber: oklch(60% 0.18 55);
+  --amber-g: oklch(60% 0.18 55 / 0.15);
+  --amber-d: oklch(60% 0.18 55 / 0.08);
+  --blue: oklch(55% 0.16 250);
+  --blue-g: oklch(55% 0.16 250 / 0.15);
+  --green: oklch(55% 0.16 140);
+  --green-g: oklch(55% 0.16 140 / 0.15);
+  --red: oklch(50% 0.18 25);
+  --red-g: oklch(50% 0.18 25 / 0.15);
+  --yellow: oklch(65% 0.18 85);
+  --yellow-g: oklch(65% 0.18 85 / 0.15);
+  --purple: oklch(55% 0.20 310);
+  --purple-g: oklch(55% 0.20 310 / 0.15);
+  --cyan: oklch(60% 0.15 210);
+  --cyan-g: oklch(60% 0.15 210 / 0.15);
+  --glass:rgba(0,0,0,.03);
+  --glass-bdr:rgba(0,0,0,.07);
+  --bar-t:rgba(0,0,0,.88);
+  --shd:0 4px 16px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.07);
+  --shd-lg:0 12px 40px rgba(0,0,0,.14),0 4px 12px rgba(0,0,0,.08);
+  --shd-xs:0 1px 4px rgba(0,0,0,.09);
+  --glow-amber:0 0 10px rgba(194,98,10,.12);
+  --glow-blue:0 0 10px rgba(37,99,235,.12);
+  --grad-amber:linear-gradient(135deg,#c2620a,#a35000);
+  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+}
+/* ============================================================
+   CSS §2b · AURORA THEME — Northern Lights Navy/Cyan
+   ============================================================ */
+[data-theme=aurora]{
+  /* Deep navy-indigo backgrounds — cool, immersive */
+  --bg-0: oklch(11% 0.025 250);
+  --bg-1: oklch(14% 0.028 252);
+  --bg-2: oklch(17% 0.030 254);
+  --bg-3: oklch(21% 0.032 255);
+  --bg-4: oklch(26% 0.033 256);
+  --bdr-d: oklch(18% 0.028 252);
+  --bdr: oklch(24% 0.032 254);
+  --bdr-h: oklch(34% 0.038 255);
+  /* Cool silver-blue text */
+  --t1: oklch(94% 0.008 210);
+  --t2: oklch(82% 0.012 210);
+  --t3: oklch(65% 0.018 215);
+  --t4: oklch(48% 0.015 220);
+  /* Cyan teal as primary accent (replaces amber role) */
+  --amber: oklch(75% 0.14 195);
+  --amber-g: oklch(75% 0.14 195 / 0.14);
+  --amber-d: oklch(75% 0.14 195 / 0.06);
+  --blue: oklch(72% 0.12 250);
+  --blue-g: oklch(72% 0.12 250 / 0.12);
+  --green: oklch(72% 0.16 165);
+  --green-g: oklch(72% 0.16 165 / 0.12);
+  --red: oklch(65% 0.18 25);
+  --red-g: oklch(65% 0.18 25 / 0.12);
+  --yellow: oklch(80% 0.14 85);
+  --yellow-g: oklch(80% 0.14 85 / 0.10);
+  --purple: oklch(72% 0.18 295);
+  --purple-g: oklch(72% 0.18 295 / 0.12);
+  --cyan: oklch(78% 0.13 200);
+  --cyan-g: oklch(78% 0.13 200 / 0.12);
+  --glass:rgba(100,200,255,.05);
+  --glass-bdr:rgba(100,200,255,.10);
+  --bar-t:rgba(220,245,255,.92);
+  --shd:0 4px 20px rgba(0,10,30,.6),0 1px 4px rgba(0,10,30,.4);
+  --shd-lg:0 12px 48px rgba(0,10,30,.7),0 4px 16px rgba(0,10,30,.4);
+  --shd-xs:0 1px 4px rgba(0,10,30,.4);
+  --glow-amber:0 0 18px rgba(0,220,200,.25),0 0 5px rgba(0,220,200,.12);
+  --glow-blue:0 0 16px rgba(100,160,255,.22),0 0 4px rgba(100,160,255,.12);
+  --grad-amber:linear-gradient(135deg,oklch(75% 0.14 195),oklch(68% 0.18 210));
+  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+}
+/* ============================================================
+   CSS §2c · MIDNIGHT THEME — OLED Black / Electric Purple
+   ============================================================ */
+[data-theme=midnight]{
+  /* Near-pure black — OLED optimized */
+  --bg-0: oklch(4% 0.008 280);
+  --bg-1: oklch(7% 0.012 280);
+  --bg-2: oklch(10% 0.015 280);
+  --bg-3: oklch(13% 0.018 280);
+  --bg-4: oklch(18% 0.022 280);
+  --bdr-d: oklch(10% 0.014 280);
+  --bdr: oklch(16% 0.022 280);
+  --bdr-h: oklch(26% 0.030 285);
+  /* High-contrast crisp white text */
+  --t1: oklch(97% 0.004 280);
+  --t2: oklch(86% 0.008 280);
+  --t3: oklch(68% 0.014 280);
+  --t4: oklch(48% 0.012 280);
+  /* Neon electric purple as primary accent */
+  --amber: oklch(72% 0.24 310);
+  --amber-g: oklch(72% 0.24 310 / 0.15);
+  --amber-d: oklch(72% 0.24 310 / 0.07);
+  --blue: oklch(74% 0.15 250);
+  --blue-g: oklch(74% 0.15 250 / 0.13);
+  --green: oklch(72% 0.20 145);
+  --green-g: oklch(72% 0.20 145 / 0.13);
+  --red: oklch(68% 0.22 25);
+  --red-g: oklch(68% 0.22 25 / 0.13);
+  --yellow: oklch(82% 0.18 85);
+  --yellow-g: oklch(82% 0.18 85 / 0.12);
+  --purple: oklch(76% 0.24 310);
+  --purple-g: oklch(76% 0.24 310 / 0.14);
+  --cyan: oklch(78% 0.17 200);
+  --cyan-g: oklch(78% 0.17 200 / 0.13);
+  --glass:rgba(180,0,255,.06);
+  --glass-bdr:rgba(180,0,255,.14);
+  --bar-t:rgba(240,220,255,.93);
+  --shd:0 4px 20px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.7);
+  --shd-lg:0 12px 48px rgba(0,0,0,.90),0 4px 16px rgba(0,0,0,.75);
+  --shd-xs:0 1px 4px rgba(0,0,0,.7);
+  --glow-amber:0 0 22px rgba(160,0,255,.32),0 0 6px rgba(160,0,255,.16);
+  --glow-blue:0 0 18px rgba(80,100,255,.28),0 0 5px rgba(80,100,255,.14);
+  --grad-amber:linear-gradient(135deg,oklch(72% 0.24 310),oklch(65% 0.28 295));
+  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+}
+/* ============================================================
+   CSS §2d · FOREST THEME — Moss Green / Earthy Warmth
+   ============================================================ */
+[data-theme=forest]{
+  /* Deep earthy green-brown backgrounds */
+  --bg-0: oklch(11% 0.022 135);
+  --bg-1: oklch(14% 0.026 133);
+  --bg-2: oklch(17% 0.028 131);
+  --bg-3: oklch(21% 0.030 130);
+  --bg-4: oklch(26% 0.032 128);
+  --bdr-d: oklch(18% 0.026 132);
+  --bdr: oklch(24% 0.030 130);
+  --bdr-h: oklch(33% 0.036 128);
+  /* Warm sage / cream text */
+  --t1: oklch(93% 0.010 100);
+  --t2: oklch(82% 0.014 105);
+  --t3: oklch(66% 0.018 110);
+  --t4: oklch(50% 0.015 115);
+  /* Emerald green as primary accent */
+  --amber: oklch(72% 0.20 145);
+  --amber-g: oklch(72% 0.20 145 / 0.14);
+  --amber-d: oklch(72% 0.20 145 / 0.06);
+  --blue: oklch(68% 0.14 220);
+  --blue-g: oklch(68% 0.14 220 / 0.12);
+  --green: oklch(74% 0.22 145);
+  --green-g: oklch(74% 0.22 145 / 0.13);
+  --red: oklch(62% 0.18 25);
+  --red-g: oklch(62% 0.18 25 / 0.12);
+  --yellow: oklch(78% 0.16 80);
+  --yellow-g: oklch(78% 0.16 80 / 0.12);
+  --purple: oklch(65% 0.18 290);
+  --purple-g: oklch(65% 0.18 290 / 0.12);
+  --cyan: oklch(74% 0.14 190);
+  --cyan-g: oklch(74% 0.14 190 / 0.12);
+  --glass:rgba(50,160,50,.05);
+  --glass-bdr:rgba(80,200,80,.09);
+  --bar-t:rgba(220,240,220,.92);
+  --shd:0 4px 18px rgba(0,8,0,.55),0 1px 4px rgba(0,8,0,.35);
+  --shd-lg:0 12px 44px rgba(0,8,0,.65),0 4px 14px rgba(0,8,0,.35);
+  --shd-xs:0 1px 4px rgba(0,8,0,.35);
+  --glow-amber:0 0 18px rgba(40,180,60,.28),0 0 5px rgba(40,180,60,.13);
+  --glow-blue:0 0 16px rgba(60,160,120,.22),0 0 4px rgba(60,160,120,.11);
+  --grad-amber:linear-gradient(135deg,oklch(72% 0.20 145),oklch(64% 0.24 135));
+  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+}
+/* ============================================================
+   CSS §2e · CRIMSON THEME — Dark Noir / Crimson Red
+   ============================================================ */
+[data-theme=crimson]{
+  /* Deep coal-black with red warmth */
+  --bg-0: oklch(8% 0.020 20);
+  --bg-1: oklch(11% 0.024 18);
+  --bg-2: oklch(14% 0.027 16);
+  --bg-3: oklch(18% 0.030 15);
+  --bg-4: oklch(23% 0.032 14);
+  --bdr-d: oklch(14% 0.024 18);
+  --bdr: oklch(22% 0.030 16);
+  --bdr-h: oklch(32% 0.038 15);
+  /* Warm near-white / cream text */
+  --t1: oklch(95% 0.007 30);
+  --t2: oklch(84% 0.010 25);
+  --t3: oklch(68% 0.015 20);
+  --t4: oklch(50% 0.013 20);
+  /* Vivid crimson as primary accent */
+  --amber: oklch(62% 0.24 18);
+  --amber-g: oklch(62% 0.24 18 / 0.16);
+  --amber-d: oklch(62% 0.24 18 / 0.07);
+  --blue: oklch(68% 0.14 250);
+  --blue-g: oklch(68% 0.14 250 / 0.13);
+  --green: oklch(66% 0.18 145);
+  --green-g: oklch(66% 0.18 145 / 0.12);
+  --red: oklch(60% 0.26 20);
+  --red-g: oklch(60% 0.26 20 / 0.14);
+  --yellow: oklch(76% 0.16 75);
+  --yellow-g: oklch(76% 0.16 75 / 0.12);
+  --purple: oklch(65% 0.20 330);
+  --purple-g: oklch(65% 0.20 330 / 0.12);
+  --cyan: oklch(70% 0.14 195);
+  --cyan-g: oklch(70% 0.14 195 / 0.12);
+  --glass:rgba(200,20,20,.06);
+  --glass-bdr:rgba(200,20,20,.13);
+  --bar-t:rgba(255,235,230,.93);
+  --shd:0 4px 20px rgba(10,0,0,.70),0 1px 4px rgba(10,0,0,.55);
+  --shd-lg:0 12px 48px rgba(10,0,0,.80),0 4px 16px rgba(10,0,0,.60);
+  --shd-xs:0 1px 4px rgba(10,0,0,.55);
+  --glow-amber:0 0 20px rgba(220,20,20,.30),0 0 6px rgba(220,20,20,.14);
+  --glow-blue:0 0 16px rgba(80,100,255,.22),0 0 4px rgba(80,100,255,.10);
+  --grad-amber:linear-gradient(135deg,oklch(62% 0.24 18),oklch(55% 0.28 10));
+  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+}
 /* ============================================================
    CSS §3 · THEME TRANSITION
    ============================================================ */
@@ -154,10 +374,90 @@ html,body{
   padding:0 16px;gap:10px;z-index:200;
   box-shadow:0 1px 0 var(--glass-bdr),0 4px 20px rgba(0,0,0,.3);
 }
-[data-theme=light] .hdr{
+[data-theme=light] .hdr,
+[data-theme=ivory] .hdr{
   background:rgba(242,239,234,.88);
   box-shadow:0 1px 0 rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.06);
 }
+[data-theme=aurora] .hdr{
+  background:rgba(8,12,36,.82);
+  border-bottom:1px solid rgba(0,200,220,.12);
+  box-shadow:0 1px 0 rgba(0,200,220,.10),0 4px 24px rgba(0,10,30,.55);
+}
+[data-theme=midnight] .hdr{
+  background:rgba(3,2,10,.88);
+  border-bottom:1px solid rgba(160,0,255,.18);
+  box-shadow:0 1px 0 rgba(160,0,255,.14),0 4px 28px rgba(0,0,0,.75);
+}
+[data-theme=forest] .hdr{
+  background:rgba(8,18,10,.82);
+  border-bottom:1px solid rgba(40,160,60,.12);
+  box-shadow:0 1px 0 rgba(40,160,60,.10),0 4px 22px rgba(0,8,0,.50);
+}
+[data-theme=crimson] .hdr{
+  background:rgba(14,4,4,.86);
+  border-bottom:1px solid rgba(200,20,20,.18);
+  box-shadow:0 1px 0 rgba(200,20,20,.14),0 4px 26px rgba(10,0,0,.65);
+}
+/* ============================================================
+   THEME PICKER COMPONENT
+   ============================================================ */
+#theme-picker-wrap{position:relative;display:flex;align-items:center;}
+#btn-theme{
+  display:flex;align-items:center;gap:5px;
+  padding:0 8px 0 6px !important;
+  height:28px;font-size:11px;font-family:var(--mono);
+  white-space:nowrap;min-width:0;
+}
+#btn-theme .th-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.25);
+  transition:background .2s;
+}
+#btn-theme .th-lbl{
+  font-size:10px;color:var(--t3);letter-spacing:.02em;
+  transition:color .15s;max-width:56px;overflow:hidden;text-overflow:ellipsis;
+}
+#btn-theme:hover .th-lbl{color:var(--t1);}
+#theme-picker-menu{
+  display:none;position:fixed;
+  background:var(--bg-1);border:1px solid var(--bdr-h);
+  border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);
+  padding:8px;z-index:99999;
+  width:260px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
+}
+#theme-picker-menu.tp-open{display:grid;}
+#theme-picker-menu:not(.tp-open){display:none;}
+.th-swatch{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;border-radius:var(--rounded-md);
+  padding:6px 4px 5px;
+  border:1px solid var(--bdr);
+  transition:border-color .15s,transform .12s;
+  background:var(--bg-2);
+  position:relative;
+}
+.th-swatch:hover{border-color:var(--bdr-h);transform:translateY(-1px);}
+.th-swatch.ts-active{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-g);}
+.th-preview{
+  width:100%;height:28px;border-radius:4px;overflow:hidden;
+  display:flex;gap:2px;flex-shrink:0;
+}
+.th-preview-bg{flex:3;height:100%;}
+.th-preview-acc{flex:1;height:100%;}
+.th-swatch-name{
+  font-size:9px;font-family:var(--mono);color:var(--t3);
+  text-transform:uppercase;letter-spacing:.06em;
+  text-align:center;line-height:1;
+}
+.th-swatch.ts-active .th-swatch-name{color:var(--amber);}
+.th-check{
+  position:absolute;top:3px;right:4px;
+  font-size:8px;color:var(--amber);opacity:0;
+  transition:opacity .15s;
+}
+.th-swatch.ts-active .th-check{opacity:1;}
 
 /* Logo — premium wordmark */
 .logo{
@@ -536,7 +836,7 @@ html,body{
 .inp-m{font-family:var(--mono);font-size:11px}
 textarea.inp{resize:vertical;min-height:54px;line-height:1.6}
 select.inp{cursor:pointer}
-[data-theme=light] .inp{
+[data-theme=light] .inp,[data-theme=ivory] .inp{
   background:var(--bg-2);
   box-shadow:inset 0 1px 2px rgba(0,0,0,.07);
 }
@@ -798,7 +1098,7 @@ summary.ts:hover{
   background:var(--glass);
   border-left-color:var(--bdr-h);
 }
-[data-theme=light] summary.ts:hover{background:var(--glass)}
+[data-theme=light] summary.ts:hover,[data-theme=ivory] summary.ts:hover{background:var(--glass)}
 details[open]>summary.ts{
   border-left-color:var(--amber);
   background:var(--amber-d);
@@ -1461,8 +1761,7 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
 /* Logo icon override */
 .logo-ico .ico svg{width:15px;height:15px;stroke:rgba(0,0,0,.85);stroke-width:2}
 
-/* Theme toggle icon swap via JS — size fix */
-#btn-theme .ico svg{width:14px;height:14px}
+/* Theme picker button — dot + label layout */
 
 /* Sidebar collapse arrow — transition-aware */
 .btn-tog .ico svg{
@@ -2139,7 +2438,7 @@ mark.hl{
   -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black 40%,transparent 100%);
   pointer-events:none;
 }
-[data-theme=light] #ob-ov::before{
+[data-theme=light] #ob-ov::before,[data-theme=ivory] #ob-ov::before{
   background-image:
     linear-gradient(rgba(194,98,10,.06) 1px,transparent 1px),
     linear-gradient(90deg,rgba(194,98,10,.06) 1px,transparent 1px);
@@ -3365,9 +3664,11 @@ textarea.inp { line-height: 1.55 !important; }
 
 /* Light theme: darken --t4 caption to meet WCAG 4.5:1 */
 [data-theme=light] { --t4: oklch(50% 0.01 55) !important; }
+[data-theme=ivory] { --t4: oklch(50% 0.01 55) !important; }
 
-/* Light theme header glassmorphism */
-[data-theme=light] .hdr {
+/* Light/Ivory theme header glassmorphism */
+[data-theme=light] .hdr,
+[data-theme=ivory] .hdr {
   background: rgba(242,239,234,.88) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
@@ -3575,12 +3876,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   color: var(--amber) !important;
 }
 
-/* Theme toggle — compact icon-only */
-#btn-theme {
-  width: 28px !important;
-  padding: 0 !important;
-  justify-content: center !important;
-}
 
 /* Slot C state chips — more distinct visual weight */
 .hdr-slot-chips .badge {
@@ -3889,7 +4184,7 @@ label[for="watch-auto-reload"] {
   border-color: var(--amber) !important;
   background: var(--amber-d) !important;
 }
-[data-theme=light] .emp-drop-zone {
+[data-theme=light] .emp-drop-zone,[data-theme=ivory] .emp-drop-zone {
   background: var(--bg-0) !important;
   border-color: var(--bdr) !important;
 }
@@ -4622,7 +4917,7 @@ label[for="watch-auto-reload"] {
   box-shadow: none !important;
   z-index: 0 !important;
 }
-[data-theme=light] #sb-tabs-pill {
+[data-theme=light] #sb-tabs-pill,[data-theme=ivory] #sb-tabs-pill {
   background: var(--bg-0) !important;
   border-color: var(--bdr) !important;
 }
@@ -4816,10 +5111,15 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
 
-      <!-- Slot E: theme toggle -->
-      <button class="btn btn-g btn-sm" id="btn-theme" title="Toggle theme" aria-label="Toggle light/dark theme">
-        <span class="ico" aria-hidden="true" id="theme-ico"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-      </button>
+      <!-- Slot E: theme picker -->
+      <div id="theme-picker-wrap">
+        <button class="btn btn-g btn-sm" id="btn-theme" title="Change theme" aria-label="Change application theme" aria-haspopup="true">
+          <span class="th-dot" id="theme-dot"></span>
+          <span class="th-lbl" id="theme-lbl">Dark</span>
+          <span style="font-size:9px;color:var(--t4);margin-left:1px;" aria-hidden="true">▾</span>
+        </button>
+        <div id="theme-picker-menu" role="listbox" aria-label="Choose theme"></div>
+      </div>
     </div>
 
     <!-- Slot F: overflow ⋯ button — displayed via responsive CSS at narrow widths -->
@@ -5876,7 +6176,12 @@ const CONSTANTS = {
   },
   THEMES: {
     DARK: 'dark',
-    LIGHT: 'light'
+    LIGHT: 'light',
+    IVORY: 'ivory',
+    AURORA: 'aurora',
+    MIDNIGHT: 'midnight',
+    FOREST: 'forest',
+    CRIMSON: 'crimson'
   },
   STORAGE_KEYS: {
     THEME: 'll-t',
@@ -6217,7 +6522,7 @@ const UTILS={
     return m;
   },
   ibg(c){
-    const l=document.documentElement.dataset.theme==='light';
+    const l=document.documentElement.dataset.theme==='ivory';
     return c+(l?'30':'1e');
   },
   renderMarkdown(md) {
@@ -6263,16 +6568,103 @@ const debounce=UTILS.debounce;
    §JS-5 THEME MANAGER
    ================================================================ */
 const Theme={
-  init(){const t=localStorage.getItem('ll-t')||'dark';this.apply(t,false);},
-  toggle(){this.apply(document.documentElement.dataset.theme==='dark'?'light':'dark',true);},
+  THEMES:[
+    {id:'dark',     label:'Obsidian', dot:'#d4882a', bg:'#1a1c22', acc:'#d4882a'},
+    {id:'ivory',    label:'Ivory',    dot:'#c2620a', bg:'#f5f3ee', acc:'#c2620a'},
+    {id:'aurora',   label:'Aurora',   dot:'#00d4c8', bg:'#0d1020', acc:'#00d4c8'},
+    {id:'midnight', label:'Midnight', dot:'#b000ff', bg:'#050310', acc:'#b000ff'},
+    {id:'forest',   label:'Forest',   dot:'#3aba5a', bg:'#0d1a0e', acc:'#3aba5a'},
+    {id:'crimson',  label:'Crimson',  dot:'#d91414', bg:'#150505', acc:'#d91414'},
+  ],
+  _pickerOpen:false,
+  _closeFn:null,
+  init(){
+    let t=localStorage.getItem('ll-t')||'dark';
+    // Legacy 'light' → 'ivory' mapping
+    if(t==='light')t='ivory';
+    this.apply(t,false);
+  },
+  // Kept for keyboard shortcut compatibility (Alt+T): cycles through themes
+  toggle(){
+    const ids=this.THEMES.map(x=>x.id);
+    const cur=document.documentElement.dataset.theme||'dark';
+    const idx=ids.indexOf(cur);
+    const next=ids[(idx+1)%ids.length];
+    this.apply(next,true);
+  },
   apply(t,anim){
     const h=document.documentElement;
     if(anim){h.classList.add('th-anim');setTimeout(()=>h.classList.remove('th-anim'),400);}
-    h.dataset.theme=t;localStorage.setItem('ll-t',t);
-    const sunSvg='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
-    const moonSvg='<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-    $('theme-ico').innerHTML=t==='dark'?sunSvg:moonSvg;
-  }
+    // Persist 'ivory' as explicit value (legacy 'light' still loads ivory via init)
+    h.dataset.theme=t;
+    localStorage.setItem('ll-t',t);
+    // Also set [data-theme=light] alias for ivory so existing [data-theme=light] CSS still works
+    if(t==='ivory'){h.setAttribute('data-theme','ivory');}
+    this._updateButton(t);
+    this._updateSwatches(t);
+  },
+  _updateButton(t){
+    const meta=this.THEMES.find(x=>x.id===t)||this.THEMES[0];
+    const dot=$('theme-dot');
+    const lbl=$('theme-lbl');
+    if(dot)dot.style.background=meta.dot;
+    if(lbl)lbl.textContent=meta.label;
+  },
+  _updateSwatches(t){
+    document.querySelectorAll('.th-swatch').forEach(el=>{
+      el.classList.toggle('ts-active',el.dataset.themeId===t);
+    });
+  },
+  renderPicker(){
+    const menu=$('theme-picker-menu');
+    if(!menu)return;
+    menu.innerHTML=this.THEMES.map(m=>`
+      <div class="th-swatch${m.id===document.documentElement.dataset.theme?' ts-active':''}"
+           data-theme-id="${m.id}" role="option" tabindex="0"
+           aria-label="${m.label} theme" title="${m.label}">
+        <div class="th-preview">
+          <div class="th-preview-bg" style="background:${m.bg};"></div>
+          <div class="th-preview-acc" style="background:${m.acc};"></div>
+        </div>
+        <span class="th-swatch-name">${m.label}</span>
+        <span class="th-check">✓</span>
+      </div>`).join('');
+    menu.querySelectorAll('.th-swatch').forEach(el=>{
+      el.addEventListener('click',()=>{
+        this.apply(el.dataset.themeId,true);
+        this.closePicker();
+      });
+      el.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}
+      });
+    });
+  },
+  openPicker(){
+    const btn=$('btn-theme');
+    const menu=$('theme-picker-menu');
+    if(!btn||!menu)return;
+    this.renderPicker();
+    const r=btn.getBoundingClientRect();
+    menu.style.top=(r.bottom+6)+'px';
+    menu.style.right=(window.innerWidth-r.right)+'px';
+    menu.style.left='auto';
+    menu.classList.add('tp-open');
+    this._pickerOpen=true;
+    // Close on outside click
+    if(this._closeFn)document.removeEventListener('click',this._closeFn,true);
+    this._closeFn=(e)=>{
+      if(!menu.contains(e.target)&&e.target!==btn&&!btn.contains(e.target)){
+        this.closePicker();
+      }
+    };
+    setTimeout(()=>document.addEventListener('click',this._closeFn,true),10);
+  },
+  closePicker(){
+    const menu=$('theme-picker-menu');
+    if(menu)menu.classList.remove('tp-open');
+    this._pickerOpen=false;
+    if(this._closeFn){document.removeEventListener('click',this._closeFn,true);this._closeFn=null;}
+  },
 };
 
 /* ================================================================
@@ -7972,7 +8364,7 @@ const EXP={
     const W=1100,LCOLW=260,ROW=24,PAD=12;
     const rs=tree[0].timestamp??0,re=mEnd(tree),rd=Math.max(1,re-rs);
     const rows=GR._fl(tree,0,rs,rd);
-    const isDark=document.documentElement.dataset.theme==='dark';
+    const isDark=document.documentElement.dataset.theme!=='ivory';
     const bg=isDark?'#0d1117':'#f8f7f5',fg=isDark?'#e6edf3':'#1c1917',
       fg3=isDark?'var(--t4)':'#57534e',bdr=isDark?'#30363d':'#c8c5bf';
     const h=PAD*2+rows.length*ROW+30;
@@ -8017,7 +8409,7 @@ const EXP={
   html(){
     if(!S.trees || !S.threads || S.threads.length === 0)return toast('No parse results.','warn');
     const threads = S.threads;
-    const isDark=document.documentElement.dataset.theme==='dark';
+    const isDark=document.documentElement.dataset.theme!=='ivory';
     const cfg=S.cfg?.globalSettings?.appName||'LogLens';
     const fn=S.logFile?.name||'unknown';
     const dt=new Date().toISOString().slice(0,19).replace('T',' ');
@@ -8049,7 +8441,7 @@ const EXP={
     // Build self-contained CSS
     const style=document.querySelector('style').textContent;
     const report=`<!DOCTYPE html>
-<html lang="en" data-theme="${isDark?'dark':'light'}">
+<html lang="en" data-theme="${document.documentElement.dataset.theme}">
 <head><meta charset="UTF-8"/><title>LogLens Interactive Report: ${esc(fn)}</title>
 <style>${style}
 body{overflow:auto!important}
@@ -9295,7 +9687,7 @@ const UNPARSED = {
  */
 const GRAPHIFY={
   async showHistogramModal(s) {
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
     
     // Create Modal
     const modalId = 'hist-large-modal';
@@ -9686,7 +10078,7 @@ const GRAPHIFY={
       .append("title")
       .text(d => `${d.rule} in bucket ${d.bucket+1}: ${d.count} event(s)`);
       
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
     const textCol = isDark ? '#e6edf3' : '#1c1917';
     
     svg.append("g")
@@ -9789,7 +10181,7 @@ const SWIMLANE={
     const W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
 
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
     const bg1 = isDark ? '#0d1117' : '#f8f7f5';
     const bg2 = isDark ? '#161b22' : '#f0ede9';
     const bdr = isDark ? '#30363d' : '#e0dbd3';
@@ -10067,7 +10459,10 @@ const SWIMLANE={
 
 // Theme
 Theme.init();
-$('btn-theme').addEventListener('click',()=>Theme.toggle());
+$('btn-theme').addEventListener('click',(e)=>{
+  e.stopPropagation();
+  if(Theme._pickerOpen){Theme.closePicker();}else{Theme.openPicker();}
+});
 
 // Control bar removed — action dock lives in CFG panel sidebar
 // (btn-toggle-ctrl and .ctrl collapse logic no longer needed)
@@ -11349,7 +11744,7 @@ const LANDSCAPE3D = {
     this._buildScene();
 
     /* ─ Theme setup ─ */
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
     this._lastTheme = isDark;
     this._updateThemeColors(isDark);
 
@@ -11800,7 +12195,7 @@ const LANDSCAPE3D = {
     const h = this._container.clientHeight || 600;
     c.width  = w; c.height = h;
     const ctx = c.getContext('2d');
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
 
     const grad = ctx.createRadialGradient(w * 0.5, h * 0.6, 20, w * 0.5, h * 0.6, Math.max(w, h));
     if (isDark) {
@@ -12190,7 +12585,7 @@ const LANDSCAPE3D = {
     const t = Date.now() * 0.001;
 
     // Theme checking & dynamic colors update
-    const isDark = document.documentElement.dataset.theme === 'dark';
+    const isDark = document.documentElement.dataset.theme !== 'ivory';
     if (this._lastTheme !== isDark) {
       this._lastTheme = isDark;
       this._updateThemeColors(isDark);
@@ -16422,8 +16817,12 @@ const RCONF = {
         <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
           <span style="font-size:11px;">Theme:</span>
           <select class="inp" id="r-theme" style="font-size:11px; padding:4px; width:auto;">
-            <option value="dark" ${this.options.theme==='dark'?'selected':''}>Dark</option>
-            <option value="light" ${this.options.theme==='light'?'selected':''}>Light</option>
+            <option value="dark"     ${this.options.theme==='dark'?'selected':''}>Obsidian (Dark)</option>
+            <option value="ivory"    ${this.options.theme==='ivory'?'selected':''}>Ivory (Light)</option>
+            <option value="aurora"   ${this.options.theme==='aurora'?'selected':''}>Aurora</option>
+            <option value="midnight" ${this.options.theme==='midnight'?'selected':''}>Midnight</option>
+            <option value="forest"   ${this.options.theme==='forest'?'selected':''}>Forest</option>
+            <option value="crimson"  ${this.options.theme==='crimson'?'selected':''}>Crimson</option>
           </select>
         </div>
         
