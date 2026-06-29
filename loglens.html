@@ -491,6 +491,17 @@ html,body{
   background:transparent;border-color:transparent;
   box-shadow:none;
 }
+/* Split-button — Select + chevron dropdown */
+.btn-split-wrap{display:inline-flex;align-items:stretch;border-radius:var(--rounded-sm);border:1px solid var(--bdr);overflow:visible;box-shadow:var(--shd-xs);background:var(--bg-3);}
+.btn-split-main{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:transparent;border:none;border-right:1px solid var(--bdr);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:var(--ui);letter-spacing:.1px;transition:all .16s var(--ease-out);border-radius:var(--rounded-sm) 0 0 var(--rounded-sm);}
+.btn-split-main:hover{background:var(--bg-4);color:var(--t1);}
+.btn-split-main:active{transform:scale(.98);}
+.btn-split-arrow{display:inline-flex;align-items:center;justify-content:center;width:24px;background:transparent;border:none;color:var(--t2);cursor:pointer;transition:all .16s var(--ease-out);border-radius:0 var(--rounded-sm) var(--rounded-sm) 0;}
+.btn-split-arrow:hover{background:var(--bg-4);color:var(--t1);}
+.btn-split-arrow:active{transform:scale(.98);}
+.btn-split-menu{display:none;position:fixed;min-width:180px;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.5);list-style:none;padding:4px 0;margin:0;z-index:99999;font-family:var(--ui);font-size:12px;}
+.btn-split-menu li{padding:7px 14px;cursor:pointer;color:var(--t1);display:flex;align-items:center;gap:8px;transition:background .1s;white-space:nowrap;}
+.btn-split-menu li:hover{background:var(--bg-3);}
 .btn-g:hover{
   background:var(--glass);
   border-color:var(--glass-bdr);
@@ -5365,8 +5376,18 @@ label[for="watch-auto-reload"] {
   <div class="ctrl">
     <div class="cg">
       <span class="cl">Log File</span>
-      <button class="btn" id="btn-sel"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Select</button>
-      <button class="btn btn-sm" id="btn-add-file" title="Add another log file (multi-file session)" aria-label="Add log file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></span></button>
+      <div class="btn-split-wrap" id="btn-sel-wrap">
+        <button class="btn-split-main" id="btn-sel" title="Select a log file">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Select
+        </button>
+        <button class="btn-split-arrow" id="btn-sel-arrow" aria-label="More file options" title="More options">
+          <svg viewBox="0 0 10 6" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>
+        </button>
+      </div>
+      <ul class="btn-split-menu" id="btn-sel-menu">
+        <li id="btn-add-file"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg> Add file to session</li>
+      </ul>
       <span id="lfname" class="cm mono trunc" style="font-size:10px;max-width:130px;"></span>
     </div>
     <div class="hsep" aria-hidden="true"></div>
@@ -10231,7 +10252,27 @@ $('fi-log').addEventListener('change',e=>{
   $('hdr-file').textContent=nm;$('hdr-file').className='badge b-blue';
   e.target.value='';
 });
-$('btn-add-file').addEventListener('click',()=>$('fi-log2').click());
+// Split-button: arrow opens portal menu
+(()=>{
+  const arrow = $('btn-sel-arrow');
+  const menu  = $('btn-sel-menu');
+  if (!arrow || !menu) return;
+  document.body.appendChild(menu); // portal — escape overflow:hidden
+  arrow.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = menu.style.display === 'block';
+    if (open) { menu.style.display = 'none'; return; }
+    const r = arrow.getBoundingClientRect();
+    menu.style.top  = (r.bottom + 4) + 'px';
+    menu.style.left = Math.max(4, r.right - 180) + 'px';
+    menu.style.display = 'block';
+  });
+  document.addEventListener('click', e => {
+    if (!menu.contains(e.target) && e.target !== arrow)
+      menu.style.display = 'none';
+  });
+})();
+$('btn-add-file').addEventListener('click', () => { $('btn-sel-menu').style.display='none'; $('fi-log2').click(); });
 $('fi-log2').addEventListener('change',e=>{
   const files=[...e.target.files];if(!files.length)return;
   MF.add(files);e.target.value='';

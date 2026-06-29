@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Log File Selection Split-Button (v6.9.12 — COMPLETED)**:
+  - Replaced the separate "Select" and "+" (Add File) buttons with a single unified split-button.
+  - Clicking the main button triggers log selection, while clicking the chevron arrow opens a portal menu with the option to "Add file to session".
+  - Implemented the menu using fixed positioning (`position: fixed` and `getBoundingClientRect()`) to prevent it from being clipped by overflow-hidden parent elements.
 - **Active Thread Dropdown — Definitive Fix (v6.9.11 — COMPLETED)**:
   - Replaced native `<select>` (whose text colour was unreliable across OS themes) with a fully custom `<button>` + `<ul>` dropdown built entirely from standard DOM elements for 100% CSS control.
   - Fixed click target: added `pointer-events: none` to inner `<span>` and `<svg>` chevron so clicks always reach the `<button>` listener, not a child element.
