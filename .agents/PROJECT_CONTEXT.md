@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Unified Thread Dropdown Search (v6.9.13 — COMPLETED)**:
+  - Merged the separate thread search field (`#thr-in`) and scan button (`#btn-disc`) from the control bar directly into the active thread dropdown.
+  - Added a sticky, focus-friendly text filter input (`#vt-chips-menu input`) inside the portal dropdown menu, allowing users to dynamically filter and select threads.
+  - Cleaned up control bar layout by removing redundant Thread input and discovery button, leaving only Log File selector and Parse controls.
 - **Log File Selection Split-Button (v6.9.12 — COMPLETED)**:
   - Replaced the separate "Select" and "+" (Add File) buttons with a single unified split-button.
   - Clicking the main button triggers log selection, while clicking the chevron arrow opens a portal menu with the option to "Add file to session".

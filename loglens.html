@@ -3854,9 +3854,6 @@ label[for="watch-auto-reload"] {
   margin: 0 4px !important;
 }
 
-/* Thread input width */
-#thr-in { width: 160px !important; }
-
 /* Parse / Abort typography */
 #btn-parse, #btn-abort {
   font-family: var(--ui) !important;
@@ -5389,13 +5386,6 @@ label[for="watch-auto-reload"] {
         <li id="btn-add-file"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg> Add file to session</li>
       </ul>
       <span id="lfname" class="cm mono trunc" style="font-size:10px;max-width:130px;"></span>
-    </div>
-    <div class="hsep" aria-hidden="true"></div>
-    <div class="cg" style="flex:1">
-      <span class="cl">Thread</span>
-      <input class="inp" id="thr-in" placeholder="all threads" style="width:170px;" list="thr-dl"/>
-      <datalist id="thr-dl"></datalist>
-      <button class="btn btn-sm" id="btn-disc" disabled title="Scan first 200 KB for thread IDs" aria-label="Scan for threads"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></button>
     </div>
     <div class="hsep" aria-hidden="true"></div>
     <div class="cg">
@@ -7407,7 +7397,7 @@ const TR={
  * @description Controls the application workspace interface, managing modals, layout panels, progress bars, view-switching, tab selection, resizes, and thread chips.
  */
 const UI={
-  ub(){const can=!!(S.cfg&&S.logFile);$('btn-parse').disabled=!can;$('btn-disc').disabled=!can;},
+  ub(){const can=!!(S.cfg&&S.logFile);$('btn-parse').disabled=!can;},
   prog(p,l,n){
     if (l === 'Parsing…') {
       const msgs = ['Crunching telemetry...', 'Unraveling the threads...', 'Reconstructing timeline...', 'Almost there...'];
@@ -7455,9 +7445,7 @@ const UI={
       }
     }
 
-    $('thr-dl').innerHTML=threads.map(t=>`<option value="${esc(t)}">`).join('');
-    const fi=$('thr-in').value.trim();
-    S.activeThr=fi&&threads.includes(fi)?fi:(threads[0]||null);
+    S.activeThr=S.activeThr&&threads.includes(S.activeThr)?S.activeThr:(threads[0]||null);
     const pms=performance.now()-S.parseStart;
     const at=trees[S.activeThr]||[];HS.ann(at,null);
 
@@ -7513,10 +7501,25 @@ const UI={
     btn.innerHTML = `<span id="vt-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;pointer-events:none;">${esc(S.activeThr||threads[0]||'')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;pointer-events:none;"><path d="M1 1l4 4 4-4"/></svg>`;
 
     // Menu is a body-level portal with position:fixed to escape any overflow:hidden ancestor
-    const menu = document.createElement('ul');
+    const menu = document.createElement('div');
     menu.id = 'vt-chips-menu';
-    menu.style.cssText = 'display:none;position:fixed;min-width:160px;max-height:220px;overflow-y:auto;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.5);list-style:none;padding:4px 0;margin:0;z-index:99999;font-family:var(--mono);font-size:10px;';
+    menu.style.cssText = 'display:none;position:fixed;min-width:180px;max-height:240px;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:99999;font-family:var(--mono);font-size:10px;flex-direction:column;overflow:hidden;';
     document.body.appendChild(menu);
+
+    // Filter input header
+    const searchWrap = document.createElement('div');
+    searchWrap.style.cssText = 'padding:6px;border-bottom:1px solid var(--bdr);background:var(--bg-1);flex-shrink:0;';
+    const searchInp = document.createElement('input');
+    searchInp.type = 'text';
+    searchInp.placeholder = 'Filter threads...';
+    searchInp.style.cssText = 'width:100%;font-size:10px;padding:3px 6px;height:22px;box-sizing:border-box;font-family:var(--mono);background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);outline:none;';
+    searchWrap.appendChild(searchInp);
+    menu.appendChild(searchWrap);
+
+    // List container
+    const list = document.createElement('ul');
+    list.style.cssText = 'list-style:none;padding:4px 0;margin:0;overflow-y:auto;flex:1;max-height:200px;';
+    menu.appendChild(list);
 
     threads.forEach(t => {
       const li = document.createElement('li');
@@ -7531,7 +7534,7 @@ const UI={
         btn.style.borderColor = 'var(--bdr)';
         const lbl = $('vt-active-label');
         if (lbl) lbl.textContent = t;
-        menu.querySelectorAll('li').forEach(l => {
+        list.querySelectorAll('li').forEach(l => {
           const isActive = l.dataset.value === t;
           l.style.color = isActive ? 'var(--amber)' : 'var(--t1)';
           l.style.fontWeight = isActive ? '700' : '';
@@ -7539,24 +7542,37 @@ const UI={
         });
         UI.sw(t);
       });
-      menu.appendChild(li);
+      list.appendChild(li);
+    });
+
+    // Filter listener
+    searchInp.addEventListener('input', () => {
+      const val = searchInp.value.toLowerCase().trim();
+      list.querySelectorAll('li').forEach(li => {
+        const text = li.textContent.toLowerCase();
+        li.style.display = text.includes(val) ? 'block' : 'none';
+      });
     });
 
     // Open/close: position menu below button using fixed coords from getBoundingClientRect
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const open = menu.style.display === 'block';
+      const open = menu.style.display === 'flex';
       if (open) {
         menu.style.display = 'none';
         btn.style.borderColor = 'var(--bdr)';
       } else {
         const r = btn.getBoundingClientRect();
         menu.style.top = (r.bottom + 4) + 'px';
-        // Align right edge of menu with right edge of button
-        const menuW = Math.max(160, r.width);
+        const menuW = Math.max(180, r.width);
         menu.style.left = Math.max(4, r.right - menuW) + 'px';
-        menu.style.display = 'block';
+        menu.style.display = 'flex';
         btn.style.borderColor = 'var(--amber)';
+
+        // Reset filter
+        searchInp.value = '';
+        list.querySelectorAll('li').forEach(li => li.style.display = 'block');
+        setTimeout(() => searchInp.focus(), 50);
       }
     });
 
@@ -10278,16 +10294,6 @@ $('fi-log2').addEventListener('change',e=>{
   MF.add(files);e.target.value='';
 });
 
-// Discover threads
-$('btn-disc').addEventListener('click',async()=>{
-  if(!S.logFile||!S.cfg)return;const btn=$('btn-disc');btn.disabled=true;btn.textContent='⏳';
-  try{
-    const t=await WM.disc(S.logFile,S.cfg);
-    $('thr-dl').innerHTML=t.map(x=>`<option value="${esc(x)}">`).join('');
-    UI.hprog();toast(`Found ${t.length} thread(s): ${t.slice(0,5).join(', ')}${t.length>5?'…':''}`,'success');
-  }catch(e){UI.hprog();toast('Scan failed: '+e.message,'error');}
-  finally{btn.disabled=false;btn.textContent='🔍';UI.ub();}
-});
 
 // Helper to reconstruct active thread stacks for delta parsing
 function getOpenStack(nodes) {
@@ -10383,7 +10389,7 @@ $('btn-parse').addEventListener('click',async()=>{
   }
 
   $('btn-parse').disabled=true;$('btn-abort').disabled=false;$('emp')?.classList.add('hidden');
-  const tf=$('thr-in').value.trim();
+  const tf='';
   
   let files = [];
   if (MF.files && MF.files.length > 0) {
