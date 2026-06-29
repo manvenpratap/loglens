@@ -11096,13 +11096,13 @@ const LANDSCAPE3D = {
     }
 
     if (this._graphLinesNormal) {
-      this._scene.remove(this._graphLinesNormal);
+      if (this._graphLinesNormal.parent) this._graphLinesNormal.parent.remove(this._graphLinesNormal);
       this._graphLinesNormal.geometry.dispose();
       this._graphLinesNormal.material.dispose();
       this._graphLinesNormal = null;
     }
     if (this._graphLinesAnomaly) {
-      this._scene.remove(this._graphLinesAnomaly);
+      if (this._graphLinesAnomaly.parent) this._graphLinesAnomaly.parent.remove(this._graphLinesAnomaly);
       this._graphLinesAnomaly.geometry.dispose();
       this._graphLinesAnomaly.material.dispose();
       this._graphLinesAnomaly = null;
@@ -11406,14 +11406,14 @@ const LANDSCAPE3D = {
       color: 0x30363d, transparent: true, opacity: 0.5
     });
     this._graphLinesNormal = new THREE.LineSegments(normalGeo, normalMat);
-    this._scene.add(this._graphLinesNormal);
+    this._forest.add(this._graphLinesNormal);
 
     const anomalyGeo = new THREE.BufferGeometry().setFromPoints(anomalyPoints.length ? anomalyPoints : [new THREE.Vector3(), new THREE.Vector3()]);
     const anomalyMat = new THREE.LineBasicMaterial({
       color: 0xff453a, transparent: true, opacity: 0.85, linewidth: 1.5
     });
     this._graphLinesAnomaly = new THREE.LineSegments(anomalyGeo, anomalyMat);
-    this._scene.add(this._graphLinesAnomaly);
+    this._forest.add(this._graphLinesAnomaly);
   },
 
   /* ── 3D spring simulation physics update loop ───────────── */
@@ -11972,13 +11972,13 @@ const LANDSCAPE3D = {
     
     // Clear graph lines
     if (this._graphLinesNormal) {
-      this._scene.remove(this._graphLinesNormal);
+      if (this._graphLinesNormal.parent) this._graphLinesNormal.parent.remove(this._graphLinesNormal);
       if (this._graphLinesNormal.geometry) this._graphLinesNormal.geometry.dispose();
       if (this._graphLinesNormal.material) this._graphLinesNormal.material.dispose();
       this._graphLinesNormal = null;
     }
     if (this._graphLinesAnomaly) {
-      this._scene.remove(this._graphLinesAnomaly);
+      if (this._graphLinesAnomaly.parent) this._graphLinesAnomaly.parent.remove(this._graphLinesAnomaly);
       if (this._graphLinesAnomaly.geometry) this._graphLinesAnomaly.geometry.dispose();
       if (this._graphLinesAnomaly.material) this._graphLinesAnomaly.material.dispose();
       this._graphLinesAnomaly = null;

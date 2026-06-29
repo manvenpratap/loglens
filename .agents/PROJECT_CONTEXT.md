@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **3D Force-Directed Graph Layout Fix (v6.9.9 — COMPLETED)**:
+  - Fixed the dependency graph rotation bug where node spheres drifted and flew out of their connector lines.
+  - Nested the connection lines inside `this._forest` Group instead of `this._scene` directly to align them to the same local coordinate space.
+  - Refactored model-reset and view-destruction code to use parent-relative detachment (`child.parent.remove(child)`) for safe resources garbage collection.
+
 - **3D Views Fix & Mobile Touch Optimization (v6.9.8 — COMPLETED)**:
   - Resolved event listener memory leaks by cleanly detaching all custom `mouseup` and `mousemove` window events on `destroy()`.
   - Added full mobile and tablet touch interaction support (`touchstart`, `touchmove`, `touchend`) to translate swipe gestures into camera rotation and taps into clicked node focus.
@@ -442,4 +447,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (3D Views Fix & Mobile Touch Optimization v6.9.8)*
+*Updated By: Antigravity (3D Force-Directed Graph Layout Fix v6.9.9)*
