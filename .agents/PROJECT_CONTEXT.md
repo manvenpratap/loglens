@@ -2,8 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
-  - Resolved active thread select dropdown text visibility clipping and collapsing issues by replacing the borderless flex-nested select layout with a standard native `<select>` layout next to the status dot, and added `width: auto !important; min-width: 100px;` to override global `.inp` class width restrictions.
+- **Active Thread Dropdown — Definitive Fix (v6.9.11 — COMPLETED)**:
+  - Replaced native `<select>` (whose text colour was unreliable across OS themes) with a fully custom `<button>` + `<ul>` dropdown built entirely from standard DOM elements for 100% CSS control.
+  - Fixed click target: added `pointer-events: none` to inner `<span>` and `<svg>` chevron so clicks always reach the `<button>` listener, not a child element.
+  - Fixed click handler accumulation: stored the document close-handler in `UI._vtCloseHandler` and call `removeEventListener` before each re-render to prevent stacking.
+  - **Root-cause fix for invisible menu**: moved the dropdown `<ul>` out of the `.vtabs` DOM tree and appended it directly to `document.body` as a **portal** with `position: fixed`. Coordinates are computed at open time via `getBoundingClientRect()`, completely escaping the `.vtabs` `overflow: hidden` clip that was hiding the menu off-screen.
+  - Updated `UI.sw()` to sync the custom button label (`#vt-active-label`) and amber item highlight whenever the active thread changes externally (keyboard shortcuts, row clicks, etc.).
   - Implemented natural sorting (alphanumeric order) for the threads list inside `UI.render()` using `localeCompare` with `numeric: true` (e.g., `worker-2` comes before `worker-10`).
   - Restyled the thread selector dropdown into a premium active status indicator badge, complete with a glowing amber status dot.
   - Removed the breadcrumb context bar (`#breadcrumb` / `BCB` namespace) completely from both HTML and script (stubbed namespace to prevent ReferenceErrors) to eliminate vertical clutter and maximize vertical workspace for the timeline.
