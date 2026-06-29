@@ -5394,10 +5394,6 @@ label[for="watch-auto-reload"] {
     <div class="prog-details" id="prog-details" style="font-size:10px; color:var(--t4); font-family:var(--mono); margin-top:4px; text-align:left;"></div>
   </div>
 
-  <!-- Breadcrumb Context Bar -->
-  <div class="breadcrumb" id="breadcrumb" aria-label="Navigation context">
-    <div class="bc-inner" id="bc-inner" aria-live="polite"></div>
-  </div>
 
   <div class="vtabs" id="vtabs">
     <div class="vt active" data-v="split"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
@@ -12632,89 +12628,11 @@ CMD.init();
    ================================================================ */
 /**
  * @namespace BCB
- * @description Breadcrumb Context Bar — shows active thread, active search filter,
- * and pinned node count as navigable chip segments between the view tabs and results.
- * Purely additive.
+ * @description Breadcrumb Context Bar — disabled to maximize vertical space for the timeline.
  */
-const BCB = (() => {
-  function render() {
-    const bc = $('breadcrumb');
-    const inner = $('bc-inner');
-    if (!bc || !inner) return;
-
-    const parts = [];
-
-    // Thread segment
-    if (S.activeThr) {
-      parts.push(`<span class="bc-chip active" title="Active thread"><span class="ico" style="font-size:10px;margin-right:2px;" aria-hidden="true"><svg viewBox="0 0 24 24" style="width:10px;height:10px;display:inline-block;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:2.5;"><path d="M4 22V4c0-1.1.9-2 2-2h14"/><circle cx="18" cy="12" r="3"/><circle cx="6" cy="12" r="3"/></svg></span> ${esc(S.activeThr)}</span>`);
-    }
-
-    // Search filter segment
-    const q = $('hdr-search')?.value?.trim();
-    if (q) {
-      parts.push('<span class="bc-sep">/</span>');
-      parts.push(`<span class="bc-filter-badge">
-        <span><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> ${esc(q)}</span>
-        <span class="bc-filter-x" id="bc-clear-search" title="Clear search" aria-label="Clear search">✕</span>
-      </span>`);
-    }
-
-    // View mode
-    if (S.viewMode && S.viewMode !== 'split') {
-      if (parts.length) parts.push('<span class="bc-sep">/</span>');
-      const vName = {gantt:'Timeline',tree:'Tree',stats:'Stats',graph:'Graph','3d':'3D'}[S.viewMode] || S.viewMode;
-      parts.push(`<span class="bc-chip">${esc(vName)}</span>`);
-    }
-
-    // Pinned count
-    if (S.pins && Object.keys(S.pins).length > 0) {
-      if (parts.length) parts.push('<span class="bc-sep">·</span>');
-      parts.push(`<span class="bc-chip"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> ${Object.keys(S.pins).length} pinned</span>`);
-    }
-
-    if (parts.length) {
-      inner.innerHTML = parts.join('');
-      bc.classList.add('vis');
-      // Wire clear-search button
-      const clr = $('bc-clear-search');
-      if (clr) {
-        clr.addEventListener('click', e => {
-          e.stopPropagation();
-          $('hdr-search').value = '';
-          updateSearchUIState();
-          S.searchQuery = '';
-          UI.rv();
-          BCB.render();
-        });
-      }
-    } else {
-      inner.innerHTML = '';
-      bc.classList.remove('vis');
-    }
-  }
-
-  function clear() {
-    const bc = $('breadcrumb');
-    const inner = $('bc-inner');
-    if (inner) inner.innerHTML = '';
-    if (bc) bc.classList.remove('vis');
-  }
-
-  return { render, clear };
-})();
-
-// Patch UI.sw to update breadcrumb on thread switch
-const _uiSwBCB = UI.sw.bind(UI);
-UI.sw = function(thr) {
-  _uiSwBCB(thr);
-  BCB.render();
-};
-
-// Patch UI.svm to update breadcrumb on view switch
-const _uiSvmBCB = UI.svm.bind(UI);
-UI.svm = function(vm) {
-  _uiSvmBCB(vm);
-  BCB.render();
+const BCB = {
+  render() {},
+  clear() {}
 };
 
 
