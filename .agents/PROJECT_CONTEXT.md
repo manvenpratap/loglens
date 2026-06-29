@@ -3,6 +3,8 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 - **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
+  - Implemented natural sorting (alphanumeric order) for the threads list inside `UI.render()` using `localeCompare` with `numeric: true` (e.g., `worker-2` comes before `worker-10`).
+  - Restyled the thread selector dropdown into a premium active status indicator badge, complete with a glowing amber status dot and custom dropdown arrow layout.
   - Removed the breadcrumb context bar (`#breadcrumb` / `BCB` namespace) completely from both HTML and script (stubbed namespace to prevent ReferenceErrors) to eliminate vertical clutter and maximize vertical workspace for the timeline.
   - Implemented collapsible split panes (Waterfall Timeline and Execution Tree) via toggle arrow buttons (`◀` / `▶`) on the divider (`.sp-hdl`), with smooth transitions and persistent split ratio tracking (`S.splitRatio` and `S.collapsedPane`).
   - Fixed scroll-driven scrubber scroll target binding by prioritizing `ganttWrapper.querySelector('.g-rows')` as the parent scroller in `SCRUBBER.attach`, ensuring horizontal scroll events on the track are captured.
