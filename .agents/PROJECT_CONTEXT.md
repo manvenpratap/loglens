@@ -2,6 +2,16 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Visual Overhaul and Branding Alignment (v6.9.2 — COMPLETED)**:
+  - Fixed branding inconsistencies by placing an "LL" lettermark logo inside the `.logo-ico` box and styling it for high readability across both light and dark themes.
+  - Replaced the Unicode character `⌕` search icon with a high-fidelity vector SVG magnifier glass icon.
+  - Replaced modal save/title emojis (`💾`, `🧩`, `📝`) with standard vector SVGs (floppy disk, 3D cube, edit pen) in HTML buttons/headings.
+  - Extracted 35+ scattered inline `style=""` overrides from JIRA, Cloud Datasources, Git, Plugins, and Directory Watcher form fields into clean, responsive CSS rules.
+  - Styled collapsible sub-section toggle buttons as rotating chevrons with hover backgrounds instead of text-based toggle cues.
+  - Aligned help panel reference tables (`.hlp-table`), keyboard shortcut rows (`.kb-row`), and capture cards (`.cg-field`) with strict design token typography and grids.
+  - Resolved theme identity issues: restored warm OKLCH cream system tokens (`--bg-2/3/4` and `--bg-overlay`) in Light Theme, overriding the cool-gray GitHub colors.
+  - Standardized the Query view tab to render its `>_` terminal icon inside a structured monospaced code badge that highlights amber on active state.
+
 - **Visual Audit Round 2 — Comprehensive Production Polish (v6.9.1 — COMPLETED)**:
   - Fixed 15 spacing violations — brought `.ctrl`, `.sp`, `.res`, `.rc`, `.ws-step`, `.f`, `.settings-section-*`, `.pref-row`, `.ann-h3`, `.ann-comment`, `.od-stat`, `.lql-input-row`, `.sp-pane`, `.emp-card` to strict 4px grid.
   - Fixed light-theme overlay readability — `#ctx-menu` now uses `var(--bg-2)` (opaque) instead of semi-transparent `--bg-overlay` which rendered text illegible.
@@ -390,5 +400,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-06-27*  
-*Updated By: Antigravity (merged v6.2 Overhaul & updated architecture details)*
+*Last Updated: 2026-06-29*  
+*Updated By: Antigravity (Visual Overhaul & Branding Alignment v6.9.2)*

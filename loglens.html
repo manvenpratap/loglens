@@ -3488,7 +3488,1036 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   /* Control bar on mobile — keep 4px-grid padding */
   .ctrl { padding: 8px !important; }
 }
+
+/* ================================================================
+   VISUAL OVERHAUL — v3 · Complete UI/UX Pass
+   "Obsidian Terminal meets Vercel Dashboard"
+   ================================================================ */
+
+/* ── A. HEADER ─────────────────────────────────────────────────── */
+
+/* Amber gradient accent line at header bottom */
+.hdr { position: relative !important; }
+.hdr::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    oklch(from var(--amber) l c h / 0.5) 35%,
+    oklch(from var(--amber) l c h / 0.5) 65%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Header right rail — consistent 8px gap */
+.hr { gap: 8px !important; }
+
+/* Export button — elevated to distinguish from utility */
+#btn-exp-menu {
+  background: var(--bg-3) !important;
+  border-color: var(--bdr-h) !important;
+  color: var(--t2) !important;
+}
+#btn-exp-menu:hover {
+  background: var(--bg-4) !important;
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+}
+
+/* Theme toggle — compact icon-only */
+#btn-theme {
+  width: 28px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+}
+
+/* Slot C state chips — more distinct visual weight */
+.hdr-slot-chips .badge {
+  font-size: 10px !important;
+  font-family: var(--mono) !important;
+  letter-spacing: 0 !important;
+  border: 1px solid var(--bdr) !important;
+  background: var(--bg-3) !important;
+  color: var(--t3) !important;
+  transition: opacity 0.15s, border-color 0.15s !important;
+}
+.hdr-slot-chips .badge:hover {
+  border-color: var(--bdr-h) !important;
+  color: var(--t2) !important;
+}
+
+/* Version badge — define missing .v-badge class */
+.v-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 9px !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  color: var(--amber) !important;
+  background: var(--amber-d) !important;
+  border: 1px solid oklch(from var(--amber) l c h / 0.2) !important;
+  border-radius: var(--rounded-full) !important;
+  padding: 1px 6px !important;
+  line-height: 1.6 !important;
+}
+
+/* Search icon — properly centered */
+.hdr-search-icon {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ── B. SIDEBAR TABS ────────────────────────────────────────────── */
+
+/* Tab bar — richer active state */
+.stab {
+  font-size: 11px !important;
+  letter-spacing: 0.01em !important;
+  transition: background 0.15s, color 0.15s, border-color 0.15s !important;
+}
+.stab:hover:not(.active) {
+  background: var(--glass) !important;
+  color: var(--t2) !important;
+}
+.stab.active {
+  color: var(--amber) !important;
+  background: var(--amber-d) !important;
+}
+.stab-ic { transition: opacity 0.15s, color 0.15s; }
+.stab.active .stab-ic {
+  color: var(--amber) !important;
+  opacity: 1 !important;
+}
+
+/* ── C. SIDEBAR SECTION HEADERS ─────────────────────────────────── */
+
+/* All .sh headers: padding, hover, cursor */
+.sh {
+  padding: 8px 4px !important;
+  border-radius: var(--rounded-sm) !important;
+  transition: background 0.14s !important;
+}
+.sh[onclick] {
+  cursor: pointer !important;
+}
+.sh:hover {
+  background: var(--glass) !important;
+}
+
+/* "Toggle" hint text inside section headers */
+.sh > span.mla {
+  font-size: 9px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--t4) !important;
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+}
+
+/* Section dividers — consistent height, no inline margins */
+.div {
+  height: 1px !important;
+  background: var(--bdr-d) !important;
+  margin: 8px 0 !important;
+  border-radius: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── D. SIDEBAR FORM INPUTS (sub-section overhaul) ──────────────── */
+
+/* Override all inline font/padding styles on sub-section inputs */
+#p-ds-body .inp,
+#p-jira-body .inp,
+#p-watch-body .inp,
+#p-git-body .inp,
+#p-plugins-body .inp,
+#p-packs-body .inp,
+#p-stream-body .inp,
+#p-unparsed-body .inp,
+#p-cfg .f > .inp,
+#p-gs .f > .inp {
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+}
+#p-ds-body select.inp,
+#p-jira-body select.inp,
+#p-packs-body select.inp,
+#p-cfg select.inp,
+#p-gs select.inp {
+  padding: 6px 8px !important;
+}
+
+/* Sub-section labels — consistent hierarchy */
+.sp .f > .fl,
+#p-gs .fl,
+#p-cfg .fl {
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+.sp .f > .fh,
+#p-gs .fh,
+#p-cfg .fh {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  line-height: 1.45 !important;
+  margin-top: 2px !important;
+}
+
+/* Section sub-labels (the 10px "Registry Packs", "Auth Header" etc.) */
+#p-ds-body .fl,
+#p-jira-body .fl,
+#p-watch-body .fl,
+#p-git-body .fl,
+#p-plugins-body .fl,
+#p-packs-body .fl,
+#p-stream-body .fl {
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  font-weight: 500 !important;
+}
+#p-jira-body .fh,
+#p-git-body .fh,
+#p-ds-body .fh {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+}
+
+/* Rules list empty state — symmetric padding */
+#rules-list .emp {
+  padding: 16px !important;
+}
+
+/* Config load session section spacing */
+#p-cfg .f[style*="padding-top"] {
+  padding-top: 8px !important;
+}
+
+/* ── E. WATCH FOLDER — checkbox upgrade ──────────────────────────── */
+#watch-dir-name {
+  font-size: 10px !important;
+  color: var(--t3) !important;
+  margin-top: 4px !important;
+  word-break: break-all !important;
+  line-height: 1.4 !important;
+}
+#watch-auto-reload {
+  accent-color: var(--amber) !important;
+  cursor: pointer !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+label[for="watch-auto-reload"] {
+  font-size: 11px !important;
+  color: var(--t2) !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  line-height: 1.4 !important;
+}
+#p-watch-body .f[style*="display:flex"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 4px !important;
+}
+
+/* Plugin list and textarea */
+#plugin-list {
+  font-size: 11px !important;
+  color: var(--t2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+#plugin-code {
+  font-size: 11px !important;
+  font-family: var(--mono) !important;
+  line-height: 1.5 !important;
+}
+
+/* Unparsed results */
+#unparsed-results {
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+/* ── F. CONTROL BAR ─────────────────────────────────────────────── */
+
+/* Dividers — more visible */
+.ctrl .hsep {
+  width: 1px !important;
+  height: 20px !important;
+  background: var(--bdr-h) !important;
+  opacity: 0.7;
+  flex-shrink: 0 !important;
+  margin: 0 4px !important;
+}
+
+/* Thread input width */
+#thr-in { width: 160px !important; }
+
+/* Parse / Abort typography */
+#btn-parse, #btn-abort {
+  font-family: var(--ui) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Stream control group */
+#cg-stream-ctrl {
+  align-items: center !important;
+  gap: 8px !important;
+}
+#stream-buf-count {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+}
+
+/* File chips scaffold */
+#file-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  transition: padding 0.2s !important;
+}
+#file-chips:not(:empty) {
+  padding: 4px 16px !important;
+}
+
+/* Log filename display */
+#lfname {
+  max-width: 130px !important;
+  font-size: 10px !important;
+  color: var(--t3) !important;
+  font-family: var(--mono) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ── G. VIEW TABS ─────────────────────────────────────────────────── */
+
+/* Query tab >_ icon — style as a terminal code badge */
+.vt[data-v="query"] .ico {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--t3) !important;
+  background: var(--bg-3) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 1px 4px !important;
+  line-height: 1.2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.vt[data-v="query"].active .ico {
+  color: var(--amber) !important;
+  border-color: var(--amber) !important;
+  background: var(--amber-d) !important;
+}
+
+/* Trace filter — remove inline style dependency */
+#trace-filter {
+  width: 128px !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  margin-left: 8px !important;
+  border-radius: var(--rounded-sm) !important;
+}
+
+/* vt-chips — no height jump when chips appear */
+.vt-chips {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+  min-height: 22px !important;
+}
+
+/* ── H. EMPTY STATE ─────────────────────────────────────────────── */
+
+/* Drop zone — higher contrast dashed border */
+.emp-drop-zone {
+  border: 2px dashed var(--bdr-h) !important;
+  background: var(--bg-1) !important;
+  transition: border-color 0.2s, background 0.2s !important;
+}
+.emp-drop-zone:hover,
+.emp-drop-zone.drag-over {
+  border-color: var(--amber) !important;
+  background: var(--amber-d) !important;
+}
+[data-theme=light] .emp-drop-zone {
+  background: var(--bg-0) !important;
+  border-color: var(--bdr) !important;
+}
+
+/* Restore subtle hover on onboarding feature cards (was disabled — too heavy) */
+.ob-feat:hover {
+  border-color: var(--bdr-h) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ico-sm — define missing utility class */
+.ico-sm {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+  vertical-align: middle !important;
+}
+.ico-sm svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  stroke-width: 1.75 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+/* ico-xl for empty state large icons */
+.ico-xl svg {
+  width: 36px !important;
+  height: 36px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  stroke-width: 1.25 !important;
+}
+
+/* ── I. MODALS ──────────────────────────────────────────────────── */
+
+/* Modal close button — fix off-grid margin */
+#btn-mx { margin-left: 8px !important; }
+#btn-ann-close { margin-left: auto !important; }
+
+/* Modal footer — right-aligned, consistent gap */
+.m-ftr {
+  display: flex !important;
+  gap: 8px !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+}
+
+/* Mode switcher toggle — visual container */
+.m-tog {
+  display: inline-flex !important;
+  background: var(--bg-3) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-md) !important;
+  padding: 2px !important;
+  gap: 2px !important;
+  flex-shrink: 0 !important;
+}
+.m-btn {
+  border-radius: calc(var(--rounded-md) - 2px) !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--t3) !important;
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  cursor: pointer !important;
+  transition: background 0.14s, color 0.14s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-family: var(--ui) !important;
+  white-space: nowrap !important;
+}
+.m-btn:hover {
+  background: var(--bg-4) !important;
+  color: var(--t2) !important;
+}
+.m-btn.active {
+  background: var(--bg-1) !important;
+  color: var(--amber) !important;
+  box-shadow: var(--shd-xs) !important;
+}
+
+/* Log format example preview — minimum readable */
+#wf-ex {
+  font-size: 10px !important;
+  color: var(--t3) !important;
+  font-family: var(--mono) !important;
+  line-height: 1.5 !important;
+}
+
+/* Quick test output — fix off-grid margin */
+#g-to {
+  font-size: 11px !important;
+  margin-top: 4px !important;
+  line-height: 1.4 !important;
+}
+#g-to:not(:empty) {
+  padding: 4px 8px !important;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr-d) !important;
+  border-radius: var(--rounded-sm) !important;
+}
+
+/* Regex token builder header */
+.rxb-hdr {
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  padding: 6px 0 !important;
+  user-select: none !important;
+  transition: color 0.14s !important;
+}
+.rxb-hdr:hover { color: var(--t2) !important; }
+.rxb-hdr .chev {
+  margin-left: auto !important;
+  font-size: 9px !important;
+  transition: transform 0.18s var(--ease-snap) !important;
+}
+/* Builder header hint text */
+.rxb-hdr > span[style*="font-size:10px"] {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  margin-left: 0 !important;
+}
+/* Emoji in builder header — neutralize size */
+.rxb-hdr > span:first-child {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Regex live preview */
+.rx-pre {
+  background: var(--bg-0) !important;
+  border: 1px solid var(--bdr-d) !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 8px 12px !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+  min-height: 36px !important;
+  word-break: break-all !important;
+  color: var(--t2) !important;
+  margin-top: 4px !important;
+}
+.rx-em {
+  color: var(--t4) !important;
+  font-style: italic !important;
+}
+
+/* Generated regex output */
+#g-rx-out.grx {
+  font-size: 11px !important;
+}
+
+/* Generated capture mapping preview */
+#g-cm-prev {
+  font-size: 10px !important;
+  font-family: var(--mono) !important;
+  color: var(--t3) !important;
+  line-height: 1.8 !important;
+}
+
+/* Annotation modal */
+#ann-node-info {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  color: var(--t2) !important;
+}
+#ann-text {
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+#ann-preview {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 10px 12px !important;
+  min-height: 60px !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  overflow-y: auto !important;
+  max-height: 150px !important;
+  color: var(--t2) !important;
+  word-break: break-word !important;
+}
+#ann-modal .fl[style*="font-size:10px"] {
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  margin-top: 8px !important;
+}
+
+/* ── J. HELP PANEL ──────────────────────────────────────────────── */
+
+/* Help panel layout */
+#p-hlp {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Internal tab bar */
+.hlp-tabs {
+  display: flex !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  gap: 0 !important;
+  margin-bottom: 8px !important;
+  flex-shrink: 0 !important;
+}
+.hlp-tab {
+  padding: 6px 12px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--t4) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  border-bottom: 2px solid transparent !important;
+  margin-bottom: -1px !important;
+  transition: color 0.14s, border-color 0.14s !important;
+  flex-shrink: 0 !important;
+  font-family: var(--ui) !important;
+}
+.hlp-tab:hover { color: var(--t2) !important; }
+.hlp-tab.active {
+  color: var(--amber) !important;
+  border-bottom-color: var(--amber) !important;
+}
+
+/* Help sections */
+.hlp-sec {
+  display: none !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+}
+.hlp-sec.active { display: flex !important; }
+
+/* Help section sub-headers */
+.hlp-sh {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--t4) !important;
+  font-family: var(--display) !important;
+  margin: 12px 0 6px 0 !important;
+  padding-bottom: 4px !important;
+  border-bottom: 1px solid var(--bdr-d) !important;
+}
+.hlp-sec > .hlp-sh:first-child { margin-top: 4px !important; }
+
+/* Help tables (LQL reference) */
+.hlp-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 11px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  overflow: hidden !important;
+}
+.hlp-table th {
+  background: var(--bg-2) !important;
+  color: var(--t4) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 6px 8px !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--bdr) !important;
+}
+.hlp-table td {
+  padding: 6px 8px !important;
+  border-bottom: 1px solid var(--bdr-d) !important;
+  color: var(--t2) !important;
+  line-height: 1.4 !important;
+  vertical-align: top !important;
+}
+.hlp-table td code {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  background: var(--bg-3) !important;
+  padding: 1px 4px !important;
+  border-radius: var(--rounded-sm) !important;
+  color: var(--amber) !important;
+}
+.hlp-table tr:last-child td { border-bottom: none !important; }
+.hlp-table tr:hover td { background: var(--bg-2) !important; }
+
+/* Keyboard shortcut rows */
+.kb-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 5px 0 !important;
+  border-bottom: 1px solid var(--bdr-d) !important;
+}
+.kb-row:last-child { border-bottom: none !important; }
+.kb-keys {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+  min-width: 80px !important;
+}
+.kb-desc {
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  line-height: 1.4 !important;
+}
+
+/* Help behavior badges */
+.hlp-beh {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 4px 0 !important;
+}
+.hlp-beh-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+}
+.hlp-beh-badge {
+  flex-shrink: 0 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  font-family: var(--mono) !important;
+  padding: 2px 8px !important;
+  border-radius: var(--rounded-full) !important;
+}
+.hlp-beh-desc {
+  font-size: 11px !important;
+  color: var(--t2) !important;
+  line-height: 1.55 !important;
+}
+.hlp-beh-desc code {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 1px 4px !important;
+}
+
+/* LQL example blocks */
+.lql-ex {
+  background: var(--bg-0) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-md) !important;
+  padding: 10px 12px !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  line-height: 1.7 !important;
+  margin-bottom: 8px !important;
+  cursor: pointer !important;
+  transition: border-color 0.15s, background 0.15s !important;
+  color: var(--t2) !important;
+}
+.lql-ex:hover {
+  border-color: var(--amber) !important;
+  background: var(--amber-d) !important;
+}
+.lql-kw { color: var(--blue) !important; font-weight: 600 !important; }
+.lql-val { color: var(--green) !important; }
+.lql-cm { color: var(--t4) !important; font-style: italic !important; }
+
+/* Capture group field cards */
+.cg-field {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid var(--bdr-d) !important;
+}
+.cg-field:last-child { border-bottom: none !important; }
+.cg-name {
+  font-size: 11px !important;
+  font-family: var(--mono) !important;
+  font-weight: 600 !important;
+  padding: 3px 8px !important;
+  border-radius: var(--rounded-sm) !important;
+  flex-shrink: 0 !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+}
+.cg-body { flex: 1 !important; min-width: 0 !important; }
+.cg-role {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--t2) !important;
+  margin-bottom: 2px !important;
+}
+.cg-detail {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  line-height: 1.5 !important;
+}
+
+/* Pins section */
+#pin-list {
+  font-size: 11px !important;
+  color: var(--t4) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  line-height: 1.5 !important;
+}
+/* Hotspot badge */
+.hb {
+  font-size: 9px !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  padding: 1px 4px !important;
+  border-radius: var(--rounded-sm) !important;
+}
+
+/* Help "How it works" paragraph — snap to standard size */
+#hlp-guide > div[style*="11.5px"] {
+  font-size: 11px !important;
+}
+
+/* ── K. NODE DETAIL OVERLAY ─────────────────────────────────────── */
+
+/* Fix hardcoded black overlay */
+#od-overlay {
+  background: var(--bg-overlay) !important;
+}
+/* Fix hardcoded black shadow on od-card */
+#od-card {
+  box-shadow: var(--shd-lg) !important;
+}
+/* Close button hover state */
+#od-close:hover {
+  color: var(--t1) !important;
+  background: var(--bg-3) !important;
+  outline: none !important;
+}
+#od-close:focus-visible {
+  outline: 2px solid var(--amber) !important;
+  outline-offset: 2px !important;
+}
+
+/* Minimap label minimum font size */
+#ll-minimap-label {
+  font-size: 9px !important;
+}
+/* Diff divider text minimum font size */
+.diff-divider-text {
+  font-size: 10px !important;
+}
+
+/* ── L. TOAST SYSTEM — tokenize backgrounds ──────────────────────── */
+
+/* Replace hardcoded RGBA with semantic token vars */
+.t-ok {
+  background: var(--green-g) !important;
+  border-color: oklch(from var(--green) l c h / 0.25) !important;
+  border-left-color: var(--green) !important;
+}
+.t-er {
+  background: var(--red-g) !important;
+  border-color: oklch(from var(--red) l c h / 0.25) !important;
+  border-left-color: var(--red) !important;
+}
+.t-in {
+  background: var(--blue-g) !important;
+  border-color: oklch(from var(--blue) l c h / 0.25) !important;
+  border-left-color: var(--blue) !important;
+}
+.t-wa {
+  background: var(--yellow-g) !important;
+  border-color: oklch(from var(--yellow) l c h / 0.22) !important;
+  border-left-color: var(--yellow) !important;
+}
+
+/* ── M. GANTT — targeted shadow and bg fixes ─────────────────────── */
+
+/* Gantt tooltip — use design token shadow */
+#g-tooltip {
+  box-shadow: var(--shd-lg) !important;
+}
+
+/* Progress shimmer — proper mid-tone (was amber-g at 13% opacity) */
+.prog-f {
+  background: linear-gradient(
+    90deg,
+    var(--amber) 0%,
+    oklch(from var(--amber) l c h / 0.5) 50%,
+    var(--amber) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+}
+
+/* ── N. STATS PANEL — spacing refinements ─────────────────────────── */
+
+.stats-card-grid {
+  gap: 12px !important;
+  margin-top: 12px !important;
+}
+.stats-panel-card {
+  padding: 12px !important;
+}
+.sp-title {
+  margin-bottom: 10px !important;
+  font-size: 11px !important;
+}
+/* ann-h4 — restore font-weight, fix off-grid margin */
+.ann-h4 {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin: 8px 0 4px 0 !important;
+  color: var(--t2) !important;
+}
+
+/* ── O. TOKEN SYSTEM CLEANUP ──────────────────────────────────────── */
+
+/* Fix: badge pulse keyframes — replace hardcoded RGBA with OKLCH */
+@keyframes badge-pulse-red {
+  0%   { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0.4); }
+  70%  { box-shadow: 0 0 0 6px oklch(from var(--red) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0); }
+}
+@keyframes badge-pulse-amber {
+  0%   { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0.4); }
+  70%  { box-shadow: 0 0 0 6px oklch(from var(--amber) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0); }
+}
+
+/* Pin badge border — replace hardcoded RGBA */
+.pin-badge {
+  border-color: oklch(from var(--yellow) l c h / 0.3) !important;
+}
+
+/* Stream scroll banner — replace hardcoded black text */
+.stream-scroll-banner {
+  color: var(--bg-0) !important;
+}
+
+/* Rex token chip — fix hardcoded black text on colored chips */
+.rex-token-chip {
+  color: var(--bg-0) !important;
+}
+
+/* Highlight for rare/important tree rows — replace hardcoded hex */
+.tree-row-rare-hl {
+  outline-color: var(--yellow) !important;
+  background: var(--yellow-g) !important;
+}
+
+/* Quick edit popover inputs */
+#quick-edit-pop input,
+#quick-edit-pop select {
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+}
+
+/* Progress details label */
+#prog-details {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  font-family: var(--mono) !important;
+  margin-top: 4px !important;
+  line-height: 1.4 !important;
+}
+
+/* corr-hdr-cell — allow shrinking for ellipsis to work */
+.corr-hdr-cell {
+  min-width: 0 !important;
+}
+
+/* Swim lane headers — minimum font size */
+.swim-lane-hdr {
+  font-size: 10px !important;
+}
+
+/* ── P. LIGHT THEME TOKEN RESTORATION ────────────────────────────── */
+
+/* Remove GitHub-gray hex overrides from overhaul block.
+   Restore warm OKLCH cream system by asserting the light token values
+   with higher specificity than the overhaul block. */
+[data-theme="light"] {
+  --bg-2: oklch(94% 0.012 55) !important;
+  --bg-3: oklch(91% 0.015 55) !important;
+  --bg-4: oklch(86% 0.018 55) !important;
+  --bg-overlay: oklch(96% 0.01 55 / 0.85) !important;
+}
+
+/* ── Q. FOCUS VISIBILITY — enhanced ring consistency ─────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--amber) !important;
+  outline-offset: 2px !important;
+  border-radius: var(--rounded-sm) !important;
+}
+:focus:not(:focus-visible) { outline: none !important; }
+
+/* ── R. MISC POLISH ─────────────────────────────────────────────── */
+
+/* .g2 grid gap — snap to 4px grid */
+.g2 { gap: 12px !important; }
+
+/* Slider range accents */
+.range-inp { accent-color: var(--amber) !important; cursor: pointer !important; }
+
+/* Heatmap cell allow shrink */
+.heat-cal-cell { flex-shrink: 0 !important; }
+
+/* Log4j result output area */
+#lj-res { gap: 8px !important; }
+
+/* AP rule card sub-label */
+.ap-sub { font-size: 10px !important; }
+
+/* AP regex output */
+.ap-rx { font-size: 10px !important; }
+
+/* grx generated regex preview — minimum readable size */
+.grx { font-size: 11px !important; }
+.grx-l { font-size: 10px !important; color: var(--t4) !important; margin-bottom: 4px !important; }
+
+/* Community packs body container */
+#p-packs-body, #p-ds-body, #p-jira-body,
+#p-watch-body, #p-git-body, #p-plugins-body,
+#p-stream-body, #p-unparsed-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding-top: 4px !important;
+}
+
+/* Ensure hidden sub-sections don't break flex */
+#p-packs-body.hidden, #p-ds-body.hidden, #p-jira-body.hidden,
+#p-watch-body.hidden, #p-git-body.hidden, #p-plugins-body.hidden,
+#p-stream-body.hidden, #p-unparsed-body.hidden {
+  display: none !important;
+}
+
 </style>
+
 
 </head>
 <body>
@@ -3500,7 +4529,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
 
   <!-- Logo -->
   <div class="logo">
-    <div class="logo-ico"><span class="ico ico-xl" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span></div>
+    <div class="logo-ico" aria-hidden="true">LL</div>
     <span>Log<span class="acc">Lens</span> <span class="v-badge">v6.1</span></span>
   </div>
   <div class="hsep" aria-hidden="true"></div>
@@ -3508,7 +4537,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
 
   <!-- Search — shrinks gracefully via .hdr-search class -->
   <div class="hdr-search-container">
-    <span class="hdr-search-icon" aria-hidden="true">⌕</span>
+    <span class="hdr-search-icon ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
     <input class="inp hdr-search" id="hdr-search" placeholder="Filter events (ID, rule, payload…)" aria-label="Filter parsed events" autocomplete="off" spellcheck="false"/>
     <span class="hdr-search-shortcut" id="hdr-search-shortcut">/</span>
     <button id="btn-search-clear" class="btn-search-clear" type="button" style="display:none;" title="Clear search">✕</button>
@@ -4248,7 +5277,8 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
       <!-- Token builder -->
       <div class="rxb">
         <div class="rxb-hdr" id="rxb-hdr">
-          <span>🧩</span><span>Pattern Token Builder</span>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+          <span>Pattern Token Builder</span>
           <span style="font-size:10px;color:var(--t4);margin-left:4px;">(click to insert at cursor)</span>
           <span class="chev">▶</span>
         </div>
@@ -4321,7 +5351,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   </div>
   <div class="m-ftr">
     <button class="btn" id="btn-mc">Cancel</button>
-    <button class="btn btn-p" id="btn-ms">💾 Save Rule</button>
+    <button class="btn btn-p" id="btn-ms"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Rule</button>
   </div>
 </div>
 </div>
@@ -4330,7 +5360,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
 <div class="mm hidden" id="ann-modal">
 <div class="modal" style="max-width:500px;">
   <div class="m-hdr">
-    <div class="m-title" id="ann-m-ttl">📝 Edit Annotation</div>
+    <div class="m-title" id="ann-m-ttl"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span> Edit Annotation</div>
     <button class="btn btn-g btn-sm" id="btn-ann-close" aria-label="Close notes dialog">✕</button>
   </div>
   <div class="m-body">
@@ -4345,7 +5375,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   </div>
   <div class="m-ftr">
     <button class="btn" id="btn-ann-cancel">Cancel</button>
-    <button class="btn btn-p" id="btn-ann-save">💾 Save Note</button>
+    <button class="btn btn-p" id="btn-ann-save"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Note</button>
   </div>
 </div>
 </div>
