@@ -2,6 +2,14 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Control Bar Elimination & Redirection (v6.9.20 — COMPLETED)**:
+  - Eliminated the horizontal control bar (`.ctrl`) and its toggle button entirely, reclaiming ~45px of vertical screen space for the visualization canvas.
+  - Redistributed its core components into a clean, sticky `#cfg-action-dock` at the top of the CFG sidebar panel:
+    - Pinned the **Log File** select split-button, current filename display (`#lfname`), and multi-file session chips (`#file-chips`).
+    - Pinned the **▶ Parse** and **■ Abort** primary actions directly below the file selector.
+    - Integrated real-time stream controls (`#cg-stream-ctrl`) inline within the second row of the dock.
+  - Moved the progress bar (`#prog`) into a dedicated slim strip above the view tabs layout inside the main panel, ensuring visual feedback is preserved during large parse cycles.
+
 - **Help Panel Always-Visible Bug Fix (v6.9.19 — COMPLETED)**:
   - Root cause: `#p-hlp { display: flex !important }` CSS rule used an ID selector which has higher specificity than the `.sp { display: none }` class rule, causing the Help panel to render as visible (`display: flex`) at all times — even when it was not the active sidebar tab.
   - Fix: Removed `display: flex !important` from the bare `#p-hlp` rule and added it exclusively to `#p-hlp.active`, so the Help panel only becomes visible when the HLP tab is actually selected.
