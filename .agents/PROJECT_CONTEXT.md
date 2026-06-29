@@ -2,6 +2,17 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **5-Theme System Expansion (v6.9.22 — COMPLETED)**:
+  - Added 4 brand-new themes: **Aurora** (cyan/deep-navy), **Midnight** (OLED-black/electric-purple), **Forest** (emerald-green/earthy), **Crimson** (dark-noir/crimson-red).
+  - Added **Ivory** as an explicit `[data-theme=ivory]` alias for the former "light" theme.
+  - Replaced the single moon/sun toggle button with a **theme swatch picker** dropdown in the header (shows all 6 themes as gradient preview cards — click to apply instantly).
+  - Expanded the `Theme` JS object: `THEMES` metadata array, `apply()`, `renderPicker()`, `openPicker()`, `closePicker()` methods.
+  - `Alt+T` keyboard shortcut now cycles through all 6 themes instead of toggling between 2.
+  - Fixed all `isDark` checks to use `dataset.theme !== 'ivory'` so all 4 new dark-background themes work correctly with Graphify/canvas rendering.
+  - Added per-theme header glassmorphism treatments (each theme has its own header tint and glow color).
+  - Updated the report renderer theme select to offer all 6 themes.
+  - **Architecture note**: All themes are pure CSS variable blocks (`[data-theme=X]`) — zero JS overhead, theme identity via `data-theme` HTML attribute.
+
 - **System Emoji Elimination & Unicode Icon Upgrades (v6.9.21 — COMPLETED)**:
   - Swept the entire application codebase and programmatically replaced all remaining 65+ system-colored emojis with high-quality, flat monochrome Unicode glyphs.
   - Substituted rule icons (🌐, 🗄, 🪵, 🚨, 🍃, ☁️, ⚡) with professional developer glyphs (❖, ▤, ▪, ✕, ☘, ☁, 🗲).
