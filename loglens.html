@@ -16814,7 +16814,14 @@ const OVERDRIVE = (() => {
       const scrollH = scroller.scrollHeight;
       const ratio = scrollH > scroller.clientHeight ? scrollTop / (scrollH - scroller.clientHeight) : 0;
       this._el.style.left = `calc(250px + (100% - 250px) * ${ratio})`;
-      const ms = ratio * this._totalDuration;
+      
+      const scrollLeft = scroller.scrollLeft;
+      const scrollW = scroller.scrollWidth;
+      const clientW = scroller.clientWidth;
+      const visibleTrackW = Math.max(1, clientW - 250);
+      const totalTrackW = Math.max(1, scrollW - 250);
+      const scrubberPosInTrack = ratio * visibleTrackW + scrollLeft;
+      const ms = Math.max(0, Math.min(this._totalDuration, (scrubberPosInTrack / totalTrackW) * this._totalDuration));
       this._tip.textContent = fmtMs(ms);
     },
 
