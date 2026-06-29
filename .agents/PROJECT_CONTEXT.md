@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Onboarding Layout Compactness (v6.9.16 — COMPLETED)**:
+  - Redesigned the onboarding feature highlights grid from a 2-column format into a balanced 3-column layout (`repeat(3, 1fr)`).
+  - This reduces the vertical height from 3 rows to 2 rows, helping the hero overlay fit comfortably within standard viewport heights.
+  - Maintains responsive collapse to a single column on small screen widths.
 - **Tagline Placement Update (v6.9.15 — COMPLETED)**:
   - Removed "Metadata-Driven Log Analyzer" tagline and its vertical line divider from the main dashboard header to declutter the user interface.
   - Repositioned the tagline onto the onboarding/hero page underneath the main LogLens wordmark for branding consistency.
