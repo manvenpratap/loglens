@@ -6037,7 +6037,7 @@ const DEF_CFG={
     {id:'r_hs',name:'HTTP Request',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName','4':'payload'},
-     stackBehavior:'push',visualStyle:{accentColor:'#3fb950',icon:'🌐'}},
+     stackBehavior:'push',visualStyle:{accentColor:'#3fb950',icon:'❖'}},
     {id:'r_he',name:'HTTP Response',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?HTTP-RESP\s+(\S+)`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
@@ -6045,7 +6045,7 @@ const DEF_CFG={
     {id:'r_dbs',name:'DB Query Start',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName','4':'payload'},
-     stackBehavior:'push',visualStyle:{accentColor:'#f0883e',icon:'🗄'}},
+     stackBehavior:'push',visualStyle:{accentColor:'#f0883e',icon:'▤'}},
     {id:'r_dbe',name:'DB Query End',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?DB-QUERY-END\s+(\S+)`,
      captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
@@ -6423,7 +6423,7 @@ const LJP={
    §JS-8 TOKEN PALETTE (Regex Builder)
    ================================================================ */
 const TOKS=[
-  {cat:'⏱ Timestamps',toks:[
+  {cat:'Timestamps',toks:[
     {n:'Java/Log4j',ex:'2024-01-15 12:34:56.789',s:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
     {n:'ISO 8601',ex:'2024-01-15T12:34:56.789Z',s:String.raw`(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[.,]\d{3}Z?)`},
     {n:'Time-only',ex:'12:34:56.789',s:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
@@ -6431,19 +6431,19 @@ const TOKS=[
     {n:'Unix ms',ex:'1705315200000',s:String.raw`(\d{13})`},
     {n:'Epoch s',ex:'1705315200',s:String.raw`(\d{10})`},
   ]},
-  {cat:'🧵 Thread / Context',toks:[
+  {cat:'Thread / Context',toks:[
     {n:'[thread]',ex:'[http-nio-8080]',s:String.raw`\[(\S+)\]`},
     {n:'(thread)',ex:'(pool-1-thread-2)',s:String.raw`\(([^)]+)\)`},
     {n:'bare word',ex:'thread-name ',s:String.raw`(\S+)\s`},
     {n:'MDC {k=v}',ex:'{reqId=abc123}',s:String.raw`\{[^}]*\}`},
     {n:'Spring [thread]',ex:'[nio-8080-exec-1]',s:String.raw`\[([^\]]+)\]`},
   ]},
-  {cat:'📊 Log Levels',toks:[
+  {cat:'Log Levels',toks:[
     {n:'5-padded',ex:'INFO  WARN  ERROR',s:String.raw`(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s*`},
     {n:'unpadded',ex:'INFO WARN ERROR',s:String.raw`(?:ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s*`},
     {n:'JSON level',ex:'"level":"INFO"',s:String.raw`"level"\s*:\s*"([^"]+)"`},
   ]},
-  {cat:'🔑 Identifiers & Values',toks:[
+  {cat:'Identifiers & Values',toks:[
     {n:'word (no space)',ex:'anyToken_123',s:String.raw`(\S+)`},
     {n:'word (alnum)',ex:'OrderService',s:String.raw`(\w+)`},
     {n:'dotted class',ex:'com.example.Svc',s:String.raw`([\w.$-]+(?:\.[\w.$-]+)*)`},
@@ -6454,7 +6454,7 @@ const TOKS=[
     {n:'key=value',ex:'name=OrderSvc',s:String.raw`\w+=(\S+)`},
     {n:'rest of line',ex:'everything → EOL',s:String.raw`(.+)$`},
   ]},
-  {cat:'⛓ Structure & Anchors',toks:[
+  {cat:'Structure & Anchors',toks:[
     {n:'^ start',ex:'beginning of line',s:'^'},
     {n:'whitespace+',ex:' (1 or more)',s:String.raw`\s+`},
     {n:'whitespace*',ex:' (0 or more)',s:String.raw`\s*`},
@@ -6697,7 +6697,7 @@ const CFG={
   rl(){
     const el=$('rules-list'),c=S.cfg;
     if(!c||!c.elementRules||!c.elementRules.length){
-      el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">📐</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';return;
+      el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">▤</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';return;
     }
     el.innerHTML=c.elementRules.map((r,i)=>{
       const col=scol(r.visualStyle?.accentColor||'var(--t4)');
@@ -6715,8 +6715,8 @@ const CFG={
         <div class="rc-more-menu-wrapper" style="position:relative; flex-shrink:0;">
           <button class="btn btn-g btn-xs rc-more-btn" type="button">⋯</button>
           <div class="rc-more-dropdown hidden">
-            <button class="rc-dropdown-item" data-a="edit" data-i="${i}" type="button">✏ Edit</button>
-            <button class="rc-dropdown-item" data-a="share" data-i="${i}" type="button">📤 Export JSON</button>
+            <button class="rc-dropdown-item" data-a="edit" data-i="${i}" type="button">✎ Edit</button>
+            <button class="rc-dropdown-item" data-a="share" data-i="${i}" type="button">▤ Export JSON</button>
             <button class="rc-dropdown-item" data-a="del" data-i="${i}" style="color:var(--red);" type="button">✕ Delete</button>
           </div>
         </div>
@@ -7041,7 +7041,7 @@ const GR={
       const bar=il
         ?`<div class="g-tick" data-idx="${idx}" style="left:calc(${sp.toFixed(2)}% - 1.5px);background:${col};" data-gtooltip="${inlineTooltip}"></div>`
         :wp>0?`<div class="${barCls}" data-idx="${idx}" style="left:${sp.toFixed(2)}%;width:${wp.toFixed(2)}%;background:${col};opacity:${barOpacity};--hover-glow:${col};" data-gtooltip="${tooltip}">
-          <span class="g-bl">${n._isSlaBreach ? '⚠️ ' : ''}${esc(dur)}</span>
+          <span class="g-bl">${n._isSlaBreach ? '⚠ ' : ''}${esc(dur)}</span>
           ${sfp>0&&sfp<98?`<div class="g-self" style="width:${sfp.toFixed(1)}%;"></div>`:''}
         </div>`:'';
       return`<div class="g-row" data-idx="${idx}">
@@ -7054,7 +7054,7 @@ const GR={
     }).join('');
     el.innerHTML=`<div class="gw">
       <div class="pt" style="display:flex; align-items:center; gap:8px;">
-        <span>📊</span> Waterfall Timeline
+        <span>▤</span> Waterfall Timeline
         <span class="badge b-gray mla">Total: ${esc(fmtMs(rd))}</span>
         <span class="badge b-gray">${rows.length} spans</span>
         <button class="btn btn-g btn-xs" id="btn-swim-toggle">Swimlane View</button>
@@ -7125,10 +7125,10 @@ const TR={
     let ab = '';
     if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
     if (n._isSlaBreach) ab += `<span class="badge b-red" style="border: 1px dashed var(--red); background: transparent; color: var(--red); margin-left:4px;">SLA BREACH</span>`;
-    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠️ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
+    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
     if (n.correlationId) ab += `<span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>`;
-    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">🤫 GAP: ${esc(fmtMs(n._quietGap))}</span>`;
-    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">🔥 CRITICAL</span>`;
+    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">⧖ GAP: ${esc(fmtMs(n._quietGap))}</span>`;
+    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">✦ CRITICAL</span>`;
 
     const elB=n.elementName&&n.elementName!==n.ruleName?`<span class="tel" style="color:${col};">${esc(n.elementName)}</span>`:'';
     const payB=n.payload?`<div class="tpy">${esc(n.payload)}</div>`:'';
@@ -7154,7 +7154,7 @@ const TR={
     el.innerHTML = `
       <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
         <div class="pt" style="flex-shrink:0; padding:10px 14px; display:flex; align-items:center;">
-          <span>🌳</span> Execution Tree
+          <span>┠</span> Execution Tree
           <span class="badge b-gray mla" id="tree-badge-count">${tree.length} root node${tree.length!==1?'s':''}</span>
           <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px;">Expand All</button>
           <button class="btn btn-g btn-xs" id="btn-tree-col">Collapse All</button>
@@ -7241,10 +7241,10 @@ const TR={
     let ab = '';
     if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
     if (n._isSlaBreach) ab += `<span class="badge b-red" style="border:1px dashed var(--red); background:transparent; color:var(--red); margin-left:4px;">SLA BREACH</span>`;
-    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠️ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
+    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
     if (n.correlationId) ab += `<span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>`;
-    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">🤫 GAP: ${esc(fmtMs(n._quietGap))}</span>`;
-    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">🔥 CRITICAL</span>`;
+    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">⧖ GAP: ${esc(fmtMs(n._quietGap))}</span>`;
+    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">✦ CRITICAL</span>`;
 
     const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
     const payB = n.payload ? `<span class="tpy" style="margin-left:8px; color:var(--t3);">${esc(n.payload)}</span>` : '';
@@ -7814,7 +7814,7 @@ const UI={
     S.ljAppenders=appenders;
     const bd=$('sh-bd');
     if(!appenders.length){
-      bd.innerHTML='<div class="emp"><div class="emp-ico">📭</div><div class="emp-sub">No PatternLayout appenders found.</div></div>';
+      bd.innerHTML='<div class="emp"><div class="emp-ico">▤</div><div class="emp-sub">No PatternLayout appenders found.</div></div>';
     } else {
       bd.innerHTML=appenders.map((a,i)=>{
         let rxP='',tsH='';
@@ -8029,7 +8029,7 @@ const EXP={
       return `
       <div id="tree-${esc(thr)}" class="thread-tree-content" style="${idx === 0 ? 'display:block;' : 'display:none;'}">
         <div class="tw">
-          <div class="pt"><span>🌳</span> Execution Tree (${esc(thr)})
+          <div class="pt"><span>┠</span> Execution Tree (${esc(thr)})
             <span class="badge b-gray mla">${tree.length} root node${tree.length !== 1 ? 's' : ''}</span>
             <button class="btn btn-g btn-xs" data-a="exp-all" style="margin-left:4px;">Expand All</button>
             <button class="btn btn-g btn-xs" data-a="col-all">Collapse All</button>
@@ -8064,7 +8064,7 @@ header.hdr-rep{display:flex!important;padding:8px 16px;border-bottom:1px solid v
 </style></head>
 <body><div class="app">
 <header class="hdr hdr-rep">
-  <div class="logo"><div class="logo-ico">🔍</div><span>Log<span class="acc">Lens</span> Interactive Report</span></div>
+  <div class="logo"><div class="logo-ico">⌕</div><span>Log<span class="acc">Lens</span> Interactive Report</span></div>
   <div class="hsep"></div>
   <span class="hsub">${esc(cfg)} · ${esc(fn)} · ${esc(dt)}</span>
 </header>
@@ -8260,7 +8260,7 @@ const REGISTRY_PACKS = {
         regexPattern: "^(\\d+\\.\\d+\\.\\d+\\.\\d+) - - \\[(.*?)\\] \"(\\w+) (.*?) HTTP/\\d\\.\\d\" (\\d+) (\\d+)",
         captureMapping: { "2": "timestamp", "1": "thread", "3": "elementName", "4": "payload" },
         stackBehavior: "inline",
-        visualStyle: { accentColor: "#3fb950", icon: "🌐" }
+        visualStyle: { accentColor: "#3fb950", icon: "❖" }
       }
     ]
   },
@@ -8273,7 +8273,7 @@ const REGISTRY_PACKS = {
         regexPattern: "\\[(.*?)\\] \\[(.*?)\\] INFO  (\\S+) - (.*)",
         captureMapping: { "1": "timestamp", "2": "thread", "3": "elementName", "4": "payload" },
         stackBehavior: "inline",
-        visualStyle: { accentColor: "#58a6ff", icon: "🪵" }
+        visualStyle: { accentColor: "#58a6ff", icon: "▪" }
       },
       {
         id: "l4j2",
@@ -8281,7 +8281,7 @@ const REGISTRY_PACKS = {
         regexPattern: "\\[(.*?)\\] \\[(.*?)\\] ERROR  (\\S+) - (.*)",
         captureMapping: { "1": "timestamp", "2": "thread", "3": "elementName", "4": "payload" },
         stackBehavior: "inline",
-        visualStyle: { accentColor: "#f85149", icon: "🚨" }
+        visualStyle: { accentColor: "#f85149", icon: "✕" }
       }
     ]
   },
@@ -8294,7 +8294,7 @@ const REGISTRY_PACKS = {
         regexPattern: "^(\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\S+)\\s+\\d+\\s+---\\s+\\[(.*?)\\]\\s+(\\S+)\\s+:\\s+(.*)",
         captureMapping: { "1": "timestamp", "3": "thread", "4": "elementName", "5": "payload" },
         stackBehavior: "inline",
-        visualStyle: { accentColor: "#3fb950", icon: "🍃" }
+        visualStyle: { accentColor: "#3fb950", icon: "☘" }
       }
     ]
   },
@@ -8307,7 +8307,7 @@ const REGISTRY_PACKS = {
         regexPattern: "\"eventTime\":\"(.*?)\".*\"eventName\":\"(.*?)\".*\"awsRegion\":\"(.*?)\"",
         captureMapping: { "1": "timestamp", "3": "thread", "2": "elementName" },
         stackBehavior: "inline",
-        visualStyle: { accentColor: "#ab7df8", icon: "☁️" }
+        visualStyle: { accentColor: "#ab7df8", icon: "☁" }
       }
     ]
   }
@@ -8471,7 +8471,7 @@ const RTS={
     const html=`
     <div class="mm" id="rts-mm" style="z-index:600">
     <div class="modal" style="width:700px">
-      <div class="m-hdr"><div class="m-title">🧪 Rule Test Suite</div>
+      <div class="m-hdr"><div class="m-title">◬ Rule Test Suite</div>
         <button class="btn btn-g btn-sm" onclick="document.getElementById('rts-mm').remove()" aria-label="Close rule test results">✕</button></div>
       <div class="m-body">
         <div class="f">
@@ -8568,16 +8568,16 @@ const CTX={
     this._node=node;
     const m=$('ctx-menu');
     m.innerHTML=`
-      <div class="ctx-mi" data-ca="copy-name">📋 Copy element name</div>
-      <div class="ctx-mi" data-ca="copy-line">📄 Copy raw line</div>
+      <div class="ctx-mi" data-ca="copy-name">▤ Copy element name</div>
+      <div class="ctx-mi" data-ca="copy-line">🗎 Copy raw line</div>
       <div class="ctx-sep"></div>
-      <div class="ctx-mi" data-ca="pin">${PIN._pins.has(node.id)?'📌 Unpin':'📌 Pin'} this event</div>
+      <div class="ctx-mi" data-ca="pin">${PIN._pins.has(node.id)?'✦ Unpin':'✦ Pin'} this event</div>
       <div class="ctx-sep"></div>
-      <div class="ctx-mi" data-ca="annotate">📝 Annotate event</div>
+      <div class="ctx-mi" data-ca="annotate">✎ Annotate event</div>
       <div class="ctx-sep"></div>
-      <div class="ctx-mi" data-ca="gantt-focus">🎯 Focus in Timeline</div>
+      <div class="ctx-mi" data-ca="gantt-focus">◎ Focus in Timeline</div>
       <div class="ctx-sep"></div>
-      <div class="ctx-mi" data-ca="jira">🎫 Create JIRA Ticket</div>
+      <div class="ctx-mi" data-ca="jira">⚲ Create JIRA Ticket</div>
     `;
     const mw=180,mh=220;
     let x=e.clientX,y=e.clientY;
@@ -8606,7 +8606,7 @@ const PIN={
   _pins:new Map(),// id → {node, note}
   toggle(n){
     if(this._pins.has(n.id)){this._pins.delete(n.id);toast('Unpinned.','info');}
-    else{this._pins.set(n.id,{node:n,note:''});toast(`📌 Pinned: ${n.elementName||n.ruleName}`,'success');}
+    else{this._pins.set(n.id,{node:n,note:''});toast(`✦ Pinned: ${n.elementName||n.ruleName}`,'success');}
     this._render();
   },
   _render(){
@@ -8713,7 +8713,7 @@ const VER={
         diffHtml += `
           <div class="diff-card" style="border:1px solid var(--green); background:rgba(22,163,74,0.06); border-radius:6px; padding:12px; margin-bottom:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:bold; color:var(--green); font-size:11px;">➕ Rule Added</span>
+              <span style="font-weight:bold; color:var(--green); font-size:11px;">+ Rule Added</span>
               <span style="font-family:var(--mono); font-size:10px; color:var(--t4);">${esc(id)}</span>
             </div>
             <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t1);">${esc(newR.name)}</div>
@@ -8728,7 +8728,7 @@ const VER={
         diffHtml += `
           <div class="diff-card" style="border:1px solid var(--red); background:rgba(220,38,38,0.06); border-radius:6px; padding:12px; margin-bottom:10px; opacity:0.8;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:bold; color:var(--red); font-size:11px; text-decoration:line-through;">➖ Rule Deleted</span>
+              <span style="font-weight:bold; color:var(--red); font-size:11px; text-decoration:line-through;">- Rule Deleted</span>
               <span style="font-family:var(--mono); font-size:10px; color:var(--t4); text-decoration:line-through;">${esc(id)}</span>
             </div>
             <div style="font-weight:bold; font-size:13px; margin-bottom:4px; color:var(--t3); text-decoration:line-through;">${esc(oldR.name)}</div>
@@ -8784,7 +8784,7 @@ const VER={
           diffHtml += `
             <div class="diff-card" style="border:1px solid var(--amber); background:rgba(255,149,0,0.04); border-radius:6px; padding:12px; margin-bottom:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <span style="font-weight:bold; color:var(--amber); font-size:11px;">📝 Rule Modified</span>
+                <span style="font-weight:bold; color:var(--amber); font-size:11px;">✎ Rule Modified</span>
                 <span style="font-family:var(--mono); font-size:10px; color:var(--t4);">${esc(id)}</span>
               </div>
               <div style="font-weight:bold; font-size:13px; color:var(--t1);">${esc(newR.name)}</div>
@@ -8807,7 +8807,7 @@ const VER={
       <div class="mm" id="diff-mm" style="z-index:650">
         <div class="modal" style="width:550px; max-height:85vh; display:flex; flex-direction:column;">
           <div class="m-hdr" style="flex-shrink:0;">
-            <div class="m-title">🔍 Rule Config Diff: Current vs v${version}</div>
+            <div class="m-title">⌕ Rule Config Diff: Current vs v${version}</div>
             <button class="btn btn-g btn-sm" onclick="document.getElementById('diff-mm').remove()" aria-label="Close file diff comparison">✕</button>
           </div>
           <div class="m-body" style="flex:1; overflow-y:auto; padding:16px;">
@@ -8830,7 +8830,7 @@ const VER={
       `<td style="color:var(--t3);padding:6px 8px;">${esc(e.date)}</td>`+
       `<td style="padding:6px 8px;">${esc(e.note)}</td>`+
       `<td style="padding:6px 8px;text-align:right;">` +
-      (e.rulesSnapshot ? `<button class="btn btn-bl btn-xs" onclick="VER.diff(${e.v}, S.cfg._meta.changelog.find(c=>c.v===${e.v}).rulesSnapshot)">🔍 Diff</button>` : `<span style="color:var(--t4);font-size:10px;">No Snapshot</span>`) +
+      (e.rulesSnapshot ? `<button class="btn btn-bl btn-xs" onclick="VER.diff(${e.v}, S.cfg._meta.changelog.find(c=>c.v===${e.v}).rulesSnapshot)">⌕ Diff</button>` : `<span style="color:var(--t4);font-size:10px;">No Snapshot</span>`) +
       `</td></tr>`).join('');
     const html=`<div class="mm" id="ver-mm" style="z-index:600">
     <div class="modal" style="width:580px">
@@ -8943,18 +8943,18 @@ const STATS={
     }).join('');
 
     container.innerHTML = `<div class="tw">
-      <div class="pt"><span>📈</span> Latency Statistics (Active Thread)</div>
+      <div class="pt"><span>◬</span> Latency Statistics (Active Thread)</div>
       
       <div style="background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:12px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <span style="font-size:12px; font-weight:bold; color:var(--t2);">🔍 Compare with previous run:</span>
+        <span style="font-size:12px; font-weight:bold; color:var(--t2);">⌕ Compare with previous run:</span>
         <select id="comp-session-sel" class="inp" style="width:280px; font-size:12px; padding:4px 8px;">${opts}</select>
         <button id="btn-clear-comp" class="btn btn-g btn-sm hidden">Clear Comparison</button>
-        <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">📊 Show Heatmap</button>
+        <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">◧ Show Heatmap</button>
       </div>
 
       <div id="heatmap-container" class="hidden" style="margin-bottom:16px; padding:12px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px;">
         <div style="font-weight:bold; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-          <span>📊 Event Frequency Heatmap (Time vs Rules)</span>
+          <span>◧ Event Frequency Heatmap (Time vs Rules)</span>
           <button class="btn btn-xs" id="btn-close-heatmap">✕ Close</button>
         </div>
         <div id="heatmap-svg-wrap" style="width:100%; overflow-x:auto;"></div>
@@ -9073,7 +9073,7 @@ const STATS={
       const isBetter = diffP95 < 0;
       const color = isBetter ? 'var(--green)' : diffP95 > 0 ? 'var(--red)' : 'var(--t3)';
       const sign = diffP95 > 0 ? '+' : '';
-      const icon = isBetter ? '🟢' : diffP95 > 0 ? '🔴' : '⚪';
+      const icon = isBetter ? '●' : diffP95 > 0 ? '●' : '○';
 
       rows.push(`<tr style="border-bottom:1px solid var(--bdr);">
         <td style="padding:8px; font-weight:bold;">${esc(curr.ruleName)}</td>
@@ -9084,7 +9084,7 @@ const STATS={
     }
 
     container.innerHTML = `<div style="background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; padding:12px;">
-      <div style="font-weight:bold; font-size:11px; text-transform:uppercase; color:var(--t3); margin-bottom:8px;">📊 Latency Comparison: P95 Benchmark vs ${esc(prevSession.fileName)}</div>
+      <div style="font-weight:bold; font-size:11px; text-transform:uppercase; color:var(--t3); margin-bottom:8px;">◧ Latency Comparison: P95 Benchmark vs ${esc(prevSession.fileName)}</div>
       <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <thead>
           <tr style="border-bottom:1px solid var(--bdr); color:var(--t4);">
@@ -9334,7 +9334,7 @@ const GRAPHIFY={
       });
     } catch(err) {
       console.error(err);
-      container.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><div class="emp-sub">Offline Mode: D3.js could not load.</div></div>`;
+      container.innerHTML = `<div class="emp"><div class="emp-ico">⚠</div><div class="emp-sub">Offline Mode: D3.js could not load.</div></div>`;
       toast('Could not load D3.js for interactive histogram.','warn');
     }
   },
@@ -9479,15 +9479,15 @@ const GRAPHIFY={
   async render(trees, container) {
     const data = this.buildGraph(trees);
     if (!data.nodes.length) {
-      container.innerHTML = `<div class="emp" style="padding:40px;"><div class="emp-ico">🕸</div><div class="emp-sub">No transaction nodes found. Make sure rules have push/pop operations.</div></div>`;
+      container.innerHTML = `<div class="emp" style="padding:40px;"><div class="emp-ico">⧉</div><div class="emp-sub">No transaction nodes found. Make sure rules have push/pop operations.</div></div>`;
       return;
     }
 
     container.innerHTML = `<div class="tw">
-      <div class="pt"><span>🕸</span> Transaction Dependency Graph <span class="badge b-gray mla">${data.nodes.length} Node(s)</span></div>
+      <div class="pt"><span>⧉</span> Transaction Dependency Graph <span class="badge b-gray mla">${data.nodes.length} Node(s)</span></div>
       <div id="d3-graph-canvas-container" style="position:relative; width:100%; height:550px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; overflow:hidden;">
         <div id="d3-graph-loading" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t3); font-size:12px; z-index:10;">
-          ⏳ Loading Graphify Engine (D3.js)...
+          ⌛ Loading Graphify Engine (D3.js)...
         </div>
       </div>
     </div>`;
@@ -9502,7 +9502,7 @@ const GRAPHIFY={
     } catch(err) {
       console.error(err);
       const l = $('d3-graph-loading');
-      if (l) l.innerHTML = `⚠️ Graphify unavailable offline.`;
+      if (l) l.innerHTML = `⚠ Graphify unavailable offline.`;
       toast('Graphify unavailable offline.', 'warn');
     }
   },
@@ -9727,8 +9727,8 @@ const SWIMLANE={
   init(container) {
     container.innerHTML = `<div class="gw" style="height:100%; display:flex; flex-direction:column;">
       <div class="pt" style="display:flex; align-items:center;">
-        <span>🕸</span> Swimlane Multi-Thread Gantt 
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">📊 Show Single Thread</button>
+        <span>⧉</span> Swimlane Multi-Thread Gantt 
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">◧ Show Single Thread</button>
         <span class="badge b-gray mla" id="swim-visible-range">Visible: 0ms</span>
       </div>
       <div style="flex:1; min-height:350px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; position:relative; overflow:hidden;">
@@ -10154,7 +10154,7 @@ $('fi-lj').addEventListener('change',e=>{
       const res=$('lj-res');
       if(!app.length){res.innerHTML='<div class="fh" style="color:var(--yellow);">⚠ No PatternLayout appenders found.</div>';return;}
       res.innerHTML=`<div class="fh" style="color:var(--green);">✓ Found ${app.length} appender${app.length>1?'s':''}: ${app.map(a=>esc(a.name)).join(', ')}</div>
-        <button class="btn btn-bl wf" id="btn-show-sh">📋 Preview &amp; Import ${app.length} Appender${app.length>1?'s':''}</button>`;
+        <button class="btn btn-bl wf" id="btn-show-sh">▤ Preview &amp; Import ${app.length} Appender${app.length>1?'s':''}</button>`;
       $('btn-show-sh')?.addEventListener('click',()=>UI.showSheet(app));
       S.ljAppenders=app;
       toast(`Parsed: ${app.length} appender${app.length>1?'s':''} found.`,'success');
@@ -10965,7 +10965,7 @@ const DS = {
       toast(`Query failed: ${e.message}. If using AWS direct, check credentials & CORS.`, 'error');
     } finally {
       $('btn-ds-fetch').disabled = false;
-      $('btn-ds-fetch').textContent = '⚡ Fetch Logs';
+      $('btn-ds-fetch').textContent = '🗲 Fetch Logs';
     }
   }
 };
@@ -11842,9 +11842,9 @@ const LANDSCAPE3D = {
           border-radius:var(--rounded-sm, 6px);padding:5px 8px;font-size:11px;font-family:var(--ui);
           cursor:pointer;outline:none;
         ">
-          <option value="forest">🌲 Log Forest (Waterfall)</option>
-          <option value="helix">🧬 Spiral Helix (Sequence)</option>
-          <option value="graph">🕸 Dependency Graph (Network)</option>
+          <option value="forest">┠ Log Forest (Waterfall)</option>
+          <option value="helix">◇ Spiral Helix (Sequence)</option>
+          <option value="graph">⧉ Dependency Graph (Network)</option>
         </select>
       </div>
       <div style="color:var(--t3);font-size:10px;line-height:1.5;font-family:var(--ui);margin-bottom:12px;border-top:1px solid var(--bdr);padding-top:8px;">
@@ -12495,8 +12495,8 @@ const CMD = (() => {
     // Exports
     { id:'e-csv',  cat:'Export', name:'Export CSV',           icon:'▤', action:()=>EXP.csv() },
     { id:'e-json', cat:'Export', name:'Export JSON Tree',      icon:'{ }', action:()=>EXP.json() },
-    { id:'e-svg',  cat:'Export', name:'Export Gantt SVG',      icon:'🖼', action:()=>EXP.svg() },
-    { id:'e-png',  cat:'Export', name:'Export Gantt PNG',      icon:'🖼', action:()=>EXP.png() },
+    { id:'e-svg',  cat:'Export', name:'Export Gantt SVG',      icon:'▤', action:()=>EXP.svg() },
+    { id:'e-png',  cat:'Export', name:'Export Gantt PNG',      icon:'▤', action:()=>EXP.png() },
     { id:'e-html', cat:'Export', name:'Export HTML Report',    icon:'◐', action:()=>EXP.html() },
     { id:'e-lls',  cat:'Export', name:'Save Session (.lls)',   icon:'▣', action:()=>EXP.lls() },
     // App
@@ -13440,7 +13440,7 @@ const ANOM = {
     
     const unmatchedRows = this.results.unmatchedBlocks.map(ub =>
       `<div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:4px 0; border-bottom:1px solid var(--bdr-d);">
-        <span class="trunc" style="max-width:180px;">🧵 ${esc(ub.thread)}: ${esc(ub.elementName || ub.ruleName)}</span>
+        <span class="trunc" style="max-width:180px;">⚬ ${esc(ub.thread)}: ${esc(ub.elementName || ub.ruleName)}</span>
         <button class="btn btn-xs btn-d btn-unmatched-jump" data-id="${esc(ub.id)}">Jump</button>
       </div>`
     ).join('');
@@ -13450,7 +13450,7 @@ const ANOM = {
         <div class="sp-title"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Pattern Anomalies</div>
         <div class="stats-card-grid">
           <div>
-            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">🔥 HOT PATHS (Transition sequences)</div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">✦ HOT PATHS (Transition sequences)</div>
             <table style="width:100%; border-collapse:collapse; font-size:11px;">
               <thead>
                 <tr style="border-bottom:1px solid var(--bdr); color:var(--t4);">
@@ -13465,13 +13465,13 @@ const ANOM = {
             </table>
           </div>
           <div>
-            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">🔍 RARE SEQUENCES (Frequency = 1)</div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">⌕ RARE SEQUENCES (Frequency = 1)</div>
             <div style="max-height:160px; overflow-y:auto; padding-right:4px;">
               ${rareRows || '<div style="text-align:center; padding:10px; color:var(--t4); font-size:11px;">No rare transitions.</div>'}
             </div>
           </div>
           <div>
-            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">📦 UNMATCHED BLOCKS (Push without pop)</div>
+            <div style="font-weight:bold; font-size:11px; color:var(--t3); margin-bottom:6px;">⧇ UNMATCHED BLOCKS (Push without pop)</div>
             <div style="max-height:160px; overflow-y:auto; padding-right:4px;">
               ${unmatchedRows || '<div style="text-align:center; padding:10px; color:var(--t4); font-size:11px;">All push blocks matched.</div>'}
             </div>
@@ -14259,7 +14259,7 @@ const DIFF = {
           </table>
         </div>
         <div style="margin-top:12px; padding:10px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; font-size:11px; font-family:var(--mono); text-align:center; color:var(--t3);">
-          📈 ${incCount} rules increased · 📉 ${decCount} rules decreased · ⚖️ ${eqCount} unchanged
+          ▲ ${incCount} rules increased · ▼ ${decCount} rules decreased · ⧓ ${eqCount} unchanged
         </div>
       `;
       const diffRows = diffs.map(d => {
@@ -14393,8 +14393,8 @@ const DIFF = {
           
           <!-- Sub Navigation -->
           <div style="display:flex; flex-direction:column; gap:4px; margin-top:12px;">
-            <button class="btn ${this.subTab==='stats'?'btn-p':''}" id="btn-diff-sub-stats">📈 Delta Stats Summary</button>
-            <button class="btn ${this.subTab==='sequence'?'btn-p':''}" id="btn-diff-sub-seq">🧵 Sequence LCS Flow</button>
+            <button class="btn ${this.subTab==='stats'?'btn-p':''}" id="btn-diff-sub-stats">◬ Delta Stats Summary</button>
+            <button class="btn ${this.subTab==='sequence'?'btn-p':''}" id="btn-diff-sub-seq">⚬ Sequence LCS Flow</button>
           </div>
         </div>
         
@@ -15260,7 +15260,7 @@ const GANTT_ZOOM_PAN = {
         <div style="border-left:1px solid var(--bdr); height:16px; margin:0 4px;"></div>
         <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
           <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
-          🔥 Critical Path
+          ✦ Critical Path
         </label>
       `;
       // Insert BEFORE .gw inside the parent
@@ -15485,7 +15485,7 @@ SWIMLANE.init = function(el) {
   el.innerHTML = `
     <div class="gw" style="display:flex; flex-direction:column; height:100%;">
       <div class="pt" style="display:flex; align-items:center;">
-        <span>🏊‍♂️</span> Swimlane Timeline View
+        <span>⧇</span> Swimlane Timeline View
         <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">Show Standard Waterfall</button>
         <div style="border-left:1px solid var(--bdr); height:16px; margin:0 8px;"></div>
         <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
@@ -15812,12 +15812,12 @@ const PLUG = {
   version: "1.0.0",
   onParseDone: (ctx) => {
     const slow = ctx.allEvents.filter(e => e.duration > 1000);
-    ctx.badge("⚠️ " + slow.length + " slow operations", "amber");
+    ctx.badge("⚠ " + slow.length + " slow operations", "amber");
     ctx.addStatsCard("Slow Operations", slow.length, "amber");
   },
   onNodeClick: (ctx, node) => {
     if (node.duration > 1000) {
-      ctx.toast("⚠️ This operation took " + node.duration + "ms", "warn");
+      ctx.toast("⚠ This operation took " + node.duration + "ms", "warn");
     }
   },
   onContextMenu: (ctx, node) => {
@@ -15852,7 +15852,7 @@ const PLUG = {
       check(tree);
     }
     if (starveCount > 0) {
-      ctx.badge("⚠️ " + starveCount + " Thread Starvations", "red");
+      ctx.badge("⚠ " + starveCount + " Thread Starvations", "red");
       ctx.addStatsCard("Thread Starvations", starveCount, "red");
     }
   }
@@ -15881,7 +15881,7 @@ const PLUG = {
       maxSpike = Math.max(maxSpike, count);
     }
     if (maxSpike > 3) {
-      ctx.badge("🚨 Spike: " + maxSpike + " Errors/5s", "red");
+      ctx.badge("✕ Spike: " + maxSpike + " Errors/5s", "red");
     }
   }
 };`
@@ -16323,14 +16323,14 @@ const SCREEN = {
           ctx.fillStyle = '#ffe3b3';
           ctx.font = 'italic 11px Geist';
           const txt = typeof ann === 'string' ? ann : (ann.comments[ann.comments.length-1]?.body || '');
-          ctx.fillText(`📝 Note: ${txt.slice(0, 32)}`, boxX + 8, y + 18);
+          ctx.fillText(`✎ Note: ${txt.slice(0, 32)}`, boxX + 8, y + 18);
         }
         
         // Pinned node star indicator
         if (S.pins && S.pins[n.id]) {
           ctx.fillStyle = '#d29922';
           ctx.font = '12px Geist';
-          ctx.fillText('📌 Pinned', barX - 60, y + 18);
+          ctx.fillText('✦ Pinned', barX - 60, y + 18);
         }
         
         y += 36;
@@ -16546,7 +16546,7 @@ const UNDO = {
 
 UNDO.init();
 
-console.log("%c🔍 LogLens", "font-weight:bold; font-size:24px; color:var(--amber); letter-spacing:-0.02em");
+console.log("%c⌕ LogLens", "font-weight:bold; font-size:24px; color:var(--amber); letter-spacing:-0.02em");
 console.log("%cIf you're reading this, you're the kind of person who opens the DevTools to see how things work. We like you.", "color:var(--t3); font-size:12px;");
 
 /* ================================================================
@@ -17204,7 +17204,7 @@ CTX.show = function(e, node) {
     const opt = document.createElement('button');
     opt.className = 'ctx-btn';
     opt.style.fontSize = '10px';
-    opt.textContent = `📌 ${gName}`;
+    opt.textContent = `✦ ${gName}`;
     opt.addEventListener('click', () => {
       PIN.toggle(node, gName);
       listEl.classList.remove('vis');
@@ -17239,13 +17239,13 @@ const HIST = {
     
     const items = this.sessions.map((s, idx) =>
       `<div class="lql-hist-chip trunc" style="max-width:260px; display:block; padding:4px; margin-top:2px;" data-idx="${idx}" title="${esc(s.fileName)}">
-        📄 ${esc(s.fileName.slice(0, 24))} · ${s.lines.toLocaleString()} ev · ${new Date(s.ts).toLocaleTimeString()}
+        🗎 ${esc(s.fileName.slice(0, 24))} · ${s.lines.toLocaleString()} ev · ${new Date(s.ts).toLocaleTimeString()}
       </div>`
     ).join('');
     
     container.innerHTML = `
       <details style="border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;">
-        <summary style="font-size:11px; font-weight:bold; cursor:pointer; color:var(--amber);">⌛ Recent Parse History</summary>
+        <summary style="font-size:11px; font-weight:bold; cursor:pointer; color:var(--amber);">⧖ Recent Parse History</summary>
         <div style="max-height:120px; overflow-y:auto; margin-top:4px;">
           ${items || '<div style="font-size:10px; color:var(--t4); text-align:center; padding:6px;">No history sessions found.</div>'}
         </div>
@@ -17594,7 +17594,7 @@ const ONBOARD = (() => {
         id: 'dr_hs', name: 'HTTP Request',
         regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
         captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '🌐' }
+        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '❖' }
       },
       {
         id: 'dr_he', name: 'HTTP Response',
@@ -17606,7 +17606,7 @@ const ONBOARD = (() => {
         id: 'dr_dbs', name: 'DB Query',
         regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
         captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '🗄' }
+        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '▤' }
       },
       {
         id: 'dr_dbe', name: 'DB Query End',
@@ -17618,7 +17618,7 @@ const ONBOARD = (() => {
         id: 'dr_cache', name: 'Cache Op',
         regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?CACHE-(HIT|MISS)\s+(\S+)`,
         captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload', '4': 'elementName' },
-        stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '⚡' }
+        stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '🗲' }
       },
       {
         id: 'dr_w', name: 'Warning',
@@ -18678,7 +18678,7 @@ ONBOARD.check();
       const lastRun = p.lastRun ? new Date(p.lastRun).toLocaleTimeString() : 'Never run';
       const statusText = isError ? 'Error' : 'Active';
       const statusClass = isError ? 'b-red' : 'b-green';
-      const icon = '🔌';
+      const icon = '⚲';
       return `
         <div class="rc" style="margin-bottom:6px; background:var(--bg-2); border:1px solid var(--bdr);">
           <div class="ric" style="background:var(--blue-g);color:var(--blue);">${icon}</div>
