@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **System Emoji Elimination & Unicode Icon Upgrades (v6.9.21 — COMPLETED)**:
+  - Swept the entire application codebase and programmatically replaced all remaining 65+ system-colored emojis with high-quality, flat monochrome Unicode glyphs.
+  - Substituted rule icons (🌐, 🗄, 🪵, 🚨, 🍃, ☁️, ⚡) with professional developer glyphs (❖, ▤, ▪, ✕, ☘, ☁, 🗲).
+  - Cleaned up category headers, option menus, stats tables, context menus, and empty state panels (replacing emojis like 🔍, 📈, 📉, 📊, 🏊‍♂️, 🕸, 📋, 📝, 📌, 🌲, 🧬, 🔌 with professional developer symbols).
+  - Ensured all icons adapt dynamically to the active light/dark theme colors rather than rendering as colored system graphics.
+
 - **Control Bar Elimination & Redirection (v6.9.20 — COMPLETED)**:
   - Eliminated the horizontal control bar (`.ctrl`) and its toggle button entirely, reclaiming ~45px of vertical screen space for the visualization canvas.
   - Redistributed its core components into a clean, sticky `#cfg-action-dock` at the top of the CFG sidebar panel:
