@@ -6105,6 +6105,13 @@ self.onmessage=function(e){
    §JS-4 UTILITIES
    ================================================================ */
 const UTILS={
+  debounce(fn, delay) {
+    let timer = null;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  },
   esc(s){
     return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -6183,6 +6190,7 @@ const mEnd=UTILS.mEnd;
 const ibg=UTILS.ibg;
 const renderMarkdown=UTILS.renderMarkdown;
 const toast=UTILS.toast;
+const debounce=UTILS.debounce;
 
 /* ================================================================
    §JS-5 THEME MANAGER
@@ -11889,10 +11897,23 @@ const LANDSCAPE3D = {
 RXB.init();
 WIZ.init();
 
-// Wire up top bar interactive elements
-$('hdr-search').addEventListener('input', e => {
-  S.searchQuery = e.target.value;
+// Wire up top bar search input (Debounced & Sync updates)
+const handleSearchInputDebounced = debounce((val) => {
+  S.searchQuery = val;
   UI.rv();
+}, 250);
+
+$('hdr-search').addEventListener('input', e => {
+  const val = e.target.value;
+  
+  // Instant visual updates to preserve typing responsiveness
+  const clearBtn = $('btn-search-clear');
+  if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
+  $('hdr-search').classList.toggle('has-query', !!val.trim());
+  BCB.render();
+  
+  // Debounced search query update & view re-render
+  handleSearchInputDebounced(val);
 });
 
 $('hdr-cfg').style.cursor = 'pointer';
@@ -12317,16 +12338,7 @@ UI.svm = function(vm) {
   BCB.render();
 };
 
-// Patch hdr-search to update breadcrumb on search
-$('hdr-search').addEventListener('input', () => {
-  BCB.render();
-  // Visual hint on search field
-  if ($('hdr-search').value.trim()) {
-    $('hdr-search').classList.add('has-query');
-  } else {
-    $('hdr-search').classList.remove('has-query');
-  }
-}, { capture: false });
+
 
 /* ================================================================
    §JS-GANTT_RESIZE — GANTT LABEL COLUMN RESIZE
@@ -12478,15 +12490,7 @@ const SEARCH_HL = (() => {
   return { highlight, clear };
 })();
 
-// Patch hdr-search input to apply search highlighting after each render
-const _origHdrSearch = $('hdr-search');
-_origHdrSearch.addEventListener('input', () => {
-  const q = _origHdrSearch.value.trim();
-  requestAnimationFrame(() => {
-    SEARCH_HL.clear();
-    if (q) SEARCH_HL.highlight(q);
-  });
-}, { capture: false });
+
 
 // Also patch UI.rv to re-apply highlights after any re-render
 const _uiRvSearch = UI.rv.bind(UI);
@@ -18089,34 +18093,20 @@ ONBOARD.check();
   };
   setTimeout(() => SETTINGS_DIRTY.init(), 300);
 
-  // 6. Search Debounce & Clear Button
+  // 6. Search Controls & Clear Button
   const searchInput = $('hdr-search');
   if (searchInput) {
-    const clone = searchInput.cloneNode(true);
-    searchInput.parentNode.replaceChild(clone, searchInput);
-    
-    let debounceTimer = null;
-    clone.addEventListener('input', e => {
-      clearTimeout(debounceTimer);
-      const val = e.target.value;
-      const clearBtn = $('btn-search-clear');
-      if (clearBtn) clearBtn.style.cssText = val ? 'display:flex;' : 'display:none;';
-      
-      debounceTimer = setTimeout(() => {
-        S.searchQuery = val;
-        UI.rv();
-      }, 150);
-    });
-
     // Wire Clear Button
     const clearBtn = $('btn-search-clear');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        clone.value = '';
+        searchInput.value = '';
         clearBtn.style.display = 'none';
+        searchInput.classList.remove('has-query');
+        BCB.render();
         S.searchQuery = '';
         UI.rv();
-        clone.focus();
+        searchInput.focus();
       });
     }
 
@@ -18125,7 +18115,7 @@ ONBOARD.check();
       const tag = document.activeElement?.tagName;
       if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
         e.preventDefault();
-        clone.focus();
+        searchInput.focus();
       }
     });
   }

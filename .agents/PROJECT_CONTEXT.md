@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Frontend Guidelines Search Refactor (v6.9.5 — COMPLETED)**:
+  - Audited search listeners and eliminated the fragile `cloneNode` hack that stripped custom event listeners from `hdr-search`.
+  - Added a reusable, performance-safe `UTILS.debounce` helper for debouncing heavy DOM-rendering and state updates.
+  - Consolidated three scattered search listeners into a single, unified search controller.
+  - Optimized rendering throughput: instant typing response for UI updates (breadcrumb tags and clear button toggle) coupled with 250ms debounced re-renders, preventing double-traversal of highlighting.
+
 - **Immersive 3D Experience Upgrades (v6.9.4 — COMPLETED)**:
   - Integrated a WebGL compatibility pre-check (`_isWebGLAvailable`) displaying diagnostic warnings if unsupported.
   - Added a Layout Mode dropdown to toggle dynamically between three 3D representations: Log Forest, Spiral Helix, and Force-Directed Graph.
@@ -419,4 +425,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Immersive 3D Experience Upgrades v6.9.4)*
+*Updated By: Antigravity (Frontend Guidelines Search Refactor v6.9.5)*
