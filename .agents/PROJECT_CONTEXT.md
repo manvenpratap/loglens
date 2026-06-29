@@ -2,6 +2,9 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Hero Layout Overflow Alignment Fix (v6.9.17 — COMPLETED)**:
+  - Fixed a classic CSS flexbox overflow bug on the onboarding welcome screen overlay (`#ob-ov`): removed the absolute vertical centering (`align-items: center`) which pushed the top-level logo elements off-screen on shorter viewports.
+  - Implemented standard container margin-collapsing (`margin: auto` on `.ob-wrap`) to center the content normally when shorter, and align safely to the top when taller than the viewport.
 - **Onboarding Layout Compactness (v6.9.16 — COMPLETED)**:
   - Redesigned the onboarding feature highlights grid from a 2-column format into a balanced 3-column layout (`repeat(3, 1fr)`).
   - This reduces the vertical height from 3 rows to 2 rows, helping the hero overlay fit comfortably within standard viewport heights.
