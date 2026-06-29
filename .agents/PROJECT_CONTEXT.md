@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Footer Relocation of Status Indicators (v6.9.23 — COMPLETED)**:
+  - Created a thin (26px) status footer at the very bottom of the application viewport.
+  - Moved all system status metrics and indicators (`#sys-status`, `#hdr-fs`, `#hdr-cfg`, `#hdr-file`) from the header action grid to the new bottom footer.
+  - Styled footer items with clean, flat transparent styling that changes cleanly across all 6 themes to preserve visual consistency.
+
 - **5-Theme System Expansion (v6.9.22 — COMPLETED)**:
   - Added 4 brand-new themes: **Aurora** (cyan/deep-navy), **Midnight** (OLED-black/electric-purple), **Forest** (emerald-green/earthy), **Crimson** (dark-noir/crimson-red).
   - Added **Ivory** as an explicit `[data-theme=ivory]` alias for the former "light" theme.
