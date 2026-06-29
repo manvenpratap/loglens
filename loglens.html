@@ -4516,7 +4516,158 @@ label[for="watch-auto-reload"] {
   display: none !important;
 }
 
+
+/* ── S. SIDEBAR DESIGN UPGRADES ───────────────────────────────── */
+
+/* Sidebar panels breathing room */
+.sb-body .sp {
+  padding: 16px !important;
+  gap: 12px !important;
+}
+
+/* Sidebar top bar container */
+.sb:not(.collapsed) .sb-top {
+  height: 48px !important;
+  background: var(--bg-1) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  padding: 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Sidebar tabs container — segmented control look */
+.sb:not(.collapsed) .sb-tabs {
+  background: var(--bg-0) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-md) !important;
+  padding: 2px !important;
+  display: flex !important;
+  gap: 2px !important;
+  height: 32px !important;
+  align-items: stretch !important;
+  position: relative !important;
+}
+
+/* Tab items */
+.sb:not(.collapsed) .stab {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  height: 100% !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--t3) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: calc(var(--rounded-md) - 2px) !important;
+  position: relative !important;
+  z-index: 1 !important;
+  transition: color 0.15s !important;
+}
+.sb:not(.collapsed) .stab:hover {
+  color: var(--t1) !important;
+}
+.sb:not(.collapsed) .stab.active {
+  color: var(--amber) !important;
+  background: transparent !important; /* background is handled by the sliding pill */
+  border: none !important;
+}
+
+/* Tab icon styles */
+.sb:not(.collapsed) .stab-ic {
+  font-size: 12px !important;
+  margin-right: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Gliding pill indicator overrides */
+#sb-tabs-pill {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr-h) !important;
+  border-radius: calc(var(--rounded-md) - 2px) !important;
+  box-shadow: var(--shd-xs) !important;
+  z-index: 0 !important;
+}
+[data-theme=light] #sb-tabs-pill {
+  background: var(--bg-1) !important;
+  border-color: var(--bdr) !important;
+}
+
+/* Interactive Collapsible Headers (clean chevrons) */
+.sh::after {
+  content: '›' !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  line-height: 1 !important;
+  color: var(--t4) !important;
+  transition: transform 0.2s var(--ease-snap), color 0.15s !important;
+}
+.sh:hover::after {
+  color: var(--amber) !important;
+}
+
+/* Hide redundant Toggle labels inside headers */
+.sh > span.mla {
+  display: none !important;
+}
+
+/* Config status card polish */
+.cfg-st {
+  background: var(--bg-2) !important;
+  border-color: var(--bdr-d) !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
+}
+
+/* Rule Card (.rc) polish */
+.rc {
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-md) !important;
+  padding: 10px 12px !important;
+  transition: border-color 0.16s var(--ease-out),
+              box-shadow 0.16s var(--ease-out),
+              transform 0.16s var(--ease-out) !important;
+}
+.rc:hover {
+  border-color: var(--amber) !important;
+  background: var(--bg-3) !important;
+  box-shadow: var(--shd-xs) !important;
+  transform: translateY(-1px) !important;
+}
+.rc:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Rule Icon wrapper */
+.ric {
+  border-radius: var(--rounded-sm) !important;
+}
+
+/* Resizer handle visual cues */
+.sb-resize-handle {
+  width: 5px !important;
+}
+.sb-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 2px; right: 2px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.sb-resize-handle:hover::after,
+.sb-resize-handle.drag::after {
+  background: var(--amber) !important;
+}
+
 </style>
+
 
 
 </head>

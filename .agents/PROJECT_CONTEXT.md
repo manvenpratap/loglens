@@ -2,6 +2,15 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Sidebar Design Upgrades & Refinements (v6.9.3 — COMPLETED)**:
+  - Re-styled the sidebar navigation bar into a segmented control tab strip with clean borders, nested spacing, and dark background highlights.
+  - Custom styled the active indicator sliding pill (`#sb-tabs-pill`) to conform as an elegant container-inset background.
+  - Replaced the thick Unicode collapsible section indicator (`▸`) with a clean, thin chevron (`›`) that rotates smoothly on state transitions.
+  - Hidden redundant text-based "Toggle" labels in collapsible headers.
+  - Refined rule cards (`.rc`) with consistent outlines, hover offsets, and tactile click states, and polished status cards (`.cfg-st`) to strip drop-shadow noise.
+  - Styled a surgical 1px vertical line indicator down the center of the drag resizer (`.sb-resize-handle`) on hover and focus.
+  - Bumped panel margins to `16px` for layout whitespace and breathing room.
+
 - **Visual Overhaul and Branding Alignment (v6.9.2 — COMPLETED)**:
   - Fixed branding inconsistencies by placing an "LL" lettermark logo inside the `.logo-ico` box and styling it for high readability across both light and dark themes.
   - Replaced the Unicode character `⌕` search icon with a high-fidelity vector SVG magnifier glass icon.
@@ -401,4 +410,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Visual Overhaul & Branding Alignment v6.9.2)*
+*Updated By: Antigravity (Sidebar Design Upgrades & Refinements v6.9.3)*
