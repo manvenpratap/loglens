@@ -11,6 +11,7 @@
   - Fixed all `isDark` checks to use `dataset.theme !== 'ivory'` so all 4 new dark-background themes work correctly with Graphify/canvas rendering.
   - Added per-theme header glassmorphism treatments (each theme has its own header tint and glow color).
   - Updated the report renderer theme select to offer all 6 themes.
+  - **Different Fonts & UI Shapes per Theme**: Assigned custom typography (e.g., Playfair Display, Syne, Orbitron, Outfit, DM Serif Display) and distinct border-radius variables (`--rounded-*`) to each theme to completely alter the visual character (ranging from sharp retro-newsprint boxes to organic fluid pills).
   - **Architecture note**: All themes are pure CSS variable blocks (`[data-theme=X]`) — zero JS overhead, theme identity via `data-theme` HTML attribute.
 
 - **System Emoji Elimination & Unicode Icon Upgrades (v6.9.21 — COMPLETED)**:
