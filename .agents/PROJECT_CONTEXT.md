@@ -2,9 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Help Popover Dismiss-on-Scroll (v6.9.19 — COMPLETED)**:
-  - Fixed a floating layout bug where the active HTIP help tooltip popover (`#htip-pop`) would remain fixed in space and overlap other inputs when scrolling the sidebar.
-  - Added a global captured scroll listener (`document.addEventListener('scroll', ... { capture: true })`) to immediately dismiss the popover when the user scrolls the sidebar or dashboard.
+- **Help Panel Always-Visible Bug Fix (v6.9.19 — COMPLETED)**:
+  - Root cause: `#p-hlp { display: flex !important }` CSS rule used an ID selector which has higher specificity than the `.sp { display: none }` class rule, causing the Help panel to render as visible (`display: flex`) at all times — even when it was not the active sidebar tab.
+  - Fix: Removed `display: flex !important` from the bare `#p-hlp` rule and added it exclusively to `#p-hlp.active`, so the Help panel only becomes visible when the HLP tab is actually selected.
+  - Result: Scrolling within CFG, SET, or L4J sidebar panels no longer reveals the Help content underneath.
+
 - **No-Scroll Hero Page Optimization (v6.9.18 — COMPLETED)**:
   - Replaced the large 3-column quickstart card block (`.ob-steps`) with an elegant, ultra-slim inline progress bar (`.ob-quick-bar`), reducing its vertical footprint by over 110px.
   - Condensed margins, padding, and text/icon sizes on features, CTA, and logo headers.
