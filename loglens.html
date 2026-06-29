@@ -3852,8 +3852,12 @@ label[for="watch-auto-reload"] {
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
-  flex-shrink: 0 !important;
+  flex-shrink: 1 !important;
   min-height: 22px !important;
+  scrollbar-width: none !important;
+}
+.vt-chips::-webkit-scrollbar {
+  display: none !important;
 }
 
 /* ── H. EMPTY STATE ─────────────────────────────────────────────── */
@@ -7647,6 +7651,22 @@ function dlSample(){
   T2(95,'ERROR','ERROR','OrderService','FK constraint violated: pending_shipment id=331 exists');
   T2(100,'INFO','HTTP-RESP','/api/cancel');
   T2(105,'INFO','TX-END','CancelOrder/99');
+  
+  // Generate threads worker-3 through worker-16 to showcase multi-thread capabilities
+  for (let i = 3; i <= 16; i++) {
+    const thr = `worker-${i}`;
+    const offset = i * 150;
+    row(offset + 0, 'INFO', thr, 'TX-BEGIN', `TaskRun/${i}`);
+    row(offset + 25, 'INFO', thr, 'DB-QUERY-START', `task.process.${i}`, `sql=SELECT * FROM tasks WHERE id=${i}`);
+    row(offset + 75, 'INFO', thr, 'DB-QUERY-END', `task.process.${i}`);
+    if (i % 5 === 0) {
+      row(offset + 85, 'WARN', thr, 'WARN', 'TaskExecutor', `Slow execution detected for task ${i}`);
+    } else if (i % 7 === 0) {
+      row(offset + 90, 'ERROR', thr, 'ERROR', 'TaskExecutor', `Failed to execute task ${i}`);
+    }
+    row(offset + 110, 'INFO', thr, 'TX-END', `TaskRun/${i}`);
+  }
+  
   const b=new Blob([rows.join('\n')],{type:'text/plain'});
   const u=URL.createObjectURL(b);
   Object.assign(document.createElement('a'),{href:u,download:'loglens-sample.log'}).click();
@@ -18802,17 +18822,28 @@ ONBOARD.check();
     wrapper.style.cssText = 'position:relative; display:flex; align-items:center; overflow:hidden; max-width:min(500px, 40vw);';
     chips.parentNode.insertBefore(wrapper, chips);
     
+    // Configure child flex attributes to allow correct shrinking and scroll bounds
+    chips.style.flex = '1';
+    chips.style.minWidth = '0';
+    chips.style.width = '100%';
+    
     const leftBtn = document.createElement('button');
     leftBtn.id = 'btn-chips-left';
     leftBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
     leftBtn.textContent = '◂';
-    leftBtn.style.cssText = 'position:absolute; left:0; z-index:10; height:100%; border-radius:0; background:var(--bg-3); border:none;';
+    leftBtn.style.cssText = 'position:absolute; left:0; z-index:10; height:100%; width:16px; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t2); border:none; cursor:pointer; font-size:10px; transition:color 0.15s; padding:0;';
     
     const rightBtn = document.createElement('button');
     rightBtn.id = 'btn-chips-right';
     rightBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
     rightBtn.textContent = '▸';
-    rightBtn.style.cssText = 'position:absolute; right:0; z-index:10; height:100%; border-radius:0; background:var(--bg-3); border:none;';
+    rightBtn.style.cssText = 'position:absolute; right:0; z-index:10; height:100%; width:16px; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t2); border:none; cursor:pointer; font-size:10px; transition:color 0.15s; padding:0;';
+    
+    // Add hover states to buttons for design cohesion
+    leftBtn.addEventListener('mouseenter', () => leftBtn.style.color = 'var(--amber)');
+    leftBtn.addEventListener('mouseleave', () => leftBtn.style.color = 'var(--t2)');
+    rightBtn.addEventListener('mouseenter', () => rightBtn.style.color = 'var(--amber)');
+    rightBtn.addEventListener('mouseleave', () => rightBtn.style.color = 'var(--t2)');
     
     wrapper.appendChild(leftBtn);
     wrapper.appendChild(chips);
@@ -18825,6 +18856,15 @@ ONBOARD.check();
       const hasOverflow = chips.scrollWidth > chips.clientWidth;
       leftBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft <= 2);
       rightBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft >= chips.scrollWidth - chips.clientWidth - 2);
+      
+      // Dynamic padding to prevent pills from bleeding under absolute positioned buttons
+      if (hasOverflow) {
+        wrapper.style.paddingLeft = '18px';
+        wrapper.style.paddingRight = '18px';
+      } else {
+        wrapper.style.paddingLeft = '0';
+        wrapper.style.paddingRight = '0';
+      }
     };
     chips.addEventListener('scroll', updateArrows);
     new MutationObserver(updateArrows).observe(chips, { childList: true });
