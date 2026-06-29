@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Thread Selector Expansion for 16 Threads (v6.9.10 — COMPLETED)**:
+  - Fixed the thread selector components to support up to 16 threads.
+  - Expanded the Thread Correlation overlap heatmap matrix thread display slice limit from 10 to 16.
+  - Adjusted the horizontal Thread Chips scroll wrapper layout's `max-width` CSS style to `min(500px, 40vw)` so that it expands dynamically on larger screens to comfortably fit more threads while remaining responsive.
+
 - **3D Force-Directed Graph Layout Fix (v6.9.9 — COMPLETED)**:
   - Fixed the dependency graph rotation bug where node spheres drifted and flew out of their connector lines.
   - Nested the connection lines inside `this._forest` Group instead of `this._scene` directly to align them to the same local coordinate space.
@@ -447,4 +452,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (3D Force-Directed Graph Layout Fix v6.9.9)*
+*Updated By: Antigravity (Thread Selector Expansion for 16 Threads v6.9.10)*

@@ -13406,8 +13406,8 @@ const CORR = {
     const threads = Object.keys(this.matrix);
     if (threads.length < 2) return;
     
-    // Limit to max 10 threads in matrix to fit display comfortably
-    const dispThreads = threads.slice(0, 10);
+    // Limit to max 16 threads in matrix to fit display comfortably
+    const dispThreads = threads.slice(0, 16);
     const cols = dispThreads.length + 1;
     
     // Header cells
@@ -18799,7 +18799,7 @@ ONBOARD.check();
   if (chips) {
     const wrapper = document.createElement('div');
     wrapper.id = 'vt-chips-wrapper';
-    wrapper.style.cssText = 'position:relative; display:flex; align-items:center; overflow:hidden; max-width:320px;';
+    wrapper.style.cssText = 'position:relative; display:flex; align-items:center; overflow:hidden; max-width:min(500px, 40vw);';
     chips.parentNode.insertBefore(wrapper, chips);
     
     const leftBtn = document.createElement('button');
