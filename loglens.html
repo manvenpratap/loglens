@@ -2123,7 +2123,7 @@ mark.hl{
   position:fixed;inset:0;z-index:9000;
   background:var(--bg-0);
   display:flex;justify-content:center;
-  overflow-y:auto;padding:24px 16px;
+  overflow-y:auto;padding:16px;
   transition:opacity .3s var(--ease-out),visibility .3s;
 }
 #ob-ov.hidden{opacity:0;visibility:hidden;pointer-events:none}
@@ -2148,31 +2148,32 @@ mark.hl{
 .ob-wrap{
   position:relative;width:100%;max-width:760px;
   display:flex;flex-direction:column;align-items:center;gap:0;
-  padding:0 0 40px;
+  padding:0;
   margin:auto;
 }
 
 /* Logo mark */
 .ob-logo{
-  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;
 }
 .ob-logo-ico{
-  width:42px;height:42px;border-radius:var(--rounded-lg);
+  width:32px;height:32px;border-radius:var(--rounded-md);
   background:var(--grad-amber);
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;
-  box-shadow:0 4px 20px rgba(255,149,0,.4),0 0 0 1px rgba(255,149,0,0.25);
+  font-size:16px;
+  box-shadow:0 2px 10px rgba(255,149,0,.35),0 0 0 1px rgba(255,149,0,0.2);
 }
 .ob-wordmark{
-  font-family:var(--display);font-size:26px;font-weight:800;
+  font-family:var(--display);font-size:22px;font-weight:800;
   letter-spacing:-.5px;
 }
 .ob-wordmark .acc{color:var(--amber)}
+
 /* Hero headline */
 .ob-headline{
-  font-family:var(--display);font-size:32px;font-weight:800;
-  letter-spacing:-.6px;text-align:center;
-  color:var(--t1);line-height:1.2;margin-bottom:10px;
+  font-family:var(--display);font-size:26px;font-weight:800;
+  letter-spacing:-.5px;text-align:center;
+  color:var(--t1);line-height:1.2;margin-bottom:6px;
 }
 .ob-headline em{
   font-style:normal;
@@ -2181,33 +2182,33 @@ mark.hl{
   background-clip:text;
 }
 .ob-sub{
-  font-size:14px;color:var(--t3);text-align:center;
-  max-width:480px;line-height:1.6;margin-bottom:36px;
+  font-size:12px;color:var(--t3);text-align:center;
+  max-width:500px;line-height:1.5;margin-bottom:20px;
 }
 
 /* CTA row */
 .ob-cta{
-  display:flex;gap:10px;margin-bottom:44px;flex-wrap:wrap;justify-content:center;
+  display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;
 }
 .ob-btn-demo{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 22px;border-radius:var(--rounded-md);
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:var(--rounded-md);
   background:var(--grad-amber);border:none;color:#000;
-  font-family:var(--display);font-size:14px;font-weight:700;
+  font-family:var(--display);font-size:13px;font-weight:700;
   cursor:pointer;transition:all .18s var(--ease-out);
-  box-shadow:0 4px 16px rgba(255,149,0,.35);
+  box-shadow:0 3px 12px rgba(255,149,0,.3);
   letter-spacing:-.1px;
 }
 .ob-btn-demo:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 24px rgba(255,149,0,.45),var(--glow-amber);
+  transform:translateY(-1.5px);
+  box-shadow:0 4px 18px rgba(255,149,0,.4),var(--glow-amber);
 }
 .ob-btn-demo:active{transform:translateY(0) scale(.98)}
 .ob-btn-cfg{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 20px;border-radius:var(--rounded-md);
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:var(--rounded-md);
   background:var(--bg-3);border:1px solid var(--bdr-h);color:var(--t1);
-  font-family:var(--display);font-size:13px;font-weight:600;
+  font-family:var(--display);font-size:12px;font-weight:600;
   cursor:pointer;transition:all .18s var(--ease-out);
   box-shadow:var(--shd-xs);
 }
@@ -2220,65 +2221,34 @@ mark.hl{
 /* Feature cards */
 .ob-features{
   display:grid;grid-template-columns:repeat(3,1fr);
-  gap:12px;width:100%;margin-bottom:36px;
+  gap:10px;width:100%;margin-bottom:20px;
 }
 @media(max-width:640px){.ob-features{grid-template-columns:1fr}}
 .ob-feat{
   background:var(--bg-1);
   border:1px solid var(--bdr);
-  border-radius:var(--rounded-lg);padding:16px;
+  border-radius:var(--rounded-md);padding:10px 12px;
   transition:border-color .2s,transform .2s,box-shadow .2s;
 }
 .ob-feat:hover{
   border-color:var(--amber);
-  transform:translateY(-2px);
+  transform:translateY(-1px);
   box-shadow:var(--shd);
 }
 .ob-feat-ico{
   display:block;line-height:1;
 }
 .ob-feat-ico svg{
-  width:22px;height:22px;stroke:var(--amber);fill:none;stroke-width:2;margin-bottom:8px;display:block;
+  width:18px;height:18px;stroke:var(--amber);fill:none;stroke-width:2;margin-bottom:4px;display:block;
 }
 .ob-feat-title{
-  font-family:var(--display);font-size:13px;font-weight:700;
-  color:var(--t1);margin-bottom:5px;letter-spacing:-.1px;
+  font-family:var(--display);font-size:12px;font-weight:700;
+  color:var(--t1);margin-bottom:2px;letter-spacing:-.1px;
 }
 .ob-feat-desc{
-  font-size:12px;color:var(--t3);line-height:1.55;
+  font-size:11px;color:var(--t3);line-height:1.45;
 }
 
-/* Steps quickstart */
-.ob-steps{
-  width:100%;background:var(--bg-1);
-  border:1px solid var(--bdr);border-radius:var(--rounded-lg);
-  overflow:hidden;margin-bottom:28px;
-}
-.ob-steps-hdr{
-  padding:12px 18px;background:var(--bg-2);
-  border-bottom:1px solid var(--bdr);
-  font-size:9.5px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.7px;color:var(--t3);
-  font-family:var(--display);
-}
-.ob-steps-body{display:flex}
-@media(max-width:640px){.ob-steps-body{flex-direction:column}}
-.ob-step{
-  flex:1;padding:16px 18px;
-  border-right:1px solid var(--bdr);
-  display:flex;gap:12px;align-items:flex-start;
-}
-.ob-step:last-child{border-right:none}
-.ob-step-n{
-  width:24px;height:24px;border-radius:50%;flex-shrink:0;
-  background:var(--grad-amber);color:#000;
-  font-size:11px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 10px rgba(255,149,0,0.25);
-  font-family:var(--display);
-}
-.ob-step-ttl{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:3px;font-family:var(--display)}
-.ob-step-desc{font-size:11px;color:var(--t3);line-height:1.5}
 
 /* Skip link */
 .ob-skip{
@@ -3351,12 +3321,10 @@ summary.ts { padding: 8px 12px !important; }
 
 /* Onboarding */
 .ob-logo { gap: 8px !important; }
-.ob-btn-demo { padding: 12px 24px !important; gap: 8px !important; }
-.ob-btn-cfg { padding: 12px 20px !important; gap: 8px !important; }
-.ob-feat { padding: 16px !important; }
-.ob-steps-hdr { padding: 12px 16px !important; }
-.ob-step { padding: 16px !important; }
-.ob-step-ttl { margin-bottom: 4px !important; }
+.ob-btn-demo { padding: 10px 22px !important; gap: 8px !important; }
+.ob-btn-cfg { padding: 10px 20px !important; gap: 8px !important; }
+.ob-feat { padding: 10px 12px !important; }
+
 
 /* Grid utility classes — snap to 4px */
 .gap2 { gap: 8px !important; }
@@ -5747,31 +5715,13 @@ label[for="watch-auto-reload"] {
     </div>
 
     <!-- Quickstart steps -->
-    <div class="ob-steps">
-      <div class="ob-steps-hdr">Quickstart: 3 steps to your first analysis</div>
-      <div class="ob-steps-body">
-        <div class="ob-step">
-          <div class="ob-step-n" aria-hidden="true">1</div>
-          <div>
-            <div class="ob-step-ttl">Load a config</div>
-            <div class="ob-step-desc">Import a JSON config or create a new one. Define regex rules that match your log format's structure.</div>
-          </div>
-        </div>
-        <div class="ob-step">
-          <div class="ob-step-n" aria-hidden="true">2</div>
-          <div>
-            <div class="ob-step-ttl">Drop your log</div>
-            <div class="ob-step-desc">Drag a .log, .txt, or .gz file onto the app, or connect a live cloud source in Settings.</div>
-          </div>
-        </div>
-        <div class="ob-step">
-          <div class="ob-step-n" aria-hidden="true">3</div>
-          <div>
-            <div class="ob-step-ttl">Explore views</div>
-            <div class="ob-step-desc">Switch between Gantt, Tree, Stats, Graph, and Query views using the toolbar. Press <kbd style="font-family:var(--mono);font-size:10px;padding:1px 4px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);">⌘K</kbd> for commands.</div>
-          </div>
-        </div>
-      </div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:12px; font-family:var(--mono); font-size:10px; color:var(--t3); margin-bottom:16px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--rounded-full); padding:6px 16px;">
+      <span style="font-weight:700; text-transform:uppercase; color:var(--t2); font-size:9px; letter-spacing:0.5px;">Quickstart:</span>
+      <span>1. Load config</span>
+      <span style="opacity:0.4;">➔</span>
+      <span>2. Drop log</span>
+      <span style="opacity:0.4;">➔</span>
+      <span>3. Explore views</span>
     </div>
 
     <button class="ob-skip" id="ob-skip">Skip (I know what I'm doing)</button>

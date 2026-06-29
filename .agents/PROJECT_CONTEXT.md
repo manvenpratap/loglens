@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **No-Scroll Hero Page Optimization (v6.9.18 — COMPLETED)**:
+  - Replaced the large 3-column quickstart card block (`.ob-steps`) with an elegant, ultra-slim inline progress bar (`.ob-quick-bar`), reducing its vertical footprint by over 110px.
+  - Condensed margins, padding, and text/icon sizes on features, CTA, and logo headers.
+  - Verified zero vertical scrollbars are needed on standard laptop (1366x768) and desktop screens.
 - **Hero Layout Overflow Alignment Fix (v6.9.17 — COMPLETED)**:
   - Fixed a classic CSS flexbox overflow bug on the onboarding welcome screen overlay (`#ob-ov`): removed the absolute vertical centering (`align-items: center`) which pushed the top-level logo elements off-screen on shorter viewports.
   - Implemented standard container margin-collapsing (`margin: auto` on `.ob-wrap`) to center the content normally when shorter, and align safely to the top when taller than the viewport.
