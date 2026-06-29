@@ -7,7 +7,7 @@
 <title>LogLens: Metadata-Driven Log Analyzer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <!-- impeccable-disable-line overused-font -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display&family=Orbitron:wght@400;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=VT323&family=Share+Tech+Mono&family=Courier+Prime&display=swap" rel="stylesheet"/> <!-- impeccable-disable-line overused-font -->
 <style>
 /* ============================================================
    CSS §1 · DESIGN TOKENS — DARK THEME (default) · Obsidian Terminal
@@ -109,9 +109,13 @@
   --shd-lg:0 12px 40px rgba(0,0,0,.14),0 4px 12px rgba(0,0,0,.08);
   --shd-xs:0 1px 4px rgba(0,0,0,.09);
   --glow-amber:0 0 10px rgba(194,98,10,.12);
-  --glow-blue:0 0 10px rgba(37,99,235,.12);
-  --grad-amber:linear-gradient(135deg,#c2620a,#a35000);
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 0px;
+  --rounded-md: 0px;
+  --rounded-lg: 0px;
+  --rounded-full: 0px;
+  --ui: 'Inter', system-ui, sans-serif;
+  --display: 'Playfair Display', 'Georgia', serif;
+  --mono: 'Courier New', Courier, monospace;
 }
 /* Ivory = explicit name for light theme (backwards-compat alias) */
 [data-theme=ivory]{
@@ -148,10 +152,13 @@
   --shd:0 4px 16px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.07);
   --shd-lg:0 12px 40px rgba(0,0,0,.14),0 4px 12px rgba(0,0,0,.08);
   --shd-xs:0 1px 4px rgba(0,0,0,.09);
-  --glow-amber:0 0 10px rgba(194,98,10,.12);
-  --glow-blue:0 0 10px rgba(37,99,235,.12);
-  --grad-amber:linear-gradient(135deg,#c2620a,#a35000);
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 0px;
+  --rounded-md: 0px;
+  --rounded-lg: 0px;
+  --rounded-full: 0px;
+  --ui: 'Inter', system-ui, sans-serif;
+  --display: 'Playfair Display', 'Georgia', serif;
+  --mono: 'Courier New', Courier, monospace;
 }
 /* ============================================================
    CSS §2b · AURORA THEME — Northern Lights Navy/Cyan
@@ -194,9 +201,13 @@
   --shd-lg:0 12px 48px rgba(0,10,30,.7),0 4px 16px rgba(0,10,30,.4);
   --shd-xs:0 1px 4px rgba(0,10,30,.4);
   --glow-amber:0 0 18px rgba(0,220,200,.25),0 0 5px rgba(0,220,200,.12);
-  --glow-blue:0 0 16px rgba(100,160,255,.22),0 0 4px rgba(100,160,255,.12);
-  --grad-amber:linear-gradient(135deg,oklch(75% 0.14 195),oklch(68% 0.18 210));
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 3px;
+  --rounded-md: 4px;
+  --rounded-lg: 6px;
+  --rounded-full: 99px;
+  --ui: 'Orbitron', 'Century Gothic', sans-serif;
+  --display: 'Orbitron', 'Century Gothic', sans-serif;
+  --mono: 'Share Tech Mono', 'Courier New', monospace;
 }
 /* ============================================================
    CSS §2c · MIDNIGHT THEME — OLED Black / Electric Purple
@@ -239,9 +250,13 @@
   --shd-lg:0 12px 48px rgba(0,0,0,.90),0 4px 16px rgba(0,0,0,.75);
   --shd-xs:0 1px 4px rgba(0,0,0,.7);
   --glow-amber:0 0 22px rgba(160,0,255,.32),0 0 6px rgba(160,0,255,.16);
-  --glow-blue:0 0 18px rgba(80,100,255,.28),0 0 5px rgba(80,100,255,.14);
-  --grad-amber:linear-gradient(135deg,oklch(72% 0.24 310),oklch(65% 0.28 295));
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 8px;
+  --rounded-md: 12px;
+  --rounded-lg: 18px;
+  --rounded-full: 99px;
+  --ui: 'Inter', sans-serif;
+  --display: 'Syne', sans-serif;
+  --mono: 'VT323', 'Courier New', monospace;
 }
 /* ============================================================
    CSS §2d · FOREST THEME — Moss Green / Earthy Warmth
@@ -284,9 +299,13 @@
   --shd-lg:0 12px 44px rgba(0,8,0,.65),0 4px 14px rgba(0,8,0,.35);
   --shd-xs:0 1px 4px rgba(0,8,0,.35);
   --glow-amber:0 0 18px rgba(40,180,60,.28),0 0 5px rgba(40,180,60,.13);
-  --glow-blue:0 0 16px rgba(60,160,120,.22),0 0 4px rgba(60,160,120,.11);
-  --grad-amber:linear-gradient(135deg,oklch(72% 0.20 145),oklch(64% 0.24 135));
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 8px;
+  --rounded-md: 14px;
+  --rounded-lg: 20px;
+  --rounded-full: 99px;
+  --ui: 'Outfit', sans-serif;
+  --display: 'Outfit', sans-serif;
+  --mono: 'Geist Mono', monospace;
 }
 /* ============================================================
    CSS §2e · CRIMSON THEME — Dark Noir / Crimson Red
@@ -329,9 +348,13 @@
   --shd-lg:0 12px 48px rgba(10,0,0,.80),0 4px 16px rgba(10,0,0,.60);
   --shd-xs:0 1px 4px rgba(10,0,0,.55);
   --glow-amber:0 0 20px rgba(220,20,20,.30),0 0 6px rgba(220,20,20,.14);
-  --glow-blue:0 0 16px rgba(80,100,255,.22),0 0 4px rgba(80,100,255,.10);
-  --grad-amber:linear-gradient(135deg,oklch(62% 0.24 18),oklch(55% 0.28 10));
-  --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  --rounded-sm: 2px;
+  --rounded-md: 2px;
+  --rounded-lg: 4px;
+  --rounded-full: 99px;
+  --ui: 'Inter', sans-serif;
+  --display: 'DM Serif Display', 'Impact', sans-serif;
+  --mono: 'Courier Prime', 'Special Elite', monospace;
 }
 /* ============================================================
    CSS §3 · THEME TRANSITION
