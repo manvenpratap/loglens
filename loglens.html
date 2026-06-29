@@ -7524,10 +7524,17 @@ const UI={
       menu.style.display = open ? 'none' : 'block';
       btn.style.borderColor = open ? 'var(--bdr)' : 'var(--amber)';
     });
-    document.addEventListener('click', () => {
+
+    // Stop li clicks from bubbling to document (prevents immediate close)
+    menu.addEventListener('click', e => e.stopPropagation());
+
+    // Remove previous document close-handler to prevent accumulation across renders
+    if (UI._vtCloseHandler) document.removeEventListener('click', UI._vtCloseHandler);
+    UI._vtCloseHandler = () => {
       menu.style.display = 'none';
       btn.style.borderColor = 'var(--bdr)';
-    });
+    };
+    document.addEventListener('click', UI._vtCloseHandler);
 
     wrap.append(dot, lbl, btn, menu);
     vtc.appendChild(wrap);
