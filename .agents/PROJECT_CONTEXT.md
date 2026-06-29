@@ -3,11 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 - **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
-  - Resolved global search overlapping layout bugs:
-    - Fixed text overlapping magnifying glass search icon by setting left padding to `34px !important` on the input, and positioning the icon at `left: 12px` with explicit `13px x 13px` dimensions.
-    - Positioned the shortcut badge `/`, clear button `✕`, and search matches count inside the search container with absolute positioning.
-    - Implemented dynamic focus/query padding-right on the input field (`90px`) to prevent typed text from overlaying the buttons and counts.
-    - Added CSS sibling selector rule to fade out the `/` shortcut helper when the input is active (focused/has query).
+  - Resolved global search overlapping layout bugs by changing class selector `.hdr-search` to ID selector `#hdr-search` in all CSS rules (including the initial rule block, media query breakpoints, and audit override rules).
+  - Fixed text overlapping magnifying glass search icon by setting left padding to `34px !important` on the input, and positioning the icon at `left: 12px` with explicit `13px x 13px` dimensions.
+  - Positioned the shortcut badge `/`, clear button `✕`, and search matches count inside the search container with absolute positioning.
+  - Implemented dynamic focus/query padding-right on the input field (`90px`) to prevent typed text from overlaying the buttons and counts.
+  - Added CSS sibling selector rule to fade out the `/` shortcut helper when the input is active (focused/has query).
   - Converted the thread selector pills into a premium dropdown select element in the view tabs bar (`vt-chips-select`) with active state value sync.
   - Removed the horizontal scroll buttons and wrapper helper block from script setup as they are no longer required.
   - Aligned onboarding demo sequence (`ONBOARD.loadDemo`) to parse and display the same 16-thread log sample dynamically generated via a shared `getSampleLogLines()` helper.

@@ -214,17 +214,16 @@ html,body{
 .hdr-slot-chips{display:flex;align-items:center;gap:4px;flex-shrink:0}
 .hdr-slot-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
 
-/* Search bar — shrinks gracefully */
-.hdr-search{
+#hdr-search{
   width:300px;max-width:300px;font-size:11px;
-  padding:5px 10px;margin-left:16px;
+  padding:5px 32px 5px 34px !important;margin-left:16px;
   border-radius:var(--rounded-sm);background:var(--bg-1);
   border:1px solid var(--bdr);color:var(--t1);
   font-family:var(--ui);transition:border-color .2s;
   flex-shrink:1;
 }
-.hdr-search:focus{border-color:var(--amber);outline:none;}
-.hdr-search::placeholder{color:var(--t4)}
+#hdr-search:focus{border-color:var(--amber);outline:none;}
+#hdr-search::placeholder{color:var(--t4)}
 
 /* Overflow menu button */
 .hdr-more{
@@ -2440,7 +2439,7 @@ mark.hl{
   .sb.sb-force-open { width: var(--sw) }
 
   /* Search shrinks a bit */
-  .hdr-search { width: 200px; max-width: 200px }
+  #hdr-search { width: 200px; max-width: 200px }
   /* State chips hide on narrow screens — in overflow menu */
   .hdr-slot-chips { display: none }
   /* Show overflow button */
@@ -2451,7 +2450,7 @@ mark.hl{
 @media (max-width: 768px) {
   :root { --hh: 48px }
 
-  .hdr-search { display: none }
+  #hdr-search { display: none }
   .hsub { display: none }
   .hdr-slot-badges .badge { font-size: 9px; padding: 2px 5px }
 
@@ -3109,15 +3108,15 @@ mark.hl{
   width: 13px !important;
   height: 13px !important;
 }
-.hdr-search {
+#hdr-search {
   margin-left: 0 !important;
   padding-left: 34px !important;
   padding-right: 32px !important;
   height: 28px !important;
   transition: border-color 0.2s, box-shadow 0.2s, padding-right 0.15s !important;
 }
-.hdr-search:focus,
-.hdr-search.has-query {
+#hdr-search:focus,
+#hdr-search.has-query {
   padding-right: 90px !important;
 }
 .hdr-search-shortcut {
@@ -3137,8 +3136,8 @@ mark.hl{
   z-index: 2 !important;
   transition: opacity 0.15s !important;
 }
-.hdr-search:focus ~ .hdr-search-shortcut,
-.hdr-search.has-query ~ .hdr-search-shortcut {
+#hdr-search:focus ~ .hdr-search-shortcut,
+#hdr-search.has-query ~ .hdr-search-shortcut {
   opacity: 0 !important;
   pointer-events: none !important;
 }
