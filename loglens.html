@@ -3922,7 +3922,7 @@ label[for="watch-auto-reload"] {
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
-  flex-shrink: 1 !important;
+  flex-shrink: 0 !important;
   min-height: 22px !important;
   scrollbar-width: none !important;
 }
@@ -7469,33 +7469,74 @@ const UI={
     const r=$('res');r.innerHTML=statsH;r.scrollTop=0;
     $('vtabs').classList.add('on');
 
-    // Thread selector dropdown in view tabs bar
-    const optionsHtml = threads.map(t =>
-      `<option value="${esc(t)}"${t===S.activeThr?' selected':''}>🧵 ${esc(t)}</option>`
-    ).join('');
-    $('vt-chips').innerHTML = `
-      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);" aria-hidden="true"></span>
-        <span style="font-size:10px; font-weight:700; color:var(--t3); font-family:var(--display); text-transform:uppercase; letter-spacing:0.4px;">Active:</span>
-        <select class="inp" id="vt-chips-select" style="width: auto !important; min-width: 100px; max-width:180px; font-size:10px; font-family:var(--mono); font-weight:bold; padding:2px 8px; height:22px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t1); cursor:pointer; outline:none; display:inline-block;">
-          ${optionsHtml}
-        </select>
-      </div>
-    `;
-    const selectEl = $('vt-chips-select');
-    if (selectEl) {
-      selectEl.addEventListener('change', e => {
-        UI.sw(e.target.value);
+    // Build a custom styled dropdown — native <select> text colour is unreliable in all themes
+    const vtc = $('vt-chips');
+    vtc.innerHTML = '';
+
+    const wrap = document.createElement('div');
+    wrap.id = 'vt-chips-container';
+    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;';
+
+    const dot = document.createElement('span');
+    dot.setAttribute('aria-hidden','true');
+    dot.style.cssText = 'display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);flex-shrink:0;';
+
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--t3);font-family:var(--display);text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap;';
+    lbl.textContent = 'Active:';
+
+    const btn = document.createElement('button');
+    btn.id = 'vt-chips-select';
+    btn.type = 'button';
+    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;min-width:90px;max-width:180px;font-size:10px;font-family:var(--mono);font-weight:700;padding:2px 6px;height:22px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);cursor:pointer;outline:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    btn.innerHTML = `<span id="vt-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;">${esc(S.activeThr||threads[0]||'')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;"><path d="M1 1l4 4 4-4"/></svg>`;
+
+    const menu = document.createElement('ul');
+    menu.id = 'vt-chips-menu';
+    menu.style.cssText = 'display:none;position:absolute;top:calc(100% + 3px);left:0;min-width:100%;max-height:220px;overflow-y:auto;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.4);list-style:none;padding:4px 0;margin:0;z-index:9999;font-family:var(--mono);font-size:10px;';
+
+    threads.forEach(t => {
+      const li = document.createElement('li');
+      li.style.cssText = `padding:5px 10px;cursor:pointer;color:var(--t1);white-space:nowrap;transition:background .1s;${t===S.activeThr?'background:var(--bg-3);color:var(--amber);font-weight:700;':''}`;
+      li.textContent = t;
+      li.dataset.value = t;
+      li.addEventListener('mouseenter', () => { li.style.background = 'var(--bg-3)'; });
+      li.addEventListener('mouseleave', () => { li.style.background = t === S.activeThr ? 'var(--bg-3)' : ''; });
+      li.addEventListener('click', () => {
+        menu.style.display = 'none';
+        $('vt-active-label').textContent = t;
+        // Update highlight
+        menu.querySelectorAll('li').forEach(l => {
+          const isActive = l.dataset.value === t;
+          l.style.color = isActive ? 'var(--amber)' : 'var(--t1)';
+          l.style.fontWeight = isActive ? '700' : '';
+          l.style.background = '';
+        });
+        UI.sw(t);
       });
-      selectEl.addEventListener('focus', () => {
-        selectEl.style.borderColor = 'var(--amber)';
-        selectEl.style.boxShadow = '0 0 0 2px rgba(255, 149, 0, 0.15)';
-      });
-      selectEl.addEventListener('blur', () => {
-        selectEl.style.borderColor = 'var(--bdr)';
-        selectEl.style.boxShadow = 'none';
-      });
-    }
+      menu.appendChild(li);
+    });
+
+    // Toggle menu open/close
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = menu.style.display === 'block';
+      menu.style.display = open ? 'none' : 'block';
+      btn.style.borderColor = open ? 'var(--bdr)' : 'var(--amber)';
+    });
+    document.addEventListener('click', () => {
+      menu.style.display = 'none';
+      btn.style.borderColor = 'var(--bdr)';
+    });
+
+    wrap.append(dot, lbl, btn, menu);
+    vtc.appendChild(wrap);
+
+    // Expose a value setter so UI.sw can sync the label
+    Object.defineProperty(window, '_vtChipsSync', { value: (tid) => {
+      const lbl = $('vt-active-label');
+      if (lbl) lbl.textContent = tid;
+    }, configurable: true, writable: true });
 
     this.rv();
   },
@@ -7694,7 +7735,15 @@ const UI={
   sw(tid){
     S.activeThr=tid;
     document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('active',c.dataset.t===tid));
-    const sel=$('vt-chips-select');if(sel)sel.value=tid;
+    // Sync custom dropdown button label
+    const lbl=$('vt-active-label');if(lbl)lbl.textContent=tid;
+    // Sync custom dropdown item highlights
+    const menu=$('vt-chips-menu');
+    if(menu)menu.querySelectorAll('li').forEach(l=>{
+      const active=l.dataset.value===tid;
+      l.style.color=active?'var(--amber)':'var(--t1)';
+      l.style.fontWeight=active?'700':'';
+    });
     this.rv();const sn=$('s-nodes');if(sn)sn.textContent=cnt(S.trees[tid]||[]);
   },
   svm(vm){
