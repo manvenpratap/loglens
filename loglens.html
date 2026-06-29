@@ -17990,6 +17990,9 @@ const HTIP = (() => {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') hide();
   });
+  document.addEventListener('scroll', () => {
+    if (_active) hide();
+  }, { capture: true, passive: true });
 
   return { show, hide };
 })();

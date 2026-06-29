@@ -2,6 +2,9 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Help Popover Dismiss-on-Scroll (v6.9.19 — COMPLETED)**:
+  - Fixed a floating layout bug where the active HTIP help tooltip popover (`#htip-pop`) would remain fixed in space and overlap other inputs when scrolling the sidebar.
+  - Added a global captured scroll listener (`document.addEventListener('scroll', ... { capture: true })`) to immediately dismiss the popover when the user scrolls the sidebar or dashboard.
 - **No-Scroll Hero Page Optimization (v6.9.18 — COMPLETED)**:
   - Replaced the large 3-column quickstart card block (`.ob-steps`) with an elegant, ultra-slim inline progress bar (`.ob-quick-bar`), reducing its vertical footprint by over 110px.
   - Condensed margins, padding, and text/icon sizes on features, CTA, and logo headers.
