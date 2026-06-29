@@ -2,14 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Thread Selector & Onboarding Demo 16-Thread Alignment (v6.9.10 — COMPLETED)**:
+- **Thread Selector Conversion to Dropdown & 16-Thread Support (v6.9.10 — COMPLETED)**:
+  - Converted the thread selector pills into a premium dropdown select element in the view tabs bar (`vt-chips-select`).
+  - Added value sync in `UI.sw(tid)` to update the dropdown's selected value when navigating threads programmatically via hotkeys or trace link clicks.
+  - Removed the horizontal scroll buttons and wrapper helper block from script setup as they are no longer required.
   - Aligned onboarding demo sequence (`ONBOARD.loadDemo`) to parse and display the same 16-thread log sample dynamically generated via a shared `getSampleLogLines()` helper.
   - Added transaction tracking rules (`dr_txs` / `dr_txe`) to onboarding `DEMO_CFG` to properly render the transaction begins/ends.
-  - Fixed the thread selector layout to support up to 16 threads without bleeding vertically or horizontally.
-  - Corrected `.vt-chips` CSS to allow shrinking (`flex-shrink: 1 !important`) and hid the horizontal scrollbar.
-  - Added dynamic side padding (`18px`) and styled arrow buttons to prevent selector pills from overlapping under arrow indicators.
   - Expanded the Thread Correlation overlap heatmap matrix thread display slice limit from 10 to 16.
-  - Adjusted the horizontal Thread Chips scroll wrapper layout's `max-width` CSS style to `min(500px, 40vw)` so that it expands dynamically on larger screens.
 
 - **3D Force-Directed Graph Layout Fix (v6.9.9 — COMPLETED)**:
   - Fixed the dependency graph rotation bug where node spheres drifted and flew out of their connector lines.
@@ -456,4 +455,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Thread Selector & Onboarding Demo 16-Thread Alignment v6.9.10)*
+*Updated By: Antigravity (Thread Selector Conversion to Dropdown & 16-Thread Support v6.9.10)*

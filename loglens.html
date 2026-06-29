@@ -7394,9 +7394,28 @@ const UI={
     const r=$('res');r.innerHTML=statsH;r.scrollTop=0;
     $('vtabs').classList.add('on');
 
-    // Thread chips in view tabs bar
-    $('vt-chips').innerHTML=threads.map(t=>
-      `<div class="tc${t===S.activeThr?' active':''}" data-t="${esc(t)}">${esc(t)}</div>`).join('');
+    // Thread selector dropdown in view tabs bar
+    const optionsHtml = threads.map(t =>
+      `<option value="${esc(t)}"${t===S.activeThr?' selected':''}>🧵 ${esc(t)}</option>`
+    ).join('');
+    $('vt-chips').innerHTML = `
+      <span style="font-size:10px; font-weight:600; color:var(--t3); margin-right:6px; font-family:var(--display);">Active Thread:</span>
+      <select class="inp" id="vt-chips-select" style="max-width:160px; font-size:10px; font-family:var(--mono); padding:2px 6px; height:22px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t2); cursor:pointer; outline:none; transition: border-color 0.15s, box-shadow 0.15s;">
+        ${optionsHtml}
+      </select>
+    `;
+    const selectEl = $('vt-chips-select');
+    if (selectEl) {
+      selectEl.addEventListener('change', e => {
+        UI.sw(e.target.value);
+      });
+      selectEl.addEventListener('focus', () => {
+        selectEl.style.borderColor = 'var(--amber)';
+      });
+      selectEl.addEventListener('blur', () => {
+        selectEl.style.borderColor = 'var(--bdr)';
+      });
+    }
 
     this.rv();
   },
@@ -7484,6 +7503,7 @@ const UI={
   sw(tid){
     S.activeThr=tid;
     document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('active',c.dataset.t===tid));
+    const sel=$('vt-chips-select');if(sel)sel.value=tid;
     this.rv();const sn=$('s-nodes');if(sn)sn.textContent=cnt(S.trees[tid]||[]);
   },
   svm(vm){
@@ -18792,64 +18812,6 @@ ONBOARD.check();
     helper.style.cssText = 'font-size:10px; color:var(--t4); margin-top:4px; font-family:var(--ui);';
     helper.textContent = 'Events exceeding this duration will be flagged SLA BREACH in the tree view';
     slaInput.parentElement.appendChild(helper);
-  }
-
-  // 23. Thread Chips scroll wrapper layout
-  const chips = $('vt-chips');
-  if (chips) {
-    const wrapper = document.createElement('div');
-    wrapper.id = 'vt-chips-wrapper';
-    wrapper.style.cssText = 'position:relative; display:flex; align-items:center; overflow:hidden; max-width:min(500px, 40vw);';
-    chips.parentNode.insertBefore(wrapper, chips);
-    
-    // Configure child flex attributes to allow correct shrinking and scroll bounds
-    chips.style.flex = '1';
-    chips.style.minWidth = '0';
-    chips.style.width = '100%';
-    
-    const leftBtn = document.createElement('button');
-    leftBtn.id = 'btn-chips-left';
-    leftBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
-    leftBtn.textContent = '◂';
-    leftBtn.style.cssText = 'position:absolute; left:0; z-index:10; height:100%; width:16px; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t2); border:none; cursor:pointer; font-size:10px; transition:color 0.15s; padding:0;';
-    
-    const rightBtn = document.createElement('button');
-    rightBtn.id = 'btn-chips-right';
-    rightBtn.className = 'btn btn-g btn-xs btn-chips-arrow hidden';
-    rightBtn.textContent = '▸';
-    rightBtn.style.cssText = 'position:absolute; right:0; z-index:10; height:100%; width:16px; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t2); border:none; cursor:pointer; font-size:10px; transition:color 0.15s; padding:0;';
-    
-    // Add hover states to buttons for design cohesion
-    leftBtn.addEventListener('mouseenter', () => leftBtn.style.color = 'var(--amber)');
-    leftBtn.addEventListener('mouseleave', () => leftBtn.style.color = 'var(--t2)');
-    rightBtn.addEventListener('mouseenter', () => rightBtn.style.color = 'var(--amber)');
-    rightBtn.addEventListener('mouseleave', () => rightBtn.style.color = 'var(--t2)');
-    
-    wrapper.appendChild(leftBtn);
-    wrapper.appendChild(chips);
-    wrapper.appendChild(rightBtn);
-    
-    leftBtn.addEventListener('click', () => { chips.scrollBy({ left: -100, behavior: 'smooth' }); });
-    rightBtn.addEventListener('click', () => { chips.scrollBy({ left: 100, behavior: 'smooth' }); });
-    
-    const updateArrows = () => {
-      const hasOverflow = chips.scrollWidth > chips.clientWidth;
-      leftBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft <= 2);
-      rightBtn.classList.toggle('hidden', !hasOverflow || chips.scrollLeft >= chips.scrollWidth - chips.clientWidth - 2);
-      
-      // Dynamic padding to prevent pills from bleeding under absolute positioned buttons
-      if (hasOverflow) {
-        wrapper.style.paddingLeft = '18px';
-        wrapper.style.paddingRight = '18px';
-      } else {
-        wrapper.style.paddingLeft = '0';
-        wrapper.style.paddingRight = '0';
-      }
-    };
-    chips.addEventListener('scroll', updateArrows);
-    new MutationObserver(updateArrows).observe(chips, { childList: true });
-    window.addEventListener('resize', updateArrows);
-    setTimeout(updateArrows, 400);
   }
 
   // 24. Loki/ES/AWS segmented control configuration binding
