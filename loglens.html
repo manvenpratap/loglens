@@ -7488,24 +7488,28 @@ const UI={
     const btn = document.createElement('button');
     btn.id = 'vt-chips-select';
     btn.type = 'button';
-    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;min-width:90px;max-width:180px;font-size:10px;font-family:var(--mono);font-weight:700;padding:2px 6px;height:22px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);cursor:pointer;outline:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;min-width:90px;max-width:180px;font-size:10px;font-family:var(--mono);font-weight:700;padding:2px 6px;height:22px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);cursor:pointer;outline:none;white-space:nowrap;overflow:hidden;';
     btn.innerHTML = `<span id="vt-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;pointer-events:none;">${esc(S.activeThr||threads[0]||'')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;pointer-events:none;"><path d="M1 1l4 4 4-4"/></svg>`;
 
+    // Menu is a body-level portal with position:fixed to escape any overflow:hidden ancestor
     const menu = document.createElement('ul');
     menu.id = 'vt-chips-menu';
-    menu.style.cssText = 'display:none;position:absolute;top:calc(100% + 3px);left:0;min-width:100%;max-height:220px;overflow-y:auto;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.4);list-style:none;padding:4px 0;margin:0;z-index:9999;font-family:var(--mono);font-size:10px;';
+    menu.style.cssText = 'display:none;position:fixed;min-width:160px;max-height:220px;overflow-y:auto;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.5);list-style:none;padding:4px 0;margin:0;z-index:99999;font-family:var(--mono);font-size:10px;';
+    document.body.appendChild(menu);
 
     threads.forEach(t => {
       const li = document.createElement('li');
-      li.style.cssText = `padding:5px 10px;cursor:pointer;color:var(--t1);white-space:nowrap;transition:background .1s;${t===S.activeThr?'background:var(--bg-3);color:var(--amber);font-weight:700;':''}`;
+      li.style.cssText = `padding:5px 12px;cursor:pointer;color:var(--t1);white-space:nowrap;transition:background .1s;${t===S.activeThr?'background:var(--bg-3);color:var(--amber);font-weight:700;':''}`;
       li.textContent = t;
       li.dataset.value = t;
       li.addEventListener('mouseenter', () => { li.style.background = 'var(--bg-3)'; });
       li.addEventListener('mouseleave', () => { li.style.background = t === S.activeThr ? 'var(--bg-3)' : ''; });
-      li.addEventListener('click', () => {
+      li.addEventListener('click', e => {
+        e.stopPropagation();
         menu.style.display = 'none';
-        $('vt-active-label').textContent = t;
-        // Update highlight
+        btn.style.borderColor = 'var(--bdr)';
+        const lbl = $('vt-active-label');
+        if (lbl) lbl.textContent = t;
         menu.querySelectorAll('li').forEach(l => {
           const isActive = l.dataset.value === t;
           l.style.color = isActive ? 'var(--amber)' : 'var(--t1)';
@@ -7517,33 +7521,36 @@ const UI={
       menu.appendChild(li);
     });
 
-    // Toggle menu open/close
+    // Open/close: position menu below button using fixed coords from getBoundingClientRect
     btn.addEventListener('click', e => {
       e.stopPropagation();
       const open = menu.style.display === 'block';
-      menu.style.display = open ? 'none' : 'block';
-      btn.style.borderColor = open ? 'var(--bdr)' : 'var(--amber)';
+      if (open) {
+        menu.style.display = 'none';
+        btn.style.borderColor = 'var(--bdr)';
+      } else {
+        const r = btn.getBoundingClientRect();
+        menu.style.top = (r.bottom + 4) + 'px';
+        // Align right edge of menu with right edge of button
+        const menuW = Math.max(160, r.width);
+        menu.style.left = Math.max(4, r.right - menuW) + 'px';
+        menu.style.display = 'block';
+        btn.style.borderColor = 'var(--amber)';
+      }
     });
-
-    // Stop li clicks from bubbling to document (prevents immediate close)
-    menu.addEventListener('click', e => e.stopPropagation());
 
     // Remove previous document close-handler to prevent accumulation across renders
     if (UI._vtCloseHandler) document.removeEventListener('click', UI._vtCloseHandler);
-    UI._vtCloseHandler = () => {
-      menu.style.display = 'none';
-      btn.style.borderColor = 'var(--bdr)';
+    UI._vtCloseHandler = e => {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.style.display = 'none';
+        btn.style.borderColor = 'var(--bdr)';
+      }
     };
     document.addEventListener('click', UI._vtCloseHandler);
 
-    wrap.append(dot, lbl, btn, menu);
+    wrap.append(dot, lbl, btn);
     vtc.appendChild(wrap);
-
-    // Expose a value setter so UI.sw can sync the label
-    Object.defineProperty(window, '_vtChipsSync', { value: (tid) => {
-      const lbl = $('vt-active-label');
-      if (lbl) lbl.textContent = tid;
-    }, configurable: true, writable: true });
 
     this.rv();
   },
