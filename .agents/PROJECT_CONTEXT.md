@@ -2,9 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Thread Selector & Sample Log Expansion for 16 Threads (v6.9.10 — COMPLETED)**:
-  - Updated the in-app sample log downloader (`dlSample`) to generate 16 distinct threads (`worker-1` through `worker-16`) containing nested transactions and classification states.
-  - Fixed the thread selector components layout to support up to 16 threads without bleeding vertically or horizontally.
+- **Thread Selector & Onboarding Demo 16-Thread Alignment (v6.9.10 — COMPLETED)**:
+  - Aligned onboarding demo sequence (`ONBOARD.loadDemo`) to parse and display the same 16-thread log sample dynamically generated via a shared `getSampleLogLines()` helper.
+  - Added transaction tracking rules (`dr_txs` / `dr_txe`) to onboarding `DEMO_CFG` to properly render the transaction begins/ends.
+  - Fixed the thread selector layout to support up to 16 threads without bleeding vertically or horizontally.
   - Corrected `.vt-chips` CSS to allow shrinking (`flex-shrink: 1 !important`) and hid the horizontal scrollbar.
   - Added dynamic side padding (`18px`) and styled arrow buttons to prevent selector pills from overlapping under arrow indicators.
   - Expanded the Thread Correlation overlap heatmap matrix thread display slice limit from 10 to 16.
@@ -455,4 +456,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Thread Selector & Sample Log Expansion for 16 Threads v6.9.10)*
+*Updated By: Antigravity (Thread Selector & Onboarding Demo 16-Thread Alignment v6.9.10)*

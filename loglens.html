@@ -7622,11 +7622,11 @@ const UI={
 /* ================================================================
    §JS-18 SAMPLE LOG GENERATOR
    ================================================================ */
-function dlSample(){
-  const now=Date.now(),rows=[];
-  const row=(o,l,thr,m,n,e='')=>{
-    const ts=new Date(now+o).toISOString().replace('T',' ').slice(0,23);
-    rows.push(`${ts} ${l.padEnd(5)} [${thr}] com.example.Service - ${m} ${n}${e?' '+e:''}`);
+function getSampleLogLines(now = Date.now()) {
+  const rows = [];
+  const row = (o, l, thr, m, n, e = '') => {
+    const ts = new Date(now + o).toISOString().replace('T', ' ').slice(0, 23);
+    rows.push(`${ts} ${l.padEnd(5)} [${thr}] com.example.Service - ${m} ${n}${e ? ' ' + e : ''}`);
   };
   row(0,'INFO','worker-1','TX-BEGIN','ProcessOrder/42');
   row(8,'INFO','worker-1','HTTP-REQ','/api/auth','method=POST');
@@ -7666,8 +7666,12 @@ function dlSample(){
     }
     row(offset + 110, 'INFO', thr, 'TX-END', `TaskRun/${i}`);
   }
-  
-  const b=new Blob([rows.join('\n')],{type:'text/plain'});
+  return rows.join('\n');
+}
+
+function dlSample(){
+  const content = getSampleLogLines();
+  const b=new Blob([content],{type:'text/plain'});
   const u=URL.createObjectURL(b);
   Object.assign(document.createElement('a'),{href:u,download:'loglens-sample.log'}).click();
   URL.revokeObjectURL(u);toast('Sample log downloaded.','success');
@@ -17379,6 +17383,18 @@ const ONBOARD = (() => {
     },
     elementRules: [
       {
+        id: 'dr_txs', name: 'Transaction Begin',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?TX-BEGIN\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        stackBehavior: 'push', visualStyle: { accentColor: 'var(--blue)', icon: '▶' }
+      },
+      {
+        id: 'dr_txe', name: 'Transaction End',
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?TX-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        stackBehavior: 'pop', visualStyle: { accentColor: 'var(--blue)', icon: '◀' }
+      },
+      {
         id: 'dr_hs', name: 'HTTP Request',
         regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
         captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
@@ -17423,43 +17439,6 @@ const ONBOARD = (() => {
       }
     ]
   };
-
-  /* ── Sample log — realistic Spring Boot style with 3 concurrent threads ── */
-  const DEMO_LOG = `2024-03-15 10:23:45.001 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-REQ GET /api/users/42
-2024-03-15 10:23:45.003 INFO  [http-nio-8080-exec-2] c.example.RequestFilter - HTTP-REQ POST /api/orders
-2024-03-15 10:23:45.008 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-MISS user:42
-2024-03-15 10:23:45.010 DEBUG [http-nio-8080-exec-2] c.example.OrderValidator - DB-QUERY-START validateStock SELECT p.stock FROM products p WHERE p.id IN (101,205,309)
-2024-03-15 10:23:45.012 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-START fetchUser SELECT * FROM users WHERE id=42
-2024-03-15 10:23:45.013 INFO  [async-worker-1] c.example.MetricsJob - HTTP-REQ GET /internal/metrics/flush
-2024-03-15 10:23:45.019 DEBUG [http-nio-8080-exec-2] c.example.OrderValidator - DB-QUERY-END validateStock
-2024-03-15 10:23:45.025 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-END fetchUser
-2024-03-15 10:23:45.026 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-START fetchPreferences SELECT * FROM user_prefs WHERE user_id=42
-2024-03-15 10:23:45.028 WARN  [http-nio-8080-exec-2] c.example.InventoryService - Item 309 stock below threshold (qty=2, reorder_point=10)
-2024-03-15 10:23:45.031 DEBUG [http-nio-8080-exec-2] c.example.PricingService - DB-QUERY-START applyDiscounts SELECT d.* FROM discounts d WHERE d.user_id=NULL AND d.active=1
-2024-03-15 10:23:45.035 DEBUG [async-worker-1] c.example.MetricsJob - DB-QUERY-START flushMetrics INSERT INTO metrics_buffer SELECT * FROM metrics_staging
-2024-03-15 10:23:45.038 DEBUG [http-nio-8080-exec-1] c.example.UserRepository - DB-QUERY-END fetchPreferences
-2024-03-15 10:23:45.041 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-HIT session:42:token
-2024-03-15 10:23:45.043 DEBUG [http-nio-8080-exec-2] c.example.PricingService - DB-QUERY-END applyDiscounts
-2024-03-15 10:23:45.052 DEBUG [http-nio-8080-exec-2] c.example.PaymentGateway - DB-QUERY-START reservePayment SELECT * FROM payment_methods WHERE user_id=(SELECT id FROM users WHERE email='user@example.com')
-2024-03-15 10:23:45.061 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-RESP GET /api/users/42
-2024-03-15 10:23:45.067 DEBUG [async-worker-1] c.example.MetricsJob - DB-QUERY-END flushMetrics
-2024-03-15 10:23:45.071 INFO  [http-nio-8080-exec-3] c.example.RequestFilter - HTTP-REQ DELETE /api/sessions/expired
-2024-03-15 10:23:45.073 DEBUG [http-nio-8080-exec-3] c.example.SessionService - DB-QUERY-START deleteExpired DELETE FROM sessions WHERE expires_at < NOW() AND last_active < DATE_SUB(NOW(), INTERVAL 30 MINUTE)
-2024-03-15 10:23:45.078 DEBUG [http-nio-8080-exec-2] c.example.PaymentGateway - DB-QUERY-END reservePayment
-2024-03-15 10:23:45.081 INFO  [async-worker-1] c.example.MetricsJob - HTTP-RESP GET /internal/metrics/flush
-2024-03-15 10:23:45.085 DEBUG [http-nio-8080-exec-2] c.example.AuditService - DB-QUERY-START writeAuditLog INSERT INTO audit_log (user_id, action, payload, created_at) VALUES (NULL, 'order.create', '{"items":3}', NOW())
-2024-03-15 10:23:45.088 DEBUG [http-nio-8080-exec-3] c.example.SessionService - DB-QUERY-END deleteExpired
-2024-03-15 10:23:45.091 DEBUG [http-nio-8080-exec-2] c.example.AuditService - DB-QUERY-END writeAuditLog
-2024-03-15 10:23:45.094 ERROR [http-nio-8080-exec-3] c.example.SessionService - Failed to acquire advisory lock for session cleanup after 3 retries (timeout=5000ms)
-2024-03-15 10:23:45.096 INFO  [http-nio-8080-exec-3] c.example.RequestFilter - HTTP-RESP DELETE /api/sessions/expired
-2024-03-15 10:23:45.101 INFO  [http-nio-8080-exec-2] c.example.RequestFilter - HTTP-RESP POST /api/orders
-2024-03-15 10:23:45.110 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-REQ GET /api/dashboard/summary
-2024-03-15 10:23:45.112 DEBUG [http-nio-8080-exec-1] c.example.CacheService - CACHE-HIT dashboard:widgets:layout
-2024-03-15 10:23:45.115 DEBUG [http-nio-8080-exec-1] c.example.DashboardService - DB-QUERY-START fetchKPIs SELECT COUNT(*) as orders, SUM(total) as revenue, AVG(duration_ms) as avg_latency FROM orders WHERE created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)
-2024-03-15 10:23:45.131 WARN  [http-nio-8080-exec-1] c.example.DashboardService - Slow query detected: fetchKPIs took 16ms (threshold=10ms)
-2024-03-15 10:23:45.133 DEBUG [http-nio-8080-exec-1] c.example.DashboardService - DB-QUERY-END fetchKPIs
-2024-03-15 10:23:45.137 INFO  [http-nio-8080-exec-1] c.example.RequestFilter - HTTP-RESP GET /api/dashboard/summary
-`.trim();
 
   /* ── Internal helpers ── */
   const _ov = () => document.getElementById('ob-ov');
@@ -17531,7 +17510,8 @@ const ONBOARD = (() => {
       await this._delay(200);
 
       // Step 2: create a synthetic File object from the demo log text
-      const blob = new Blob([DEMO_LOG], { type: 'text/plain' });
+      const demoLogContent = getSampleLogLines();
+      const blob = new Blob([demoLogContent], { type: 'text/plain' });
       const file = new File([blob], 'demo-springboot.log', { type: 'text/plain' });
       S.logFile = file;
 
