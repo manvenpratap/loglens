@@ -3,7 +3,7 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 - **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
-  - Resolved active thread select dropdown text visibility clipping issues by replacing the borderless flex-nested select layout with a standard native `<select>` layout next to the status dot, restoring standard line-height and bounding box auto-sizing.
+  - Resolved active thread select dropdown text visibility clipping and collapsing issues by replacing the borderless flex-nested select layout with a standard native `<select>` layout next to the status dot, and added `width: auto !important; min-width: 100px;` to override global `.inp` class width restrictions.
   - Implemented natural sorting (alphanumeric order) for the threads list inside `UI.render()` using `localeCompare` with `numeric: true` (e.g., `worker-2` comes before `worker-10`).
   - Restyled the thread selector dropdown into a premium active status indicator badge, complete with a glowing amber status dot.
   - Removed the breadcrumb context bar (`#breadcrumb` / `BCB` namespace) completely from both HTML and script (stubbed namespace to prevent ReferenceErrors) to eliminate vertical clutter and maximize vertical workspace for the timeline.
