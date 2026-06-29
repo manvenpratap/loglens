@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **View Switcher Relocation to Header (v6.9.24 — COMPLETED)**:
+  - Moved the view switcher tabs (`#vtabs`) from the main content viewport directly into the center area of the header.
+  - Removed all inline styling from `#vtabs` HTML tag and structured styling rules purely inside the CSS stylesheet with responsive header overrides.
+  - Handled the active indicator highlights using absolute bottom border lines that scale perfectly on theme transitions.
+
 - **Footer Relocation of Status Indicators (v6.9.23 — COMPLETED)**:
   - Created a thin (26px) status footer at the very bottom of the application viewport.
   - Moved all system status metrics and indicators (`#sys-status`, `#hdr-fs`, `#hdr-cfg`, `#hdr-file`) from the header action grid to the new bottom footer.
