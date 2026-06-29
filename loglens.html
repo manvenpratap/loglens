@@ -16801,7 +16801,7 @@ const OVERDRIVE = (() => {
       ganttWrapper.appendChild(this._el);
 
       // JS fallback: track parent container scroll
-      const scrollParent = ganttWrapper.closest('.vscroll-container, [style*="overflow"]') || ganttWrapper.parentElement;
+      const scrollParent = ganttWrapper.querySelector('.g-rows') || ganttWrapper.closest('.vscroll-container, [style*="overflow"]') || ganttWrapper.parentElement;
       if (scrollParent) {
         scrollParent.addEventListener('scroll', () => this._update(scrollParent), { passive: true });
         this._update(scrollParent);
