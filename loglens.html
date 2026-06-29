@@ -5047,11 +5047,52 @@ label[for="watch-auto-reload"] {
   background: transparent;
   transition: background 0.15s;
 }
-.sb-resize-handle:hover::after,
-.sb-resize-handle.drag::after {
-  background: var(--amber) !important;
+/* Thin footer at the bottom of the workspace */
+.ftr {
+  height: 26px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--bdr);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--t3);
+  flex-shrink: 0;
+  z-index: 200;
+  user-select: none;
 }
-
+.ftr-left, .ftr-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ftr .badge {
+  font-size: 10px !important;
+  font-family: var(--mono) !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  display: inline-flex;
+  align-items: center;
+}
+.ftr .system-status {
+  color: var(--t2) !important;
+  gap: 6px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.ftr #hdr-fs, .ftr #hdr-cfg, .ftr #hdr-file {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.ftr #hdr-fs:hover, .ftr #hdr-cfg:hover, .ftr #hdr-file:hover {
+  color: var(--t1);
+}
 </style>
 
 
@@ -5107,13 +5148,6 @@ label[for="watch-auto-reload"] {
       <span class="badge b-amber hidden" id="hdr-outliers" role="button" tabindex="0" title="Statistical outliers — click for details"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="txt">0 Outliers</span></span>
     </div>
 
-    <!-- Slot C: state chips (FS, config, file) -->
-    <div class="hdr-slot-chips">
-      <span class="badge system-status" id="sys-status" title="System Status"><span class="status-dot"></span><span class="status-txt">SYS_STATUS // IDLE</span></span>
-      <span class="badge b-gray" id="hdr-fs" title="File System Access API">FS API</span>
-      <span class="badge b-gray" id="hdr-cfg" title="Loaded configuration">No Config</span>
-      <span class="badge b-gray" id="hdr-file" title="Loaded log file">No File</span>
-    </div>
     <!-- Slot D: actions (export + theme) -->
     <div class="hdr-slot-actions">
       <div class="exp-wrap">
@@ -5710,8 +5744,19 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
   </div>
-</main>
 </div>
+
+<!-- ================================================================ FOOTER -->
+<footer class="ftr">
+  <div class="ftr-left">
+    <span class="badge system-status" id="sys-status" title="System Status"><span class="status-dot"></span><span class="status-txt">SYS_STATUS // IDLE</span></span>
+  </div>
+  <div class="ftr-right">
+    <span class="badge b-gray" id="hdr-fs" title="File System Access API">FS API</span>
+    <span class="badge b-gray" id="hdr-cfg" title="Loaded configuration">No Config</span>
+    <span class="badge b-gray" id="hdr-file" title="Loaded log file">No File</span>
+  </div>
+</footer>
 
 <!-- ================================================================ RULE MODAL -->
 <div class="mm hidden" id="mm">
