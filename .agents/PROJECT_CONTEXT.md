@@ -2,6 +2,15 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Immersive 3D Experience Upgrades (v6.9.4 — COMPLETED)**:
+  - Integrated a WebGL compatibility pre-check (`_isWebGLAvailable`) displaying diagnostic warnings if unsupported.
+  - Added a Layout Mode dropdown to toggle dynamically between three 3D representations: Log Forest, Spiral Helix, and Force-Directed Graph.
+  - Upgraded **Log Forest (Waterfall)** mode to render outliers and SLA breaches with glowing emissive materials and floating pulsing indicators.
+  - Implemented **3D Spiral Helix (Sequence)** mode to render sequential chronologies along a spiral helix path with a golden backbone guideline.
+  - Developed a standalone **3D Force-Directed Graph (Network)** physics engine solver using Verlet integration to simulate dynamic node repulsion, link spring attraction, and gravity.
+  - Integrated dynamic theme-matching colors to synchronize radial background gradients, floor grid helper borders, and overlays on dark/light toggle.
+  - Wired an interactive click-and-focus bridge (`focusNode`) to transition back to split/tree view and scroll-center clicked elements.
+
 - **Sidebar Design Upgrades & Refinements (v6.9.3 — COMPLETED)**:
   - Re-styled the sidebar navigation bar into a segmented control tab strip with clean borders, nested spacing, and dark background highlights.
   - Custom styled the active indicator sliding pill (`#sb-tabs-pill`) to conform as an elegant container-inset background.
@@ -410,4 +419,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Sidebar Design Upgrades & Refinements v6.9.3)*
+*Updated By: Antigravity (Immersive 3D Experience Upgrades v6.9.4)*

@@ -10839,7 +10839,7 @@ const LANDSCAPE3D = {
   _scene: null,
   _camera: null,
   _renderer: null,
-  _forest: null,           // THREE.Group containing all bars
+  _forest: null,           // THREE.Group containing all active bars
   _rafId: null,
   _container: null,
   _canvas: null,
@@ -10851,11 +10851,46 @@ const LANDSCAPE3D = {
   _autoRotate: true,
   _initialized: false,
   tree: null,
+  _currentMode: 'forest',  // 'forest' | 'helix' | 'graph'
+  _lastTheme: null,
+  _gridHelper: null,
+  _ambientLight: null,
+  _keyLight: null,
+  _fillLight: null,
+  _rimLight: null,
+  _bgCanvas: null,
+
+  // Graph layout state
+  _graphNodes: [],
+  _graphLinks: [],
+  _graphLinesNormal: null,
+  _graphLinesAnomaly: null,
+
+  /* ── WebGL Capability Check ────────────────────────────── */
+  _isWebGLAvailable() {
+    try {
+      const canvas = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+    } catch (e) {
+      return false;
+    }
+  },
 
   /* ── public entry point ─────────────────────────────────── */
   init(tree, container) {
-    this.tree   = tree;
+    this.tree = tree;
     this._container = container;
+
+    // Check WebGL availability first
+    if (!this._isWebGLAvailable()) {
+      container.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;font-family:var(--ui);background:var(--bg-0);';
+      container.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div style="color:var(--red);font-size:13px;font-weight:600;">WebGL unsupported or disabled</div>
+        <div style="color:var(--t3);font-size:11px;">3D Log Landscape requires WebGL. Please check your browser or graphics settings.</div>
+      `;
+      return;
+    }
 
     // Show branded loading screen immediately
     container.style.cssText = 'position:relative;width:100%;height:100%;background:#07090d;overflow:hidden;';
@@ -10879,6 +10914,7 @@ const LANDSCAPE3D = {
     `;
 
     this._loadThreeJS().then(() => this._build()).catch(err => {
+      container.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;font-family:var(--ui);background:var(--bg-0);';
       container.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;font-family:'Geist',sans-serif;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff453a" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -10921,7 +10957,6 @@ const LANDSCAPE3D = {
     bgCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;';
     container.insertBefore(bgCanvas, renderer.domElement);
     this._bgCanvas = bgCanvas;
-    this._drawBg();
 
     /* ─ Scene ─ */
     const scene = new THREE.Scene();
@@ -10934,37 +10969,121 @@ const LANDSCAPE3D = {
     this._camera = camera;
 
     /* ─ Lights — DESIGN.md amber primary + cool fill ─ */
-    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    scene.add(ambientLight);
+    this._ambientLight = ambientLight;
 
     const keyLight = new THREE.PointLight(0xff9500, 2.8, 200); // Safety Amber
     keyLight.position.set(12, 28, 18);
     scene.add(keyLight);
+    this._keyLight = keyLight;
 
     const fillLight = new THREE.PointLight(0x4f9eff, 0.9, 200); // Cool Blue
     fillLight.position.set(-20, 10, -10);
     scene.add(fillLight);
+    this._fillLight = fillLight;
 
     const rimLight = new THREE.DirectionalLight(0xffffff, 0.35);
     rimLight.position.set(0, 50, -30);
     scene.add(rimLight);
+    this._rimLight = rimLight;
 
-    /* ─ Grid floor — obsidian muted ─ */
-    const gridHelper = new THREE.GridHelper(60, 30, 0x252c3d, 0x1a1f2c);
-    gridHelper.position.y = -6;
-    scene.add(gridHelper);
+    /* ─ Grid Helper floor ─ */
+    this._gridHelper = null;
 
-    /* ─ Build bar forest from tree data ─ */
+    /* ─ Resize handling ─ */
+    this._resize();
+    this._resizeObs = new ResizeObserver(() => this._resize());
+    this._resizeObs.observe(container);
+
+    /* ─ Raycaster for hover ─ */
+    this._raycaster = new THREE.Raycaster();
+    this._mouse = new THREE.Vector2(-99, -99);
+
+    /* ─ Controls overlay ─ */
+    this._buildOverlay(container);
+
+    /* ─ Tooltip ─ */
+    this._buildTooltip();
+
+    /* ─ Populate initial scene meshes ─ */
+    this._buildScene();
+
+    /* ─ Theme setup ─ */
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    this._lastTheme = isDark;
+    this._updateThemeColors(isDark);
+
+    /* ─ Mouse interaction ─ */
+    this._wireEvents(renderer.domElement);
+
+    /* ─ Animation loop ─ */
+    this._animate();
+  },
+
+  /* ── rebuild visual meshes based on currentMode ─────────── */
+  _buildScene() {
+    const THREE = window.THREE;
+    if (!this._scene) return;
+
+    // Clear previous meshes
+    if (this._forest) {
+      this._scene.remove(this._forest);
+      this._forest.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+          else child.material.dispose();
+        }
+      });
+      this._forest = null;
+    }
+
+    if (this._graphLinesNormal) {
+      this._scene.remove(this._graphLinesNormal);
+      this._graphLinesNormal.geometry.dispose();
+      this._graphLinesNormal.material.dispose();
+      this._graphLinesNormal = null;
+    }
+    if (this._graphLinesAnomaly) {
+      this._scene.remove(this._graphLinesAnomaly);
+      this._graphLinesAnomaly.geometry.dispose();
+      this._graphLinesAnomaly.material.dispose();
+      this._graphLinesAnomaly = null;
+    }
+
+    this._bars = [];
+    this._graphNodes = [];
+    this._graphLinks = [];
+
     const forest = new THREE.Group();
     this._forest = forest;
-    scene.add(forest);
-    this._bars = [];
+    this._scene.add(forest);
 
+    // Build specific structures
+    if (this._currentMode === 'forest') {
+      this._buildForest();
+    } else if (this._currentMode === 'helix') {
+      this._buildHelix();
+    } else if (this._currentMode === 'graph') {
+      this._buildGraph();
+    }
+
+    // Update node count indicator
+    const nodeCount = this._bars.length;
+    const countEl = document.getElementById('ld3-node-count');
+    if (countEl) countEl.textContent = `${nodeCount} node(s) rendered`;
+  },
+
+  /* ── Mode 1: Log Forest (Waterfall) ─────────────────────── */
+  _buildForest() {
+    const THREE = window.THREE;
     const PALETTE = [0xff9500, 0x4f9eff, 0x30d158, 0xff453a, 0xbf5af2, 0x32ade6, 0xffd60a];
     const flat = this._flatten(this.tree);
     const count = Math.min(flat.length > 0 ? flat.length : 60, 300);
 
     if (flat.length === 0) {
-      // No data — render decorative demo forest (matches code.html reference)
+      // Demo log forest
       for (let i = 0; i < 60; i++) {
         const h = Math.random() * 12 + 2;
         const geo = new THREE.BoxGeometry(0.65, h, 0.65);
@@ -10977,11 +11096,10 @@ const LANDSCAPE3D = {
         const r = 5 + Math.random() * 16;
         mesh.position.set(Math.cos(angle) * r, h / 2 - 6, Math.sin(angle) * r);
         mesh.rotation.y = Math.random() * Math.PI;
-        mesh.userData = { baseH: h, idx: i };
-        forest.add(mesh);
+        mesh.userData = { baseH: h, idx: i, mode: 'forest' };
+        this._forest.add(mesh);
       }
     } else {
-      // Real data — position bars in timeline × depth grid
       let minT = Infinity, maxT = -Infinity;
       for (const { node: n } of flat) {
         const t = n.timestamp || 0, et = n.endTimestamp || t;
@@ -11002,111 +11120,435 @@ const LANDSCAPE3D = {
         const barH = n.behavior === 'inline' ? 0.5 : Math.min(16, Math.log10(dur + 1) * 3 + 0.4);
         const zPos = -12 + depth * 3.5;
 
-        const color = n.visualStyle?.accentColor
+        let color = n.visualStyle?.accentColor
           ? parseInt(n.visualStyle.accentColor.replace('#', ''), 16)
           : PALETTE[i % PALETTE.length];
 
+        let emissive = 0x000000;
+        let emissiveIntensity = 0;
+        if (n._isSlaBreach) {
+          color = 0xff453a;
+          emissive = 0x550000;
+          emissiveIntensity = 0.6;
+        } else if (n._isOutlier) {
+          color = 0xff9500;
+          emissive = 0x442200;
+          emissiveIntensity = 0.5;
+        } else if (n._isCriticalPath) {
+          color = 0xbf5af2;
+        }
+
         const geo = new THREE.BoxGeometry(barW, barH, 1.1);
         const mat = new THREE.MeshPhongMaterial({
-          color, transparent: true, opacity: 0.85, shininess: 110
+          color, emissive, emissiveIntensity,
+          transparent: true, opacity: 0.85, shininess: 110
         });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(xPos + barW / 2, barH / 2 - 6, zPos);
-        mesh.userData = { baseH: barH, idx: i, node: n };
-        forest.add(mesh);
+        mesh.userData = { baseH: barH, idx: i, node: n, mode: 'forest' };
+        this._forest.add(mesh);
         this._bars.push({ mesh, node: n });
+
+        // Add animated indicator for anomalies
+        if (n._isSlaBreach || n._isOutlier) {
+          const indGeo = new THREE.OctahedronGeometry(0.35, 0);
+          const indMat = new THREE.MeshPhongMaterial({
+            color: n._isSlaBreach ? 0xff453a : 0xff9500,
+            emissive: n._isSlaBreach ? 0xff453a : 0xff9500,
+            emissiveIntensity: 0.8, shininess: 150
+          });
+          const indMesh = new THREE.Mesh(indGeo, indMat);
+          const indY = barH - 6 + 0.8;
+          indMesh.position.set(xPos + barW / 2, indY, zPos);
+          indMesh.userData = { localY: indY, isIndicator: true, idx: i };
+          this._forest.add(indMesh);
+        }
+      }
+    }
+  },
+
+  /* ── Mode 2: Spiral Helix (Sequence) ────────────────────── */
+  _buildHelix() {
+    const THREE = window.THREE;
+    const PALETTE = [0xff9500, 0x4f9eff, 0x30d158, 0xff453a, 0xbf5af2, 0x32ade6, 0xffd60a];
+    const flat = this._flatten(this.tree);
+    const count = Math.min(flat.length > 0 ? flat.length : 60, 300);
+
+    const radius = 12;
+    const heightSpan = 22;
+    const numTurns = 3;
+
+    if (flat.length === 0) {
+      // Demo helix
+      for (let i = 0; i < 60; i++) {
+        const pct = i / 59;
+        const angle = pct * Math.PI * 2 * numTurns;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const y = pct * heightSpan - (heightSpan / 2) - 2;
+
+        const h = Math.random() * 2 + 1;
+        const geo = new THREE.BoxGeometry(0.8, h, 0.8);
+        const mat = new THREE.MeshPhongMaterial({
+          color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+          transparent: true, opacity: 0.82, shininess: 120
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(x, y, z);
+        mesh.rotation.y = angle;
+        mesh.userData = { baseH: h, idx: i, mode: 'helix' };
+        this._forest.add(mesh);
+      }
+    } else {
+      const helixPoints = [];
+
+      for (let i = 0; i < count; i++) {
+        const { node: n, depth } = flat[i];
+        const pct = i / (count - 1 || 1);
+        const angle = pct * Math.PI * 2 * numTurns;
+        const r = Math.max(2, radius - depth * 1.5);
+        const x = Math.cos(angle) * r;
+        const z = Math.sin(angle) * r;
+        const y = pct * heightSpan - (heightSpan / 2) - 2;
+
+        const dur = n.duration || 0;
+        const size = n.behavior === 'inline' ? 0.4 : Math.min(3, Math.log10(dur + 1) * 0.8 + 0.4);
+
+        let color = n.visualStyle?.accentColor
+          ? parseInt(n.visualStyle.accentColor.replace('#', ''), 16)
+          : PALETTE[i % PALETTE.length];
+
+        let emissive = 0x000000;
+        let emissiveIntensity = 0;
+        if (n._isSlaBreach) {
+          color = 0xff453a;
+          emissive = 0x550000;
+          emissiveIntensity = 0.6;
+        } else if (n._isOutlier) {
+          color = 0xff9500;
+          emissive = 0x442200;
+          emissiveIntensity = 0.5;
+        } else if (n._isCriticalPath) {
+          color = 0xbf5af2;
+        }
+
+        const geo = new THREE.BoxGeometry(size, size, size);
+        const mat = new THREE.MeshPhongMaterial({
+          color, emissive, emissiveIntensity,
+          transparent: true, opacity: 0.85, shininess: 110
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(x, y, z);
+        mesh.rotation.y = -angle;
+        mesh.userData = { baseH: size, idx: i, node: n, mode: 'helix' };
+        this._forest.add(mesh);
+        this._bars.push({ mesh, node: n });
+
+        helixPoints.push(new THREE.Vector3(x, y, z));
+
+        // Add animated indicator floating alongside the helix box
+        if (n._isSlaBreach || n._isOutlier) {
+          const indGeo = new THREE.OctahedronGeometry(0.25, 0);
+          const indMat = new THREE.MeshPhongMaterial({
+            color: n._isSlaBreach ? 0xff453a : 0xff9500,
+            emissive: n._isSlaBreach ? 0xff453a : 0xff9500,
+            emissiveIntensity: 0.8, shininess: 150
+          });
+          const indMesh = new THREE.Mesh(indGeo, indMat);
+          const indY = y + size + 0.4;
+          indMesh.position.set(x, indY, z);
+          indMesh.userData = { localY: indY, isIndicator: true, idx: i };
+          this._forest.add(indMesh);
+        }
+      }
+
+      // Draw helix backbone connector
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(helixPoints);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0xff9500, transparent: true, opacity: 0.25
+      });
+      const backbone = new THREE.Line(lineGeo, lineMat);
+      this._forest.add(backbone);
+    }
+  },
+
+  /* ── Mode 3: 3D Force-Directed Graph (Network) ──────────── */
+  _buildGraph() {
+    const THREE = window.THREE;
+    // Build node-link model from Graphify engine
+    const data = GRAPHIFY.buildGraph(S.trees);
+
+    if (!data.nodes.length) {
+      // Decorative demo graph
+      const demoNodes = [];
+      for (let i = 0; i < 24; i++) {
+        demoNodes.push({ id: `Op-${i}`, color: '#ff9500', selfTime: Math.random() * 800, count: 1 });
+      }
+      const demoLinks = [];
+      for (let i = 1; i < 24; i++) {
+        demoLinks.push({ source: `Op-${Math.floor(Math.random() * i)}`, target: `Op-${i}`, value: 120 });
+      }
+      this._graphNodes = demoNodes;
+      this._graphLinks = demoLinks;
+    } else {
+      this._graphNodes = data.nodes;
+      this._graphLinks = data.links;
+    }
+
+    const nodeMap = {};
+    this._graphNodes.forEach((n, idx) => {
+      // Place nodes in starting random coordinate positions
+      n.x = (Math.random() - 0.5) * 16;
+      n.y = (Math.random() - 0.5) * 16;
+      n.z = (Math.random() - 0.5) * 16;
+      n.vx = 0; n.vy = 0; n.vz = 0;
+      nodeMap[n.id] = n;
+
+      const r = Math.max(0.6, Math.min(2.5, Math.sqrt(n.selfTime || 1) * 0.16));
+      const geo = new THREE.SphereGeometry(r, 16, 16);
+
+      const colorVal = typeof n.color === 'string' && n.color.startsWith('#')
+        ? parseInt(n.color.replace('#', ''), 16)
+        : 0x4f9eff;
+
+      const mat = new THREE.MeshPhongMaterial({
+        color: colorVal, transparent: true, opacity: 0.9, shininess: 120
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(n.x, n.y, n.z);
+      mesh.userData = { node: n, isGraphNode: true, mode: 'graph' };
+      this._forest.add(mesh);
+      n.mesh = mesh;
+
+      this._bars.push({ mesh, node: n });
+    });
+
+    this._graphLinks.forEach(l => {
+      l.sourceNode = typeof l.source === 'string' ? nodeMap[l.source] : l.source;
+      l.targetNode = typeof l.target === 'string' ? nodeMap[l.target] : l.target;
+    });
+
+    // Populate buffers for line segment rendering
+    const normalPoints = [];
+    const anomalyPoints = [];
+    this._graphLinks.forEach(l => {
+      const n1 = l.sourceNode;
+      const n2 = l.targetNode;
+      if (!n1 || !n2) return;
+      
+      const pt1 = new THREE.Vector3(n1.x, n1.y, n1.z);
+      const pt2 = new THREE.Vector3(n2.x, n2.y, n2.z);
+      if (l.isCross || l.value > 1000) {
+        anomalyPoints.push(pt1, pt2);
+      } else {
+        normalPoints.push(pt1, pt2);
+      }
+    });
+
+    const normalGeo = new THREE.BufferGeometry().setFromPoints(normalPoints.length ? normalPoints : [new THREE.Vector3(), new THREE.Vector3()]);
+    const normalMat = new THREE.LineBasicMaterial({
+      color: 0x30363d, transparent: true, opacity: 0.5
+    });
+    this._graphLinesNormal = new THREE.LineSegments(normalGeo, normalMat);
+    this._scene.add(this._graphLinesNormal);
+
+    const anomalyGeo = new THREE.BufferGeometry().setFromPoints(anomalyPoints.length ? anomalyPoints : [new THREE.Vector3(), new THREE.Vector3()]);
+    const anomalyMat = new THREE.LineBasicMaterial({
+      color: 0xff453a, transparent: true, opacity: 0.85, linewidth: 1.5
+    });
+    this._graphLinesAnomaly = new THREE.LineSegments(anomalyGeo, anomalyMat);
+    this._scene.add(this._graphLinesAnomaly);
+  },
+
+  /* ── 3D spring simulation physics update loop ───────────── */
+  _updateGraphLayout() {
+    if (this._currentMode !== 'graph' || !this._graphNodes || !this._graphNodes.length) return;
+
+    const THREE = window.THREE;
+    const nodes = this._graphNodes;
+    const links = this._graphLinks;
+
+    // 1. Coulomb repulsion between nodes
+    const repulsionK = 25;
+    for (let i = 0; i < nodes.length; i++) {
+      const n1 = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const n2 = nodes[j];
+        let dx = n2.x - n1.x;
+        let dy = n2.y - n1.y;
+        let dz = n2.z - n1.z;
+        let dist = Math.sqrt(dx*dx + dy*dy + dz*dz) || 0.1;
+        if (dist < 28) {
+          let force = repulsionK / (dist * dist);
+          let fx = (dx / dist) * force;
+          let fy = (dy / dist) * force;
+          let fz = (dz / dist) * force;
+          n1.vx -= fx; n1.vy -= fy; n1.vz -= fz;
+          n2.vx += fx; n2.vy += fy; n2.vz += fz;
+        }
       }
     }
 
-    /* ─ Raycaster for hover ─ */
-    this._raycaster = new THREE.Raycaster();
-    this._mouse = new THREE.Vector2(-99, -99);
+    // 2. Hooke spring attraction along links
+    const attractionK = 0.05;
+    const restLength = 8.5;
+    links.forEach(l => {
+      const n1 = l.sourceNode;
+      const n2 = l.targetNode;
+      if (!n1 || !n2) return;
+      let dx = n2.x - n1.x;
+      let dy = n2.y - n1.y;
+      let dz = n2.z - n1.z;
+      let dist = Math.sqrt(dx*dx + dy*dy + dz*dz) || 0.1;
+      let force = attractionK * (dist - restLength);
+      let fx = (dx / dist) * force;
+      let fy = (dy / dist) * force;
+      let fz = (dz / dist) * force;
+      n1.vx += fx; n1.vy += fy; n1.vz += fz;
+      n2.vx -= fx; n2.vy -= fy; n2.vz -= fz;
+    });
 
-    /* ─ Resize handling ─ */
-    this._resize();
-    this._resizeObs = new ResizeObserver(() => this._resize());
-    this._resizeObs.observe(container);
+    // 3. Central gravity
+    const gravityK = 0.015;
+    nodes.forEach(n => {
+      n.vx -= n.x * gravityK;
+      n.vy -= n.y * gravityK;
+      n.vz -= n.z * gravityK;
+    });
 
-    /* ─ Controls overlay ─ */
-    this._buildOverlay(container);
+    // 4. Update velocity & damping
+    const damping = 0.82;
+    nodes.forEach(n => {
+      n.x += n.vx; n.y += n.vy; n.z += n.vz;
+      n.vx *= damping; n.vy *= damping; n.vz *= damping;
 
-    /* ─ Tooltip ─ */
-    this._buildTooltip();
+      if (n.mesh) {
+        n.mesh.position.set(n.x, n.y, n.z);
+      }
+    });
 
-    /* ─ Mouse interaction ─ */
-    this._wireEvents(renderer.domElement);
+    // 5. Refresh line positions
+    const normalPoints = [];
+    const anomalyPoints = [];
+    links.forEach(l => {
+      const n1 = l.sourceNode;
+      const n2 = l.targetNode;
+      if (!n1 || !n2) return;
+      const pt1 = new THREE.Vector3(n1.x, n1.y, n1.z);
+      const pt2 = new THREE.Vector3(n2.x, n2.y, n2.z);
+      if (l.isCross || l.value > 1000) {
+        anomalyPoints.push(pt1, pt2);
+      } else {
+        normalPoints.push(pt1, pt2);
+      }
+    });
 
-    /* ─ Animation loop ─ */
-    this._autoRotate = true;
-    this._animate();
+    if (this._graphLinesNormal && normalPoints.length) {
+      this._graphLinesNormal.geometry.setFromPoints(normalPoints);
+      this._graphLinesNormal.geometry.attributes.position.needsUpdate = true;
+    }
+    if (this._graphLinesAnomaly && anomalyPoints.length) {
+      this._graphLinesAnomaly.geometry.setFromPoints(anomalyPoints);
+      this._graphLinesAnomaly.geometry.attributes.position.needsUpdate = true;
+    }
   },
 
+  /* ── background radial gradient ──────────────────────────── */
   _drawBg() {
     const c = this._bgCanvas;
+    if (!c) return;
     const w = this._container.clientWidth  || 800;
     const h = this._container.clientHeight || 600;
     c.width  = w; c.height = h;
     const ctx = c.getContext('2d');
+    const isDark = document.documentElement.dataset.theme === 'dark';
+
     const grad = ctx.createRadialGradient(w * 0.5, h * 0.6, 20, w * 0.5, h * 0.6, Math.max(w, h));
-    grad.addColorStop(0, '#0c1017');
-    grad.addColorStop(1, '#05070a');
+    if (isDark) {
+      grad.addColorStop(0, '#0c1017');
+      grad.addColorStop(1, '#05070a');
+    } else {
+      grad.addColorStop(0, '#faf8f5');
+      grad.addColorStop(1, '#edecea');
+    }
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   },
 
+  /* ── Overlay controls HUD ───────────────────────────────── */
   _buildOverlay(container) {
     const ov = document.createElement('div');
     ov.id = 'ld3-overlay';
     ov.style.cssText = `
-      position:absolute;top:14px;left:14px;z-index:10;
-      background:rgba(12,15,21,0.78);
-      border:1px solid rgba(255,149,0,0.18);
-      border-radius:8px;padding:14px 16px;
-      font-family:'Space Grotesk','Geist',sans-serif;
+      position:absolute;top:16px;left:16px;z-index:10;
+      background:var(--bg-overlay, rgba(12,15,21,0.78));
+      border:1px solid var(--bdr);
+      border-radius:var(--rounded-md, 8px);padding:14px 16px;
+      font-family:var(--ui);
       backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-      box-shadow:0 0 24px rgba(255,149,0,0.10),0 4px 20px rgba(0,0,0,0.55);
-      min-width:200px;animation:ld3-fadein .35s var(--ease-snap,cubic-bezier(.16,1,.3,1));
+      box-shadow:0 4px 20px rgba(0,0,0,0.25);
+      min-width:210px;animation:ld3-fadein .35s var(--ease-snap,cubic-bezier(.16,1,.3,1));
     `;
     ov.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
         </svg>
-        <span style="color:#ff9500;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;">3D Log Landscape</span>
+        <span style="color:var(--amber);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;">3D Log Landscape</span>
       </div>
-      <div style="color:#7a8299;font-size:10.5px;line-height:1.6;font-family:'Geist',sans-serif;margin-bottom:12px;">
-        <span style="color:#a3b0cc;">Drag</span> to orbit &nbsp;·&nbsp; <span style="color:#a3b0cc;">Scroll</span> to zoom<br>
-        <span style="color:#a3b0cc;">Hover</span> bars for event details
+      <div style="margin-bottom: 12px;">
+        <label for="sel-3d-mode" style="display:block;font-size:9.5px;color:var(--t3);margin-bottom:4px;font-family:var(--ui);text-transform:uppercase;letter-spacing:.02em;">3D Layout Mode</label>
+        <select id="sel-3d-mode" style="
+          width:100%;background:var(--bg-0);color:var(--amber);border:1px solid var(--bdr);
+          border-radius:var(--rounded-sm, 6px);padding:5px 8px;font-size:11px;font-family:var(--ui);
+          cursor:pointer;outline:none;
+        ">
+          <option value="forest">🌲 Log Forest (Waterfall)</option>
+          <option value="helix">🧬 Spiral Helix (Sequence)</option>
+          <option value="graph">🕸 Dependency Graph (Network)</option>
+        </select>
+      </div>
+      <div style="color:var(--t3);font-size:10px;line-height:1.5;font-family:var(--ui);margin-bottom:12px;border-top:1px solid var(--bdr);padding-top:8px;">
+        <span style="color:var(--t2);">Drag</span> to orbit &nbsp;·&nbsp; <span style="color:var(--t2);">Scroll</span> to zoom<br>
+        <span style="color:var(--t2);">Click</span> elements to focus details
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button id="btn-3d-rotate" style="
           display:inline-flex;align-items:center;gap:5px;
-          padding:5px 10px;border-radius:6px;border:1px solid rgba(255,149,0,0.35);
-          background:rgba(255,149,0,0.10);color:#ff9500;
-          font-family:'Geist',sans-serif;font-size:10px;font-weight:600;cursor:pointer;
+          padding:5px 10px;border-radius:var(--rounded-sm, 6px);border:1px solid var(--bdr);
+          background:var(--bg-1);color:var(--amber);
+          font-family:var(--ui);font-size:10px;font-weight:600;cursor:pointer;
           transition:all .18s;
         ">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.17"/></svg>
           Auto-Rotate: On
         </button>
         <button id="btn-3d-reset" style="
-          padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.10);
-          background:rgba(255,255,255,0.04);color:#c4c9d8;
-          font-family:'Geist',sans-serif;font-size:10px;font-weight:600;cursor:pointer;
+          padding:5px 10px;border-radius:var(--rounded-sm, 6px);border:1px solid var(--bdr);
+          background:var(--bg-1);color:var(--t2);
+          font-family:var(--ui);font-size:10px;font-weight:600;cursor:pointer;
           transition:all .18s;
         ">↺ Reset</button>
       </div>
-      <div id="ld3-node-count" style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);font-family:'Geist Mono',monospace;font-size:9px;color:#40475e;"></div>
+      <div id="ld3-node-count" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--bdr);font-family:var(--mono);font-size:9.5px;color:var(--t3);"></div>
     `;
     container.appendChild(ov);
 
-    // Wire overlay button events
+    // Dropdown visual changer
+    ov.querySelector('#sel-3d-mode').value = this._currentMode;
+    ov.querySelector('#sel-3d-mode').addEventListener('change', (e) => {
+      this._currentMode = e.target.value;
+      this._buildScene();
+    });
+
+    // Auto rotate toggle
     ov.querySelector('#btn-3d-rotate').addEventListener('click', (e) => {
       this._autoRotate = !this._autoRotate;
-      e.currentTarget.textContent = `Auto-Rotate: ${this._autoRotate ? 'On' : 'Off'}`;
-      e.currentTarget.style.color = this._autoRotate ? '#ff9500' : '#7a8299';
-      e.currentTarget.style.borderColor = this._autoRotate ? 'rgba(255,149,0,0.35)' : 'rgba(255,255,255,0.10)';
+      e.currentTarget.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.17"/></svg> Auto-Rotate: ${this._autoRotate ? 'On' : 'Off'}`;
+      e.currentTarget.style.color = this._autoRotate ? 'var(--amber)' : 'var(--t3)';
     });
+
+    // Reset view matrix
     ov.querySelector('#btn-3d-reset').addEventListener('click', () => {
       if (this._camera) {
         this._camera.position.set(20, 22, 22);
@@ -11114,13 +11556,9 @@ const LANDSCAPE3D = {
       }
       if (this._forest) this._forest.rotation.y = 0;
     });
-
-    // Show node count
-    const nodeCount = this._forest ? this._forest.children.length : 0;
-    const countEl = ov.querySelector('#ld3-node-count');
-    if (countEl) countEl.textContent = `${nodeCount} node(s) rendered`;
   },
 
+  /* ── tooltip balloon setup ────────────────────────────── */
   _buildTooltip() {
     let tip = document.getElementById('ld3-tooltip');
     if (!tip) {
@@ -11128,13 +11566,13 @@ const LANDSCAPE3D = {
       tip.id = 'ld3-tooltip';
       tip.style.cssText = `
         position:fixed;pointer-events:none;z-index:9999;
-        background:rgba(12,15,21,0.92);
-        border:1px solid rgba(255,149,0,0.28);
-        border-radius:8px;padding:12px 14px;
-        font-family:'Geist',sans-serif;font-size:11px;
-        box-shadow:0 0 14px rgba(255,149,0,0.18),0 4px 20px rgba(0,0,0,0.6);
-        backdrop-filter:blur(12px);
-        color:#eef0f5;max-width:240px;
+        background:var(--bg-overlay, rgba(12,15,21,0.92));
+        border:1px solid var(--bdr);
+        border-radius:var(--rounded-md, 8px);padding:12px 14px;
+        font-family:var(--ui);font-size:11px;
+        box-shadow:0 4px 20px rgba(0,0,0,0.3);
+        backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+        color:var(--t1);max-width:240px;
         transition:opacity .12s;opacity:0;
       `;
       document.body.appendChild(tip);
@@ -11142,20 +11580,40 @@ const LANDSCAPE3D = {
     this._tooltip = tip;
   },
 
+  /* ── mouse listener setups ─────────────────────────────── */
   _wireEvents(canvas) {
-    // Orbit drag
     let isDrag = false, lastX = 0, lastY = 0;
+    let startX = 0, startY = 0, startTime = 0;
+
     canvas.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
       isDrag = true;
       lastX = e.clientX; lastY = e.clientY;
+      startX = e.clientX; startY = e.clientY;
+      startTime = Date.now();
       canvas.style.cursor = 'grabbing';
     });
-    window.addEventListener('mouseup', () => {
+
+    window.addEventListener('mouseup', e => {
+      if (!isDrag) return;
       isDrag = false;
       canvas.style.cursor = 'grab';
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const dt = Date.now() - startTime;
+
+      // Click evaluation
+      if (Math.sqrt(dx*dx + dy*dy) < 5 && dt < 250) {
+        this._onClick(e.clientX, e.clientY);
+      }
     });
+
     window.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      this._mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+      this._mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+
       if (isDrag && this._forest) {
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
@@ -11164,27 +11622,22 @@ const LANDSCAPE3D = {
         this._camera.lookAt(0, 0, 0);
         lastX = e.clientX; lastY = e.clientY;
       }
-      // Raycasting for hover tooltip
-      const rect = canvas.getBoundingClientRect();
-      this._mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-      this._mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
       this._raycast(e.clientX, e.clientY);
     });
 
-    // Zoom
     canvas.addEventListener('wheel', e => {
       e.preventDefault();
       const dist = this._camera.position.length();
-      const factor = 1 + e.deltaY * 0.001;
+      const factor = 1 + e.deltaY * 0.0015;
       const newDist = Math.max(8, Math.min(80, dist * factor));
       this._camera.position.normalize().multiplyScalar(newDist);
       this._camera.lookAt(0, 0, 0);
     }, { passive: false });
   },
 
+  /* ── raycasting hover tooltips ────────────────────────── */
   _raycast(clientX, clientY) {
     if (!this._raycaster || !this._bars.length) return;
-    const THREE = window.THREE;
     this._raycaster.setFromCamera(this._mouse, this._camera);
     const meshes = this._bars.map(b => b.mesh);
     const hits = this._raycaster.intersectObjects(meshes);
@@ -11200,19 +11653,38 @@ const LANDSCAPE3D = {
 
   _showTip(node, x, y) {
     if (!this._tooltip) return;
-    this._tooltip.innerHTML = `
-      <div style="font-weight:700;margin-bottom:4px;color:${node.visualStyle?.accentColor || '#ff9500'};font-size:12px;font-family:'Space Grotesk',sans-serif;">${esc(node.elementName || node.ruleName)}</div>
-      <div style="color:#7a8299;font-family:'Geist Mono',monospace;font-size:9.5px;margin-bottom:8px;">${esc(node.ruleName)}</div>
-      <div style="display:flex;justify-content:space-between;gap:14px;">
-        <span style="color:#c4c9d8;">Duration</span>
-        <span style="font-weight:700;color:#ff9500;font-family:'Geist Mono',monospace;">${fmtMs(node.duration)}</span>
-      </div>
-      ${node.timestamp ? `<div style="display:flex;justify-content:space-between;gap:14px;margin-top:3px;">
-        <span style="color:#c4c9d8;">Time</span>
-        <span style="font-family:'Geist Mono',monospace;color:#a3b0cc;font-size:10px;">${new Date(node.timestamp).toLocaleTimeString()}</span>
-      </div>` : ''}
-      ${node.payload ? `<div style="margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.07);color:#7a8299;font-size:9.5px;font-family:'Geist Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(node.payload.slice(0, 60))}</div>` : ''}
-    `;
+    
+    let html = '';
+    if (this._currentMode === 'graph') {
+      html = `
+        <div style="font-weight:700;margin-bottom:4px;color:${node.color || 'var(--blue)'};font-size:12px;font-family:var(--ui);">${esc(node.id)}</div>
+        <div style="color:var(--t3);font-family:var(--mono);font-size:9.5px;margin-bottom:8px;">Transaction Node</div>
+        <div style="display:flex;justify-content:space-between;gap:14px;margin-bottom:3px;">
+          <span style="color:var(--t2);">Calls</span>
+          <span style="font-weight:700;color:var(--amber);font-family:var(--mono);">${node.count}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:14px;">
+          <span style="color:var(--t2);">Self Time</span>
+          <span style="font-weight:700;color:var(--amber);font-family:var(--mono);">${fmtMs(node.selfTime)}</span>
+        </div>
+      `;
+    } else {
+      html = `
+        <div style="font-weight:700;margin-bottom:4px;color:${node.visualStyle?.accentColor || 'var(--amber)'};font-size:12px;font-family:var(--ui);">${esc(node.elementName || node.ruleName)}</div>
+        <div style="color:var(--t3);font-family:var(--mono);font-size:9.5px;margin-bottom:8px;">${esc(node.ruleName)}</div>
+        <div style="display:flex;justify-content:space-between;gap:14px;">
+          <span style="color:var(--t2);">Duration</span>
+          <span style="font-weight:700;color:var(--amber);font-family:var(--mono);">${fmtMs(node.duration)}</span>
+        </div>
+        ${node.timestamp ? `<div style="display:flex;justify-content:space-between;gap:14px;margin-top:3px;">
+          <span style="color:var(--t2);">Time</span>
+          <span style="font-family:var(--mono);color:var(--t3);font-size:10px;">${new Date(node.timestamp).toLocaleTimeString()}</span>
+        </div>` : ''}
+        ${node.payload ? `<div style="margin-top:7px;padding-top:5px;border-top:1px solid var(--bdr);color:var(--t3);font-size:9.5px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(node.payload.slice(0, 60))}</div>` : ''}
+      `;
+    }
+
+    this._tooltip.innerHTML = html;
     this._tooltip.style.left  = (x + 14) + 'px';
     this._tooltip.style.top   = (y + 14) + 'px';
     this._tooltip.style.opacity = '1';
@@ -11222,6 +11694,88 @@ const LANDSCAPE3D = {
     if (this._tooltip) this._tooltip.style.opacity = '0';
   },
 
+  /* ── Interactive Focus Bridge ───────────────────────────── */
+  _onClick(clientX, clientY) {
+    if (!this._raycaster || !this._bars.length) return;
+    this._raycaster.setFromCamera(this._mouse, this._camera);
+    const meshes = this._bars.map(b => b.mesh);
+    const hits = this._raycaster.intersectObjects(meshes);
+
+    if (hits.length > 0) {
+      const hit = hits[0];
+      const entry = this._bars.find(b => b.mesh === hit.object);
+      if (entry) {
+        if (this._currentMode === 'graph') {
+          toast(`Selected node: ${entry.node.id}`, 'info');
+        } else {
+          this.focusNode(entry.node);
+        }
+      }
+    }
+  },
+
+  focusNode(node) {
+    if (!node || !node.id) return;
+    
+    // Switch to split view layout
+    UI.svm('split');
+
+    // Switch thread if needed
+    if (node.thread && node.thread !== S.activeThr) {
+      UI.sw(node.thread);
+    }
+
+    // Force expansion of parent layers
+    let p = node.parent;
+    while (p) {
+      p.expanded = true;
+      p = p.parent;
+    }
+
+    // Refresh tree render hierarchy
+    TR.updateVisible();
+    TR.drawVisible();
+
+    // Scroll tree row into centered view
+    const idx = TR._visibleNodes.findIndex(n => n.id === node.id);
+    if (idx >= 0) {
+      KBN._idx = idx;
+      TR.drawVisible();
+      
+      const container = TR._container;
+      if (container) {
+        container.scrollTop = idx * TR._rowHeight - (container.clientHeight / 2) + (TR._rowHeight / 2);
+      }
+      toast(`Focused operation: ${node.elementName || node.ruleName}`, 'success');
+    }
+  },
+
+  /* ── Grid/Color sync dynamically on theme change ───────── */
+  _updateThemeColors(isDark) {
+    const THREE = window.THREE;
+    if (!this._scene) return;
+
+    if (this._gridHelper) this._scene.remove(this._gridHelper);
+
+    const colorCenter = isDark ? 0x252c3d : 0xcac5bc;
+    const colorGrid = isDark ? 0x1a1f2c : 0xe0dbd3;
+
+    const gridHelper = new THREE.GridHelper(60, 30, colorCenter, colorGrid);
+    gridHelper.position.y = -6;
+    this._gridHelper = gridHelper;
+    this._scene.add(gridHelper);
+
+    this._drawBg();
+
+    if (this._ambientLight) {
+      this._ambientLight.intensity = isDark ? 0.45 : 0.75;
+    }
+    if (this._keyLight) {
+      this._keyLight.intensity = isDark ? 2.8 : 2.0;
+    }
+  },
+
+  /* ── resize wrapper ─────────────────────────────────────── */
   _resize() {
     const c = this._container;
     if (!c || !this._renderer || !this._camera) return;
@@ -11233,7 +11787,7 @@ const LANDSCAPE3D = {
     this._drawBg();
   },
 
-  /* ── flat tree helper ───────────────────────────────────── */
+  /* ── flatten helper ─────────────────────────────────────── */
   _flatten(nodes, depth = 0, out = []) {
     for (const n of (nodes || [])) {
       out.push({ node: n, depth });
@@ -11242,23 +11796,43 @@ const LANDSCAPE3D = {
     return out;
   },
 
-  /* ── animation loop ─────────────────────────────────────── */
+  /* ── main animation frame loop ────────────────────────── */
   _animate() {
     this._rafId = requestAnimationFrame(() => this._animate());
     const t = Date.now() * 0.001;
 
-    // Auto-rotate the log forest
+    // Theme checking & dynamic colors update
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    if (this._lastTheme !== isDark) {
+      this._lastTheme = isDark;
+      this._updateThemeColors(isDark);
+    }
+
+    // Auto rotate scene
     if (this._autoRotate && this._forest) {
       this._forest.rotation.y += 0.0008;
     }
 
-    // Sine-wave breathing scale on each bar (matches code.html reference)
+    // Animate meshes depending on active visual mode
     if (this._forest) {
-      this._forest.children.forEach((mesh, idx) => {
-        const baseH = mesh.userData.baseH || 1;
-        const pulse = 1 + Math.sin(t + idx * 0.35) * 0.12;
-        mesh.scale.y = pulse;
-      });
+      if (this._currentMode === 'forest' || this._currentMode === 'helix') {
+        this._forest.children.forEach((mesh) => {
+          const baseH = mesh.userData.baseH || 1;
+          const idx = mesh.userData.idx || 0;
+          if (mesh.userData.isIndicator) {
+            const localY = mesh.userData.localY;
+            mesh.position.y = localY + Math.sin(t * 3.5 + idx * 0.5) * 0.15;
+            mesh.rotation.y += 0.025;
+          } else if (mesh.geometry && mesh.geometry.type === 'BoxGeometry') {
+            // Breathing bars
+            const pulse = 1 + Math.sin(t + idx * 0.35) * 0.12;
+            mesh.scale.y = pulse;
+          }
+        });
+      } else if (this._currentMode === 'graph') {
+        // Run Verlet spring force calculations
+        this._updateGraphLayout();
+      }
     }
 
     if (this._renderer && this._scene && this._camera) {
@@ -11266,13 +11840,46 @@ const LANDSCAPE3D = {
     }
   },
 
-  /* ── cleanup when view is switched ─────────────────────── */
+  /* ── cleanup on destroy ─────────────────────────────────── */
   destroy() {
     if (this._rafId) { cancelAnimationFrame(this._rafId); this._rafId = null; }
     if (this._resizeObs) { this._resizeObs.disconnect(); this._resizeObs = null; }
+    
+    // Clear graph lines
+    if (this._graphLinesNormal) {
+      this._scene.remove(this._graphLinesNormal);
+      if (this._graphLinesNormal.geometry) this._graphLinesNormal.geometry.dispose();
+      if (this._graphLinesNormal.material) this._graphLinesNormal.material.dispose();
+      this._graphLinesNormal = null;
+    }
+    if (this._graphLinesAnomaly) {
+      this._scene.remove(this._graphLinesAnomaly);
+      if (this._graphLinesAnomaly.geometry) this._graphLinesAnomaly.geometry.dispose();
+      if (this._graphLinesAnomaly.material) this._graphLinesAnomaly.material.dispose();
+      this._graphLinesAnomaly = null;
+    }
+
+    // Clear forest Group meshes
+    if (this._forest) {
+      this._scene.remove(this._forest);
+      this._forest.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+          else child.material.dispose();
+        }
+      });
+      this._forest = null;
+    }
+
     if (this._renderer) { this._renderer.dispose(); this._renderer = null; }
     if (this._tooltip) { this._tooltip.style.opacity = '0'; }
-    this._scene = null; this._camera = null; this._forest = null; this._bars = [];
+    
+    this._scene = null;
+    this._camera = null;
+    this._bars = [];
+    this._graphNodes = [];
+    this._graphLinks = [];
   }
 };
 
