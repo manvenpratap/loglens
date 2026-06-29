@@ -162,22 +162,25 @@ html,body{
 /* Logo — premium wordmark */
 .logo{
   display:flex;align-items:center;gap:8px;
-  font-family:var(--display);font-weight:800;font-size:16px;
-  letter-spacing:-.3px;
+  font-family:var(--mono);font-weight:700;font-size:15px;
+  letter-spacing:-.5px;
+  text-transform:uppercase;
 }
 .logo-ico{
-  width:28px;height:28px;border-radius:var(--rounded-md);
-  background:var(--grad-amber);
+  width:28px;height:28px;border-radius:var(--rounded-sm);
+  background:var(--bg-2);border:1px solid var(--bdr);
+  color:var(--amber);
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;
-  box-shadow:0 2px 8px rgba(255,149,0,.35),0 0 0 1px rgba(255,149,0,.2);
+  font-size:13px;
+  font-family:var(--mono);font-weight:800;
   flex-shrink:0;
 }
 .logo .acc{color:var(--amber)}
 .hsep{width:1px;height:18px;background:var(--bdr)}
 .hsub{
-  font-size:10px;color:var(--t4);font-weight:500;
-  font-family:var(--mono);letter-spacing:.2px;
+  font-size:9px;color:var(--t4);font-weight:500;
+  font-family:var(--mono);letter-spacing:.5px;
+  text-transform:uppercase;
 }
 .hr{margin-left:auto;display:flex;align-items:center;gap:6px}
 
@@ -283,17 +286,19 @@ html,body{
 .sb-tabs{display:flex;flex:1;overflow:hidden}
 .stab{
   flex:1;min-width:0;padding:9px 3px;
-  text-align:center;font-size:9.5px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.6px;
+  text-align:center;font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;
   color:var(--t4);cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:color .16s var(--ease-out),background .16s var(--ease-out),border-color .16s var(--ease-out);
+  border-bottom:none;
+  transition:color .16s var(--ease-out),background .16s var(--ease-out);
   display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;
-  font-family:var(--display);
+  font-family:var(--mono);
+  position:relative;z-index:1;
 }
 .stab:hover{color:var(--t2);background:var(--glass)}
-.stab.active{color:var(--amber);border-bottom-color:var(--amber);background:var(--amber-d)}
-.stab-ic{font-size:13px}
+.stab.active{color:var(--amber);background:transparent}
+.stab .stab-ic{display:none}
+.sb.collapsed .stab-ic{display:inline-flex !important;font-size:14px}
 
 .btn-tog{
   width:32px;height:32px;flex-shrink:0;
@@ -4588,15 +4593,56 @@ label[for="watch-auto-reload"] {
 
 /* Gliding pill indicator overrides */
 #sb-tabs-pill {
-  background: var(--bg-1) !important;
-  border: 1px solid var(--bdr-h) !important;
-  border-radius: calc(var(--rounded-md) - 2px) !important;
-  box-shadow: var(--shd-xs) !important;
+  background: var(--bg-0) !important;
+  border: 1px solid var(--bdr) !important;
+  border-left: 2px solid var(--amber) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   z-index: 0 !important;
 }
 [data-theme=light] #sb-tabs-pill {
-  background: var(--bg-1) !important;
+  background: var(--bg-0) !important;
   border-color: var(--bdr) !important;
+}
+
+/* System Status LED Badge */
+.system-status {
+  font-family: var(--mono);
+  font-size: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  padding: 4px 8px !important;
+  border-radius: var(--rounded-sm) !important;
+  color: var(--t2) !important;
+  user-select: none;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  display: inline-block;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 oklch(68% 0.14 140 / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(68% 0.14 140 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(68% 0.14 140 / 0); }
+}
+@keyframes pulse-amber {
+  0% { box-shadow: 0 0 0 0 oklch(67% 0.16 55 / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(67% 0.16 55 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(67% 0.16 55 / 0); }
+}
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 oklch(62% 0.18 25 / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(62% 0.18 25 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(62% 0.18 25 / 0); }
 }
 
 /* Interactive Collapsible Headers (clean chevrons) */
@@ -4713,6 +4759,7 @@ label[for="watch-auto-reload"] {
 
     <!-- Slot C: state chips (FS, config, file) -->
     <div class="hdr-slot-chips">
+      <span class="badge system-status" id="sys-status" title="System Status"><span class="status-dot"></span><span class="status-txt">SYS_STATUS // IDLE</span></span>
       <span class="badge b-gray" id="hdr-fs" title="File System Access API">FS API</span>
       <span class="badge b-gray" id="hdr-cfg" title="Loaded configuration">No Config</span>
       <span class="badge b-gray" id="hdr-file" title="Loaded log file">No File</span>
@@ -4758,10 +4805,10 @@ label[for="watch-auto-reload"] {
 <aside class="sb" id="sb">
   <div class="sb-top">
     <div class="sb-tabs">
-      <div class="stab active" data-panel="p-cfg" title="Configuration" aria-label="Configuration tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="stab-lbl">Config</span></div>
-      <div class="stab" data-panel="p-gs" title="Settings" aria-label="Settings tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span class="stab-lbl">Settings</span></div>
-      <div class="stab" data-panel="p-lj" title="Log4j Import" aria-label="Log4j import tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span class="stab-lbl">Log4j</span></div>
-      <div class="stab" data-panel="p-hlp" title="Help" aria-label="Help tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="stab-lbl">Help</span></div>
+      <div class="stab active" data-panel="p-cfg" title="Configuration" aria-label="Configuration tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="stab-lbl">CFG</span></div>
+      <div class="stab" data-panel="p-gs" title="Settings" aria-label="Settings tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span class="stab-lbl">SET</span></div>
+      <div class="stab" data-panel="p-lj" title="Log4j Import" aria-label="Log4j import tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span class="stab-lbl">L4J</span></div>
+      <div class="stab" data-panel="p-hlp" title="Help" aria-label="Help tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="stab-lbl">HLP</span></div>
     </div>
     <button class="btn-tog" id="btn-sb-tog" title="Collapse sidebar" aria-label="Collapse sidebar"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span></button>
   </div>
@@ -18120,7 +18167,7 @@ ONBOARD.check();
     });
   }
 
-  // 7. Parse Button State Machine
+  // 7. Parse Button State Machine & System Status LED
   window.PARSEBTN = {
     set(state) {
       const btn = $('btn-parse');
@@ -18132,10 +18179,45 @@ ONBOARD.check();
       } else {
         btn.textContent = labels[state] || '▶ Parse';
       }
+
+      // Update system status LED
+      const sysStatus = $('sys-status');
+      if (sysStatus) {
+        const dot = sysStatus.querySelector('.status-dot');
+        const txt = sysStatus.querySelector('.status-txt');
+        if (state === 'parsing') {
+          if (dot) { dot.style.background = 'var(--amber)'; dot.style.boxShadow = '0 0 8px var(--amber)'; dot.style.animation = 'pulse-amber 1s infinite'; }
+          if (txt) txt.textContent = 'SYS_STATUS // PARSING_LOG';
+        } else if (state === 'done') {
+          if (dot) { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 8px var(--green)'; dot.style.animation = 'pulse-green 2s infinite'; }
+          if (txt) txt.textContent = 'SYS_STATUS // LOG_LOADED';
+        } else if (state === 'error') {
+          if (dot) { dot.style.background = 'var(--red)'; dot.style.boxShadow = '0 0 8px var(--red)'; dot.style.animation = 'pulse-red 1s infinite'; }
+          if (txt) txt.textContent = 'SYS_STATUS // ERROR';
+          setTimeout(() => this.resetStatus(), 2000);
+        }
+      }
+
       if (state === 'done') setTimeout(() => this.set('idle'), 1500);
       if (state === 'error') setTimeout(() => this.set('idle'), 2000);
+    },
+    resetStatus() {
+      const sysStatus = $('sys-status');
+      if (sysStatus) {
+        const dot = sysStatus.querySelector('.status-dot');
+        const txt = sysStatus.querySelector('.status-txt');
+        const hasFile = !!(S && S.logFile);
+        if (hasFile) {
+          if (dot) { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 8px var(--green)'; dot.style.animation = 'pulse-green 2s infinite'; }
+          if (txt) txt.textContent = 'SYS_STATUS // LOG_LOADED';
+        } else {
+          if (dot) { dot.style.background = '#ef4444'; dot.style.boxShadow = 'none'; dot.style.animation = 'none'; }
+          if (txt) txt.textContent = 'SYS_STATUS // IDLE';
+        }
+      }
     }
   };
+  setTimeout(() => PARSEBTN.resetStatus(), 400);
 
   const originalWmParse = WM.parse.bind(WM);
   WM.parse = async function(file, cfg, tf) {
@@ -18791,7 +18873,7 @@ ONBOARD.check();
     if (!pill) {
       pill = document.createElement('div');
       pill.id = 'sb-tabs-pill';
-      pill.style.cssText = 'position:absolute; background:var(--amber-d) !important; border:1px solid var(--amber) !important; box-shadow:0 0 6px var(--amber-g); border-radius:var(--radius-md); transition:all 0.22s var(--ease-spring); z-index:0; pointer-events:none;';
+      pill.style.cssText = 'position:absolute; background:var(--bg-0) !important; border:1px solid var(--bdr) !important; border-left:2px solid var(--amber) !important; transition:all 0.22s var(--ease-spring); z-index:0; pointer-events:none;';
       container.appendChild(pill);
     }
     

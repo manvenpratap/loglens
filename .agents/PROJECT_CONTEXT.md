@@ -2,6 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Topbar and Sidebar Visual Redesign (v6.9.7 — COMPLETED)**:
+  - Redesigned sidebar tabs using monospace font family (`var(--mono)`), size `10px`, weight `600`, and JSDoc-style abbreviations (`CFG`, `SET`, `L4J`, `HLP`) with pure monospaced labels.
+  - Implemented smart visibility rule for tab icons: hidden by default when expanded and displayed only when collapsed.
+  - Upgraded active tab background glider (`#sb-tabs-pill`) into a tactile mechanical slider panel with a 2px left amber accent border.
+  - Added a clinical Status Monitor badge (`.system-status`) in the topbar slot featuring a dynamic pulsing LED indicator synchronized with parsing operations (`SYS_STATUS // PARSING_LOG` / `LOG_LOADED` / `IDLE` states).
+  - Cleaned up topbar logo to utilize flat boundaries and monospaced typography to enhance industrial console aesthetics.
+
 - **Obsidian Amber Theme Implementation (v6.9.6 — COMPLETED)**:
   - Shifted the dark theme background colors from a warm mud-gray hue to a deep obsidian-slate blue-gray (Hue 240) while preserving warm telemetry highlighting lights.
   - Aligned header elements and backgrounds to match glassmorphic dark-slate tints.
@@ -430,4 +437,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Obsidian Amber Theme Implementation v6.9.6)*
+*Updated By: Antigravity (Topbar and Sidebar Visual Redesign v6.9.7)*
