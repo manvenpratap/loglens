@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Brand Logo & Wordmark Redesign (v6.9.26 — COMPLETED)**:
+  - Designed a premium vector SVG logo emblem consisting of interlocking Squircle boundary, parallel data lines, and transparent magnifying focus lens elements with amber-to-orange gradients.
+  - Upgraded font styling of "LogLens" branding across both header and onboarding overlay to use heavier font weights (`800`/`900`), modern display typefaces, and high-fidelity text-mask gradients.
+  - Promoted overall layout prominence (increased logo icon bounds to 32px in header and 44px in onboarding).
+
 - **Primary Action Bar Implementation (v6.9.25 — COMPLETED)**:
   - Introduced a primary action bar (`#action-bar`) below the header.
   - Relocated the active thread selector (`#vt-chips`) to the left side of the action bar.
