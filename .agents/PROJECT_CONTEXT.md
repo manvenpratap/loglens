@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Tagline Placement Update (v6.9.15 — COMPLETED)**:
+  - Removed "Metadata-Driven Log Analyzer" tagline and its vertical line divider from the main dashboard header to declutter the user interface.
+  - Repositioned the tagline onto the onboarding/hero page underneath the main LogLens wordmark for branding consistency.
+  - Cleaned up unused onboarding badge (`.ob-badge`) CSS rule.
 - **Premium Logo Design & Version Removal (v6.9.14 — COMPLETED)**:
   - Replaced the simple "LL" text box with a premium custom inline SVG logo icon depicting structured log lines scanned by a glowing diagnostic lens with amber/orange gradients.
   - Removed the frontend version display badge (`.v-badge` showing `v6.1`) next to the wordmark to clean up the header layout.
