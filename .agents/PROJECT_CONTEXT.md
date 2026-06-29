@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Premium Logo Design & Version Removal (v6.9.14 — COMPLETED)**:
+  - Replaced the simple "LL" text box with a premium custom inline SVG logo icon depicting structured log lines scanned by a glowing diagnostic lens with amber/orange gradients.
+  - Removed the frontend version display badge (`.v-badge` showing `v6.1`) next to the wordmark to clean up the header layout.
+  - Cleaned up unused `.v-badge` CSS rules to maintain stylesheet integrity.
 - **Unified Thread Dropdown Search (v6.9.13 — COMPLETED)**:
   - Merged the separate thread search field (`#thr-in`) and scan button (`#btn-disc`) from the control bar directly into the active thread dropdown.
   - Added a sticky, focus-friendly text filter input (`#vt-chips-menu input`) inside the portal dropdown menu, allowing users to dynamically filter and select threads.
