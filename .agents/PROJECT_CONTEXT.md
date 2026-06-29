@@ -3,10 +3,12 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 - **Search Layout Fix & Thread Selector Dropdown Conversion (v6.9.10 — COMPLETED)**:
+  - Resolved active thread select dropdown text visibility clipping issues by replacing the borderless flex-nested select layout with a standard native `<select>` layout next to the status dot, restoring standard line-height and bounding box auto-sizing.
   - Implemented natural sorting (alphanumeric order) for the threads list inside `UI.render()` using `localeCompare` with `numeric: true` (e.g., `worker-2` comes before `worker-10`).
-  - Restyled the thread selector dropdown into a premium active status indicator badge, complete with a glowing amber status dot and custom dropdown arrow layout.
+  - Restyled the thread selector dropdown into a premium active status indicator badge, complete with a glowing amber status dot.
   - Removed the breadcrumb context bar (`#breadcrumb` / `BCB` namespace) completely from both HTML and script (stubbed namespace to prevent ReferenceErrors) to eliminate vertical clutter and maximize vertical workspace for the timeline.
   - Implemented collapsible split panes (Waterfall Timeline and Execution Tree) via toggle arrow buttons (`◀` / `▶`) on the divider (`.sp-hdl`), with smooth transitions and persistent split ratio tracking (`S.splitRatio` and `S.collapsedPane`).
+  - Added a collapsible/minimizable top control bar (`.ctrl`) triggered by a chevron toggle button in the header actions slot, maximizing vertical layout space for the timeline, with state persistence across loads.
   - Fixed scroll-driven scrubber scroll target binding by prioritizing `ganttWrapper.querySelector('.g-rows')` as the parent scroller in `SCRUBBER.attach`, ensuring horizontal scroll events on the track are captured.
   - Aligned scroll-driven scrubber timeline position (`#ll-scrubber`) by updating `SCRUBBER._update` to use the formula `calc(250px + (100% - 250px) * ratio)`, and incorporated zoom and horizontal scroll offset (`scrollLeft` and `scrollWidth`) into the duration calculations. This ensures that the tooltip (`#ll-scrubber-tip`) displays the correct time segment dynamically when the user scrolls horizontally or zooms.
   - Fixed Swimlane zoom visible range boundary persistence by resetting `S.visibleStart = null` and `S.visibleEnd = null` in `UI.render()` when a new log file is loaded, preventing outdated range bounds from causing `0.00ms` calculations.
