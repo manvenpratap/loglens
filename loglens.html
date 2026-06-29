@@ -7353,6 +7353,7 @@ const UI={
 
   render(trees,threads,stats){
     S.trees=trees;S.threads=threads;S.stats=stats;
+    S.visibleStart = null; S.visibleEnd = null;
     if (S.logFile) {
       $('hdr-file').textContent = S.logFile.name.slice(0, 16) + (S.logFile.name.length > 16 ? '...' : '');
       $('hdr-file').className = 'badge b-green';
