@@ -16813,8 +16813,7 @@ const OVERDRIVE = (() => {
       const scrollTop = scroller.scrollTop;
       const scrollH = scroller.scrollHeight;
       const ratio = scrollH > scroller.clientHeight ? scrollTop / (scrollH - scroller.clientHeight) : 0;
-      const pct = ratio * 100;
-      this._el.style.left = `calc(${pct}% - 1px)`;
+      this._el.style.left = `calc(250px + (100% - 250px) * ${ratio})`;
       const ms = ratio * this._totalDuration;
       this._tip.textContent = fmtMs(ms);
     },
