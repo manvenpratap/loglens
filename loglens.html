@@ -5118,6 +5118,31 @@ label[for="watch-auto-reload"] {
 .ftr #hdr-fs:hover, .ftr #hdr-cfg:hover, .ftr #hdr-file:hover {
   color: var(--t1);
 }
+/* Action bar below header */
+.action-bar {
+  display: none;
+  height: 32px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--bdr);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 150;
+}
+.action-bar.on {
+  display: flex;
+}
+.action-bar-left, .action-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.action-bar .hdr-search-container {
+  margin: 0 !important;
+  background: var(--bg-2) !important;
+}
+
 </style>
 
 
@@ -5148,13 +5173,7 @@ label[for="watch-auto-reload"] {
     <span>Log<span class="acc">Lens</span></span>
   </div>
 
-  <!-- Search — shrinks gracefully via .hdr-search class -->
-  <div class="hdr-search-container">
-    <span class="hdr-search-icon ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-    <input class="inp hdr-search" id="hdr-search" placeholder="Filter events (ID, rule, payload…)" aria-label="Filter parsed events" autocomplete="off" spellcheck="false"/>
-    <span class="hdr-search-shortcut" id="hdr-search-shortcut">/</span>
-    <button id="btn-search-clear" class="btn-search-clear" type="button" style="display:none;" title="Clear search">✕</button>
-  </div>
+
 
   <div class="vtabs" id="vtabs">
     <div class="vt active" data-v="split"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
@@ -5166,8 +5185,6 @@ label[for="watch-auto-reload"] {
     <div class="vt" data-v="graph"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
     <div class="vt" data-v="3d"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
     <input class="inp" id="trace-filter" placeholder="Trace ID Filter" style="width:120px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
-    <div class="vt-gap"></div>
-    <div class="vt-chips" id="vt-chips"></div>
   </div>
 
   <!-- Right-side slot system: A=live · B=status badges · C=state chips · D=actions · E=overflow -->
@@ -5225,6 +5242,21 @@ label[for="watch-auto-reload"] {
   <!-- Overflow dropdown (positioned relative to header) -->
   <div class="hdr-overflow-menu" id="hdr-overflow-menu" role="menu" aria-label="Overflow options"></div>
 </header>
+
+<!-- ================================================================ ACTION BAR -->
+<div class="action-bar" id="action-bar">
+  <div class="action-bar-left">
+    <div class="vt-chips" id="vt-chips"></div>
+  </div>
+  <div class="action-bar-right">
+    <div class="hdr-search-container" id="hdr-search-container">
+      <span class="hdr-search-icon ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input class="inp hdr-search" id="hdr-search" placeholder="Filter events (ID, rule, payload…)" aria-label="Filter parsed events" autocomplete="off" spellcheck="false"/>
+      <span class="hdr-search-shortcut" id="hdr-search-shortcut">/</span>
+      <button id="btn-search-clear" class="btn-search-clear" type="button" style="display:none;" title="Clear search">✕</button>
+    </div>
+  </div>
+</div>
 
 <!-- ================================================================ WORKSPACE -->
 <div class="ws">
@@ -7896,6 +7928,7 @@ const UI={
 
     const r=$('res');r.innerHTML=statsH;r.scrollTop=0;
     $('vtabs').classList.add('on');
+    $('action-bar').classList.add('on');
 
     // Build a custom styled dropdown — native <select> text colour is unreliable in all themes
     const vtc = $('vt-chips');
@@ -8219,6 +8252,11 @@ const UI={
   svm(vm){
     S.viewMode=vm;
     document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('active',t.dataset.v===vm));
+    const isSearchApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'graph'].includes(vm);
+    const searchWrap = $('hdr-search-container');
+    if (searchWrap) {
+      searchWrap.style.setProperty('display', isSearchApplicable ? 'flex' : 'none', 'important');
+    }
     if(S.trees&&S.activeThr!==null)this.rv();
   },
 
