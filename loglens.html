@@ -7474,31 +7474,26 @@ const UI={
       `<option value="${esc(t)}"${t===S.activeThr?' selected':''}>🧵 ${esc(t)}</option>`
     ).join('');
     $('vt-chips').innerHTML = `
-      <div style="display:inline-flex; align-items:center; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--rounded-md); padding:2px 4px 2px 8px; gap:6px; height:24px; transition:border-color 0.15s, box-shadow 0.15s;">
+      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
         <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);" aria-hidden="true"></span>
         <span style="font-size:10px; font-weight:700; color:var(--t3); font-family:var(--display); text-transform:uppercase; letter-spacing:0.4px;">Active:</span>
-        <select class="inp" id="vt-chips-select" style="max-width:160px; font-size:10px; font-family:var(--mono); font-weight:bold; padding:0 18px 0 4px; height:18px; line-height:18px; background:transparent; border:none; color:var(--t1); cursor:pointer; outline:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-repeat:no-repeat; background-position:right 2px center; background-size:8px; background-image:url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%238b949e\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"6 9 12 15 18 9\"/></svg>');">
+        <select class="inp" id="vt-chips-select" style="max-width:180px; font-size:10px; font-family:var(--mono); font-weight:bold; padding:2px 8px; height:22px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t1); cursor:pointer; outline:none; display:inline-block;">
           ${optionsHtml}
         </select>
       </div>
     `;
     const selectEl = $('vt-chips-select');
     if (selectEl) {
-      const container = selectEl.parentElement;
       selectEl.addEventListener('change', e => {
         UI.sw(e.target.value);
       });
       selectEl.addEventListener('focus', () => {
-        if (container) {
-          container.style.borderColor = 'var(--amber)';
-          container.style.boxShadow = '0 0 0 2px rgba(255, 149, 0, 0.15)';
-        }
+        selectEl.style.borderColor = 'var(--amber)';
+        selectEl.style.boxShadow = '0 0 0 2px rgba(255, 149, 0, 0.15)';
       });
       selectEl.addEventListener('blur', () => {
-        if (container) {
-          container.style.borderColor = 'var(--bdr)';
-          container.style.boxShadow = 'none';
-        }
+        selectEl.style.borderColor = 'var(--bdr)';
+        selectEl.style.boxShadow = 'none';
       });
     }
 
