@@ -11000,7 +11000,8 @@ const LANDSCAPE3D = {
 
     /* ─ Renderer ─ */
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.shadowMap.enabled = true;
     this._renderer = renderer;
@@ -11635,21 +11636,21 @@ const LANDSCAPE3D = {
     this._tooltip = tip;
   },
 
-  /* ── mouse listener setups ─────────────────────────────── */
+  /* ── mouse & touch listener setups ─────────────────────── */
   _wireEvents(canvas) {
     let isDrag = false, lastX = 0, lastY = 0;
     let startX = 0, startY = 0, startTime = 0;
 
-    canvas.addEventListener('mousedown', e => {
+    this._onMouseDown = e => {
       if (e.button !== 0) return;
       isDrag = true;
       lastX = e.clientX; lastY = e.clientY;
       startX = e.clientX; startY = e.clientY;
       startTime = Date.now();
       canvas.style.cursor = 'grabbing';
-    });
+    };
 
-    window.addEventListener('mouseup', e => {
+    this._onMouseUp = e => {
       if (!isDrag) return;
       isDrag = false;
       canvas.style.cursor = 'grab';
@@ -11662,9 +11663,9 @@ const LANDSCAPE3D = {
       if (Math.sqrt(dx*dx + dy*dy) < 5 && dt < 250) {
         this._onClick(e.clientX, e.clientY);
       }
-    });
+    };
 
-    window.addEventListener('mousemove', e => {
+    this._onMouseMove = e => {
       const rect = canvas.getBoundingClientRect();
       this._mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
       this._mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
@@ -11678,16 +11679,65 @@ const LANDSCAPE3D = {
         lastX = e.clientX; lastY = e.clientY;
       }
       this._raycast(e.clientX, e.clientY);
-    });
+    };
 
-    canvas.addEventListener('wheel', e => {
+    this._onWheel = e => {
       e.preventDefault();
       const dist = this._camera.position.length();
       const factor = 1 + e.deltaY * 0.0015;
       const newDist = Math.max(8, Math.min(80, dist * factor));
       this._camera.position.normalize().multiplyScalar(newDist);
       this._camera.lookAt(0, 0, 0);
-    }, { passive: false });
+    };
+
+    this._onTouchStart = e => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      isDrag = true;
+      lastX = touch.clientX; lastY = touch.clientY;
+      startX = touch.clientX; startY = touch.clientY;
+      startTime = Date.now();
+    };
+
+    this._onTouchEnd = e => {
+      if (!isDrag) return;
+      isDrag = false;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      const dt = Date.now() - startTime;
+
+      if (Math.sqrt(dx*dx + dy*dy) < 5 && dt < 250) {
+        this._onClick(touch.clientX, touch.clientY);
+      }
+    };
+
+    this._onTouchMove = e => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      this._mouse.x =  ((touch.clientX - rect.left) / rect.width)  * 2 - 1;
+      this._mouse.y = -((touch.clientY - rect.top)  / rect.height) * 2 + 1;
+
+      if (isDrag && this._forest) {
+        const dx = touch.clientX - lastX;
+        const dy = touch.clientY - lastY;
+        this._forest.rotation.y += dx * 0.008;
+        this._camera.position.y = Math.max(2, Math.min(50, this._camera.position.y - dy * 0.08));
+        this._camera.lookAt(0, 0, 0);
+        lastX = touch.clientX; lastY = touch.clientY;
+      }
+      this._raycast(touch.clientX, touch.clientY);
+    };
+
+    canvas.addEventListener('mousedown', this._onMouseDown);
+    window.addEventListener('mouseup', this._onMouseUp);
+    window.addEventListener('mousemove', this._onMouseMove);
+    canvas.addEventListener('wheel', this._onWheel, { passive: false });
+
+    canvas.addEventListener('touchstart', this._onTouchStart, { passive: true });
+    canvas.addEventListener('touchend', this._onTouchEnd, { passive: true });
+    canvas.addEventListener('touchmove', this._onTouchMove, { passive: true });
   },
 
   /* ── raycasting hover tooltips ────────────────────────── */
@@ -11899,6 +11949,26 @@ const LANDSCAPE3D = {
   destroy() {
     if (this._rafId) { cancelAnimationFrame(this._rafId); this._rafId = null; }
     if (this._resizeObs) { this._resizeObs.disconnect(); this._resizeObs = null; }
+
+    // Detach event listeners to prevent memory leaks
+    if (this._renderer && this._renderer.domElement) {
+      const canvas = this._renderer.domElement;
+      if (this._onMouseDown) canvas.removeEventListener('mousedown', this._onMouseDown);
+      if (this._onWheel) canvas.removeEventListener('wheel', this._onWheel);
+      if (this._onTouchStart) canvas.removeEventListener('touchstart', this._onTouchStart);
+      if (this._onTouchEnd) canvas.removeEventListener('touchend', this._onTouchEnd);
+      if (this._onTouchMove) canvas.removeEventListener('touchmove', this._onTouchMove);
+    }
+    if (this._onMouseUp) window.removeEventListener('mouseup', this._onMouseUp);
+    if (this._onMouseMove) window.removeEventListener('mousemove', this._onMouseMove);
+
+    this._onMouseDown = null;
+    this._onMouseUp = null;
+    this._onMouseMove = null;
+    this._onWheel = null;
+    this._onTouchStart = null;
+    this._onTouchEnd = null;
+    this._onTouchMove = null;
     
     // Clear graph lines
     if (this._graphLinesNormal) {

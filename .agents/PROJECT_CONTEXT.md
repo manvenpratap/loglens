@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **3D Views Fix & Mobile Touch Optimization (v6.9.8 — COMPLETED)**:
+  - Resolved event listener memory leaks by cleanly detaching all custom `mouseup` and `mousemove` window events on `destroy()`.
+  - Added full mobile and tablet touch interaction support (`touchstart`, `touchmove`, `touchend`) to translate swipe gestures into camera rotation and taps into clicked node focus.
+  - Capped maximum renderer device pixel ratio (DPR) to `1` on mobile devices and `2` on high-DPR desktop screens to prevent CPU/GPU thermal bottlenecks.
+
 - **Topbar and Sidebar Visual Redesign (v6.9.7 — COMPLETED)**:
   - Redesigned sidebar tabs using monospace font family (`var(--mono)`), size `10px`, weight `600`, and JSDoc-style abbreviations (`CFG`, `SET`, `L4J`, `HLP`) with pure monospaced labels.
   - Implemented smart visibility rule for tab icons: hidden by default when expanded and displayed only when collapsed.
@@ -437,4 +442,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Topbar and Sidebar Visual Redesign v6.9.7)*
+*Updated By: Antigravity (3D Views Fix & Mobile Touch Optimization v6.9.8)*
