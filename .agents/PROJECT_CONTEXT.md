@@ -2,8 +2,14 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Primary Action Bar Implementation (v6.9.25 — COMPLETED)**:
+  - Introduced a primary action bar (`#action-bar`) below the header.
+  - Relocated the active thread selector (`#vt-chips`) to the left side of the action bar.
+  - Relocated the global search filter (`#hdr-search-container`) to the right side of the action bar.
+  - Hooked global search container visibility to display only when applicable for the selected view mode (e.g. hidden on Stats and 3D View).
+
 - **View Switcher Relocation to Header (v6.9.24 — COMPLETED)**:
-  - Moved the view switcher tabs (`#vtabs`) from the main content viewport directly into the center area of the header.
+  - Moved the view switcher tabs (`#vtabs`) from the main content viewport directly into the center area of the header and centered it horizontally using absolute positioning.
   - Removed all inline styling from `#vtabs` HTML tag and structured styling rules purely inside the CSS stylesheet with responsive header overrides.
   - Handled the active indicator highlights using absolute bottom border lines that scale perfectly on theme transitions.
 
