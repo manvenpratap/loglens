@@ -2,6 +2,14 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Config & Setup Panel Merger (v6.9.32 — COMPLETED)**:
+  - Merged Setup (`gs`) and Config (`cfg`) view modes into a single, unified "Settings" (`cfg`) view.
+  - Relocated all setup cards (Global Settings, Cloud Datasources, JIRA Settings, Directory Watcher, Git Sync, Custom Plugins) directly into the Config dashboard card grid layout.
+  - Restructured the DOM: closed the `.dashboard-grid` container to cleanly place the Element Rules section full-width below the settings cards.
+  - Re-anchored settings dirty state tracking to listen to the new merged Settings tab (`cfg`) click events.
+  - Removed all occurrences, routing switch statements, command palette registry items, and sidebar references to the old setup view (`gs`).
+  - Redirected the `Alt+8` keyboard shortcut to launch the merged Settings (`cfg`) view mode.
+
 - **UI/UX Pro Max Overhaul (v6.9.31 — COMPLETED)**:
   - Redesigned full-screen Config, Setup, and Log4j screens into modern dashboard layout card grids (`.dashboard-grid` and `.dashboard-card`) with glass hover animations, subtle shadows, and structured headers.
   - Refactored header view switcher tabs (`.hdr .vtabs`) to use flexible center alignment with automatic horizontal scrolling (`overflow-x: auto`) and hidden scrollbars, preventing visual collisions with logos and actions on narrow viewports.
@@ -580,5 +588,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-06-29*  
-*Updated By: Antigravity (Search Layout Fix & Thread Selector Dropdown Conversion v6.9.10)*
+*Last Updated: 2026-06-30*  
+*Updated By: Antigravity (Config & Setup Panel Merger v6.9.32)*
