@@ -10201,44 +10201,46 @@ const STATS={
       </tr>`;
     }).join('');
 
-    container.innerHTML = `<div class="tw">
-      <div class="pt"><span>◬</span> Latency Statistics (Active Thread)</div>
-      
-      <div style="background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; padding:12px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <span style="font-size:12px; font-weight:bold; color:var(--t2);">⌕ Compare with previous run:</span>
-        <select id="comp-session-sel" class="inp" style="width:280px; font-size:12px; padding:4px 8px;">${opts}</select>
-        <button id="btn-clear-comp" class="btn btn-g btn-sm hidden">Clear Comparison</button>
-        <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">◧ Show Heatmap</button>
-      </div>
-
-      <div id="heatmap-container" class="hidden" style="margin-bottom:16px; padding:12px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px;">
-        <div style="font-weight:bold; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-          <span>◧ Event Frequency Heatmap (Time vs Rules)</span>
-          <button class="btn btn-xs" id="btn-close-heatmap">✕ Close</button>
+    container.innerHTML = `<div class="stats-layout-wrapper" style="display:flex; flex-direction:column; gap:16px;">
+      <div class="stats-panel-card" style="margin-top:0;">
+        <div class="sp-title"><span class="ico">◬</span> Latency Statistics (Active Thread)</div>
+        
+        <div style="background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; padding:12px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <span style="font-size:12px; font-weight:bold; color:var(--t2);">⌕ Compare with previous run:</span>
+          <select id="comp-session-sel" class="inp" style="width:280px; font-size:12px; padding:4px 8px;">${opts}</select>
+          <button id="btn-clear-comp" class="btn btn-g btn-sm hidden">Clear Comparison</button>
+          <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">◧ Show Heatmap</button>
         </div>
-        <div id="heatmap-svg-wrap" style="width:100%; overflow-x:auto;"></div>
-      </div>
 
-      <div id="comp-results-container" class="hidden" style="margin-bottom:16px;"></div>
+        <div id="heatmap-container" class="hidden stats-panel-card" style="margin-bottom:16px; margin-top:0;">
+          <div style="font-weight:bold; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span class="sp-title" style="margin-bottom:0;">◧ Event Frequency Heatmap (Time vs Rules)</span>
+            <button class="btn btn-xs" id="btn-close-heatmap">✕ Close</button>
+          </div>
+          <div id="heatmap-svg-wrap" style="width:100%; overflow-x:auto;"></div>
+        </div>
 
-      <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:12px;">
-          <thead>
-            <tr style="background:var(--bg-2); border-bottom:1px solid var(--bdr); color:var(--t3); text-transform:uppercase; font-size:10px;">
-              <th style="padding:10px; text-align:left;">Rule Name</th>
-              <th style="padding:10px; text-align:right;">Count</th>
-              <th style="padding:10px; text-align:right;">Avg Latency</th>
-              <th style="padding:10px; text-align:right;">P50</th>
-              <th style="padding:10px; text-align:right;">P95</th>
-              <th style="padding:10px; text-align:right;">P99</th>
-              <th style="padding:10px; text-align:right;">Outliers</th>
-              <th style="padding:10px; text-align:center; width:140px;">Latency Hist</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml || '<tr><td colspan="8" style="padding:20px; text-align:center; color:var(--t3);">No operations found. Make sure rules have push/pop behavior.</td></tr>'}
-          </tbody>
-        </table>
+        <div id="comp-results-container" class="hidden" style="margin-bottom:16px;"></div>
+
+        <div class="tw" style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg-2); border-bottom:1px solid var(--bdr); color:var(--t3); text-transform:uppercase; font-size:10px;">
+                <th style="padding:10px; text-align:left;">Rule Name</th>
+                <th style="padding:10px; text-align:right;">Count</th>
+                <th style="padding:10px; text-align:right;">Avg Latency</th>
+                <th style="padding:10px; text-align:right;">P50</th>
+                <th style="padding:10px; text-align:right; font-weight:bold; color:var(--amber);">P95</th>
+                <th style="padding:10px; text-align:right;">P99</th>
+                <th style="padding:10px; text-align:right;">Outliers</th>
+                <th style="padding:10px; text-align:center; width:140px;">Latency Hist</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml || '<tr><td colspan="8" style="padding:20px; text-align:center; color:var(--t3);">No operations found. Make sure rules have push/pop behavior.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>`;
 
@@ -10309,7 +10311,7 @@ const STATS={
     }
     const maxVal = Math.max(...buckets) || 1;
     const bw = W / B;
-    ctx.fillStyle = '#f0883e'; // --amber token hex equivalent
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--amber').trim() || '#f0883e';
     for (let i = 0; i < B; i++) {
       const h = (buckets[i]/maxVal) * (H - 4);
       ctx.fillRect(i*bw + 1, H - h - 1, bw - 2, h);
@@ -14924,7 +14926,7 @@ const ANOM = {
     ).join('');
     
     const html = `
-      <div class="stats-panel-card" style="margin-top:16px;">
+      <div class="stats-panel-card">
         <div class="sp-title"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Pattern Anomalies</div>
         <div class="stats-card-grid">
           <div>
@@ -15127,7 +15129,7 @@ const CORR = {
     });
     
     const html = `
-      <div class="stats-panel-card" style="margin-top:16px;">
+      <div class="stats-panel-card">
         <div class="sp-title"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span> Thread Correlation (Overlap Heatmap)</div>
         <div class="corr-grid-wrap">
           <div class="corr-grid" style="grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width:max-content; min-width:100%;">
@@ -15230,7 +15232,7 @@ const HEAT = {
     });
     
     const html = `
-      <div class="stats-panel-card" style="margin-top:16px;">
+      <div class="stats-panel-card">
         <div class="sp-title"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> Duration Heatmap Calendar</div>
         <div class="heat-cal-wrap">
           ${cellsHtml}
@@ -15276,7 +15278,7 @@ STATS.render = async function(tree, container) {
   await _origStatsRender(tree, container);
   
   // Appends pattern anomalies, thread correlation and contribution calendar heatmaps
-  const extWrap = container.querySelector('.tw');
+  const extWrap = container.querySelector('.stats-layout-wrapper');
   if (extWrap) {
     ANOM.renderCard(extWrap);
     CORR.renderCard(extWrap);
@@ -17518,7 +17520,7 @@ const PLUG = {
       },
       addStatsCard: (label, value, color) => {
         // Appends card to Stats view
-        const target = document.querySelector('.tw');
+        const target = document.querySelector('.stats-layout-wrapper') || document.querySelector('.tw');
         if (target) {
           const card = document.createElement('div');
           card.className = 'stats-panel-card';

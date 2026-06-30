@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Stats View UI Layout Fixes (v6.9.36 — COMPLETED)**:
+  - Refactored the Stats panel structure by introducing a flex column `.stats-layout-wrapper` container with standard `16px` gaps.
+  - Eliminated the double-border card nesting bug by wrapping only the Latency Statistics table inside `.tw`, making the main Latency panel, Pattern Anomalies, Thread Correlation, and Heatmap Calendar sibling cards.
+  - Updated custom plugin SDK method `addStatsCard` to target the new `.stats-layout-wrapper` (with fallback to `.tw`), preventing plugin cards from being incorrectly nested inside the table borders.
+  - Replaced the hardcoded hex color inside the Canvas Spark Histograms (`drawSpark`) with a dynamic `--amber` CSS theme-variable lookup for precise, responsive dark/light mode synchronization.
+
 - **Tauri Desktop Application Setup (v6.9.35 — COMPLETED)**:
   - Initialized a Tauri v2 native desktop application wrapper inside the workspace root (`src-tauri` container).
   - Configured `tauri.conf.json` with the app bundle identifier `com.loglens.desktop` and custom high-density desktop dimensions (`1280` x `800`).
