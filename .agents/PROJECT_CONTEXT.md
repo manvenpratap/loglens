@@ -8,7 +8,7 @@
   - Promoted overall layout prominence (increased logo icon bounds to 32px in header and 44px in onboarding).
 
 - **Primary Action Bar Implementation (v6.9.25 — COMPLETED)**:
-  - Introduced a primary action bar (`#action-bar`) below the header.
+  - Introduced a primary action bar (`#action-bar`) nested inside the main content viewport so that it starts beyond (to the right of) the left sidebar, allowing the sidebar to extend directly to the top header.
   - Relocated the active thread selector (`#vt-chips`) to the left side of the action bar.
   - Relocated the global search filter (`#hdr-search-container`) to the right side of the action bar.
   - Hooked global search container visibility to display only when applicable for the selected view mode (e.g. hidden on Stats and 3D View).
