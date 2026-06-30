@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Global Summary Cards UI Styling (v6.9.37 — COMPLETED)**:
+  - Implemented responsive, glassmorphic CSS styling for the global `#res-summary-cards` container and `.summary-card` children elements.
+  - Added smooth grid-based layouts, micro-interaction scale transforms, rotating hover icons, and theme-synced progress bars to match the premium console aesthetic.
+  - Resolved the unstyled vertical stacked layout bugs affecting the "Slowest Operation", "Rules Coverage", and "Active Threads" summary telemetry elements on analytical views.
+
 - **Stats View UI Layout Fixes (v6.9.36 — COMPLETED)**:
   - Refactored the Stats panel structure by introducing a flex column `.stats-layout-wrapper` container with standard `16px` gaps.
   - Eliminated the double-border card nesting bug by wrapping only the Latency Statistics table inside `.tw`, making the main Latency panel, Pattern Anomalies, Thread Correlation, and Heatmap Calendar sibling cards.
