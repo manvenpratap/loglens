@@ -12,6 +12,7 @@
   - Created the `SETTINGS_IO` JavaScript module (`§JS-SETTINGS_IO`) with `exportAll()`, `importAll(file)`, and `exportRules()` methods.
   - Wired section collapse/expand via event delegation on `[data-collapse]` attribute click and keyboard events.
   - Updated responsive CSS overrides for the new collapsible section structure.
+  - **Dropdown Stacking Fix**: Resolved rule action menus (`.rc-more-dropdown`) being clipped/occluded under subsequent element cards by using the CSS `:has()` selector to dynamically raise the active card's `z-index` to `50` when the dropdown is open, and `z-index: 2` on card hover.
 
 - **Log4j Panel Merger into Settings (v6.9.33 — COMPLETED)**:
   - Merged the Log4j XML Importer and Real-Time Log Stream views into the unified Settings (`cfg`) panel.
