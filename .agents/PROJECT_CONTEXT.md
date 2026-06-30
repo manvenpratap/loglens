@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Onboarding Skip Flow Persistence Fix (v6.9.39 — COMPLETED)**:
+  - Resolved a bug where the onboarding overlay `#ob-ov` rendered as visible on page load even if the user had already dismissed it previously.
+  - Added the `class="hidden"` attribute to the `#ob-ov` container in the HTML markup so it remains hidden on page load unless the `ll-ob-seen` localStorage flag is missing, enabling correct check timing.
+
 - **Frontend Design Audit & CSS Variable Fixes (v6.9.38 — COMPLETED)**:
   - Audited the entire stylesheet and resolved all undefined CSS variables (`--amber-dim`, `--sans`, `--text-sm`, `--text-xs`), preventing silent rendering failures in modern browsers.
   - Aligned `.ss-ord` badges background to use `--amber-g` and changed `.rules-hdr-btn` font-family to `--ui`.
