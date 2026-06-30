@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Auto-Parse Empty Rule Check & Redirection (v6.9.43 — COMPLETED)**:
+  - Added a validation guard to both the file-select helper (`UI.chooseAndParseLog()`) and the drag-and-drop listener to check for active rules (`S.cfg.elementRules.length`).
+  - If no rules exist, a warning toast is shown and the user is automatically redirected to the Config screen to add or import rules first, preventing empty/useless parsing.
+
 - **Auto-Parsing Workflow for Empty State and Drag-and-Drop (v6.9.42 — COMPLETED)**:
   - Added a `UI.chooseAndParseLog()` helper function that auto-triggers parsing once the user selects a log file via the empty state action button.
   - Enhanced the drag-and-drop listener to immediately parse log files upon being dropped onto the workspace if a config is already present, eliminating extra clicks in the new sidebarless UI.

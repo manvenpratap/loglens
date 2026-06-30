@@ -9737,7 +9737,12 @@ const DD={
       if(jsons.length){FS.imp(jsons[0]);if(jsons.length>1)toast('Only first JSON imported.','warn');}
       if(logs.length){
         MF.add(logs);
-        if(S.cfg){setTimeout(()=>$('btn-parse').click(),150);}
+        if(S.cfg && S.cfg.elementRules && S.cfg.elementRules.length > 0){
+          setTimeout(()=>$('btn-parse').click(),150);
+        } else {
+          toast('No configuration rules active. Please create or load rules first.', 'warn');
+          document.querySelector('.vt[data-v="cfg"]')?.click();
+        }
       }
     });
   }
@@ -19410,8 +19415,13 @@ UI.chooseAndParseLog = function() {
   const onFileChange = () => {
     input.removeEventListener('change', onFileChange);
     setTimeout(() => {
-      if (S.logFile && S.cfg) {
-        $('btn-parse').click();
+      if (S.logFile) {
+        if (!S.cfg || !S.cfg.elementRules || S.cfg.elementRules.length === 0) {
+          toast('No configuration rules active. Please create or load rules first.', 'warn');
+          document.querySelector('.vt[data-v="cfg"]')?.click();
+        } else {
+          $('btn-parse').click();
+        }
       }
     }, 100);
   };
