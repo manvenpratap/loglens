@@ -20056,91 +20056,12 @@ UI.svm(S.viewMode);
     });
   }
 
-  // 10. Rules coverage + threads card grid & Stats clicks
+  // 10. Click statistics row to filter in tree view
   const origStatsRender = STATS.render;
   STATS.render = async function(tree, container) {
     await origStatsRender.call(STATS, tree, container);
-    
     const stats = STATS.compute(tree);
-    const statsValues = Object.values(stats);
     
-    let slowestName = 'None';
-    let slowestVal = 0;
-    let slowestSla = 0;
-    let slowestCol = 'var(--blue)';
-    if (statsValues.length > 0) {
-      const s = statsValues.reduce((a, b) => (a.max > b.max ? a : b));
-      slowestName = s.ruleName;
-      slowestVal = s.max;
-      slowestSla = s.sla || s.max;
-      slowestCol = s.color || 'var(--blue)';
-    }
-    const slowestBarWidth = slowestVal > 0 ? Math.min(100, (slowestVal / slowestSla) * 100) : 0;
-    
-    const totalRules = S.cfg?.elementRules?.length || 0;
-    const matchedRules = statsValues.length;
-    const coveragePct = totalRules > 0 ? Math.round((matchedRules / totalRules) * 100) : 0;
-    const totalThreads = S.threads?.length || 0;
-    
-    const gridHtml = `
-      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
-        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Slowest Operation</div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <div class="stats-card-value trunc" style="max-width:180px; font-size:14px; font-weight:bold; color:${slowestCol};" title="${esc(slowestName)}">${esc(slowestName)}</div>
-          <svg width="40" height="6" style="background:var(--bg-3); border-radius:3px; margin-left:6px; flex-shrink:0;">
-            <rect width="${slowestBarWidth}%" height="100%" fill="var(--red)"></rect>
-          </svg>
-        </div>
-        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">Max Latency: ${fmtMs(slowestVal)}</div>
-      </div>
-      
-      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
-        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Rules Coverage</div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <div class="stats-card-value" style="font-size:14px; font-weight:bold;">${coveragePct}%</div>
-          <svg width="16" height="16" viewBox="0 0 16 16" style="transform: rotate(-90deg); margin-left:6px; flex-shrink:0;">
-            <circle cx="8" cy="8" r="6" fill="transparent" stroke="var(--bg-3)" stroke-width="2"></circle>
-            <circle cx="8" cy="8" r="6" fill="transparent" stroke="var(--green)" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="${37.7 - (37.7 * coveragePct / 100)}"></circle>
-          </svg>
-        </div>
-        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">${matchedRules} of ${totalRules} rules matched</div>
-      </div>
-      
-      <div class="stats-card" style="padding:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;">
-        <div class="stats-card-title" style="font-size:10px; text-transform:uppercase; color:var(--t4); font-weight:bold;">Active Threads</div>
-        <div class="stats-card-value" style="font-size:14px; font-weight:bold;">${totalThreads}</div>
-        <div class="stats-card-desc" style="font-size:9px; color:var(--t4);">Total threads parsed in session</div>
-      </div>
-    `;
-    
-    let grid = container.querySelector('#stats-card-grid');
-    if (!grid) {
-      grid = document.createElement('div');
-      grid.id = 'stats-card-grid';
-      grid.className = 'stats-card-grid';
-      grid.style.cssText = 'display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;';
-      const tw = container.querySelector('.tw');
-      if (tw) tw.insertBefore(grid, tw.firstChild);
-    }
-    grid.innerHTML = gridHtml;
-    
-    // Trigger countUp on stats cards
-    setTimeout(() => {
-      document.querySelectorAll('.stats-card-value').forEach(el => {
-        const txt = el.textContent;
-        if (txt.endsWith('%')) {
-          const val = parseInt(txt, 10) || 0;
-          el.textContent = '0%';
-          countUp(el, val, '%');
-        } else if (/^\d+$/.test(txt)) {
-          const val = parseInt(txt, 10) || 0;
-          el.textContent = '0';
-          countUp(el, val);
-        }
-      });
-    }, 100);
-
-    // Click statistics row to filter in tree view
     container.querySelectorAll('.stats-row').forEach(row => {
       row.style.cursor = 'pointer';
       row.addEventListener('click', () => {
@@ -20632,6 +20553,127 @@ UI.svm(S.viewMode);
       setTimeout(updateSbTabsPill, 250);
     });
   }
+
+  // 27. Conditionally render enhanced summary cards under stats-bar on eligible analytical views
+  UI.updateSummaryCards = function() {
+    const r = $('res');
+    if (!r) return;
+    
+    const eligible = ['split', 'gantt', 'tree', 'stats'];
+    const hasData = S.trees && Object.keys(S.trees).length > 0 && S.activeThr && S.trees[S.activeThr];
+    const isEligible = eligible.includes(S.viewMode) && hasData;
+    
+    let container = $('res-summary-cards');
+    
+    if (!isEligible) {
+      if (container) container.remove();
+      return;
+    }
+    
+    const activeTree = S.trees[S.activeThr] || [];
+    const stats = STATS.compute(activeTree);
+    const statsValues = Object.values(stats);
+    
+    let slowestName = 'None';
+    let slowestVal = 0;
+    let slowestSla = 0;
+    let slowestCol = 'var(--blue)';
+    if (statsValues.length > 0) {
+      const s = statsValues.reduce((a, b) => (a.max > b.max ? a : b));
+      slowestName = s.ruleName;
+      slowestVal = s.max;
+      slowestSla = s.sla || s.max;
+      slowestCol = s.color || 'var(--blue)';
+    }
+    const slowestBarWidth = slowestVal > 0 ? Math.min(100, (slowestVal / slowestSla) * 100) : 0;
+    
+    const totalRules = S.cfg?.elementRules?.length || 0;
+    const matchedRules = statsValues.length;
+    const coveragePct = totalRules > 0 ? Math.round((matchedRules / totalRules) * 100) : 0;
+    const totalThreads = S.threads?.length || 0;
+
+    const slowestSvg = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${slowestCol}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stats-icon-svg" style="transition: transform 0.3s ease;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    const coverageSvg = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stats-icon-svg" style="transition: transform 0.3s ease;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 11 13 15 9"/></svg>`;
+    const threadsSvg = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stats-icon-svg" style="transition: transform 0.3s ease;"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>`;
+
+    const gridHtml = `
+      <div class="summary-card slowest-op-card">
+        <div class="summary-card-header">
+          <div class="summary-card-title">Slowest Operation</div>
+          <div class="summary-card-icon">${slowestSvg}</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value trunc" title="${esc(slowestName)}" style="color:${slowestCol};">${esc(slowestName)}</div>
+          <div class="summary-card-progress-wrap">
+            <div class="summary-card-progress-bar" style="width:${slowestBarWidth}%; background-color:${slowestCol};"></div>
+          </div>
+        </div>
+        <div class="summary-card-footer">
+          <span class="summary-card-desc">Max Latency: <span class="mono">${fmtMs(slowestVal)}</span></span>
+        </div>
+      </div>
+      
+      <div class="summary-card coverage-card">
+        <div class="summary-card-header">
+          <div class="summary-card-title">Rules Coverage</div>
+          <div class="summary-card-icon">${coverageSvg}</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value summary-card-value-animate" data-val="${coveragePct}" data-suffix="%">${coveragePct}%</div>
+          <div class="summary-card-progress-wrap">
+            <div class="summary-card-progress-bar" style="width:${coveragePct}%; background-color:var(--green);"></div>
+          </div>
+        </div>
+        <div class="summary-card-footer">
+          <span class="summary-card-desc"><span class="mono">${matchedRules}</span> of <span class="mono">${totalRules}</span> rules matched</span>
+        </div>
+      </div>
+      
+      <div class="summary-card threads-card">
+        <div class="summary-card-header">
+          <div class="summary-card-title">Active Threads</div>
+          <div class="summary-card-icon">${threadsSvg}</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value summary-card-value-animate" data-val="${totalThreads}">${totalThreads}</div>
+          <div style="height:4px;"></div>
+        </div>
+        <div class="summary-card-footer">
+          <span class="summary-card-desc">Total threads parsed in session</span>
+        </div>
+      </div>
+    `;
+
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'res-summary-cards';
+      container.className = 'res-summary-cards';
+      const statsBar = $('stats-bar');
+      if (statsBar && statsBar.nextSibling) {
+        r.insertBefore(container, statsBar.nextSibling);
+      } else {
+        r.insertBefore(container, r.firstChild);
+      }
+    }
+    
+    container.innerHTML = gridHtml;
+    
+    setTimeout(() => {
+      container.querySelectorAll('.summary-card-value-animate').forEach(el => {
+        const val = parseInt(el.dataset.val, 10) || 0;
+        const suffix = el.dataset.suffix || '';
+        el.textContent = '0' + suffix;
+        countUp(el, val, suffix);
+      });
+    }, 50);
+  };
+
+  // Hook UI.rv to refresh summary cards after rendering
+  const _origUiRvSummary = UI.rv.bind(UI);
+  UI.rv = function() {
+    _origUiRvSummary();
+    UI.updateSummaryCards();
+  };
 
   window.addEventListener('resize', updateSbTabsPill);
   setTimeout(updateSbTabsPill, 400);
