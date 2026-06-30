@@ -4061,6 +4061,36 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   flex-shrink: 0 !important;
 }
 
+/* ── Settings Chronological Section Headers ─────────────────── */
+.settings-section-hdr {
+  padding: 24px 24px 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bdr);
+  margin-left: 12px;
+}
+.settings-section-desc {
+  font-size: 11px;
+  color: var(--t3);
+  margin-bottom: 8px;
+}
+
 /* ── D. SIDEBAR FORM INPUTS (sub-section overhaul) ──────────────── */
 
 /* Override all inline font/padding styles on sub-section inputs */
@@ -5618,10 +5648,9 @@ label[for="watch-auto-reload"] {
 
     <!-- CONFIG -->
     <div class="sp active" id="p-cfg" style="padding:0;gap:0;overflow-y:auto;">
-      <div class="dashboard-grid" style="padding:24px 24px 0 24px;">
-        
-        <!-- Card 1: Active Log & Parse Actions -->
-        <div class="dashboard-card">
+      <!-- Primary Action Dock (pinned at the very top of Settings) -->
+      <div style="padding: 24px 24px 0 24px;">
+        <div class="dashboard-card" style="margin-bottom:0;">
           <div class="dashboard-card-title">
             <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
             Active Log & Parse Actions
@@ -5655,7 +5684,16 @@ label[for="watch-auto-reload"] {
             <div id="file-chips"></div>
           </div>
         </div>
+      </div>
 
+      <!-- SECTION 1: System & Aesthetics -->
+      <div class="settings-section-hdr">
+        <div class="settings-section-title">
+          <span class="ico" aria-hidden="true">❖</span> System & Aesthetics
+        </div>
+        <div class="settings-section-desc">Manage your workspace configuration database, global settings, fallback timestamp rules, and application layout and performance controls.</div>
+      </div>
+      <div class="dashboard-grid" style="padding:0 24px;">
         <!-- Card 2: Configuration Database -->
         <div class="dashboard-card">
           <div class="dashboard-card-title">
@@ -5696,6 +5734,23 @@ label[for="watch-auto-reload"] {
           <button class="btn" id="btn-sgs" style="margin-top:6px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
         </div>
 
+        <!-- Card 9: App Preferences -->
+        <div class="dashboard-card" id="p-gs">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/></svg></span>
+            App Preferences
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Log Sources & Stream Ingest -->
+      <div class="settings-section-hdr">
+        <div class="settings-section-title">
+          <span class="ico" aria-hidden="true">☘</span> Log Sources & Stream Ingest
+        </div>
+        <div class="settings-section-desc">Configure active connections to your local files, active folders, WebSocket streams, Git sync targets, and remote query APIs.</div>
+      </div>
+      <div class="dashboard-grid" style="padding:0 24px;">
         <!-- Card 4: Cloud Datasources -->
         <div class="dashboard-card">
           <div class="dashboard-card-title" id="hdr-ds" style="cursor:pointer;" onclick="$('p-ds-body').classList.toggle('hidden')">
@@ -5746,28 +5801,27 @@ label[for="watch-auto-reload"] {
           </div>
         </div>
 
-        <!-- Card 5: JIRA Settings -->
+        <!-- Card: Real-Time Log Stream -->
         <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-jira" style="cursor:pointer;" onclick="$('p-jira-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
-            JIRA Settings
+          <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
+            Real-Time Log Stream
             <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
           </div>
-          <div id="p-jira-body" class="fcol gap1" style="margin-top:0;">
+          <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
             <div class="f">
-              <div class="fl" style="font-size:10px;">JIRA Base URL</div>
-              <input class="inp" id="jira-url" placeholder="https://company.atlassian.net" style="font-size:11px;padding:4px 6px;"/>
-              <div class="fh" style="font-size:9px;">Used for redirect ticket creation links.</div>
+              <div class="fl" style="font-size:10px;">WebSocket URL</div>
+              <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
             </div>
-            <div class="f">
-              <div class="fl" style="font-size:10px;">JIRA Webhook URL</div>
-              <input class="inp" id="jira-webhook" placeholder="https://company.atlassian.net/rest/api/2/issue..." style="font-size:11px;padding:4px 6px;"/>
-              <div class="fh" style="font-size:9px;">Webhook URL to POST JSON ticket data.</div>
+            <div class="flex gap1 mt1">
+              <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
+              <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
             </div>
+            <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
           </div>
         </div>
 
-        <!-- Card 6: Directory Watcher -->
+        <!-- Card: Directory Watcher -->
         <div class="dashboard-card">
           <div class="dashboard-card-title" id="hdr-watch" style="cursor:pointer;" tabindex="0" onclick="$('p-watch-body').classList.toggle('hidden')">
             <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
@@ -5786,7 +5840,7 @@ label[for="watch-auto-reload"] {
           </div>
         </div>
 
-        <!-- Card 7: Git Configuration Sync -->
+        <!-- Card: Git Configuration Sync -->
         <div class="dashboard-card">
           <div class="dashboard-card-title" id="hdr-git" style="cursor:pointer;" tabindex="0" onclick="$('p-git-body').classList.toggle('hidden')">
             <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>
@@ -5804,6 +5858,112 @@ label[for="watch-auto-reload"] {
             </div>
             <div class="flex gap1 mt1">
               <button class="btn btn-bl btn-sm wf" id="btn-git-sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span> Sync Config</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Rule Generators -->
+      <div class="settings-section-hdr">
+        <div class="settings-section-title">
+          <span class="ico" aria-hidden="true">▤</span> Rule Generators
+        </div>
+        <div class="settings-section-desc">Import patterns from external log setups like Log4j XML layouts or load pre-built community rule packs.</div>
+      </div>
+      <div class="dashboard-grid" style="padding:0 24px;">
+        <!-- Card: Log4j / Logback XML Import -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+            Log4j / Logback XML Import
+          </div>
+          <div class="fh" style="font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px;">
+            Import a <strong>log4j.xml</strong>, <strong>log4j2.xml</strong>, or
+            <strong>logback.xml</strong> file. LogLens parses every
+            <code style="color:var(--amber)">PatternLayout</code> /
+            <code style="color:var(--amber)">ConversionPattern</code> and generates
+            ready-to-use base regex patterns (no regex knowledge needed).
+          </div>
+          <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
+        </div>
+
+        <!-- Card: Community Packs -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            Community Packs
+          </div>
+          <div class="f">
+            <div class="fl" style="font-size:10px;">Registry Packs</div>
+            <select class="inp" id="pack-registry" style="font-size:11px;padding:4px 6px;">
+              <option value="">-- Select a pack --</option>
+              <option value="nginx">Nginx Access Log Patterns</option>
+              <option value="log4j">Log4j Standard Patterns</option>
+              <option value="springboot">Spring Boot Default Logs</option>
+              <option value="aws">AWS CloudTrail Events</option>
+            </select>
+          </div>
+          <div class="f">
+            <div class="fl" style="font-size:10px;">Or URL</div>
+            <input class="inp" id="pack-url" placeholder="https://example.com/rules.json" style="font-size:11px;padding:4px 6px;"/>
+          </div>
+          <button class="btn btn-sm btn-p" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Sessions & Diagnostics -->
+      <div class="settings-section-hdr">
+        <div class="settings-section-title">
+          <span class="ico" aria-hidden="true">☼</span> Sessions & Diagnostics
+        </div>
+        <div class="settings-section-desc">Load previously saved workspace session (.lls) bundles, run unparsed anomaly detection, customize JIRA ticket rules, or load plugins.</div>
+      </div>
+      <div class="dashboard-grid" style="padding:0 24px;">
+        <!-- Card 10: Session Management -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+            Session Management
+          </div>
+          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+            Load previously saved session files (`.lls`) containing complete logs, threads, rules, and parsed telemetry stats.
+          </div>
+          <button class="btn wf" id="btn-load-lls" title="Load saved session (.lls) file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Load Session (.lls)</button>
+          <input type="file" id="fi-lls" accept=".lls" class="hidden"/>
+        </div>
+
+        <!-- Card: Unparsed Analyzer -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+            Unparsed Analyzer
+          </div>
+          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+            Find lines that failed to match any defined parse rules, helping you refine your configuration.
+          </div>
+          <button class="btn btn-sm" id="btn-analyze-unparsed" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Analyze Unparsed</button>
+          <div id="unparsed-results" style="margin-top:8px; font-size:11px; color:var(--t3); display:flex; flex-direction:column; gap:6px;">
+            No analysis run yet. Parse a log first.
+          </div>
+        </div>
+
+        <!-- Card 5: JIRA Settings -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title" id="hdr-jira" style="cursor:pointer;" onclick="$('p-jira-body').classList.toggle('hidden')">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+            JIRA Settings
+            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+          </div>
+          <div id="p-jira-body" class="fcol gap1" style="margin-top:0;">
+            <div class="f">
+              <div class="fl" style="font-size:10px;">JIRA Base URL</div>
+              <input class="inp" id="jira-url" placeholder="https://company.atlassian.net" style="font-size:11px;padding:4px 6px;"/>
+              <div class="fh" style="font-size:9px;">Used for redirect ticket creation links.</div>
+            </div>
+            <div class="f">
+              <div class="fl" style="font-size:10px;">JIRA Webhook URL</div>
+              <input class="inp" id="jira-webhook" placeholder="https://company.atlassian.net/rest/api/2/issue..." style="font-size:11px;padding:4px 6px;"/>
+              <div class="fh" style="font-size:9px;">Webhook URL to POST JSON ticket data.</div>
             </div>
           </div>
         </div>
@@ -5826,102 +5986,6 @@ label[for="watch-auto-reload"] {
             <div id="plugin-list" class="fcol gap1 mt1" style="font-size:11px;color:var(--t2);"></div>
           </div>
         </div>
-
-        <!-- Card: Log4j / Logback XML Import -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-            Log4j / Logback XML Import
-          </div>
-          <div class="fh" style="font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px;">
-            Import a <strong>log4j.xml</strong>, <strong>log4j2.xml</strong>, or
-            <strong>logback.xml</strong> file. LogLens parses every
-            <code style="color:var(--amber)">PatternLayout</code> /
-            <code style="color:var(--amber)">ConversionPattern</code> and generates
-            ready-to-use base regex patterns (no regex knowledge needed).
-          </div>
-          <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
-        </div>
-
-        <!-- Card: Real-Time Log Stream -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
-            Real-Time Log Stream
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">WebSocket URL</div>
-              <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
-            </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
-              <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
-            </div>
-            <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
-          </div>
-        </div>
-
-        <!-- Card 9: App Preferences -->
-        <div class="dashboard-card" id="p-gs">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/></svg></span>
-            App Preferences
-          </div>
-        </div>
-
-        <!-- Card 10: Session Management -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
-            Session Management
-          </div>
-          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-            Load previously saved session files (`.lls`) containing complete logs, threads, rules, and parsed telemetry stats.
-          </div>
-          <button class="btn wf" id="btn-load-lls" title="Load saved session (.lls) file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Load Session (.lls)</button>
-          <input type="file" id="fi-lls" accept=".lls" class="hidden"/>
-        </div>
-
-        <!-- Card 11: Community Packs -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
-            Community Packs
-          </div>
-          <div class="f">
-            <div class="fl" style="font-size:10px;">Registry Packs</div>
-            <select class="inp" id="pack-registry" style="font-size:11px;padding:4px 6px;">
-              <option value="">-- Select a pack --</option>
-              <option value="nginx">Nginx Access Log Patterns</option>
-              <option value="log4j">Log4j Standard Patterns</option>
-              <option value="springboot">Spring Boot Default Logs</option>
-              <option value="aws">AWS CloudTrail Events</option>
-            </select>
-          </div>
-          <div class="f">
-            <div class="fl" style="font-size:10px;">Or URL</div>
-            <input class="inp" id="pack-url" placeholder="https://example.com/rules.json" style="font-size:11px;padding:4px 6px;"/>
-          </div>
-          <button class="btn btn-sm btn-p" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
-        </div>
-
-        <!-- Card 12: Unparsed Analyzer -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
-            Unparsed Analyzer
-          </div>
-          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-            Find lines that failed to match any defined parse rules, helping you refine your configuration.
-          </div>
-          <button class="btn btn-sm" id="btn-analyze-unparsed" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Analyze Unparsed</button>
-          <div id="unparsed-results" style="margin-top:8px; font-size:11px; color:var(--t3); display:flex; flex-direction:column; gap:6px;">
-            No analysis run yet. Parse a log first.
-          </div>
-        </div>
-
       </div>
 
       <!-- Imported patterns output below the grid -->
