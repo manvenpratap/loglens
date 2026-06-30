@@ -5339,7 +5339,7 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div"></div>
-      <div class="sh" id="hdr-rules" style="cursor:pointer;" onclick="if(!event.target.closest('.mla')) $('rules-list').classList.toggle('hidden')">
+      <div class="sh" id="hdr-rules" style="cursor:pointer;" tabindex="0" onclick="if(!event.target.closest('.mla')) $('rules-list').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span> Element Rules
         <div class="flex gap1 mla" style="margin-right:8px;">
           <button class="btn btn-g btn-xs" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span></button>
@@ -5359,7 +5359,7 @@ label[for="watch-auto-reload"] {
         <input type="file" id="fi-lls" accept=".lls" class="hidden"/>
       </div>
       <div class="div"></div>
-      <div class="sh" id="hdr-packs" style="cursor:pointer;margin-top:6px;" onclick="$('p-packs-body').classList.toggle('hidden')">
+      <div class="sh" id="hdr-packs" style="cursor:pointer;margin-top:6px;" tabindex="0" onclick="$('p-packs-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span> Community Packs <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
       </div>
       <div id="p-packs-body" class="fcol gap1 hidden" style="margin-top:4px;">
@@ -5471,7 +5471,7 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div" style="margin: 12px 0;"></div>
-      <div class="sh" id="hdr-watch" style="cursor:pointer;" onclick="$('p-watch-body').classList.toggle('hidden')">
+      <div class="sh" id="hdr-watch" style="cursor:pointer;" tabindex="0" onclick="$('p-watch-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Directory Watcher <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
       </div>
       <div id="p-watch-body" class="fcol gap1 hidden" style="margin-top:6px;">
@@ -5485,7 +5485,7 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div" style="margin: 12px 0;"></div>
-      <div class="sh" id="hdr-git" style="cursor:pointer;" onclick="$('p-git-body').classList.toggle('hidden')">
+      <div class="sh" id="hdr-git" style="cursor:pointer;" tabindex="0" onclick="$('p-git-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span> Git Configuration Sync <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
       </div>
       <div id="p-git-body" class="fcol gap1 hidden" style="margin-top:6px;">
@@ -5502,7 +5502,7 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div" style="margin: 12px 0;"></div>
-      <div class="sh" id="hdr-plugins" style="cursor:pointer;" onclick="$('p-plugins-body').classList.toggle('hidden')">
+      <div class="sh" id="hdr-plugins" style="cursor:pointer;" tabindex="0" onclick="$('p-plugins-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span> Custom Plugins <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
       </div>
       <div id="p-plugins-body" class="fcol gap1 hidden" style="margin-top:6px;">
@@ -5530,7 +5530,7 @@ label[for="watch-auto-reload"] {
       <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
       <div id="lj-res" class="fcol gap2"></div>
       <div class="div" style="margin: 12px 0;"></div>
-      <div class="sh" id="hdr-stream" style="cursor:pointer;" onclick="$('p-stream-body').classList.toggle('hidden')">
+      <div class="sh" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span> Real-Time Log Stream <span class="mla" style="font-size:10px;color:var(--t3);">Toggle</span>
       </div>
       <div id="p-stream-body" class="fcol gap1 hidden" style="margin-top:6px;">
@@ -18736,6 +18736,18 @@ ONBOARD.check();
       document.addEventListener('mousemove', e => {
         if (this.el && this.el.classList.contains('vis')) {
           this.position(e.clientX, e.clientY);
+        }
+      });
+      document.addEventListener('mouseleave', () => {
+        this.hide();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          const sh = e.target.closest('.sh[onclick]');
+          if (sh) {
+            e.preventDefault();
+            sh.click();
+          }
         }
       });
     },
