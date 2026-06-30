@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Frontend Design Audit & CSS Variable Fixes (v6.9.38 — COMPLETED)**:
+  - Audited the entire stylesheet and resolved all undefined CSS variables (`--amber-dim`, `--sans`, `--text-sm`, `--text-xs`), preventing silent rendering failures in modern browsers.
+  - Aligned `.ss-ord` badges background to use `--amber-g` and changed `.rules-hdr-btn` font-family to `--ui`.
+  - Replaced the undefined `--sans` and inline template variable font sizes inside the Regex Builder Accordion with standard fixed font sizes (`11px` and `9.5px`).
+  - Enforced the **Flat-First Rule** by removing drop-shadows on `.dashboard-card` elements at rest (`box-shadow: none`) and cleanly adding them on hover states only.
+
 - **Global Summary Cards UI Styling (v6.9.37 — COMPLETED)**:
   - Implemented responsive, glassmorphic CSS styling for the global `#res-summary-cards` container and `.summary-card` children elements.
   - Added smooth grid-based layouts, micro-interaction scale transforms, rotating hover icons, and theme-synced progress bars to match the premium console aesthetic.

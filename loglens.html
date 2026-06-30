@@ -4193,7 +4193,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   font-size: 10px;
   font-weight: 700;
   color: var(--amber);
-  background: var(--amber-dim);
+  background: var(--amber-g);
   padding: 2px 6px;
   border-radius: var(--rounded-sm);
   letter-spacing: 0.04em;
@@ -5386,7 +5386,7 @@ label[for="watch-auto-reload"] {
   cursor: pointer;
   padding: 4px 7px;
   font-size: 10px;
-  font-family: var(--sans);
+  font-family: var(--ui);
   font-weight: 500;
   transition: background 0.14s, border-color 0.14s, color 0.14s;
   line-height: 1;
@@ -5692,12 +5692,12 @@ label[for="watch-auto-reload"] {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .dashboard-card:hover {
-  border-color: var(--amber-dim);
-  box-shadow: 0 6px 24px rgba(255, 140, 0, 0.10);
+  border-color: var(--amber);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 .dashboard-card-title {
   font-size: 13px;
@@ -20417,7 +20417,7 @@ UI.svm(S.viewMode);
     if (!bd) return;
     bd.innerHTML = TOKS.map((cat, idx) => `
       <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
-        <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:var(--text-sm); font-weight:600; color:var(--t2);">
+        <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:11px; font-weight:600; color:var(--t2);">
           <span>${esc(cat.cat)}</span>
           <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
         </div>
@@ -20425,8 +20425,8 @@ UI.svm(S.viewMode);
           <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             ${cat.toks.map(tk => `
               <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
-                <span class="tok-n" style="font-size:var(--text-sm); font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
-                <span class="tok-ex" style="font-family:var(--mono); font-size:var(--text-xs); color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
+                <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
+                <span class="tok-ex" style="font-family:var(--mono); font-size:9.5px; color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
               </div>
             `).join('')}
           </div>
