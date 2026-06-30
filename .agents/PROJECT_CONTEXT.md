@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Auto-Parsing Workflow for Empty State and Drag-and-Drop (v6.9.42 — COMPLETED)**:
+  - Added a `UI.chooseAndParseLog()` helper function that auto-triggers parsing once the user selects a log file via the empty state action button.
+  - Enhanced the drag-and-drop listener to immediately parse log files upon being dropped onto the workspace if a config is already present, eliminating extra clicks in the new sidebarless UI.
+
 - **Onboarding Hero Section Default Visibility Reversion (v6.9.41 — COMPLETED)**:
   - Reverted the default-hidden change on the onboarding welcome overlay (`#ob-ov`), ensuring the hero section starts visible by default on page load to guide new sessions.
   - Confirmed that this initial welcome screen serves as the core entry page when no log data exists.

@@ -6606,7 +6606,7 @@ label[for="watch-auto-reload"] {
       <div class="emp-title">Nothing parsed yet</div>
       <div class="emp-desc">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
       <div class="emp-actions">
-        <button class="btn btn-bl" onclick="$('fi-log').click()" type="button" title="Select a local log file from your disk">
+        <button class="btn btn-bl" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
           Select Log File
         </button>
@@ -9735,7 +9735,10 @@ const DD={
       const logs=files.filter(f=>/\.(log|txt|out|gz)$/i.test(f.name));
       const jsons=files.filter(f=>/\.json$/i.test(f.name));
       if(jsons.length){FS.imp(jsons[0]);if(jsons.length>1)toast('Only first JSON imported.','warn');}
-      if(logs.length)MF.add(logs);
+      if(logs.length){
+        MF.add(logs);
+        if(S.cfg){setTimeout(()=>$('btn-parse').click(),150);}
+      }
     });
   }
 };
@@ -19399,6 +19402,22 @@ const ONBOARD = (() => {
     }
   };
 })();
+
+// Helper to let the user select a file from empty state and auto-parse it
+UI.chooseAndParseLog = function() {
+  const input = $('fi-log');
+  if (!input) return;
+  const onFileChange = () => {
+    input.removeEventListener('change', onFileChange);
+    setTimeout(() => {
+      if (S.logFile && S.cfg) {
+        $('btn-parse').click();
+      }
+    }, 100);
+  };
+  input.addEventListener('change', onFileChange);
+  input.click();
+};
 
 /* ── Wire onboarding events ── */
 (function wireOnboarding() {
