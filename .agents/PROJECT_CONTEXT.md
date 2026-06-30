@@ -13,6 +13,7 @@
   - Wired section collapse/expand via event delegation on `[data-collapse]` attribute click and keyboard events.
   - Updated responsive CSS overrides for the new collapsible section structure.
   - **Dropdown Stacking Fix**: Resolved rule action menus (`.rc-more-dropdown`) being clipped/occluded under subsequent element cards by using the CSS `:has()` selector to dynamically raise the active card's `z-index` to `50` when the dropdown is open, and `z-index: 2` on card hover.
+  - **Enhanced Global Summary Cards**: Moved the three telemetry summary cards ("Slowest Operation", "Rules Coverage", "Active Threads") from being locally nested inside the Stats view into a global `#res-summary-cards` container right below the `#stats-bar`. Designed with a premium glassmorphic theme, micro-animation scale hover effect, rotating SVG icons, progress bars, and conditional display across all analytical result views (`split`, `gantt`, `tree`, `stats`) while hiding them on utility views like `cfg` and `hlp`.
 
 - **Log4j Panel Merger into Settings (v6.9.33 — COMPLETED)**:
   - Merged the Log4j XML Importer and Real-Time Log Stream views into the unified Settings (`cfg`) panel.
