@@ -3884,6 +3884,24 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   color: var(--t1);
 }
 
+.rule-rx-preview {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--t3);
+  background: var(--bg-3);
+  padding: 1px 5px;
+  border-radius: var(--rounded-sm);
+  border: 1px solid var(--bdr);
+  margin-left: 6px;
+  max-width: 130px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+
 
 
 /* ── 7. ICONS ─────────────────────────────────────────────────── */
@@ -5103,29 +5121,248 @@ label[for="watch-auto-reload"] {
   padding: 8px 12px !important;
 }
 
+/* ── Element Rules Section Header (premium) ─────────────────── */
+.rules-section-hdr {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 10px 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  margin: 4px 0;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+.rules-section-hdr:hover {
+  border-color: var(--bdr-h);
+  background: var(--bg-3);
+}
+.rules-section-hdr:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.rules-hdr-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rules-hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+.rules-hdr-ico {
+  display: flex;
+  align-items: center;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.rules-hdr-ico svg {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.rules-hdr-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.rules-count-badge {
+  background: var(--amber-g, oklch(50% 0.18 70 / 0.18));
+  color: var(--amber);
+  border: 1px solid oklch(70% 0.18 70 / 0.3);
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 1px 7px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+.rules-hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.rules-hdr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--glass);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-sm);
+  color: var(--t2);
+  cursor: pointer;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-family: var(--sans);
+  font-weight: 500;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+  line-height: 1;
+}
+.rules-hdr-btn svg {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+.rules-hdr-btn:hover:not(:disabled) {
+  background: var(--bg-3);
+  border-color: var(--bdr-h);
+  color: var(--t1);
+}
+.rules-hdr-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.rules-hdr-btn-primary {
+  background: oklch(60% 0.21 35 / 0.14);
+  border-color: oklch(60% 0.21 35 / 0.4);
+  color: var(--amber);
+  font-weight: 600;
+}
+.rules-hdr-btn-primary:hover:not(:disabled) {
+  background: oklch(60% 0.21 35 / 0.25);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* Rules search bar */
+.rules-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-sm);
+  padding: 4px 8px;
+}
+.rules-search-ico {
+  display: flex;
+  align-items: center;
+  color: var(--t4);
+  flex-shrink: 0;
+}
+.rules-search-ico svg {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.rules-search-inp {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--t1);
+  font-size: 10px;
+  font-family: var(--mono);
+  line-height: 1.4;
+}
+.rules-search-inp::placeholder { color: var(--t4); }
+.rules-search-clear {
+  background: none;
+  border: none;
+  color: var(--t4);
+  cursor: pointer;
+  font-size: 9px;
+  padding: 0 2px;
+  line-height: 1;
+  display: none;
+}
+.rules-search-clear:hover { color: var(--red); }
+
 /* Rule Card (.rc) polish */
 .rc {
   background: var(--bg-2) !important;
   border: 1px solid var(--bdr) !important;
+  border-left-width: 3px !important;
   border-radius: var(--rounded-md) !important;
-  padding: 10px 12px !important;
-  transition: border-color 0.16s var(--ease-out),
-              box-shadow 0.16s var(--ease-out),
-              transform 0.16s var(--ease-out) !important;
+  padding: 10px 10px 10px 12px !important;
+  transition: border-color 0.18s var(--ease-out),
+              border-left-color 0.18s var(--ease-out),
+              box-shadow 0.18s var(--ease-out),
+              transform 0.18s var(--ease-out) !important;
+  position: relative !important;
 }
 .rc:hover {
-  border-color: var(--amber) !important;
   background: var(--bg-3) !important;
-  box-shadow: var(--shd-xs) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.22) !important;
   transform: translateY(-1px) !important;
 }
 .rc:active {
-  transform: translateY(0) scale(0.98) !important;
+  transform: translateY(0) scale(0.985) !important;
+}
+.rc.rule-disabled {
+  opacity: 0.45 !important;
 }
 
 /* Rule Icon wrapper */
 .ric {
-  border-radius: var(--rounded-sm) !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: var(--rounded-md) !important;
+  font-size: 15px !important;
+  flex-shrink: 0 !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.15) !important;
+}
+
+/* Rule name and meta */
+.rn {
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.01em !important;
+}
+.rm {
+  margin-top: 4px !important;
+  gap: 5px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+/* Rule enable toggle */
+.rule-toggle {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 28px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.rule-toggle input {
+  opacity: 0;
+  width: 0; height: 0;
+  position: absolute;
+}
+.rule-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--bdr);
+  border-radius: 16px;
+  transition: background 0.18s;
+  cursor: pointer;
+}
+.rule-toggle input:checked + .rule-toggle-track {
+  background: var(--green);
+}
+.rule-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 12px; height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.18s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+.rule-toggle input:checked + .rule-toggle-track::after {
+  transform: translateX(12px);
 }
 
 /* Resizer handle visual cues */
@@ -5375,18 +5612,40 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div"></div>
-      <div class="sh" id="hdr-rules" style="cursor:pointer;" tabindex="0" onclick="if(!event.target.closest('.mla')) $('rules-list').classList.toggle('hidden')">
-        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span> Element Rules
-        <div class="flex gap1 mla" style="margin-right:8px;">
-          <button class="btn btn-g btn-xs" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span></button>
-          <button class="btn btn-g btn-xs" id="btn-rule-test" disabled title="Test all rules against sample lines" aria-label="Test rules"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span></button>
-          <button class="btn btn-p btn-sm" id="btn-ar" disabled title="Add a new custom event regex parse rule">+ Add</button>
+
+      <!-- Element Rules Section Header (enhanced) -->
+      <div class="rules-section-hdr" id="hdr-rules" tabindex="0" onclick="if(!event.target.closest('.rules-hdr-actions')) $('rules-list').classList.toggle('hidden')">
+        <div class="rules-hdr-top">
+          <div class="rules-hdr-left">
+            <span class="rules-hdr-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+            <span class="rules-hdr-title">Element Rules</span>
+            <span class="rules-count-badge" id="rules-count-badge">0</span>
+          </div>
+          <div class="rules-hdr-actions">
+            <button class="rules-hdr-btn" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule">
+              <svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+            <button class="rules-hdr-btn" id="btn-rule-test" disabled title="Test all rules against sample log lines" aria-label="Test rules">
+              <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </button>
+            <button class="rules-hdr-btn rules-hdr-btn-primary" id="btn-ar" disabled title="Add a new regex parse rule">
+              <svg viewBox="0 0 24 24" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Rule
+            </button>
+          </div>
+        </div>
+        <div class="rules-search-bar" id="rules-search-bar" style="display:none;">
+          <span class="rules-search-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+          <input class="rules-search-inp" id="rules-search-inp" type="text" placeholder="Filter rules…" autocomplete="off" />
+          <button class="rules-search-clear" id="rules-search-clear" title="Clear filter">✕</button>
         </div>
       </div>
+
       <div id="rules-list" class="fcol gap1">
-        <div class="emp" style="padding:16px 6px">
+        <div class="emp" style="padding:20px 6px">
           <div class="emp-ico"><span class="ico ico-xl" aria-hidden="true" style="color:var(--t4)"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span></div>
-          <div class="emp-sub">Connect or create a config to manage rules.</div>
+          <div class="emp-ttl" style="font-size:12px;font-weight:600;color:var(--t2);margin-top:6px;">No rules configured</div>
+          <div class="emp-sub">Connect a config database to manage rules.</div>
         </div>
       </div>
       <div class="div"></div>
@@ -7299,25 +7558,45 @@ const CFG={
     if(!c||!c.elementRules||!c.elementRules.length){
       el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">▤</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';return;
     }
+    // Update rule count badge
+    const countBadge=$('rules-count-badge');
+    if(countBadge) countBadge.textContent=c.elementRules.length;
+    // Show search bar if >3 rules
+    const srchBar=$('rules-search-bar');
+    if(srchBar) srchBar.style.display=c.elementRules.length>3?'flex':'none';
+
     el.innerHTML=c.elementRules.map((r,i)=>{
-      const col=scol(r.visualStyle?.accentColor||'var(--t4)');
-      const ico=esc(r.visualStyle?.icon||'•');
+      const col=scol(r.visualStyle?.accentColor||'#888');
+      const ico=esc(r.visualStyle?.icon||'●');
       const beh=r.stackBehavior||'inline';
       const bc={push:'b-blue',pop:'b-green',inline:'b-pur'}[beh]||'b-gray';
-      const styleAttr = `border-color:${col}60 !important; box-shadow:0 0 8px ${col}25 !important;`;
-      return`<div class="rc" draggable="true" data-ri="${i}" data-tip="Pattern: ${esc(r.regexPattern || '')}" style="${styleAttr}">
+      const behLabel={push:'↑ push',pop:'↓ pop',inline:'→ inline'}[beh]||beh;
+      const isEnabled=r.enabled!==false;
+      const disabledCls=isEnabled?'':'rule-disabled';
+      const rxPrev=r.regexPattern?esc(r.regexPattern.slice(0,42)+(r.regexPattern.length>42?'…':'')):'—';
+      return`<div class="rc ${disabledCls}" draggable="true" data-ri="${i}" style="border-left-color:${col} !important;">
         <div class="rh" title="Drag to reorder">⠿</div>
-        <div class="ric" style="background:${col}1e;color:${col};">${ico}</div>
+        <div class="ric" style="background:${col}22;color:${col};border:1.5px solid ${col}44;">${ico}</div>
         <div style="flex:1;min-width:0;">
-          <div class="rn">${esc(r.name||'Unnamed')}</div>
-          <div class="rm"><span class="badge ${bc}" style="font-size:9px;">${esc(beh)}</span></div>
+          <div class="rn">${esc(r.name||'Unnamed Rule')}</div>
+          <div class="rm">
+            <span class="badge ${bc}" style="font-size:9px;padding:2px 6px;">${behLabel}</span>
+            <span class="rule-rx-preview" title="Regex: ${esc(r.regexPattern||'')}">${rxPrev}</span>
+          </div>
         </div>
-        <div class="rc-more-menu-wrapper" style="position:relative; flex-shrink:0;">
-          <button class="btn btn-g btn-xs rc-more-btn" type="button">⋯</button>
-          <div class="rc-more-dropdown hidden">
-            <button class="rc-dropdown-item" data-a="edit" data-i="${i}" type="button">✎ Edit</button>
-            <button class="rc-dropdown-item" data-a="share" data-i="${i}" type="button">▤ Export JSON</button>
-            <button class="rc-dropdown-item" data-a="del" data-i="${i}" style="color:var(--red);" type="button">✕ Delete</button>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <label class="rule-toggle" title="${isEnabled?'Disable':'Enable'} this rule" onclick="event.stopPropagation()">
+            <input type="checkbox" ${isEnabled?'checked':''} data-toggle-ri="${i}" />
+            <span class="rule-toggle-track"></span>
+          </label>
+          <div class="rc-more-menu-wrapper" style="position:relative;">
+            <button class="btn btn-g btn-xs rc-more-btn" type="button" title="Rule actions">•••</button>
+            <div class="rc-more-dropdown hidden">
+              <button class="rc-dropdown-item" data-a="edit" data-i="${i}" type="button"><svg viewBox="0 0 24 24" width="11" height="11" style="stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:5px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Rule</button>
+              <button class="rc-dropdown-item" data-a="share" data-i="${i}" type="button"><svg viewBox="0 0 24 24" width="11" height="11" style="stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Export JSON</button>
+              <div style="height:1px;background:var(--bdr);margin:3px 8px;"></div>
+              <button class="rc-dropdown-item" data-a="del" data-i="${i}" style="color:var(--red);" type="button"><svg viewBox="0 0 24 24" width="11" height="11" style="stroke:var(--red);fill:none;stroke-width:2;vertical-align:middle;margin-right:5px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete</button>
+            </div>
           </div>
         </div>
       </div>`;
@@ -10721,6 +11000,18 @@ $('rules-list').addEventListener('click',e=>{
     dropdown.classList.toggle('hidden');
     return;
   }
+  // Enable/disable rule toggle
+  const toggleInput = e.target.closest('[data-toggle-ri]');
+  if (toggleInput) {
+    e.stopPropagation();
+    const ri = +toggleInput.dataset.toggleRi;
+    if(S.cfg?.elementRules?.[ri] != null) {
+      S.cfg.elementRules[ri].enabled = toggleInput.checked;
+      toggleInput.closest('.rc').classList.toggle('rule-disabled', !toggleInput.checked);
+      toggleInput.closest('label').title = toggleInput.checked ? 'Disable this rule' : 'Enable this rule';
+    }
+    return;
+  }
   const btn=e.target.closest('[data-a]');if(!btn)return;
   const i=+btn.dataset.i;
   btn.closest('.rc-more-dropdown')?.classList.add('hidden');
@@ -10734,6 +11025,30 @@ document.addEventListener('click', () => {
 $('btn-ar').addEventListener('click',()=>UI.openM(null));
 $('btn-rule-test').addEventListener('click',()=>RTS.open());
 $('btn-rule-imp').addEventListener('click',()=>$('fi-rule-imp').click());
+
+// Rules search filter
+(()=>{
+  const inp=$('rules-search-inp');
+  const clr=$('rules-search-clear');
+  if(!inp||!clr) return;
+  function filterRules(q){
+    const cards=$('rules-list').querySelectorAll('.rc');
+    const term=q.trim().toLowerCase();
+    cards.forEach(card=>{
+      const name=card.querySelector('.rn')?.textContent.toLowerCase()||'';
+      const rx=card.querySelector('.rule-rx-preview')?.title.toLowerCase()||'';
+      card.style.display=(!term||name.includes(term)||rx.includes(term))?'':'none';
+    });
+    clr.style.display=term?'inline':'none';
+  }
+  inp.addEventListener('input',()=>filterRules(inp.value));
+  clr.addEventListener('click',()=>{
+    inp.value='';filterRules('');inp.focus();
+  });
+  // Stop header collapse from firing when clicking in search bar
+  inp.addEventListener('click',e=>e.stopPropagation());
+  clr.addEventListener('click',e=>e.stopPropagation());
+})();
 $('fi-rule-imp').addEventListener('change',e=>{EXP.importRule(e.target.files[0]);e.target.value='';});
 
 // Load LLS Session
