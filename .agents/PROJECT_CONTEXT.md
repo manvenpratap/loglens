@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Element Rules Interactivity & 3-Dot Actions (v6.9.28 — COMPLETED)**:
+  - Enabled section collapse/minimize functionality for the "Element Rules" sidebar header, ensuring click events trigger toggle states for `#rules-list` only when clicking outside the action buttons.
+  - Implemented event delegation in JavaScript to capture clicks on each rule's 3-dot actions button (`.rc-more-btn`), dynamically showing/hiding options (Edit, Export, Delete) and auto-closing them when clicking outside.
+
 - **Premium Tooltip System Integration (v6.9.27 — COMPLETED)**:
   - Designed and built a custom floating tooltip container (`#app-tooltip`) with theme-aware borders, elegant paddings, squircle corners, and smooth CSS transitions.
   - Refactored the core Javascript `TIP` controller to bind to the new HTML element, automatically capturing client coordinates and fading tooltips in and out on hover/focus actions.
