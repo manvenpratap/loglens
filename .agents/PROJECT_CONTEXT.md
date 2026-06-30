@@ -2,13 +2,16 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Onboarding Hero Section Default Visibility Reversion (v6.9.41 — COMPLETED)**:
+  - Reverted the default-hidden change on the onboarding welcome overlay (`#ob-ov`), ensuring the hero section starts visible by default on page load to guide new sessions.
+  - Confirmed that this initial welcome screen serves as the core entry page when no log data exists.
+
 - **Empty State Action Buttons Integration (v6.9.40 — COMPLETED)**:
   - Integrated primary action buttons directly inside the empty state card (`.emp-card`) for "Select Log File" and "Load Demo Log", resolving layout flow ambiguity when landing on the "Ready for telemetry" screen.
   - Replaced inline styles inside the empty state markup with clean, dedicated CSS classes (`.emp-title`, `.emp-desc`, `.emp-actions`).
 
-- **Onboarding Skip Flow Persistence Fix (v6.9.39 — COMPLETED)**:
-  - Resolved a bug where the onboarding overlay `#ob-ov` rendered as visible on page load even if the user had already dismissed it previously.
-  - Added the `class="hidden"` attribute to the `#ob-ov` container in the HTML markup so it remains hidden on page load unless the `ll-ob-seen` localStorage flag is missing, enabling correct check timing.
+- **Onboarding Skip Flow Persistence Fix (v6.9.39 — REVERTED)**:
+  - Temporarily set onboarding overlay `#ob-ov` to start as hidden; reverted in v6.9.41 to keep the welcome screen as the default landing experience.
 
 - **Frontend Design Audit & CSS Variable Fixes (v6.9.38 — COMPLETED)**:
   - Audited the entire stylesheet and resolved all undefined CSS variables (`--amber-dim`, `--sans`, `--text-sm`, `--text-xs`), preventing silent rendering failures in modern browsers.
