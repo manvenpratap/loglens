@@ -2084,7 +2084,7 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
   border:1px solid var(--bdr);
   border-radius:var(--rounded-md);overflow:hidden;
 }
-.settings-section-hdr{
+.settings-section > .settings-section-hdr{
   display:flex;align-items:center;gap:8px;
   padding:10px 13px;
   background:var(--bg-1);
@@ -2095,17 +2095,17 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
   user-select:none;
   transition:background .14s;
 }
-.settings-section-hdr:hover{background:var(--bg-2)}
-.settings-section-hdr .ss-chev{
+.settings-section > .settings-section-hdr:hover{background:var(--bg-2)}
+.settings-section > .settings-section-hdr .ss-chev{
   margin-left:auto;font-size:9px;color:var(--t4);
   transition:transform .18s var(--ease-snap);
 }
-.settings-section-hdr.open .ss-chev{transform:rotate(90deg)}
-.settings-section-body{
+.settings-section > .settings-section-hdr.open .ss-chev{transform:rotate(90deg)}
+.settings-section > .settings-section-body{
   display:none;flex-direction:column;gap:10px;
   padding:12px 13px;
 }
-.settings-section-body.vis{display:flex}
+.settings-section > .settings-section-body.vis{display:flex}
 
 .pref-row{
   display:flex;align-items:center;gap:10px;
@@ -3547,9 +3547,9 @@ mark.hl{
 /* Form group gap — was 5px */
 .f { gap: 6px !important; }
 
-/* Settings section — was 10px/13px header, 12px/13px body */
-.settings-section-hdr { padding: 12px 16px !important; }
-.settings-section-body { padding: 12px 16px !important; }
+/* Settings collapsible sections — override for 4px grid alignment */
+.settings-section-hdr { padding: 12px 24px !important; }
+.settings-section-body > .dashboard-grid { padding: 4px 24px 16px 24px !important; }
 
 /* Pref row gap — was 10px */
 .pref-row { gap: 12px !important; }
@@ -4061,34 +4061,107 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   flex-shrink: 0 !important;
 }
 
-/* ── Settings Chronological Section Headers ─────────────────── */
+/* ── Settings Collapsible Sections ─────────────────────────── */
+.settings-section-wrap {
+  border-bottom: 1px solid var(--bdr);
+}
+.settings-section-wrap:last-of-type { border-bottom: none; }
 .settings-section-hdr {
-  padding: 24px 24px 8px 24px;
+  padding: 14px 24px;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.14s ease;
+  position: relative;
+}
+.settings-section-hdr:hover { background: var(--bg-2); }
+.settings-section-hdr:active { background: var(--bg-3); }
+.ss-ord {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-dim);
+  padding: 2px 6px;
+  border-radius: var(--rounded-sm);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  line-height: 1.4;
 }
 .settings-section-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--t1);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.settings-section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--bdr);
-  margin-left: 12px;
+.settings-section-title .ico {
+  font-size: 13px;
+  color: var(--t3);
+  flex-shrink: 0;
 }
 .settings-section-desc {
+  font-size: 10px;
+  color: var(--t4);
+  margin-left: 44px;
+  margin-top: -4px;
+  padding-bottom: 4px;
+  line-height: 1.4;
+}
+.ss-chev-main {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--t4);
+  transition: transform 0.22s var(--ease-snap);
+  flex-shrink: 0;
+  font-weight: 300;
+}
+.settings-section-wrap.open > .settings-section-hdr .ss-chev-main {
+  transform: rotate(90deg);
+}
+.settings-section-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s var(--ease-snap), opacity 0.2s ease;
+  opacity: 0;
+}
+.settings-section-wrap.open > .settings-section-body {
+  max-height: 3000px;
+  opacity: 1;
+}
+.settings-section-body > .dashboard-grid {
+  padding: 4px 24px 20px 24px;
+  gap: 12px;
+}
+/* ── Settings Toolbar (Export/Import dock) ─────────────────── */
+.settings-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid var(--bdr);
+  background: var(--bg-0);
+  flex-wrap: wrap;
+}
+.settings-toolbar .stb-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--mono);
+  margin-right: 4px;
+}
+.settings-toolbar .btn {
   font-size: 11px;
-  color: var(--t3);
-  margin-bottom: 8px;
+  padding: 5px 10px;
 }
 
 /* ── D. SIDEBAR FORM INPUTS (sub-section overhaul) ──────────────── */
@@ -5687,13 +5760,17 @@ label[for="watch-auto-reload"] {
       </div>
 
       <!-- SECTION 1: System & Aesthetics -->
-      <div class="settings-section-hdr">
-        <div class="settings-section-title">
-          <span class="ico" aria-hidden="true">❖</span> System & Aesthetics
+      <div class="settings-section-wrap open" data-section="system">
+        <div class="settings-section-hdr" data-collapse="section-system">
+          <span class="ss-ord">01</span>
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true">❖</span> System & Aesthetics
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Manage your workspace configuration database, global settings, fallback timestamp rules, and application layout and performance controls.</div>
-      </div>
-      <div class="dashboard-grid" style="padding:0 24px;">
+        <div class="settings-section-desc">Configuration database, global settings, and application preferences.</div>
+        <div class="settings-section-body" id="section-system">
+          <div class="dashboard-grid">
         <!-- Card 2: Configuration Database -->
         <div class="dashboard-card">
           <div class="dashboard-card-title">
@@ -5741,16 +5818,22 @@ label[for="watch-auto-reload"] {
             App Preferences
           </div>
         </div>
-      </div>
+        </div>
+      </div><!-- close .dashboard-grid + .settings-section-body -->
+      </div><!-- close .settings-section-wrap section 1 -->
 
       <!-- SECTION 2: Log Sources & Stream Ingest -->
-      <div class="settings-section-hdr">
-        <div class="settings-section-title">
-          <span class="ico" aria-hidden="true">☘</span> Log Sources & Stream Ingest
+      <div class="settings-section-wrap open" data-section="sources">
+        <div class="settings-section-hdr" data-collapse="section-sources">
+          <span class="ss-ord">02</span>
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true">☘</span> Log Sources & Stream Ingest
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Configure active connections to your local files, active folders, WebSocket streams, Git sync targets, and remote query APIs.</div>
-      </div>
-      <div class="dashboard-grid" style="padding:0 24px;">
+        <div class="settings-section-desc">Cloud APIs, WebSocket streams, directory watchers, and Git sync.</div>
+        <div class="settings-section-body" id="section-sources">
+          <div class="dashboard-grid">
         <!-- Card 4: Cloud Datasources -->
         <div class="dashboard-card">
           <div class="dashboard-card-title" id="hdr-ds" style="cursor:pointer;" onclick="$('p-ds-body').classList.toggle('hidden')">
@@ -5861,16 +5944,22 @@ label[for="watch-auto-reload"] {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </div><!-- close .dashboard-grid + .settings-section-body -->
+      </div><!-- close .settings-section-wrap section 2 -->
 
       <!-- SECTION 3: Rule Generators -->
-      <div class="settings-section-hdr">
-        <div class="settings-section-title">
-          <span class="ico" aria-hidden="true">▤</span> Rule Generators
+      <div class="settings-section-wrap open" data-section="rules">
+        <div class="settings-section-hdr" data-collapse="section-rules">
+          <span class="ss-ord">03</span>
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true">▤</span> Rule Generators
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Import patterns from external log setups like Log4j XML layouts or load pre-built community rule packs.</div>
-      </div>
-      <div class="dashboard-grid" style="padding:0 24px;">
+        <div class="settings-section-desc">Log4j XML imports and community rule packs.</div>
+        <div class="settings-section-body" id="section-rules">
+          <div class="dashboard-grid">
         <!-- Card: Log4j / Logback XML Import -->
         <div class="dashboard-card">
           <div class="dashboard-card-title">
@@ -5909,16 +5998,22 @@ label[for="watch-auto-reload"] {
           </div>
           <button class="btn btn-sm btn-p" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
         </div>
-      </div>
+        </div>
+      </div><!-- close .dashboard-grid + .settings-section-body -->
+      </div><!-- close .settings-section-wrap section 3 -->
 
       <!-- SECTION 4: Sessions & Diagnostics -->
-      <div class="settings-section-hdr">
-        <div class="settings-section-title">
-          <span class="ico" aria-hidden="true">☼</span> Sessions & Diagnostics
+      <div class="settings-section-wrap open" data-section="sessions">
+        <div class="settings-section-hdr" data-collapse="section-sessions">
+          <span class="ss-ord">04</span>
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true">☼</span> Sessions & Diagnostics
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Load previously saved workspace session (.lls) bundles, run unparsed anomaly detection, customize JIRA ticket rules, or load plugins.</div>
-      </div>
-      <div class="dashboard-grid" style="padding:0 24px;">
+        <div class="settings-section-desc">Saved sessions, unparsed analysis, JIRA, and plugins.</div>
+        <div class="settings-section-body" id="section-sessions">
+          <div class="dashboard-grid">
         <!-- Card 10: Session Management -->
         <div class="dashboard-card">
           <div class="dashboard-card-title">
@@ -5986,7 +6081,67 @@ label[for="watch-auto-reload"] {
             <div id="plugin-list" class="fcol gap1 mt1" style="font-size:11px;color:var(--t2);"></div>
           </div>
         </div>
-      </div>
+        </div>
+      </div><!-- close .dashboard-grid + .settings-section-body -->
+      </div><!-- close .settings-section-wrap section 4 -->
+
+      <!-- SECTION 5: Data Portability -->
+      <div class="settings-section-wrap open" data-section="portability">
+        <div class="settings-section-hdr" data-collapse="section-portability">
+          <span class="ss-ord">05</span>
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Data Portability
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
+        </div>
+        <div class="settings-section-desc">Export, import, and share your entire workspace configuration.</div>
+        <div class="settings-section-body" id="section-portability">
+          <div class="dashboard-grid">
+            <!-- Card: Export All Settings -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+                Export All Settings
+              </div>
+              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+                Download your complete workspace configuration including global settings, element rules, app preferences, datasource connections, and theme as a single JSON file.
+              </div>
+              <button class="btn btn-p wf" id="btn-settings-export-all" title="Export all settings to a single JSON file">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export All Settings
+              </button>
+            </div>
+
+            <!-- Card: Import Settings -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+                Import Settings
+              </div>
+              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+                Load a previously exported <code style="color:var(--amber)">.loglens-settings.json</code> file to restore your complete workspace configuration.
+              </div>
+              <button class="btn wf" id="btn-settings-import-all" title="Import settings from a JSON file">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import Settings
+              </button>
+              <input type="file" id="fi-settings-import" accept=".json,.loglens-settings.json" class="hidden"/>
+            </div>
+
+            <!-- Card: Export Element Rules -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+                Export Element Rules
+              </div>
+              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+                Export only your element rules as a standalone JSON file. Useful for sharing rule definitions without other settings.
+              </div>
+              <button class="btn btn-bl wf" id="btn-settings-export-rules" title="Export element rules as JSON">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> Export Rules JSON
+              </button>
+            </div>
+          </div>
+        </div>
+      </div><!-- close .settings-section-wrap section 5 -->
 
       <!-- Imported patterns output below the grid -->
       <div id="lj-res" class="fcol gap2" style="padding: 0 24px 24px 24px;"></div>
@@ -14202,6 +14357,175 @@ const SETTINGS_ADDITIONS = (() => {
 })();
 
 SETTINGS_ADDITIONS.init();
+
+/* ================================================================
+   §JS-SETTINGS_IO — SETTINGS EXPORT / IMPORT / RULES EXPORT
+   ================================================================ */
+const SETTINGS_IO = {
+  /**
+   * Export all settings: S.cfg + S.appPrefs + datasource fields +
+   * JIRA/Git/watcher settings + theme → single JSON file.
+   */
+  exportAll() {
+    const payload = {
+      _type: 'loglens-settings',
+      _version: '1.0',
+      exportedAt: new Date().toISOString(),
+      config: S.cfg || null,
+      appPrefs: S.appPrefs || {},
+      theme: document.documentElement.dataset.theme || 'dark',
+      datasource: {
+        type: $('ds-type')?.value || '',
+        url: $('ds-url')?.value || '',
+        auth: $('ds-auth')?.value || '',
+        awsRegion: $('ds-aws-region')?.value || '',
+        awsKey: $('ds-aws-key')?.value || '',
+        awsGroup: $('ds-aws-group')?.value || '',
+        query: $('ds-query')?.value || ''
+      },
+      websocket: { url: $('stream-ws-url')?.value || '' },
+      jira: {
+        baseUrl: $('jira-url')?.value || '',
+        webhookUrl: $('jira-webhook')?.value || ''
+      },
+      git: {
+        rawUrl: $('git-url')?.value || '',
+        token: $('git-token')?.value || ''
+      }
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const name = (S.cfg?.globalSettings?.appName || 'loglens') + '.loglens-settings.json';
+    EXP._dl(blob, name);
+    toast('All settings exported.', 'success');
+  },
+
+  /**
+   * Import settings from a .loglens-settings.json file.
+   */
+  importAll(file) {
+    if (!file) return;
+    const rdr = new FileReader();
+    rdr.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d._type !== 'loglens-settings') {
+          throw new Error('Not a valid LogLens Settings file.');
+        }
+
+        // Hydrate config
+        if (d.config) {
+          S.cfg = d.config;
+          CFG.load(S.cfg);
+        }
+
+        // App preferences
+        if (d.appPrefs) {
+          Object.assign(S.appPrefs, d.appPrefs);
+          const as = $('pref-anim-speed');
+          if (as) { as.value = S.appPrefs.animationSpeed; $('pref-anim-speed-val').textContent = S.appPrefs.animationSpeed.toFixed(1) + '×'; }
+          const dn = $('pref-density');
+          if (dn) dn.value = S.appPrefs.fontDensity || 'normal';
+          const gh = $('pref-gantt-h');
+          if (gh) { gh.value = S.appPrefs.ganttBarHeight; $('pref-gantt-h-val').textContent = S.appPrefs.ganttBarHeight + 'px'; }
+          const hl = $('pref-hl-toggle');
+          if (hl) hl.checked = S.appPrefs.enableHighlighting !== false;
+        }
+
+        // Theme
+        if (d.theme && typeof Theme !== 'undefined' && Theme.apply) {
+          Theme.apply(d.theme);
+        }
+
+        // Datasource fields
+        if (d.datasource) {
+          if ($('ds-type')) $('ds-type').value = d.datasource.type || 'loki';
+          if ($('ds-url')) $('ds-url').value = d.datasource.url || '';
+          if ($('ds-auth')) $('ds-auth').value = d.datasource.auth || '';
+          if ($('ds-aws-region')) $('ds-aws-region').value = d.datasource.awsRegion || '';
+          if ($('ds-aws-key')) $('ds-aws-key').value = d.datasource.awsKey || '';
+          if ($('ds-aws-group')) $('ds-aws-group').value = d.datasource.awsGroup || '';
+          if ($('ds-query')) $('ds-query').value = d.datasource.query || '';
+        }
+
+        // WebSocket
+        if (d.websocket) {
+          if ($('stream-ws-url')) $('stream-ws-url').value = d.websocket.url || '';
+        }
+
+        // JIRA
+        if (d.jira) {
+          if ($('jira-url')) $('jira-url').value = d.jira.baseUrl || '';
+          if ($('jira-webhook')) $('jira-webhook').value = d.jira.webhookUrl || '';
+        }
+
+        // Git
+        if (d.git) {
+          if ($('git-url')) $('git-url').value = d.git.rawUrl || '';
+          if ($('git-token')) $('git-token').value = d.git.token || '';
+        }
+
+        toast('Settings imported successfully.', 'success');
+      } catch (e) {
+        console.error('[LL] Settings import error:', e);
+        toast('Import failed: ' + e.message, 'error');
+      }
+    };
+    rdr.readAsText(file);
+  },
+
+  /**
+   * Export just the element rules array as a standalone JSON file.
+   */
+  exportRules() {
+    if (!S.cfg || !S.cfg.elementRules || !S.cfg.elementRules.length) {
+      return toast('No element rules to export.', 'warn');
+    }
+    const payload = {
+      _type: 'loglens-element-rules',
+      exportedAt: new Date().toISOString(),
+      configName: S.cfg?.globalSettings?.appName || 'LogLens',
+      elementRules: S.cfg.elementRules
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const name = (S.cfg?.globalSettings?.appName || 'loglens') + '-element-rules.json';
+    EXP._dl(blob, name);
+    toast(`Exported ${S.cfg.elementRules.length} element rules.`, 'success');
+  }
+};
+
+/* ── Settings Section Collapse/Expand Wiring ────────────────── */
+(function wireSettingsSections() {
+  document.querySelectorAll('.settings-section-hdr[data-collapse]').forEach(hdr => {
+    hdr.addEventListener('click', () => {
+      const wrap = hdr.closest('.settings-section-wrap');
+      if (wrap) wrap.classList.toggle('open');
+    });
+    hdr.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const wrap = hdr.closest('.settings-section-wrap');
+        if (wrap) wrap.classList.toggle('open');
+      }
+    });
+  });
+
+  // Wire export/import buttons
+  const btnExAll = $('btn-settings-export-all');
+  if (btnExAll) btnExAll.addEventListener('click', () => SETTINGS_IO.exportAll());
+
+  const btnImAll = $('btn-settings-import-all');
+  const fiImport = $('fi-settings-import');
+  if (btnImAll && fiImport) {
+    btnImAll.addEventListener('click', () => fiImport.click());
+    fiImport.addEventListener('change', e => {
+      if (e.target.files[0]) SETTINGS_IO.importAll(e.target.files[0]);
+      e.target.value = '';
+    });
+  }
+
+  const btnExRules = $('btn-settings-export-rules');
+  if (btnExRules) btnExRules.addEventListener('click', () => SETTINGS_IO.exportRules());
+})();
 
 /* ================================================================
    §JS-KB-ADDITIONS — EXTENDED KEYBOARD SHORTCUTS

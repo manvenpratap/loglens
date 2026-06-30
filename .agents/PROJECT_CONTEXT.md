@@ -2,6 +2,17 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Settings UI/UX Refinement & Data Portability (v6.9.34 — COMPLETED)**:
+  - Redesigned all 4 settings sections into collapsible `.settings-section-wrap` containers with smooth `max-height` CSS transitions, rotating `›` chevron indicators, and monospace amber ordinal badges (`01`–`05`) for industrial wayfinding.
+  - Scoped the inner App Preferences sub-section CSS selectors under `.settings-section >` parent to prevent style collision with the new top-level collapsible headers.
+  - Added **Section 05: Data Portability** with three new cards:
+    - **Export All Settings**: serializes `S.cfg`, `S.appPrefs`, theme, datasource fields, JIRA, Git, and WebSocket config into a single `.loglens-settings.json` file.
+    - **Import Settings**: reads and validates a `.loglens-settings.json` file, hydrates all form fields, applies theme and preferences.
+    - **Export Element Rules**: exports just `S.cfg.elementRules` as a standalone JSON file.
+  - Created the `SETTINGS_IO` JavaScript module (`§JS-SETTINGS_IO`) with `exportAll()`, `importAll(file)`, and `exportRules()` methods.
+  - Wired section collapse/expand via event delegation on `[data-collapse]` attribute click and keyboard events.
+  - Updated responsive CSS overrides for the new collapsible section structure.
+
 - **Log4j Panel Merger into Settings (v6.9.33 — COMPLETED)**:
   - Merged the Log4j XML Importer and Real-Time Log Stream views into the unified Settings (`cfg`) panel.
   - Placed the Log4j import card and WebSocket stream card directly inside the dashboard-grid container of the Settings screen.
