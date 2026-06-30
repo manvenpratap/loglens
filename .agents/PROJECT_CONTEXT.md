@@ -10,6 +10,7 @@
 - **Element Rules Interactivity & 3-Dot Actions (v6.9.28 — COMPLETED)**:
   - Enabled section collapse/minimize functionality for the "Element Rules" sidebar header, ensuring click events trigger toggle states for `#rules-list` only when clicking outside the action buttons.
   - Implemented event delegation in JavaScript to capture clicks on each rule's 3-dot actions button (`.rc-more-btn`), dynamically showing/hiding options (Edit, Export, Delete) and auto-closing them when clicking outside.
+  - Designed custom, premium CSS styling (`.rc-more-dropdown` and `.rc-dropdown-item`) supporting glass hover effects, card elevation, and responsive dark-mode variables.
 
 - **Premium Tooltip System Integration (v6.9.27 — COMPLETED)**:
   - Designed and built a custom floating tooltip container (`#app-tooltip`) with theme-aware borders, elegant paddings, squircle corners, and smooth CSS transitions.
