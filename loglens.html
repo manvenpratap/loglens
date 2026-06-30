@@ -3849,6 +3849,42 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   transform: translateY(0);
 }
 
+/* Rule card 3-dot actions dropdown menu */
+.rc-more-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shd-lg) !important;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  padding: 4px 0;
+  overflow: hidden;
+}
+.rc-dropdown-item {
+  background: transparent;
+  border: none;
+  color: var(--t2);
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  transition: background 0.12s, color 0.12s;
+}
+.rc-dropdown-item:hover {
+  background: var(--glass);
+  color: var(--t1);
+}
+
+
 
 /* ── 7. ICONS ─────────────────────────────────────────────────── */
 
