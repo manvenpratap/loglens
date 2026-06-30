@@ -1,0 +1,14 @@
+{
+  "name": "loglens-desktop",
+  "version": "0.1.0",
+  "description": "Desktop version of LogLens log timeline analyzer",
+  "private": true,
+  "scripts": {
+    "copy-assets": "node -e \"const fs = require('fs'); fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('loglens.html', 'dist/index.html');\"",
+    "dev": "npm run copy-assets && tauri dev",
+    "build": "npm run copy-assets && tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0"
+  }
+}

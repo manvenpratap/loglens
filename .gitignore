@@ -1,0 +1,8 @@
+# Node / Build directories
+node_modules/
+dist/
+package-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db

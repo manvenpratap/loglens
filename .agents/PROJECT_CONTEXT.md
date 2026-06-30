@@ -2,6 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Tauri Desktop Application Setup (v6.9.35 — COMPLETED)**:
+  - Initialized a Tauri v2 native desktop application wrapper inside the workspace root (`src-tauri` container).
+  - Configured `tauri.conf.json` with the app bundle identifier `com.loglens.desktop` and custom high-density desktop dimensions (`1280` x `800`).
+  - Added a root `package.json` to organize Tauri CLI dependency triggers (`npm run dev` / `npm run build`).
+  - Implemented a cross-platform asset packaging node build script that copies the self-contained `loglens.html` into `dist/index.html` at run/build time.
+  - Setup root level `.gitignore` rules to exclude package lock files, build artifacts (`dist/`), and dependencies (`node_modules/`).
+
 - **Settings UI/UX Refinement & Data Portability (v6.9.34 — COMPLETED)**:
   - Redesigned all 4 settings sections into collapsible `.settings-section-wrap` containers with smooth `max-height` CSS transitions, rotating `›` chevron indicators, and monospace amber ordinal badges (`01`–`05`) for industrial wayfinding.
   - Scoped the inner App Preferences sub-section CSS selectors under `.settings-section >` parent to prevent style collision with the new top-level collapsible headers.
@@ -564,7 +571,7 @@ loglens.html
 ### Phase 5 — Platform (v6.0) · Month 18–24
 **Status: Complete**
 
-- [ ] Tauri desktop app (Rust + WebView, <10 MB)
+- [x] Tauri desktop app (Rust + WebView, <10 MB)
 - [x] CLI tool (`loglens parse --config rules.json app.log`)
 - [x] Plugin SDK (JS/WASM modules)
 - [ ] Rust/WASM parser core (10–20× throughput)
