@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **View Switcher Enabled Globally (v6.9.44 — COMPLETED)**:
+  - Set the view tabs bar (`#vtabs`) display style to `flex` by default in CSS, rendering it visible at all times.
+  - Rewrote the `UI.svm` navigation controller to support switching tabs cleanly when no logs are loaded yet: appends Settings (`cfg`) and Help (`hlp`) panels dynamically, and keeps the empty state card (`#emp`) correctly rendered across all analytical view modes.
+
 - **Auto-Parse Empty Rule Check & Redirection (v6.9.43 — COMPLETED)**:
   - Added a validation guard to both the file-select helper (`UI.chooseAndParseLog()`) and the drag-and-drop listener to check for active rules (`S.cfg.elementRules.length`).
   - If no rules exist, a warning toast is shown and the user is automatically redirected to the Config screen to add or import rules first, preventing empty/useless parsing.

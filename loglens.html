@@ -666,12 +666,11 @@ html,body{
 
 /* View tabs — refined indicator strip */
 .vtabs{
-  display:none;align-items:center;
+  display:flex;align-items:center;
   background:var(--bg-1);
   border-bottom:1px solid var(--bdr);
   flex-shrink:0;padding:0 14px;
 }
-.vtabs.on{display:flex}
 .vt{
   padding:8px 14px;font-size:11px;font-weight:600;
   color:var(--t3);cursor:pointer;
@@ -9141,7 +9140,45 @@ const UI={
     if (actBar) {
       actBar.style.setProperty('display', isActionBarApplicable ? 'flex' : 'none', 'important');
     }
-    if(S.trees&&S.activeThr!==null)this.rv();
+    if(S.trees&&S.activeThr!==null){
+      this.rv();
+    } else {
+      const r = $('res');
+      if (r) {
+        r.style.overflowY = '';
+        r.innerHTML = '';
+        if (vm === 'cfg') {
+          r.appendChild($('p-cfg'));
+        } else if (vm === 'hlp') {
+          r.appendChild($('p-hlp'));
+        } else {
+          r.innerHTML = `
+            <div class="emp-card" id="emp">
+              <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
+                <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="emp-drop-label">Ready for telemetry. Drop log to begin.</div>
+              </div>
+              <div class="emp-title">Nothing parsed yet</div>
+              <div class="emp-desc">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
+              <div class="emp-actions">
+                <button class="btn btn-bl" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  Select Log File
+                </button>
+                <button class="btn" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  Load Demo Log
+                </button>
+              </div>
+              <div class="emp-features">
+                <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Zero install</div>
+                <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> 100% private</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
   },
 
   /* Modal */
