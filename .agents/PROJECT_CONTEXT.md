@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **UI/UX Pro Max Overhaul (v6.9.31 — COMPLETED)**:
+  - Redesigned full-screen Config, Setup, and Log4j screens into modern dashboard layout card grids (`.dashboard-grid` and `.dashboard-card`) with glass hover animations, subtle shadows, and structured headers.
+  - Refactored header view switcher tabs (`.hdr .vtabs`) to use flexible center alignment with automatic horizontal scrolling (`overflow-x: auto`) and hidden scrollbars, preventing visual collisions with logos and actions on narrow viewports.
+  - Dynamically hide the workspace filter action bar (`#action-bar`) when switching to non-analytical screens (Config, Setup, Log4j, Help) to reclaim valuable vertical space for form views.
+  - Optimized dashboard layout card accessibility, making forms and toggles visible by default in full screen while retaining manual toggle collapse controls.
+
 - **Sidebar Options to Full-Fledged Screens (v6.9.30 — COMPLETED)**:
   - Relocated Config, Setup (Settings), Log4j, and Help sections from the narrow sidebar into full-screen main view modes.
   - Added "Config", "Setup", "Log4j", and "Help" view tabs to the header view switcher (`#vtabs`) with modern SVG icons.
