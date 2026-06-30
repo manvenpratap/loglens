@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Premium Tooltip System Integration (v6.9.27 — COMPLETED)**:
+  - Designed and built a custom floating tooltip container (`#app-tooltip`) with theme-aware borders, elegant paddings, squircle corners, and smooth CSS transitions.
+  - Refactored the core Javascript `TIP` controller to bind to the new HTML element, automatically capturing client coordinates and fading tooltips in and out on hover/focus actions.
+  - Added descriptive `title` attributes (which dynamically map to tooltips) across view switchers, configuration database controls, file parse options, and rule manipulation elements.
+
 - **Brand Logo & Wordmark Redesign (v6.9.26 — COMPLETED)**:
   - Designed a premium vector SVG logo emblem consisting of interlocking Squircle boundary, parallel data lines, and transparent magnifying focus lens elements with amber-to-orange gradients.
   - Upgraded font styling of "LogLens" branding across both header and onboarding overlay to use heavier font weights (`800`/`900`), modern display typefaces, and high-fidelity text-mask gradients.
