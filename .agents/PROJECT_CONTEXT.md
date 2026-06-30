@@ -2,6 +2,14 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Log4j Panel Merger into Settings (v6.9.33 — COMPLETED)**:
+  - Merged the Log4j XML Importer and Real-Time Log Stream views into the unified Settings (`cfg`) panel.
+  - Placed the Log4j import card and WebSocket stream card directly inside the dashboard-grid container of the Settings screen.
+  - Relocated the pattern import result output container (`#lj-res`) below the grid but above the Element Rules section.
+  - Removed the Log4j view (`lj`) tab switcher from both the header and hidden sidebar panel tabs.
+  - Redirected the `Alt+9` keyboard shortcut to switch to the unified Settings view, and removed the Log4j option from the command palette.
+  - Cleaned up obsolete CSS rules and references for the Log4j (`lj`) view mode.
+
 - **Config & Setup Panel Merger (v6.9.32 — COMPLETED)**:
   - Merged Setup (`gs`) and Config (`cfg`) view modes into a single, unified "Settings" (`cfg`) view.
   - Relocated all setup cards (Global Settings, Cloud Datasources, JIRA Settings, Directory Watcher, Git Sync, Custom Plugins) directly into the Config dashboard card grid layout.
@@ -589,4 +597,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-06-30*  
-*Updated By: Antigravity (Config & Setup Panel Merger v6.9.32)*
+*Updated By: Antigravity (Log4j Panel Merger into Settings v6.9.33)*

@@ -3411,39 +3411,6 @@ mark.hl{
   }
 }
 
-/* Mobile bottom-sheet layout for Log4j XML importer */
-@media (max-width: 480px) {
-  #p-lj {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 70vh !important;
-    background: var(--bg-1) !important;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
-    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4) !important;
-    transform: translateY(100%);
-    transition: transform 0.28s var(--ease-spring) !important;
-    z-index: var(--z-modal) !important;
-    padding-top: 24px !important;
-    display: none;
-  }
-  #p-lj.active {
-    display: block !important;
-    transform: translateY(0) !important;
-  }
-  #p-lj::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 4px;
-    background: var(--bdr-h);
-    border-radius: var(--radius-pill);
-  }
-}
 /* Custom keyboard keys refinement */
 .kbd {
   font-family: var(--mono);
@@ -5572,7 +5539,6 @@ label[for="watch-auto-reload"] {
     <div class="vt" data-v="graph" title="D3.js Relationship Graph View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
     <div class="vt" data-v="3d" title="Three.js 3D Execution Landscape"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
     <div class="vt" data-v="cfg" title="Configuration & Settings"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> Settings</div>
-    <div class="vt" data-v="lj" title="Log4j Import Utility"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Log4j</div>
     <div class="vt" data-v="hlp" title="Help and Documentation"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Help</div>
     <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="width:120px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
   </div>
@@ -5644,7 +5610,6 @@ label[for="watch-auto-reload"] {
   <div class="sb-top">
     <div class="sb-tabs">
       <div class="stab active" data-panel="p-cfg" title="Settings" aria-label="Settings tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="stab-lbl">SET</span></div>
-      <div class="stab" data-panel="p-lj" title="Log4j Import" aria-label="Log4j import tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span class="stab-lbl">L4J</span></div>
       <div class="stab" data-panel="p-hlp" title="Help" aria-label="Help tab"><span class="stab-ic ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="stab-lbl">HLP</span></div>
     </div>
     <button class="btn-tog" id="btn-sb-tog" title="Collapse sidebar" aria-label="Collapse sidebar"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span></button>
@@ -5862,6 +5827,42 @@ label[for="watch-auto-reload"] {
           </div>
         </div>
 
+        <!-- Card: Log4j / Logback XML Import -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+            Log4j / Logback XML Import
+          </div>
+          <div class="fh" style="font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px;">
+            Import a <strong>log4j.xml</strong>, <strong>log4j2.xml</strong>, or
+            <strong>logback.xml</strong> file. LogLens parses every
+            <code style="color:var(--amber)">PatternLayout</code> /
+            <code style="color:var(--amber)">ConversionPattern</code> and generates
+            ready-to-use base regex patterns (no regex knowledge needed).
+          </div>
+          <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
+        </div>
+
+        <!-- Card: Real-Time Log Stream -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
+            Real-Time Log Stream
+            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+          </div>
+          <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
+            <div class="f">
+              <div class="fl" style="font-size:10px;">WebSocket URL</div>
+              <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
+            </div>
+            <div class="flex gap1 mt1">
+              <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
+              <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
+            </div>
+            <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
+          </div>
+        </div>
+
         <!-- Card 9: App Preferences -->
         <div class="dashboard-card" id="p-gs">
           <div class="dashboard-card-title">
@@ -5923,6 +5924,9 @@ label[for="watch-auto-reload"] {
 
       </div>
 
+      <!-- Imported patterns output below the grid -->
+      <div id="lj-res" class="fcol gap2" style="padding: 0 24px 24px 24px;"></div>
+
       <!-- Element Rules (Full Width below cards) -->
       <div style="padding: 24px;">
         <!-- Element Rules Section Header (enhanced) -->
@@ -5961,51 +5965,6 @@ label[for="watch-auto-reload"] {
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- LOG4J -->
-    <div class="sp" id="p-lj" style="padding:0;gap:0;overflow-y:auto;">
-      <div class="dashboard-grid">
-        
-        <!-- Card 1: Log4j / Logback Import -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-            Log4j / Logback XML Import
-          </div>
-          <div class="fh" style="font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px;">
-            Import a <strong>log4j.xml</strong>, <strong>log4j2.xml</strong>, or
-            <strong>logback.xml</strong> file. LogLens parses every
-            <code style="color:var(--amber)">PatternLayout</code> /
-            <code style="color:var(--amber)">ConversionPattern</code> and generates
-            ready-to-use base regex patterns (no regex knowledge needed).
-          </div>
-          <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
-        </div>
-
-        <!-- Card 2: Real-Time Log Stream -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
-            Real-Time Log Stream
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">WebSocket URL</div>
-              <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
-            </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
-              <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
-            </div>
-            <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
-          </div>
-        </div>
-
-      </div>
-      <!-- Imported patterns output below the grid -->
-      <div id="lj-res" class="fcol gap2" style="margin-top:24px;"></div>
     </div>
 
     <!-- HELP -->
@@ -6941,7 +6900,7 @@ const S={
   fsOk:typeof window.showOpenFilePicker==='function',
   logFile:null,threads:[],trees:{},activeThr:null,
   worker:null,wUrl:null,parseStart:0,
-  viewMode:'cfg',         // 'cfg'|'lj'|'hlp'|'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
+  viewMode:'cfg',         // 'cfg'|'hlp'|'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
   modalMode:'guided',     // 'guided'|'advanced'
   sbCollapsed:false,
   wizKw:[],               // keyword chips
@@ -8395,7 +8354,7 @@ const UI={
       threads.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
     }
     // Auto-switch away from config/help views to split view when rendering parsed results
-    if (['cfg', 'lj', 'hlp'].includes(S.viewMode)) {
+    if (['cfg', 'hlp'].includes(S.viewMode)) {
       S.viewMode = 'split';
       document.querySelectorAll('.vt').forEach(t => t.classList.toggle('active', t.dataset.v === 'split'));
       const searchWrap = $('hdr-search-container');
@@ -8589,7 +8548,7 @@ const UI={
     // Relocate active panels back to hidden panels container to prevent removal
     const hiddenCont = $('hidden-panels-container');
     if (hiddenCont) {
-      ['p-cfg', 'p-lj', 'p-hlp'].forEach(id => {
+      ['p-cfg', 'p-hlp'].forEach(id => {
         const el = $(id);
         if (el && el.parentElement && el.parentElement !== hiddenCont) {
           hiddenCont.appendChild(el);
@@ -8599,7 +8558,7 @@ const UI={
     const r=$('res');
     r.style.overflowY = 'auto';
     r.style.padding = '14px';
-    [...r.children].filter(el=>el.id!=='stats-bar' && !['p-cfg', 'p-lj', 'p-hlp'].includes(el.id)).forEach(el=>el.remove());
+    [...r.children].filter(el=>el.id!=='stats-bar' && !['p-cfg', 'p-hlp'].includes(el.id)).forEach(el=>el.remove());
     let tree=S.trees[S.activeThr]||[];HS.ann(tree,null);
     const q = (S.searchQuery || '').trim().toLowerCase();
     if(q || S.activeTraceId){
@@ -8674,8 +8633,6 @@ const UI={
       LANDSCAPE3D.init(tree, d);
     } else if(vm==='cfg'){
       r.appendChild($('p-cfg'));
-    } else if(vm==='lj'){
-      r.appendChild($('p-lj'));
     } else if(vm==='hlp'){
       r.appendChild($('p-hlp'));
     } else {
@@ -11607,8 +11564,7 @@ document.addEventListener('keydown',e=>{
     if(e.key==='4'){e.preventDefault();UI.svm('stats');}
     if(e.key==='5'){e.preventDefault();UI.svm('graph');}
     if(e.key==='6'){e.preventDefault();UI.svm('3d');}
-    if(e.key==='7'||e.key==='8'){e.preventDefault();UI.svm('cfg');}
-    if(e.key==='9'){e.preventDefault();UI.svm('lj');}
+    if(e.key==='7'||e.key==='8'||e.key==='9'){e.preventDefault();UI.svm('cfg');}
     if(e.key==='0'){e.preventDefault();UI.svm('hlp');}
     if((e.key==='['||e.key===']')&&S.threads.length>1){
       e.preventDefault();
@@ -13621,7 +13577,6 @@ const CMD = (() => {
     { id:'v-graph',  cat:'View', name:'Dependency Graph', hint:'Alt+5', icon:'⚬', action:()=>UI.svm('graph') },
     { id:'v-3d',     cat:'View', name:'3D Landscape',     hint:'Alt+6', icon:'◇', action:()=>UI.svm('3d') },
     { id:'v-cfg',    cat:'View', name:'Settings & Configuration', hint:'Alt+7', icon:'⚙', action:()=>UI.svm('cfg') },
-    { id:'v-lj',     cat:'View', name:'Log4j Screen',     hint:'Alt+9', icon:'📄', action:()=>UI.svm('lj') },
     { id:'v-hlp',    cat:'View', name:'Help Screen',      hint:'Alt+0', icon:'❓', action:()=>UI.svm('hlp') },
     // Exports
     { id:'e-csv',  cat:'Export', name:'Export CSV',           icon:'▤', action:()=>EXP.csv() },
