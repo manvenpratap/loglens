@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Empty State Action Buttons Integration (v6.9.40 — COMPLETED)**:
+  - Integrated primary action buttons directly inside the empty state card (`.emp-card`) for "Select Log File" and "Load Demo Log", resolving layout flow ambiguity when landing on the "Ready for telemetry" screen.
+  - Replaced inline styles inside the empty state markup with clean, dedicated CSS classes (`.emp-title`, `.emp-desc`, `.emp-actions`).
+
 - **Onboarding Skip Flow Persistence Fix (v6.9.39 — COMPLETED)**:
   - Resolved a bug where the onboarding overlay `#ob-ov` rendered as visible on page load even if the user had already dismissed it previously.
   - Added the `class="hidden"` attribute to the `#ob-ov` container in the HTML markup so it remains hidden on page load unless the `ll-ob-seen` localStorage flag is missing, enabling correct check timing.
