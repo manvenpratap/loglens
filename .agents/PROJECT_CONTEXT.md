@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Keyboard Accessibility & Tooltip Viewport Guard (v6.9.29 — COMPLETED)**:
+  - Added `tabindex="0"` focus markers to all collapsible sidebar headers (`#hdr-rules`, `#hdr-watch`, `#hdr-git`, `#hdr-plugins`, `#hdr-stream`, `#hdr-packs`).
+  - Added a global `keydown` event listener to toggle collapsible section visibility when pressing `Enter` or `Space` while focused.
+  - Extended the custom tooltip (`TIP` module) to listen for the document `mouseleave` event, ensuring the tooltip is immediately hidden if the cursor exits the browser viewport.
+
 - **Element Rules Interactivity & 3-Dot Actions (v6.9.28 — COMPLETED)**:
   - Enabled section collapse/minimize functionality for the "Element Rules" sidebar header, ensuring click events trigger toggle states for `#rules-list` only when clicking outside the action buttons.
   - Implemented event delegation in JavaScript to capture clicks on each rule's 3-dot actions button (`.rc-more-btn`), dynamically showing/hiding options (Edit, Export, Delete) and auto-closing them when clicking outside.
