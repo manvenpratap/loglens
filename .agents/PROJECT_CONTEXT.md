@@ -2,6 +2,15 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Sidebar Options to Full-Fledged Screens (v6.9.30 — COMPLETED)**:
+  - Relocated Config, Setup (Settings), Log4j, and Help sections from the narrow sidebar into full-screen main view modes.
+  - Added "Config", "Setup", "Log4j", and "Help" view tabs to the header view switcher (`#vtabs`) with modern SVG icons.
+  - Implemented dynamic panel recycling in `UI.rv()` to append/move panels between `#res` and a hidden container (`#hidden-panels-container`) when view modes change, preserving active states and DOM listeners.
+  - Hidden the sidebar (`.sb`) and resizing handle (`.sb-resize-handle`) entirely, allowing all visualization views and setup screens to utilize 100% of the viewport width.
+  - Updated default boot view mode to `'cfg'` for a clean setup start page.
+  - Added keyboard shortcuts (`Alt+7` to `Alt+0`) and command palette view items.
+  - Re-routed header click event listeners and overflow menu items to navigate to the new views via `UI.svm()`.
+
 - **Keyboard Accessibility & Tooltip Viewport Guard (v6.9.29 — COMPLETED)**:
   - Added `tabindex="0"` focus markers to all collapsible sidebar headers (`#hdr-rules`, `#hdr-watch`, `#hdr-git`, `#hdr-plugins`, `#hdr-stream`, `#hdr-packs`).
   - Added a global `keydown` event listener to toggle collapsible section visibility when pressing `Enter` or `Space` while focused.
