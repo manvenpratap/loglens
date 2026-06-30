@@ -5339,9 +5339,9 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
       <div class="div"></div>
-      <div class="sh">
+      <div class="sh" id="hdr-rules" style="cursor:pointer;" onclick="if(!event.target.closest('.mla')) $('rules-list').classList.toggle('hidden')">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span> Element Rules
-        <div class="flex gap1 mla">
+        <div class="flex gap1 mla" style="margin-right:8px;">
           <button class="btn btn-g btn-xs" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span></button>
           <button class="btn btn-g btn-xs" id="btn-rule-test" disabled title="Test all rules against sample lines" aria-label="Test rules"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span></button>
           <button class="btn btn-p btn-sm" id="btn-ar" disabled title="Add a new custom event regex parse rule">+ Add</button>
@@ -10675,11 +10675,25 @@ $('btn-sgs').addEventListener('click',()=>CFG.saveGs());
 
 // Rules list (delegated)
 $('rules-list').addEventListener('click',e=>{
+  const moreBtn = e.target.closest('.rc-more-btn');
+  if (moreBtn) {
+    e.stopPropagation();
+    const dropdown = moreBtn.nextElementSibling;
+    document.querySelectorAll('.rc-more-dropdown').forEach(d => {
+      if (d !== dropdown) d.classList.add('hidden');
+    });
+    dropdown.classList.toggle('hidden');
+    return;
+  }
   const btn=e.target.closest('[data-a]');if(!btn)return;
   const i=+btn.dataset.i;
+  btn.closest('.rc-more-dropdown')?.classList.add('hidden');
   if(btn.dataset.a==='edit')UI.openM(S.cfg?.elementRules?.[i]);
   if(btn.dataset.a==='del')CFG.del(i);
   if(btn.dataset.a==='share')EXP.exportRule(i);
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.rc-more-dropdown').forEach(d => d.classList.add('hidden'));
 });
 $('btn-ar').addEventListener('click',()=>UI.openM(null));
 $('btn-rule-test').addEventListener('click',()=>RTS.open());
