@@ -3821,9 +3821,34 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
 }
 
 /* Floating modals, overlays, and tooltips */
-#od-card, #g-tooltip, #mm-tooltip, .cmd-box, .exp-menu, #ctx-menu {
+#od-card, #g-tooltip, #mm-tooltip, .cmd-box, .exp-menu, #ctx-menu, #app-tooltip {
   box-shadow: var(--shd-lg) !important;
 }
+
+#app-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg-1);
+  color: var(--t1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-family: var(--mono);
+  pointer-events: none;
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  line-height: 1.4;
+}
+#app-tooltip.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 /* ── 7. ICONS ─────────────────────────────────────────────────── */
 
@@ -5184,15 +5209,15 @@ label[for="watch-auto-reload"] {
 
 
   <div class="vtabs" id="vtabs">
-    <div class="vt active" data-v="split"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
-    <div class="vt" data-v="gantt"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Timeline</div>
-    <div class="vt" data-v="tree"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
-    <div class="vt" data-v="diff" id="vt-diff" style="display:none;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Diff</div>
-    <div class="vt" data-v="query" id="vt-query"><span class="ico" aria-hidden="true">>_</span> Query</div>
-    <div class="vt" data-v="stats"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
-    <div class="vt" data-v="graph"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
-    <div class="vt" data-v="3d"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
-    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" style="width:120px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
+    <div class="vt active" data-v="split" title="Split Panel View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
+    <div class="vt" data-v="gantt" title="Interactive Gantt Timeline View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Timeline</div>
+    <div class="vt" data-v="tree" title="Execution Tree View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
+    <div class="vt" data-v="diff" id="vt-diff" style="display:none;" title="Side-by-Side Log File Comparison"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Diff</div>
+    <div class="vt" data-v="query" id="vt-query" title="LogLens Query Language (LQL) Terminal"><span class="ico" aria-hidden="true">>_</span> Query</div>
+    <div class="vt" data-v="stats" title="Statistical Dashboard"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
+    <div class="vt" data-v="graph" title="D3.js Relationship Graph View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
+    <div class="vt" data-v="3d" title="Three.js 3D Execution Landscape"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
+    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="width:120px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
   </div>
 
   <!-- Right-side slot system: A=live · B=status badges · C=state chips · D=actions · E=overflow -->
@@ -5290,10 +5315,10 @@ label[for="watch-auto-reload"] {
           <span id="lfname" class="cm mono trunc" style="font-size:10px;"></span>
         </div>
         <div class="dock-row">
-          <button class="btn btn-p wf" id="btn-parse" disabled>▶ Parse</button>
-          <button class="btn btn-d btn-sm" id="btn-abort" disabled>■ Abort</button>
+          <button class="btn btn-p wf" id="btn-parse" disabled title="Parse selected log file under current configuration rules (Shortcut: Ctrl+Enter)">▶ Parse</button>
+          <button class="btn btn-d btn-sm" id="btn-abort" disabled title="Abort current parsing job">■ Abort</button>
           <div id="cg-stream-ctrl" style="display:none;align-items:center;gap:6px;">
-            <button class="btn btn-g btn-sm" id="btn-stream-pause">⏸ Pause</button>
+            <button class="btn btn-g btn-sm" id="btn-stream-pause" title="Pause or resume live streaming log data">⏸ Pause</button>
             <span id="stream-buf-count" class="badge b-gray" style="font-family:var(--mono);">Buffer: 0 / 2000</span>
           </div>
         </div>
@@ -5305,12 +5330,12 @@ label[for="watch-auto-reload"] {
         <div class="cfg-st"><div class="cfg-dot" id="cfg-dot"></div>
           <div class="cfg-st-txt" id="cfg-txt">Not connected</div></div>
         <div class="flex gap1 mt1">
-          <button class="btn btn-p wf" id="btn-conn"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span> Connect DB</button>
-          <button class="btn wf" id="btn-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import</button>
+          <button class="btn btn-p wf" id="btn-conn" title="Connect to an IndexedDB Configuration Database"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span> Connect DB</button>
+          <button class="btn wf" id="btn-imp" title="Import configuration JSON file (rules and styles)"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import</button>
         </div>
         <div class="flex gap1">
-          <button class="btn wf" id="btn-exp" disabled><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export</button>
-          <button class="btn wf" id="btn-new"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> New</button>
+          <button class="btn wf" id="btn-exp" disabled title="Export active configuration to a JSON file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export</button>
+          <button class="btn wf" id="btn-new" title="Create a new clean configuration database"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> New</button>
         </div>
       </div>
       <div class="div"></div>
@@ -5319,7 +5344,7 @@ label[for="watch-auto-reload"] {
         <div class="flex gap1 mla">
           <button class="btn btn-g btn-xs" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span></button>
           <button class="btn btn-g btn-xs" id="btn-rule-test" disabled title="Test all rules against sample lines" aria-label="Test rules"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span></button>
-          <button class="btn btn-p btn-sm" id="btn-ar" disabled>+ Add</button>
+          <button class="btn btn-p btn-sm" id="btn-ar" disabled title="Add a new custom event regex parse rule">+ Add</button>
         </div>
       </div>
       <div id="rules-list" class="fcol gap1">
@@ -6065,6 +6090,7 @@ label[for="watch-auto-reload"] {
 </div>
 
 <div id="toast-r" role="status" aria-live="polite"></div>
+<div id="app-tooltip" role="tooltip" aria-hidden="true"></div>
 
 <!-- ================================================================ ONBOARDING -->
 <div id="ob-ov" role="dialog" aria-modal="true" aria-label="Welcome to LogLens">
@@ -18679,11 +18705,7 @@ ONBOARD.check();
       });
       obs.observe(document.body, { childList: true, subtree: true });
 
-      this.el = document.createElement('div');
-      this.el.id = 'g-tooltip';
-      this.el.className = 'hidden';
-      this.el.style.cssText = 'position:absolute; background:var(--bg-overlay); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid var(--bdr-h); color:var(--t1); padding:6px 10px; font-size:11px; font-family:var(--ui); border-radius:var(--radius-sm); pointer-events:none; z-index:1000; box-shadow:var(--shd); max-width:280px; white-space:pre-wrap;';
-      document.body.appendChild(this.el);
+      this.el = $('app-tooltip');
 
       document.addEventListener('mouseover', e => {
         const target = e.target.closest('[data-tip]');
@@ -18698,7 +18720,7 @@ ONBOARD.check();
         this.hide();
       });
       document.addEventListener('mousemove', e => {
-        if (this.el && !this.el.classList.contains('hidden')) {
+        if (this.el && this.el.classList.contains('vis')) {
           this.position(e.clientX, e.clientY);
         }
       });
@@ -18706,10 +18728,10 @@ ONBOARD.check();
     show(target) {
       if (!this.el) return;
       this.el.textContent = target.dataset.tip;
-      this.el.classList.remove('hidden');
+      this.el.classList.add('vis');
     },
     hide() {
-      if (this.el) this.el.classList.add('hidden');
+      if (this.el) this.el.classList.remove('vis');
     },
     position(x, y) {
       if (!this.el) return;
@@ -18719,8 +18741,8 @@ ONBOARD.check();
       const rect = this.el.getBoundingClientRect();
       if (left + rect.width > window.innerWidth) left = x - rect.width - offset;
       if (top + rect.height > window.innerHeight) top = y - rect.height - offset;
-      this.el.style.left = (left + window.scrollX) + 'px';
-      this.el.style.top = (top + window.scrollY) + 'px';
+      this.el.style.left = left + 'px';
+      this.el.style.top = top + 'px';
     }
   };
   setTimeout(() => TIP.init(), 100);
