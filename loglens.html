@@ -9118,9 +9118,9 @@ const UI={
       r.appendChild(d);
       LANDSCAPE3D.init(tree, d);
     } else if(vm==='cfg'){
-      const el = $('p-cfg'); if (el) r.appendChild(el);
+      const el = $('p-cfg'); if (el) { el.classList.add('active'); r.appendChild(el); }
     } else if(vm==='hlp'){
-      const el = $('p-hlp'); if (el) r.appendChild(el);
+      const el = $('p-hlp'); if (el) { el.classList.add('active'); r.appendChild(el); }
     } else {
       r.style.overflowY = 'hidden';
       const d=document.createElement('div');
@@ -9273,9 +9273,9 @@ const UI={
         r.style.overflowY = '';
         r.innerHTML = '';
         if (vm === 'cfg') {
-          const el = $('p-cfg'); if (el) r.appendChild(el);
+          const el = $('p-cfg'); if (el) { el.classList.add('active'); r.appendChild(el); }
         } else if (vm === 'hlp') {
-          const el = $('p-hlp'); if (el) r.appendChild(el);
+          const el = $('p-hlp'); if (el) { el.classList.add('active'); r.appendChild(el); }
         } else {
           r.innerHTML = `
             <div class="emp-card" id="emp">
