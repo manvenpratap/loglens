@@ -2,6 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Enhanced Stack Behaviors: swap & popAll (v6.9.57 — COMPLETED)**:
+  - Added support for two new stack behavior options: `swap` (closes current top stack node and opens a new one at the same level) and `popAll` (closes all open nodes on the stack and starts fresh at root).
+  - Integrated the behaviors into all three parsing modules: Worker-based batch parser (`pl`), local stream parser (`STREAM_PARSER`), and WebSocket stream parser (`WS_STREAM_PARSER`).
+  - Added dropdown selection elements to Rule Editor modal, and mapped badge styling (`b-amber` for swap, `b-red` for popAll) and visual labels (`⇆ swap`, `⤊ popAll`) inside Settings screen lists and Regex Test Wizard match indicators.
+  - Documented new stack behaviors in the Help tooltip library (`HTIP.behavior`).
+  - Added automated validation test suite `test_stack_behaviors.py` confirming parser stack node tree outputs.
+
 - **Settings & Help Panel DOM Preservation Fix (v6.9.56 — COMPLETED)**:
   - Fixed a critical garbage-collection bug where `UI._showPanel()` used `removeChild()` to detach inactive utility panels from the DOM, causing them to be discarded by the browser. Solved this by parking inactive panels in `#hidden-panels-container` instead of detaching them.
   - Also resolved a bug in `UI.render()` where `#res.innerHTML = statsH` wiped out `p-cfg` or `p-hlp` if they were active during parsing. Added a panel preservation block at the start of `render()`.
@@ -710,4 +717,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-01*  
-*Updated By: Antigravity (Settings & Help Panel DOM Preservation Fix v6.9.56)*
+*Updated By: Antigravity (Enhanced Stack Behaviors: swap & popAll v6.9.57)*

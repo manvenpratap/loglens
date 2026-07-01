@@ -6665,6 +6665,8 @@ label[for="watch-auto-reload"] {
           <option value="push">push: opens block</option>
           <option value="pop">pop: closes block</option>
           <option value="inline">inline: point event</option>
+          <option value="swap">swap: closes current, opens new</option>
+          <option value="popAll">popAll: closes all open blocks</option>
         </select>
       </div>
     </div>
@@ -7368,6 +7370,8 @@ function pl(line,tf,stacks,trees,all){
       case'push':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);stk.push(nd);break;
       case'pop':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}break;
       case'inline':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);break;
+      case'swap':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);stk.push(nd);break;
+      case'popAll':while(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}tr.push(nd);break;
     }return true;
   }
   return false;
@@ -8165,8 +8169,8 @@ const CFG={
       const col=scol(r.visualStyle?.accentColor||'#888');
       const ico=esc(r.visualStyle?.icon||'●');
       const beh=r.stackBehavior||'inline';
-      const bc={push:'b-blue',pop:'b-green',inline:'b-pur'}[beh]||'b-gray';
-      const behLabel={push:'↑ push',pop:'↓ pop',inline:'→ inline'}[beh]||beh;
+      const bc={push:'b-blue',pop:'b-green',inline:'b-pur',swap:'b-amber',popAll:'b-red'}[beh]||'b-gray';
+      const behLabel={push:'↑ push',pop:'↓ pop',inline:'→ inline',swap:'⇆ swap',popAll:'⤊ popAll'}[beh]||beh;
       const isEnabled=r.enabled!==false;
       const disabledCls=isEnabled?'':'rule-disabled';
       const rxPrev=r.regexPattern?esc(r.regexPattern.slice(0,42)+(r.regexPattern.length>42?'…':'')):'—';
@@ -10091,7 +10095,7 @@ const RTS={
       if(ok)totalHits++;
       const ico=r.visualStyle?.icon||'•';
       const beh=r.stackBehavior;
-      const bc={push:'b-blue',pop:'b-green',inline:'b-pur'}[beh]||'b-gray';
+      const bc={push:'b-blue',pop:'b-green',inline:'b-pur',swap:'b-amber',popAll:'b-red'}[beh]||'b-gray';
       const matchHtml=matched.map(l=>
         `<div class="test-line"><span class="test-ok">✓</span><span class="test-log">${esc(l)}</span></div>`
       ).join('')||
@@ -12250,6 +12254,24 @@ const STREAM_PARSER = {
         case 'inline':
           if (stk.length > 0) stk[stk.length - 1].events.push(nd);
           else tr.push(nd);
+          break;
+        case 'swap':
+          if (stk.length > 0) {
+            const o = stk.pop();
+            o.endTimestamp = ts;
+            o.duration = (ts != null && o.timestamp != null) ? (ts - o.timestamp) : null;
+          }
+          if (stk.length > 0) stk[stk.length - 1].events.push(nd);
+          else tr.push(nd);
+          stk.push(nd);
+          break;
+        case 'popAll':
+          while (stk.length > 0) {
+            const o = stk.pop();
+            o.endTimestamp = ts;
+            o.duration = (ts != null && o.timestamp != null) ? (ts - o.timestamp) : null;
+          }
+          tr.push(nd);
           break;
       }
       
@@ -15708,6 +15730,28 @@ STREAM_PARSER.parseLine = function(line) {
           if (S.viewMode === 'tree') tr.unshift(nd);
           else tr.push(nd);
         }
+        break;
+      case 'swap':
+        if (stk.length > 0) {
+          const o = stk.pop();
+          o.endTimestamp = ts;
+          o.duration = (ts != null && o.timestamp != null) ? (ts - o.timestamp) : null;
+        }
+        if (stk.length > 0) stk[stk.length - 1].events.push(nd);
+        else {
+          if (S.viewMode === 'tree') tr.unshift(nd);
+          else tr.push(nd);
+        }
+        stk.push(nd);
+        break;
+      case 'popAll':
+        while (stk.length > 0) {
+          const o = stk.pop();
+          o.endTimestamp = ts;
+          o.duration = (ts != null && o.timestamp != null) ? (ts - o.timestamp) : null;
+        }
+        if (S.viewMode === 'tree') tr.unshift(nd);
+        else tr.push(nd);
         break;
     }
     
@@ -19745,7 +19789,9 @@ const HTIP = (() => {
       body: `Controls how this rule interacts with the event tree:<br><br>
         <strong>push</strong>: Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
         <strong>pop</strong>: Closes the last open <code>push</code> block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
-        <strong>inline</strong>: A standalone point event with no duration. Use for log statements, warnings, and errors.`
+        <strong>inline</strong>: A standalone point event with no duration. Use for log statements, warnings, and errors.<br><br>
+        <strong>swap</strong>: Closes the active block (like <code>pop</code>) and opens a new block (like <code>push</code>) at the same nesting level.<br><br>
+        <strong>popAll</strong>: Closes all currently open blocks on this thread, calculating durations, and starts fresh at the root-level.`
     },
     capture: {
       title: 'Capture Group Mapping',
