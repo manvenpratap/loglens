@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Wider Rule Editor Modal Layout (v6.9.47 — COMPLETED)**:
+  - Increased the default `.modal` width from `660px` to `920px` to leverage available workspace area on desktop displays.
+  - Updated the token palette grid (`.tok-grid`) inside the Regex Builder accordion to use auto-fill (`repeat(auto-fill, minmax(130px, 1fr))`) instead of fixed 2 columns, letting the pattern token cards scale fluidly across the expanded modal layout.
+
 - **Visual Group Mapping & Token Builder Search (v6.9.46 — COMPLETED)**:
   - Implemented a Visual Group Builder experience: highlighted regex capture groups in the live match preview can now be clicked directly to open an interactive mapping dropdown menu, setting the corresponding metadata field inputs dynamically.
   - Added a search input box at the top of the Pattern Token Builder accordion, filtering regex tokens and dynamically auto-expanding matching categories to improve builder navigation.

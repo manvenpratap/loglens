@@ -1332,7 +1332,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   background:var(--bg-2);
   border:1px solid var(--bdr);
   border-radius:var(--rounded-lg);
-  width:660px;max-width:96vw;max-height:91vh;
+  width:920px;max-width:96vw;max-height:91vh;
   display:flex;flex-direction:column;
   overflow:hidden;
   box-shadow:var(--shd-lg);
@@ -20624,7 +20624,7 @@ UI.svm(S.viewMode);
               <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
             </div>
             <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
-              <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:6px;">
                 ${cat.toks.map(tk => `
                   <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
                     <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
