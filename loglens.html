@@ -9244,17 +9244,19 @@ const UI={
   _showPanel(id){
     const r = $('res');
     if (!r) return;
-    // Detach BOTH panels from wherever they live (sb-body, hidden container, #res, etc.)
+    // Save references FIRST — removeChild detaches from DOM so getElementById won't find them after
+    const saved = {};
     ['p-cfg','p-hlp'].forEach(pid => {
       const el = $(pid);
+      saved[pid] = el;
       if (el && el.parentElement) el.parentElement.removeChild(el);
     });
     // Clear #res (preserve stats-bar)
     [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
     r.style.overflowY = 'auto';
     r.style.padding = '0';
-    // Append the requested panel and force visible via inline style
-    const panel = $(id);
+    // Append using saved reference (not getElementById — element is detached)
+    const panel = saved[id];
     if (panel) {
       panel.classList.add('active');
       panel.style.display = 'flex';

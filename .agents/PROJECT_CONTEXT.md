@@ -2,6 +2,20 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Settings Panel DOM Reference Fix (v6.9.55 — COMPLETED)**:
+  - Fixed an issue where the Settings or Help panel would fail to display because they were detached using `removeChild()` before `document.getElementById` was called to look them up.
+  - Implemented pre-detached reference preservation inside `UI._showPanel()`.
+
+- **Settings & Help Panel Staging Refactor (v6.9.54 — COMPLETED)**:
+  - Completely removed the legacy `.sb-body` (sidebar) re-parking logic from `UI.rv()`. Since the sidebar is hidden, parking panels there caused rendering errors.
+  - Rewrote `UI._showPanel()` to cleanly use `removeChild()` to detach panels from any parent, and set inline `display: flex` style override to guarantee visibility.
+
+- **Settings/Help View Short-Circuiting (v6.9.53 — COMPLETED)**:
+  - Bypassed the analytical view data-renderer `UI.rv()` in `UI.svm()` when navigating to utility views (`cfg`/`hlp`) by short-circuiting to the new `_showPanel` helper.
+
+- **Active State Restoration Fix (v6.9.52 — COMPLETED)**:
+  - Ensured `.active` class is reapplied to `p-cfg` and `p-hlp` when rendering them inside `#res`.
+
 - **Null-Guard Fix for btn-parse/btn-abort (v6.9.51 — COMPLETED)**:
   - Fixed `Uncaught (in promise) TypeError: Cannot set properties of null (setting 'disabled')` thrown from `UI.ub()` during `ONBOARD.loadDemo()`.
   - Root cause: `btn-parse` can be temporarily absent from the DOM during async demo loading when the onboarding overlay is still visible and the parse dock hasn't mounted yet.
@@ -691,4 +705,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-01*  
-*Updated By: Antigravity (Null-Guard Fix for btn-parse/btn-abort v6.9.51)*
+*Updated By: Antigravity (Settings Panel DOM Reference Fix v6.9.55)*
