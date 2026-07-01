@@ -2,6 +2,13 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Log Level Parsing & UI Visualization (v6.9.50 — COMPLETED)**:
+  - Enabled logging level capturing across all three parsing entry points (Web Worker batch parser, client-side stream parser, and secondary live stream parser), populating a new `level` attribute on parsed telemetry nodes.
+  - Implemented dynamic, color-coded level badges inside Tree View, Flat Row Timeline List View, and Diff Tree renderers using CSS swatches (`.b-red` for errors/fatal, `.b-amber` for warnings, `.b-blue` for info, and `.b-gray`/`.b-pur` for debug/trace).
+  - Integrated the `level` attribute into the LQL (LogLens Query Language) runtime records mapping, allowing query statements like `WHERE level = "ERROR"`.
+  - Documented `level` fields under the LQL Help reference table.
+  - Updated both `DEF_CFG` and onboarding `DEMO_CFG` element rules regex patterns and capture mappings to extract log level fields, ensuring out-of-the-box level visualization support on built-in demo loads.
+
 - **Defensive Button & Panel Checks (v6.9.49 — COMPLETED)**:
   - Added strict existence validation checks (`if (el) ...`) to all DOM appends of `p-cfg` and `p-hlp` inside both `UI.rv` and `UI.svm` navigation controllers.
   - Implemented safe element checks for `btn-parse` and `btn-abort` inside the `ONBOARD.loadDemo()` asynchronous workflow, preventing any uncaught promise rejections if the buttons are temporarily detached or unmounted during active rendering.
@@ -677,5 +684,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-06-30*  
-*Updated By: Antigravity (Log4j Panel Merger into Settings v6.9.33)*
+*Last Updated: 2026-07-01*  
+*Updated By: Antigravity (Log Level Parsing & UI Visualization v6.9.50)*

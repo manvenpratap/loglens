@@ -6413,6 +6413,7 @@ label[for="watch-auto-reload"] {
             <tr><td><code>timestamp</code></td><td>number (ms)</td><td>Parsed start timestamp</td></tr>
             <tr><td><code>payload</code></td><td>string</td><td>Free-text capture from log line</td></tr>
             <tr><td><code>correlationId</code></td><td>string</td><td>Distributed trace ID</td></tr>
+            <tr><td><code>level</code></td><td>string</td><td>Log level (e.g. INFO, ERROR, WARN)</td></tr>
             <tr><td><code>behavior</code></td><td>push/pop/inline</td><td>Stack behavior of the rule</td></tr>
             <tr><td><code>sla_breach</code></td><td>boolean</td><td>Duration exceeded SLA threshold</td></tr>
             <tr><td><code>anomaly</code></td><td>boolean</td><td>Statistical outlier detection flag</td></tr>
@@ -6800,6 +6801,10 @@ label[for="watch-auto-reload"] {
         <div class="f">
           <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
           <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
+        </div>
+        <div class="f">
+          <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
+          <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
         </div>
       </div>
     </div>
@@ -7293,36 +7298,36 @@ const DEF_CFG={
   },
   elementRules:[
     {id:'r_txs',name:'Transaction Begin',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?TX-BEGIN\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-BEGIN\s+(\S+)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
      stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'}},
     {id:'r_txe',name:'Transaction End',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?TX-END\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-END\s+(\S+)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
      stackBehavior:'pop',visualStyle:{accentColor:'var(--blue)',icon:'◀'}},
     {id:'r_hs',name:'HTTP Request',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName','4':'payload'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'},
      stackBehavior:'push',visualStyle:{accentColor:'#3fb950',icon:'❖'}},
     {id:'r_he',name:'HTTP Response',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?HTTP-RESP\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-RESP\s+(\S+)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
      stackBehavior:'pop',visualStyle:{accentColor:'#3fb950',icon:'↩'}},
     {id:'r_dbs',name:'DB Query Start',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName','4':'payload'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'},
      stackBehavior:'push',visualStyle:{accentColor:'#f0883e',icon:'▤'}},
     {id:'r_dbe',name:'DB Query End',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*?DB-QUERY-END\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'elementName'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-END\s+(\S+)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
      stackBehavior:'pop',visualStyle:{accentColor:'#f0883e',icon:'✓'}},
     {id:'r_w',name:'Warning',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+WARN\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'payload'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'payload'},
      stackBehavior:'inline',visualStyle:{accentColor:'#d29922',icon:'⚠'}},
     {id:'r_e',name:'Error',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+ERROR\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:{'1':'timestamp','2':'thread','3':'payload'},
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
+     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'payload'},
      stackBehavior:'inline',visualStyle:{accentColor:'#f85149',icon:'✕'}},
   ]
 };
@@ -7356,6 +7361,7 @@ function pl(line,tf,stacks,trees,all){
       endTimestamp:null,duration:null,behavior:r.stackBehavior,
       visualStyle:r.visualStyle||{},events:[],
       correlationId:c.correlationId||null,
+      level:c.level||null,
       slaThresholdMs:r.slaThresholdMs||null,
       rawLine:line.length>260?line.slice(0,260)+'…':line};
     switch(r.stackBehavior){
@@ -7832,31 +7838,31 @@ const TOKS=[
 
 /* Pattern templates for Advanced mode */
 const TMPLS={
-  java_std:{rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'thread'}},
-  spring:  {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+[\w.$-]+\s+:\s+`,cm:{'1':'timestamp','2':'thread'}},
-  log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(?:ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'thread'}},
-  json_ts: {rx:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"[^"]+","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,cm:{'1':'timestamp','2':'thread'}},
+  java_std:{rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'level','3':'thread'}},
+  spring:  {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+[\w.$-]+\s+:\s+`,cm:{'1':'timestamp','2':'level','3':'thread'}},
+  log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'thread','3':'level'}},
+  json_ts: {rx:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"([^"]+)","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,cm:{'1':'timestamp','2':'level','3':'thread'}},
   iso_bare:{rx:String.raw`^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})\s+`,cm:{'1':'timestamp'}},
-  csv:     {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|[^|]+\|([^|]+)\|`,cm:{'1':'timestamp','2':'thread'}},
+  csv:     {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|([^|]+)\|([^|]+)\|`,cm:{'1':'timestamp','2':'level','3':'thread'}},
 };
 
 /* Wizard format presets */
 const WIZ_FMTS={
   java_std:{ex:'2024-01-15 12:34:56.789 INFO  [main] com.example.Svc - TX-BEGIN Order/42',
-    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+\S+\s+-\s+`,
-    cm:{'1':'timestamp','2':'thread'},ng:3,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+\S+\s+-\s+`,
+    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
   spring:  {ex:'2024-01-15 12:34:56.789  INFO 12345 --- [nio-8080-exec-1] c.e.s.Svc   : TX-BEGIN',
-    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+\S+\s+:\s+`,
-    cm:{'1':'timestamp','2':'thread'},ng:3,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+\S+\s+:\s+`,
+    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
   log4j2_t:{ex:'12:34:56.789 [main] INFO  com.example.Svc - TX-BEGIN Order/42',
-    base:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(?:ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+\S+\s+-\s+`,
-    cm:{'1':'timestamp','2':'thread'},ng:3,ts:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+\S+\s+-\s+`,
+    cm:{'1':'timestamp','2':'thread','3':'level'},ng:4,ts:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
   json:    {ex:'{"timestamp":"2024-01-15T12:34:56.789Z","level":"INFO","thread":"main","message":"TX-BEGIN"}',
-    base:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"[^"]+","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,
-    cm:{'1':'timestamp','2':'thread'},ng:3,ts:String.raw`"timestamp"\s*:\s*"([^"]+)"`},
+    base:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"([^"]+)","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,
+    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`"timestamp"\s*:\s*"([^"]+)"`},
   csv:     {ex:'2024-01-15 12:34:56.789|INFO|main|TX-BEGIN Order/42',
-    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|[^|]+\|([^|]+)\|`,
-    cm:{'1':'timestamp','2':'thread'},ng:3,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|([^|]+)\|([^|]+)\|`,
+    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
   custom:  {ex:'',base:'^',cm:{},ng:1,ts:''},
 };
 
@@ -7928,7 +7934,8 @@ const RXB={
       { id: 'cm-th', label: '🧵 thread' },
       { id: 'cm-el', label: '🏷 elementName' },
       { id: 'cm-py', label: '📦 payload' },
-      { id: 'cm-co', label: '🔗 correlationId' }
+      { id: 'cm-co', label: '🔗 correlationId' },
+      { id: 'cm-lv', label: '⚡ level' }
     ];
     
     const currentMappings = {};
@@ -8007,7 +8014,7 @@ const RXB={
   _hl(line,rxStr,cm){
     /* Color palette for capture groups */
     const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
-    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr'};
+    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr',level:'⚡ lvl'};
     try{
       let rx,hasIdx=false;
       try{rx=new RegExp(rxStr,'d');hasIdx=true;}catch{try{rx=new RegExp(rxStr);}catch(e){return`<span class="rx-nm">⚠ Regex error: ${esc(e.message)}</span>`;}}
@@ -8591,6 +8598,11 @@ const TR={
     const tsB=ts?`<span class="tts">${esc(ts)}</span>`:'';
     
     let ab = '';
+    if (n.level) {
+      const lvl = n.level.trim().toUpperCase();
+      const bCls = ['ERROR', 'FATAL', 'FAIL', 'SEVERE', 'CRITICAL'].includes(lvl) ? 'b-red' : ['WARN', 'WARNING'].includes(lvl) ? 'b-amber' : ['INFO'].includes(lvl) ? 'b-blue' : ['DEBUG'].includes(lvl) ? 'b-gray' : 'b-pur';
+      ab += `<span class="badge ${bCls}" style="margin-left:4px; font-weight:bold; letter-spacing:0.3px;">${esc(lvl)}</span>`;
+    }
     if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
     if (n._isSlaBreach) ab += `<span class="badge b-red" style="border: 1px dashed var(--red); background: transparent; color: var(--red); margin-left:4px;">SLA BREACH</span>`;
     if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
@@ -8707,6 +8719,11 @@ const TR={
     const tsB = ts ? `<span class="tts">${esc(ts)}</span>` : '';
     
     let ab = '';
+    if (n.level) {
+      const lvl = n.level.trim().toUpperCase();
+      const bCls = ['ERROR', 'FATAL', 'FAIL', 'SEVERE', 'CRITICAL'].includes(lvl) ? 'b-red' : ['WARN', 'WARNING'].includes(lvl) ? 'b-amber' : ['INFO'].includes(lvl) ? 'b-blue' : ['DEBUG'].includes(lvl) ? 'b-gray' : 'b-pur';
+      ab += `<span class="badge ${bCls}" style="margin-left:4px; font-weight:bold; letter-spacing:0.3px;">${esc(lvl)}</span>`;
+    }
     if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
     if (n._isSlaBreach) ab += `<span class="badge b-red" style="border:1px dashed var(--red); background:transparent; color:var(--red); margin-left:4px;">SLA BREACH</span>`;
     if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
@@ -9301,7 +9318,7 @@ const UI={
     const cm=rule?.captureMapping||{};
     const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
     $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');$('cm-el').value=fg('elementName');$('cm-py').value=fg('payload');
-    $('cm-co').value=fg('correlationId');$('e-sla').value=rule?.slaThresholdMs||'';
+    $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');$('e-sla').value=rule?.slaThresholdMs||'';
     S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';$('g-tl').value='';$('g-to').textContent='';
     $('a-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
     $('tmpl-sel').value='';WIZ.ex();WIZ.gen();this.setMM(S.modalMode);
@@ -9348,7 +9365,7 @@ const UI={
     } else {
       rx=$('e-rx').value.trim();if(!rx){toast('Pattern required.','error');return;}
       try{new RegExp(rx);}catch(e){toast('Invalid regex: '+e.message,'error');return;}
-      cm={};[['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId']]
+      cm={};[['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
         .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
     }
     const hex=$('e-hex').value.trim();
@@ -12183,6 +12200,7 @@ const STREAM_PARSER = {
         visualStyle: r.visualStyle || {},
         events: [],
         correlationId: c.correlationId || null,
+        level: c.level || null,
         slaThresholdMs: r.slaThresholdMs || null,
         rawLine: line.length > 260 ? line.slice(0, 260) + '…' : line
       };
@@ -14385,9 +14403,9 @@ const SEARCH_HL = (() => {
       if (cnt) { cnt.style.display = 'none'; }
       return;
     }
-    // Walk text nodes inside .tnm and .tel elements
+    // Walk text nodes inside .tnm, .tel, .tpy and .badge elements
     let matches = 0;
-    const targets = tree.querySelectorAll('.tnm, .tel, .tpy');
+    const targets = tree.querySelectorAll('.tnm, .tel, .tpy, .badge');
     targets.forEach(el => {
       // Skip if already processed (avoid double-wrap)
       const text = el.textContent;
@@ -15044,9 +15062,15 @@ UI.rv = function() {
 
         const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
         const payB = n.payload ? `<div class="tpy">${esc(n.payload)}</div>` : '';
+        let lvlB = '';
+        if (n.level) {
+          const lvl = n.level.trim().toUpperCase();
+          const bCls = ['ERROR', 'FATAL', 'FAIL', 'SEVERE', 'CRITICAL'].includes(lvl) ? 'b-red' : ['WARN', 'WARNING'].includes(lvl) ? 'b-amber' : ['INFO'].includes(lvl) ? 'b-blue' : ['DEBUG'].includes(lvl) ? 'b-gray' : 'b-pur';
+          lvlB = `<span class="badge ${bCls}" style="margin-left:4px; font-weight:bold; letter-spacing:0.3px;">${esc(lvl)}</span>`;
+        }
         const hd = `<span class="tchev">▶</span>
           <div class="tico" style="background:${bg};color:${col};">${ico}</div>
-          <div class="tbd"><div class="thr" style="${customBg}"><span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>${elB}${durB}${hotB}${smB}</div>${payB}</div>`;
+          <div class="tbd"><div class="thr" style="${customBg}"><span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>${elB}${lvlB}${durB}${hotB}${smB}</div>${payB}</div>`;
         const ch = kids ? `<div class="tch">${n.events.map(c => render(c, d + 1)).join('')}</div>` : '';
         return `<details class="tn" ${d < 2 ? 'open' : ''}><summary class="ts" style="border-left:1px solid ${col};padding-left:8px;${customBg}">${hd}</summary>${ch}</details>`;
       };
@@ -15621,6 +15645,7 @@ STREAM_PARSER.parseLine = function(line) {
       visualStyle: r.visualStyle || {},
       events: [],
       correlationId: c.correlationId || null,
+      level: c.level || null,
       slaThresholdMs: r.slaThresholdMs || null,
       rawLine: line.length > 260 ? line.slice(0, 260) + '…' : line
     };
@@ -16387,6 +16412,7 @@ const LQL = {
             duration: n.duration,
             payload: n.payload,
             correlationId: n.correlationId,
+            level: n.level || null,
             rawLine: n.rawLine,
             behavior: n.behavior,
             sla_breach: !!n._isSlaBreach,
@@ -19362,56 +19388,56 @@ const ONBOARD = (() => {
     elementRules: [
       {
         id: 'dr_txs', name: 'Transaction Begin',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?TX-BEGIN\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?TX-BEGIN\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
         stackBehavior: 'push', visualStyle: { accentColor: 'var(--blue)', icon: '▶' }
       },
       {
         id: 'dr_txe', name: 'Transaction End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?TX-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?TX-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: 'var(--blue)', icon: '◀' }
       },
       {
         id: 'dr_hs', name: 'HTTP Request',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName', '5': 'payload' },
         stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '❖' }
       },
       {
         id: 'dr_he', name: 'HTTP Response',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?HTTP-RESP\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?HTTP-RESP\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: '#4f9eff', icon: '↩' }
       },
       {
         id: 'dr_dbs', name: 'DB Query',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName', '4': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName', '5': 'payload' },
         stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '▤' }
       },
       {
         id: 'dr_dbe', name: 'DB Query End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?DB-QUERY-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?DB-QUERY-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: '#f0883e', icon: '✓' }
       },
       {
         id: 'dr_cache', name: 'Cache Op',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[([^\]]+)\].*?CACHE-(HIT|MISS)\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload', '4': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?CACHE-(HIT|MISS)\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload', '5': 'elementName' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '🗲' }
       },
       {
         id: 'dr_w', name: 'Warning',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+WARN\s+\[([^\]]+)\]\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\]\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#d29922', icon: '⚠' }
       },
       {
         id: 'dr_e', name: 'Error',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+ERROR\s+\[([^\]]+)\]\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'thread', '3': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\]\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#f85149', icon: '✕' },
         slaThresholdMs: 0
       }
@@ -20724,8 +20750,12 @@ UI.svm(S.viewMode);
       const tmpl = TMPLS[e.target.value]; if (!tmpl) return;
       $('e-rx').value = tmpl.rx;
       const fg = f => Object.entries(tmpl.cm).find(([,v]) => v === f)?.[0] || '';
-      $('cm-ts').value = fg('timestamp'); $('cm-th').value = fg('thread');
-      $('cm-el').value = ''; $('cm-py').value = '';
+      $('cm-ts').value = fg('timestamp');
+      $('cm-th').value = fg('thread');
+      $('cm-el').value = fg('elementName');
+      $('cm-py').value = fg('payload');
+      $('cm-co').value = fg('correlationId');
+      $('cm-lv').value = fg('level');
       this.update(); toast('Template applied.', 'info');
     });
     $('e-rx').addEventListener('input', () => this.update());
@@ -20768,6 +20798,7 @@ UI.svm(S.viewMode);
           <span style="background:rgba(255,149,0,0.12); color:var(--amber); border:1px solid var(--amber-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 3: elementName]</span>
           <span style="background:rgba(220,38,38,0.12); color:var(--red); border:1px solid var(--red-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 4: payload]</span>
           <span style="background:rgba(197,130,255,0.12); color:var(--purple); border:1px solid var(--purple-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 5: correlationId]</span>
+          <span style="background:rgba(210,153,34,0.12); color:var(--yellow); border:1px solid var(--yellow-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 6: level]</span>
         </div>
       `;
       parent.appendChild(diag);
