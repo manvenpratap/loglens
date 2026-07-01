@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **CSV / Pipe-Delimited Template Alignment (v6.9.45 — COMPLETED)**:
+  - Fixed an inconsistency where the "CSV / Pipe-delimited" preset was available in the Guided Rule Wizard but missing as a preset in the Advanced Mode template selection dropdown.
+  - Added the CSV option to the `#tmpl-sel` HTML select dropdown and mapped its base regular expression template to the `TMPLS` pattern dictionary in JavaScript.
+
 - **View Switcher Enabled Globally (v6.9.44 — COMPLETED)**:
   - Set the view tabs bar (`#vtabs`) display style to `flex` by default in CSS, rendering it visible at all times.
   - Rewrote the `UI.svm` navigation controller to support switching tabs cleanly when no logs are loaded yet: appends Settings (`cfg`) and Help (`hlp`) panels dynamically, and keeps the empty state card (`#emp`) correctly rendered across all analytical view modes.

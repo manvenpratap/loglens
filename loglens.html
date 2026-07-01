@@ -6741,6 +6741,7 @@ label[for="watch-auto-reload"] {
           <option value="spring">Spring Boot: ts level PID --- [thread] logger : </option>
           <option value="log4j2">Log4j2 Time: HH:mm:ss.SSS [thread] level logger - </option>
           <option value="json_ts">JSON: {timestamp, level, thread, message…</option>
+          <option value="csv">CSV / Pipe-delimited: ts|level|thread|msg</option>
           <option value="iso_bare">ISO timestamp + anything</option>
         </select>
       </div>
@@ -7832,6 +7833,7 @@ const TMPLS={
   log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(?:ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'thread'}},
   json_ts: {rx:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"[^"]+","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,cm:{'1':'timestamp','2':'thread'}},
   iso_bare:{rx:String.raw`^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})\s+`,cm:{'1':'timestamp'}},
+  csv:     {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|[^|]+\|([^|]+)\|`,cm:{'1':'timestamp','2':'thread'}},
 };
 
 /* Wizard format presets */
