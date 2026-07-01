@@ -9246,6 +9246,28 @@ const UI={
     });
     this.rv();const sn=$('s-nodes');if(sn)sn.textContent=cnt(S.trees[tid]||[]);
   },
+  // Helper: show a full-screen utility panel (cfg or hlp) regardless of parse state
+  _showPanel(id){
+    const r = $('res');
+    if (!r) return;
+    // Park all panels safely away from #res so the clear won't destroy them
+    const hc = $('hidden-panels-container');
+    ['p-cfg','p-hlp'].forEach(pid => {
+      const el = $(pid);
+      if (el && el.parentElement !== hc) (hc || document.body).appendChild(el);
+    });
+    // Clear #res
+    r.style.overflowY = 'auto';
+    r.style.padding = '';
+    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+    // Move the requested panel into #res
+    const panel = $(id);
+    if (panel) {
+      panel.classList.add('active');
+      r.appendChild(panel);
+    }
+  },
+
   svm(vm){
     S.viewMode=vm;
     document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('active',t.dataset.v===vm));
@@ -9259,25 +9281,16 @@ const UI={
     if (actBar) {
       actBar.style.setProperty('display', isActionBarApplicable ? 'flex' : 'none', 'important');
     }
+    // Utility panels bypass all data-rendering paths
+    if (vm === 'cfg') { this._showPanel('p-cfg'); return; }
+    if (vm === 'hlp') { this._showPanel('p-hlp'); return; }
     if(S.trees&&S.activeThr!==null){
       this.rv();
     } else {
       const r = $('res');
       if (r) {
-        const sbBody = document.querySelector('.sb-body');
-        if (sbBody) {
-          const cfg = $('p-cfg'), hlp = $('p-hlp');
-          if (cfg && cfg.parentElement !== sbBody) sbBody.appendChild(cfg);
-          if (hlp && hlp.parentElement !== sbBody) sbBody.appendChild(hlp);
-        }
         r.style.overflowY = '';
-        r.innerHTML = '';
-        if (vm === 'cfg') {
-          const el = $('p-cfg'); if (el) { el.classList.add('active'); r.appendChild(el); }
-        } else if (vm === 'hlp') {
-          const el = $('p-hlp'); if (el) { el.classList.add('active'); r.appendChild(el); }
-        } else {
-          r.innerHTML = `
+        r.innerHTML = `
             <div class="emp-card" id="emp">
               <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
                 <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
@@ -9301,7 +9314,6 @@ const UI={
               </div>
             </div>
           `;
-        }
       }
     }
   },
