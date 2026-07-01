@@ -7805,6 +7805,8 @@ const TOKS=[
     {n:'decimal',ex:'3.14',s:String.raw`(\d+\.\d+)`},
     {n:'quoted string',ex:'"some value"',s:String.raw`"([^"]*)"`},
     {n:'key=value',ex:'name=OrderSvc',s:String.raw`\w+=(\S+)`},
+    {n:'Trace/Span ID',ex:'7b8b2a3cd4f1...',s:String.raw`([a-f0-9]{16,32})`},
+    {n:'Generic JSON field',ex:'"key":"value"',s:String.raw`"[^"]+"\s*:\s*"([^"]+)"`},
     {n:'rest of line',ex:'everything → EOL',s:String.raw`(.+)$`},
   ]},
   {cat:'Structure & Anchors',toks:[
@@ -7819,6 +7821,8 @@ const TOKS=[
     {n:'literal  .',ex:'.',s:String.raw`\.`},
     {n:'literal  [',ex:'[',s:String.raw`\[`},
     {n:'literal  ]',ex:']',s:String.raw`\]`},
+    {n:'literal  {',ex:'{',s:String.raw`\{`},
+    {n:'literal  }',ex:'}',s:String.raw`\}`},
     {n:'open group (',ex:'(capture',s:'('},
     {n:'non-cap (?:',ex:'(?:no capture',s:'(?:'},
     {n:'close group )',ex:'close)',s:')'},
@@ -7910,10 +7914,100 @@ const RXB={
     pre.innerHTML=this._hl(line,rxStr,cm);
   },
 
+  showMappingMenu(gi, x, y) {
+    let menu = $('vgb-menu');
+    if (!menu) {
+      menu = document.createElement('div');
+      menu.id = 'vgb-menu';
+      menu.style.cssText = 'position:fixed;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);z-index:9999;min-width:185px;display:none;flex-direction:column;overflow:hidden;animation:modal-rise .16s var(--ease-snap);';
+      document.body.appendChild(menu);
+    }
+    
+    const fields = [
+      { id: 'cm-ts', label: '⏱ timestamp' },
+      { id: 'cm-th', label: '🧵 thread' },
+      { id: 'cm-el', label: '🏷 elementName' },
+      { id: 'cm-py', label: '📦 payload' },
+      { id: 'cm-co', label: '🔗 correlationId' }
+    ];
+    
+    const currentMappings = {};
+    fields.forEach(f => {
+      if ($(f.id).value.trim() === String(gi)) {
+        currentMappings[f.id] = true;
+      }
+    });
+
+    let html = `<div style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--bdr);">Map Group [${gi}]</div>`;
+    
+    fields.forEach(f => {
+      const isMapped = currentMappings[f.id];
+      const checkIcon = isMapped ? '✓' : '';
+      const mappedStyle = isMapped ? 'font-weight:bold;color:var(--amber);background:var(--bg-3);' : '';
+      html += `<div class="vgb-mi" data-fid="${f.id}" style="padding:8px 14px;font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .12s,color .12s;white-space:nowrap;${mappedStyle}">
+        <span>${f.label}</span>
+        <span style="font-size:11px;font-family:var(--mono);">${checkIcon}</span>
+      </div>`;
+    });
+    
+    html += `<div style="height:1px;background:var(--bdr);margin:4px 0;"></div>`;
+    html += `<div class="vgb-mi" data-action="clear" style="padding:8px 14px;font-size:12px;color:var(--red);cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .12s,color .12s;white-space:nowrap;">
+      <span>Clear mapping</span>
+    </div>`;
+    
+    menu.innerHTML = html;
+    
+    menu.querySelectorAll('.vgb-mi').forEach(mi => {
+      mi.addEventListener('mouseenter', () => {
+        if (!mi.style.color.includes('var(--amber)')) mi.style.background = 'var(--bg-3)';
+      });
+      mi.addEventListener('mouseleave', () => {
+        if (!mi.style.color.includes('var(--amber)')) mi.style.background = '';
+      });
+      mi.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const fid = mi.dataset.fid;
+        const action = mi.dataset.action;
+        
+        fields.forEach(f => {
+          if ($(f.id).value.trim() === String(gi)) {
+            $(f.id).value = '';
+          }
+        });
+        
+        if (fid) {
+          $(fid).value = gi;
+          toast(`Mapped Group ${gi} to ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+        } else if (action === 'clear') {
+          toast(`Cleared mapping for Group ${gi}`, 'info');
+        }
+        
+        this.hideMappingMenu();
+        this.update();
+      });
+    });
+    
+    menu.style.display = 'flex';
+    
+    const rect = menu.getBoundingClientRect();
+    let left = x;
+    let top = y;
+    if (left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 8;
+    if (top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 8;
+    
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+  },
+  
+  hideMappingMenu() {
+    const menu = $('vgb-menu');
+    if (menu) menu.style.display = 'none';
+  },
+
   _hl(line,rxStr,cm){
     /* Color palette for capture groups */
     const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
-    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay'};
+    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr'};
     try{
       let rx,hasIdx=false;
       try{rx=new RegExp(rxStr,'d');hasIdx=true;}catch{try{rx=new RegExp(rxStr);}catch(e){return`<span class="rx-nm">⚠ Regex error: ${esc(e.message)}</span>`;}}
@@ -7931,8 +8025,8 @@ const RXB={
           if(g.s>cur)lh+=`<span style="color:var(--t3);">${esc(line.slice(cur,g.s))}</span>`;
           const col=C[(g.i-1)%C.length];
           const fn=cm[String(g.i)]?FL[cm[String(g.i)]]||cm[String(g.i)]:`g${g.i}`;
-          lh+=`<span style="background:${col}28;color:${col};border-radius:var(--rounded-sm);padding:0 2px;border-bottom:2px solid ${col};"
-            title="Group ${g.i}: ${fn}">${esc(line.slice(g.s,g.e))}</span>`;
+          lh+=`<span class="rx-grp-btn" data-gi="${g.i}" style="background:${col}28;color:${col};border-radius:var(--rounded-sm);padding:0 2px;border-bottom:2px solid ${col};cursor:pointer;user-select:none;font-weight:600;"
+            title="Click to map Group ${g.i}: ${fn}">${esc(line.slice(g.s,g.e))}</span>`;
           cur=g.e;
         }
         lh+=`<span style="color:var(--t4);">${esc(line.slice(cur))}</span>`;
@@ -7945,7 +8039,7 @@ const RXB={
       const leg=m.slice(1).map((v,i)=>{
         if(v===undefined)return'';
         const col=C[i%C.length],fn=cm[String(i+1)]?FL[cm[String(i+1)]]||cm[String(i+1)]:`group ${i+1}`;
-        return`<span style="color:${col};"><strong>[${i+1}]</strong> ${esc(fn)}: ${esc(v.slice(0,55))}${v.length>55?'…':''}</span>`;
+        return`<span class="rx-grp-btn" data-gi="${i+1}" style="color:${col};cursor:pointer;margin-right:12px;user-select:none;" title="Click to map Group ${i+1}"><strong>[${i+1}]</strong> ${esc(fn)}: ${esc(v.slice(0,55))}${v.length>55?'…':''}</span>`;
       }).filter(Boolean).join('');
 
       return`<div class="rx-ln">${lh}</div>`+
@@ -20513,29 +20607,36 @@ UI.svm(S.viewMode);
     }
   };
 
-  // 19. Categorized Accordion Palette in Regex Builder (RXB)
+  // 19. Categorized Accordion Palette in Regex Builder (RXB) with Token Search & Visual Group Mapping
   const originalRxbInit = RXB.init.bind(RXB);
   RXB.init = function() {
     const bd = $('rxb-bd');
     if (!bd) return;
-    bd.innerHTML = TOKS.map((cat, idx) => `
-      <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
-        <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:11px; font-weight:600; color:var(--t2);">
-          <span>${esc(cat.cat)}</span>
-          <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
-        </div>
-        <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
-          <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-            ${cat.toks.map(tk => `
-              <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
-                <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
-                <span class="tok-ex" style="font-family:var(--mono); font-size:9.5px; color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+    bd.innerHTML = `
+      <div style="padding:6px 8px; border-bottom:1px solid var(--bdr-d); background:var(--bg-1); display:flex; align-items:center; gap:8px;">
+        <input class="inp" id="rxb-search" placeholder="🔍 Search tokens..." style="flex:1; font-size:11px; padding:4px 8px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t1); outline:none;"/>
       </div>
-    `).join('');
+      <div id="rxb-toks-container">
+        ${TOKS.map((cat, idx) => `
+          <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
+            <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:11px; font-weight:600; color:var(--t2);">
+              <span>${esc(cat.cat)}</span>
+              <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
+            </div>
+            <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
+              <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                ${cat.toks.map(tk => `
+                  <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
+                    <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
+                    <span class="tok-ex" style="font-family:var(--mono); font-size:9.5px; color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
 
     bd.querySelectorAll('.tok-accordion-hdr').forEach(hdr => {
       hdr.addEventListener('click', () => {
@@ -20548,6 +20649,40 @@ UI.svm(S.viewMode);
       });
     });
 
+    $('rxb-search')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase().trim();
+      const container = $('rxb-toks-container');
+      if (!container) return;
+      
+      container.querySelectorAll('.tok').forEach(el => {
+        const name = el.querySelector('.tok-n')?.textContent.toLowerCase() || '';
+        const s = el.dataset.s.toLowerCase();
+        const matches = name.includes(q) || s.includes(q);
+        el.style.display = matches ? 'flex' : 'none';
+      });
+      
+      container.querySelectorAll('.tok-accordion-sec').forEach(sec => {
+        const grid = sec.querySelector('.tok-grid');
+        const visibleToks = [...grid.children].filter(el => el.style.display !== 'none');
+        sec.style.display = visibleToks.length > 0 ? '' : 'none';
+        
+        const body = sec.querySelector('.tok-accordion-body');
+        const arrow = sec.querySelector('.tok-accordion-arrow');
+        if (q) {
+          if (visibleToks.length > 0) {
+            sec.classList.add('open');
+            body.style.maxHeight = '500px';
+            arrow.textContent = '▼';
+          }
+        } else {
+          const isFirst = sec === container.firstElementChild;
+          sec.classList.toggle('open', isFirst);
+          body.style.maxHeight = isFirst ? '500px' : '0px';
+          arrow.textContent = isFirst ? '▼' : '▶';
+        }
+      });
+    });
+
     bd.addEventListener('click', e => {
       const tk = e.target.closest('.tok'); if (!tk) return;
       this.ins('e-rx', tk.dataset.s); this.update();
@@ -20557,6 +20692,20 @@ UI.svm(S.viewMode);
       const open = $('rxb-bd').classList.toggle('vis');
       $('rxb-hdr').classList.toggle('open', open);
     });
+
+    // Wire visual group mapping context menu click
+    $('rx-pre').addEventListener('click', e => {
+      const btn = e.target.closest('.rx-grp-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      const gi = parseInt(btn.dataset.gi, 10);
+      this.showMappingMenu(gi, e.clientX, e.clientY);
+    });
+
+    document.addEventListener('click', () => {
+      this.hideMappingMenu();
+    });
+
     $('tmpl-sel').addEventListener('change', e => {
       const tmpl = TMPLS[e.target.value]; if (!tmpl) return;
       $('e-rx').value = tmpl.rx;

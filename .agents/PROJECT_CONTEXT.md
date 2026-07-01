@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Visual Group Mapping & Token Builder Search (v6.9.46 — COMPLETED)**:
+  - Implemented a Visual Group Builder experience: highlighted regex capture groups in the live match preview can now be clicked directly to open an interactive mapping dropdown menu, setting the corresponding metadata field inputs dynamically.
+  - Added a search input box at the top of the Pattern Token Builder accordion, filtering regex tokens and dynamically auto-expanding matching categories to improve builder navigation.
+  - Expanded the token presets palette (`TOKS`) with trace/span IDs, generic JSON field capturing, and literal brace anchors.
+
 - **CSV / Pipe-Delimited Template Alignment (v6.9.45 — COMPLETED)**:
   - Fixed an inconsistency where the "CSV / Pipe-delimited" preset was available in the Guided Rule Wizard but missing as a preset in the Advanced Mode template selection dropdown.
   - Added the CSV option to the `#tmpl-sel` HTML select dropdown and mapped its base regular expression template to the `TMPLS` pattern dictionary in JavaScript.
