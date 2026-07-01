@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Defensive Button & Panel Checks (v6.9.49 — COMPLETED)**:
+  - Added strict existence validation checks (`if (el) ...`) to all DOM appends of `p-cfg` and `p-hlp` inside both `UI.rv` and `UI.svm` navigation controllers.
+  - Implemented safe element checks for `btn-parse` and `btn-abort` inside the `ONBOARD.loadDemo()` asynchronous workflow, preventing any uncaught promise rejections if the buttons are temporarily detached or unmounted during active rendering.
+
 - **Panel Preservation & TypeError Fix (v6.9.48 — COMPLETED)**:
   - Resolved `Uncaught TypeError` when switching view modes where `p-cfg` or `p-hlp` would be destroyed by `.innerHTML = ''` or `.remove()`.
   - Added parent element preservation guards to both `UI.svm` and `UI.rv` which move `p-cfg` and `p-hlp` back to `.sb-body` (the sidebar container) before clearing `#res`.

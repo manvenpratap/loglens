@@ -9101,9 +9101,9 @@ const UI={
       r.appendChild(d);
       LANDSCAPE3D.init(tree, d);
     } else if(vm==='cfg'){
-      r.appendChild($('p-cfg'));
+      const el = $('p-cfg'); if (el) r.appendChild(el);
     } else if(vm==='hlp'){
-      r.appendChild($('p-hlp'));
+      const el = $('p-hlp'); if (el) r.appendChild(el);
     } else {
       r.style.overflowY = 'hidden';
       const d=document.createElement('div');
@@ -9256,9 +9256,9 @@ const UI={
         r.style.overflowY = '';
         r.innerHTML = '';
         if (vm === 'cfg') {
-          r.appendChild($('p-cfg'));
+          const el = $('p-cfg'); if (el) r.appendChild(el);
         } else if (vm === 'hlp') {
-          r.appendChild($('p-hlp'));
+          const el = $('p-hlp'); if (el) r.appendChild(el);
         } else {
           r.innerHTML = `
             <div class="emp-card" id="emp">
@@ -19512,8 +19512,9 @@ const ONBOARD = (() => {
 
       // Step 5: run the parse using WM.parse (the correct API; WM.run does not exist)
       try {
-        $('btn-parse').disabled = true;
-        $('btn-abort').disabled = false;
+        const btnParse = $('btn-parse'), btnAbort = $('btn-abort');
+        if (btnParse) btnParse.disabled = true;
+        if (btnAbort) btnAbort.disabled = false;
         $('emp')?.classList.add('hidden');
         const { trees, threads, stats } = await WM.parse(file, S.cfg, '');
         ANOMALY.analyze(trees);
@@ -19527,8 +19528,9 @@ const ONBOARD = (() => {
       } catch (e) {
         toast('Demo parse error: ' + e.message, 'error');
       } finally {
-        $('btn-parse').disabled = false;
-        $('btn-abort').disabled = true;
+        const btnParse = $('btn-parse'), btnAbort = $('btn-abort');
+        if (btnParse) btnParse.disabled = false;
+        if (btnAbort) btnAbort.disabled = true;
         UI.ub();
       }
     },
