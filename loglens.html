@@ -9019,9 +9019,15 @@ const UI={
       });
     }
     const r=$('res');
+    const sbBody = document.querySelector('.sb-body');
+    if (sbBody) {
+      const cfg = $('p-cfg'), hlp = $('p-hlp');
+      if (cfg && cfg.parentElement !== sbBody) sbBody.appendChild(cfg);
+      if (hlp && hlp.parentElement !== sbBody) sbBody.appendChild(hlp);
+    }
     r.style.overflowY = 'auto';
     r.style.padding = '14px';
-    [...r.children].filter(el=>el.id!=='stats-bar' && !['p-cfg', 'p-hlp'].includes(el.id)).forEach(el=>el.remove());
+    [...r.children].filter(el=>el.id!=='stats-bar').forEach(el=>el.remove());
     let tree=S.trees[S.activeThr]||[];HS.ann(tree,null);
     const q = (S.searchQuery || '').trim().toLowerCase();
     if(q || S.activeTraceId){
@@ -9241,6 +9247,12 @@ const UI={
     } else {
       const r = $('res');
       if (r) {
+        const sbBody = document.querySelector('.sb-body');
+        if (sbBody) {
+          const cfg = $('p-cfg'), hlp = $('p-hlp');
+          if (cfg && cfg.parentElement !== sbBody) sbBody.appendChild(cfg);
+          if (hlp && hlp.parentElement !== sbBody) sbBody.appendChild(hlp);
+        }
         r.style.overflowY = '';
         r.innerHTML = '';
         if (vm === 'cfg') {

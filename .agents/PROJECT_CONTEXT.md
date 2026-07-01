@@ -2,6 +2,10 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Panel Preservation & TypeError Fix (v6.9.48 — COMPLETED)**:
+  - Resolved `Uncaught TypeError` when switching view modes where `p-cfg` or `p-hlp` would be destroyed by `.innerHTML = ''` or `.remove()`.
+  - Added parent element preservation guards to both `UI.svm` and `UI.rv` which move `p-cfg` and `p-hlp` back to `.sb-body` (the sidebar container) before clearing `#res`.
+
 - **Wider Rule Editor Modal Layout (v6.9.47 — COMPLETED)**:
   - Increased the default `.modal` width from `660px` to `920px` to leverage available workspace area on desktop displays.
   - Updated the token palette grid (`.tok-grid`) inside the Regex Builder accordion to use auto-fill (`repeat(auto-fill, minmax(130px, 1fr))`) instead of fixed 2 columns, letting the pattern token cards scale fluidly across the expanded modal layout.
