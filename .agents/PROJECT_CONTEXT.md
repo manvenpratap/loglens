@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Null-Guard Fix for btn-parse/btn-abort (v6.9.51 — COMPLETED)**:
+  - Fixed `Uncaught (in promise) TypeError: Cannot set properties of null (setting 'disabled')` thrown from `UI.ub()` during `ONBOARD.loadDemo()`.
+  - Root cause: `btn-parse` can be temporarily absent from the DOM during async demo loading when the onboarding overlay is still visible and the parse dock hasn't mounted yet.
+  - Applied defensive `if (btn)` guards across all six call sites: `UI.ub`, command palette parse/abort actions, incremental-parse catch/callback, `finally` block of main parse handler, and abort click listener.
+  - Also guarded `btn-exp-menu` and `btn-abort` references in the same block.
+
 - **Log Level Parsing & UI Visualization (v6.9.50 — COMPLETED)**:
   - Enabled logging level capturing across all three parsing entry points (Web Worker batch parser, client-side stream parser, and secondary live stream parser), populating a new `level` attribute on parsed telemetry nodes.
   - Implemented dynamic, color-coded level badges inside Tree View, Flat Row Timeline List View, and Diff Tree renderers using CSS swatches (`.b-red` for errors/fatal, `.b-amber` for warnings, `.b-blue` for info, and `.b-gray`/`.b-pur` for debug/trace).
@@ -685,4 +691,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-01*  
-*Updated By: Antigravity (Log Level Parsing & UI Visualization v6.9.50)*
+*Updated By: Antigravity (Null-Guard Fix for btn-parse/btn-abort v6.9.51)*

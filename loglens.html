@@ -8816,7 +8816,7 @@ const TR={
  * @description Controls the application workspace interface, managing modals, layout panels, progress bars, view-switching, tab selection, resizes, and thread chips.
  */
 const UI={
-  ub(){const can=!!(S.cfg&&S.logFile);$('btn-parse').disabled=!can;},
+  ub(){const can=!!(S.cfg&&S.logFile);const btn=$('btn-parse');if(btn)btn.disabled=!can;},
   prog(p,l,n){
     if (l === 'Parsing…') {
       const msgs = ['Crunching telemetry...', 'Unraveling the threads...', 'Reconstructing timeline...', 'Almost there...'];
@@ -11991,12 +11991,23 @@ $('btn-parse').addEventListener('click',async()=>{
       size: files.reduce((s,f)=>s+f.size,0),
       lastModified: files[0].lastModified
     };
-    $('btn-exp-menu').disabled=false;
+    const btnExpMenu = $('btn-exp-menu');
+    if (btnExpMenu) btnExpMenu.disabled = false;
   }catch(e){UI.hprog();toast('Parse error: '+e.message,'error');}
-  finally{$('btn-parse').disabled=false;$('btn-abort').disabled=true;UI.ub();}
+  finally{
+    const bp = $('btn-parse'), ba = $('btn-abort');
+    if(bp) bp.disabled = false;
+    if(ba) ba.disabled = true;
+    UI.ub();
+  }
 });
 $('btn-abort').addEventListener('click',()=>{
-  WM.kill();UI.hprog();$('btn-parse').disabled=false;$('btn-abort').disabled=true;UI.ub();toast('Aborted.','warn');
+  WM.kill();UI.hprog();
+  const bp = $('btn-parse'), ba = $('btn-abort');
+  if(bp) bp.disabled = false;
+  if(ba) ba.disabled = true;
+  UI.ub();
+  toast('Aborted.','warn');
 });
 
 // View tabs + thread chips (delegated on vtabs)
@@ -14128,8 +14139,8 @@ const CMD = (() => {
     { id:'e-lls',  cat:'Export', name:'Save Session (.lls)',   icon:'▣', action:()=>EXP.lls() },
     // App
     { id:'a-theme',  cat:'App', name:'Toggle Theme',        hint:'Alt+T', icon:'◑', action:()=>Theme.toggle() },
-    { id:'a-parse',  cat:'App', name:'Parse Log File',      icon:'▶',    action:()=>{ if(!$('btn-parse').disabled)$('btn-parse').click(); } },
-    { id:'a-abort',  cat:'App', name:'Abort Parse',         icon:'■',    action:()=>{ if(!$('btn-abort').disabled)$('btn-abort').click(); } },
+    { id:'a-parse',  cat:'App', name:'Parse Log File',      icon:'▶',    action:()=>{ const btn=$('btn-parse'); if(btn && !btn.disabled) btn.click(); } },
+    { id:'a-abort',  cat:'App', name:'Abort Parse',         icon:'■',    action:()=>{ const btn=$('btn-abort'); if(btn && !btn.disabled) btn.click(); } },
     { id:'a-search', cat:'App', name:'Focus Search',        hint:'/',   icon:'⌕', action:()=>{ CMD.close();$('hdr-search').focus(); } },
     { id:'a-idb',    cat:'App', name:'Clear IDB Cache',     icon:'⌧',   action:()=>{ IDB.clear&&IDB.clear();toast('IDB cache cleared.','info'); } },
     { id:'a-sample', cat:'App', name:'Download Sample Log', icon:'⬇',   action:()=>{ CMD.close();dlSample&&dlSample(); } },
