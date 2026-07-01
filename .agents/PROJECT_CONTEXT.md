@@ -2,6 +2,11 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Settings & Help Panel DOM Preservation Fix (v6.9.56 — COMPLETED)**:
+  - Fixed a critical garbage-collection bug where `UI._showPanel()` used `removeChild()` to detach inactive utility panels from the DOM, causing them to be discarded by the browser. Solved this by parking inactive panels in `#hidden-panels-container` instead of detaching them.
+  - Also resolved a bug in `UI.render()` where `#res.innerHTML = statsH` wiped out `p-cfg` or `p-hlp` if they were active during parsing. Added a panel preservation block at the start of `render()`.
+  - Added a comprehensive Playwright automation test suite `test_settings.py` verifying full navigation transition flows.
+
 - **Settings Panel DOM Reference Fix (v6.9.55 — COMPLETED)**:
   - Fixed an issue where the Settings or Help panel would fail to display because they were detached using `removeChild()` before `document.getElementById` was called to look them up.
   - Implemented pre-detached reference preservation inside `UI._showPanel()`.
@@ -705,4 +710,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-01*  
-*Updated By: Antigravity (Settings Panel DOM Reference Fix v6.9.55)*
+*Updated By: Antigravity (Settings & Help Panel DOM Preservation Fix v6.9.56)*
