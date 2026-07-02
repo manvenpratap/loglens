@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="LogLens, a privacy-first, zero-install log analysis tool with Gantt timelines and execution trees."/>
 <title>LogLens: Metadata-Driven Log Analyzer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display&family=Orbitron:wght@400;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=VT323&family=Share+Tech+Mono&family=Courier+Prime&display=swap" rel="stylesheet"/> <!-- impeccable-disable-line overused-font -->
 <style>
 /* ============================================================
    CSS §1 · DESIGN TOKENS — DARK THEME (default) · Obsidian Terminal
@@ -49,9 +46,9 @@
   --sw:322px;--hh:50px;
   --rounded-sm:6px;--rounded-md:8px;--rounded-lg:10px;--rounded-full:99px;
   /* Typography — Inter and Geist display/body */
-  --ui:'Geist','Inter','Segoe UI',system-ui,sans-serif;
-  --display:'Inter','Geist','Segoe UI',system-ui,sans-serif;
-  --mono:'Geist Mono','JetBrains Mono','Cascadia Code','Fira Code',Consolas,monospace;
+  --ui:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
   /* Surfaces & depth */
   --bar-t:rgba(255,255,255,.95);
   --glass:rgba(255,255,255,.04);
@@ -113,9 +110,9 @@
   --rounded-md: 0px;
   --rounded-lg: 0px;
   --rounded-full: 0px;
-  --ui: 'Inter', system-ui, sans-serif;
-  --display: 'Playfair Display', 'Georgia', serif;
-  --mono: 'Courier New', Courier, monospace;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: 'Georgia', 'Times New Roman', serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* Ivory = explicit name for light theme (backwards-compat alias) */
 [data-theme=ivory]{
@@ -156,9 +153,9 @@
   --rounded-md: 0px;
   --rounded-lg: 0px;
   --rounded-full: 0px;
-  --ui: 'Inter', system-ui, sans-serif;
-  --display: 'Playfair Display', 'Georgia', serif;
-  --mono: 'Courier New', Courier, monospace;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: 'Georgia', 'Times New Roman', serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* ============================================================
    CSS §2b · AURORA THEME — Northern Lights Navy/Cyan
@@ -205,9 +202,9 @@
   --rounded-md: 4px;
   --rounded-lg: 6px;
   --rounded-full: 99px;
-  --ui: 'Orbitron', 'Century Gothic', sans-serif;
-  --display: 'Orbitron', 'Century Gothic', sans-serif;
-  --mono: 'Share Tech Mono', 'Courier New', monospace;
+  --ui: 'Century Gothic', -apple-system, system-ui, sans-serif;
+  --display: 'Century Gothic', -apple-system, system-ui, sans-serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* ============================================================
    CSS §2c · MIDNIGHT THEME — OLED Black / Electric Purple
@@ -254,9 +251,9 @@
   --rounded-md: 12px;
   --rounded-lg: 18px;
   --rounded-full: 99px;
-  --ui: 'Inter', sans-serif;
-  --display: 'Syne', sans-serif;
-  --mono: 'VT323', 'Courier New', monospace;
+  --ui: system-ui, -apple-system, sans-serif;
+  --display: 'Impact', 'Arial Black', sans-serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* ============================================================
    CSS §2d · FOREST THEME — Moss Green / Earthy Warmth
@@ -303,9 +300,9 @@
   --rounded-md: 14px;
   --rounded-lg: 20px;
   --rounded-full: 99px;
-  --ui: 'Outfit', sans-serif;
-  --display: 'Outfit', sans-serif;
-  --mono: 'Geist Mono', monospace;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* ============================================================
    CSS §2e · CRIMSON THEME — Dark Noir / Crimson Red
@@ -352,9 +349,9 @@
   --rounded-md: 2px;
   --rounded-lg: 4px;
   --rounded-full: 99px;
-  --ui: 'Inter', sans-serif;
-  --display: 'DM Serif Display', 'Impact', sans-serif;
-  --mono: 'Courier Prime', 'Special Elite', monospace;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: 'Georgia', 'Times New Roman', serif;
+  --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
 }
 /* ============================================================
    CSS §3 · THEME TRANSITION
@@ -7031,7 +7028,7 @@ label[for="watch-auto-reload"] {
 <input type="file" id="fi-log" accept=".log,.txt,.out,.gz" style="display:none"/>
 <input type="file" id="fi-log2" accept=".log,.txt,.out,.gz" multiple style="display:none"/>
 <input type="file" id="fi-lj"  accept=".xml" style="display:none"/>
-<iframe id="plugin-sandbox" sandbox="allow-scripts" style="display:none;"></iframe>
+
 <input type="file" id="fi-rule-imp" accept=".json" style="display:none"/>
 
 <!-- ================================================================ COMMAND PALETTE -->
@@ -8495,6 +8492,10 @@ const WM={
     return new Promise((res,rej)=>{
       const w=this._mk();
       w.onmessage=({data})=>{
+        if (!MSG_VALIDATOR.validate(data)) {
+          console.error('[WM] Message schema validation failed:', data);
+          return;
+        }
         if(data.type==='progress')UI.prog(data.percent,'Scanning…',data.linesProcessed,data.matchedLines);
         else if(data.type==='scan_done'){this.kill();res(data.threads);}
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
@@ -8507,6 +8508,10 @@ const WM={
     return new Promise((res,rej)=>{
       const w=this._mk();S.parseStart=performance.now();
       w.onmessage=({data})=>{
+        if (!MSG_VALIDATOR.validate(data)) {
+          console.error('[WM] Message schema validation failed:', data);
+          return;
+        }
         if(data.type==='progress')UI.prog(data.percent,'Parsing…',data.linesProcessed,data.matchedLines);
         else if(data.type==='done'){this.kill();res(data);}
         else if(data.type==='error'){this.kill();rej(new Error(data.message));}
@@ -9340,8 +9345,23 @@ const UI={
     }
   },
 
+  cleanupCurrentView() {
+    if (typeof GANTT_RESIZE !== 'undefined' && GANTT_RESIZE.disconnectObserver) {
+      GANTT_RESIZE.disconnectObserver();
+    }
+    if (typeof LANDSCAPE3D !== 'undefined' && LANDSCAPE3D.destroy) {
+      LANDSCAPE3D.destroy();
+    }
+  },
+
   svm(vm){
+    this.cleanupCurrentView();
     S.viewMode=vm;
+    if (vm === 'gantt' || vm === 'split') {
+      if (typeof GANTT_RESIZE !== 'undefined' && GANTT_RESIZE.connectObserver) {
+        GANTT_RESIZE.connectObserver();
+      }
+    }
     document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('active',t.dataset.v===vm));
     const isSearchApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'graph'].includes(vm);
     const searchWrap = $('hdr-search-container');
@@ -12774,91 +12794,175 @@ ${(S.annotations && S.annotations[n.id] && getAnnotationText(S.annotations[n.id]
  * @namespace PLUGINS
  * @description Plugin SDK system implementing iframe sandbox isolation, hooks registration, and custom lifecycle execution.
  */
+const MSG_VALIDATOR = {
+  SCHEMAS: {
+    progress: { percent: 'number', linesProcessed: 'number', matchedLines: 'number' },
+    done: { trees: 'object', threads: 'object', stats: 'object' },
+    scan_done: { threads: 'object' },
+    error: { message: 'string' },
+    load_done: { success: 'boolean', error: 'string?' },
+    run_done: { hook: 'string', result: 'string?', error: 'string?' }
+  },
+  validate(data) {
+    if (!data || typeof data !== 'object') return false;
+    const type = data.type;
+    const schema = this.SCHEMAS[type];
+    if (!schema) return false;
+    for (const [key, expectedType] of Object.entries(schema)) {
+      const isOptional = expectedType.endsWith('?');
+      const actualType = isOptional ? expectedType.slice(0, -1) : expectedType;
+      const val = data[key];
+      if (val === undefined || val === null) {
+        if (isOptional) continue;
+        return false;
+      }
+      if (actualType === 'array') {
+        if (!Array.isArray(val)) return false;
+      } else if (expectedType === 'object') {
+        if (typeof val !== 'object') return false;
+      } else if (typeof val !== actualType) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+const PLUGINS_WORKER_SRC = `
+  let activePlugin = null;
+  self.addEventListener('message', (e) => {
+    const { type, code, hook, payload } = e.data;
+    if (type === 'load') {
+      try {
+        const fn = new Function(code);
+        activePlugin = fn();
+        if (!activePlugin || typeof activePlugin !== 'object') {
+          throw new Error('Plugin must return an object');
+        }
+        self.postMessage({ type: 'load_done', success: true });
+      } catch (err) {
+        self.postMessage({ type: 'load_done', success: false, error: err.message });
+      }
+    } else if (type === 'run') {
+      try {
+        if (!activePlugin) throw new Error('Plugin not loaded');
+        if (typeof activePlugin[hook] !== 'function') {
+          self.postMessage({ type: 'run_done', hook, result: null });
+          return;
+        }
+        const res = activePlugin[hook](payload);
+        if (res instanceof Promise) {
+          res.then(val => {
+            self.postMessage({ type: 'run_done', hook, result: val });
+          }).catch(err => {
+            self.postMessage({ type: 'run_done', hook, error: err.message });
+          });
+        } else {
+          self.postMessage({ type: 'run_done', hook, result: res });
+        }
+      } catch (err) {
+        self.postMessage({ type: 'run_done', hook, error: err.message });
+      }
+    }
+  });
+`;
+
 const PLUGINS = {
-  _list: [], // [{ id, code }]
+  _list: [], // [{ id, code, status, lastRun, lastDuration, errorCount, disabled }]
+  _workers: {}, // { id: Worker }
   
   init() {
-    const sandbox = $('plugin-sandbox');
-    if (!sandbox) return;
-    
-    const srcdoc = `<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval';">
-</head>
-<body>
-  <script>
-    const activePlugins = {};
-    window.addEventListener('message', (e) => {
-      if (e.origin !== "null" && e.origin !== "file://" && !e.origin.startsWith("http")) return;
-      const { type, id, code, hook, payload } = e.data;
-      if (type === 'load') {
-        try {
-          const fn = new Function(code);
-          const instance = fn();
-          if (!instance || typeof instance !== 'object') {
-            throw new Error('Plugin must return an object');
-          }
-          activePlugins[id] = instance;
-          window.parent.postMessage({ type: 'load_done', id, success: true }, '*');
-        } catch (err) {
-          window.parent.postMessage({ type: 'load_done', id, success: false, error: err.message }, '*');
-        }
-      } else if (type === 'run') {
-        const plugin = activePlugins[id];
-        if (plugin && typeof plugin[hook] === 'function') {
-          Promise.race([
-            Promise.resolve().then(() => plugin[hook](payload)),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: execution exceeded 3000ms')), 3000))
-          ]).then(res => {
-            window.parent.postMessage({ type: 'run_done', id, hook, result: res }, '*');
-          }).catch(err => {
-            window.parent.postMessage({ type: 'run_done', id, hook, error: err.message }, '*');
-          });
-        }
-      }
-    });
-  <\/script>
-</body>
-</html>`;
-    
-    sandbox.srcdoc = srcdoc;
-    
-    window.addEventListener('message', (e) => {
-      if (e.origin !== "null" && e.origin !== window.location.origin) return;
-      if (e.source !== sandbox.contentWindow) return;
-      const { type, id, success, error, hook, result } = e.data;
-      if (type === 'load_done') {
-        if (success) {
-          toast('Plugin loaded successfully.', 'success');
-          this._renderList();
-        } else {
-          this._list = this._list.filter(p => p.id !== id);
-          this._save();
-          toast(`Failed to load plugin: ${error}`, 'error');
-        }
-      } else if (type === 'run_done') {
-        if (error) {
-          console.error(`Plugin ${id} hook ${hook} failed:`, error);
-        } else if (result) {
-          toast(result, 'warn');
-        }
-      }
-    });
-    
     try {
       const saved = localStorage.getItem('ll-plugins');
       if (saved) {
         this._list = JSON.parse(saved);
-        sandbox.onload = () => {
-          this._list.forEach(p => {
-            sandbox.contentWindow.postMessage({ type: 'load', id: p.id, code: p.code }, '*');
-          });
-          this._renderList();
-        };
+        this._list.forEach(p => {
+          this.initWorker(p);
+        });
       }
+      this._renderList();
     } catch (e) {
-      console.error('[LL]', e);
+      console.error('[LL] Plugins init failed:', e);
+    }
+  },
+
+  initWorker(p) {
+    if (p.disabled) return;
+    if (this._workers[p.id]) {
+      this._workers[p.id].terminate();
+    }
+    try {
+      const blob = new Blob([PLUGINS_WORKER_SRC], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      const w = new Worker(url);
+      this._workers[p.id] = w;
+      
+      w.postMessage({ type: 'load', code: p.code });
+      
+      w.onmessage = ({ data }) => {
+        if (!MSG_VALIDATOR.validate(data)) {
+          console.error(`[PLUGINS] Invalid message schema from plugin ${p.id}:`, data);
+          return;
+        }
+        const { type, success, error, hook, result } = data;
+        if (type === 'load_done') {
+          if (success) {
+            p.status = 'active';
+            p.errorCount = 0;
+            toast(`Plugin ${p.id} loaded successfully.`, 'success');
+          } else {
+            p.status = 'error';
+            p.errorCount = (p.errorCount || 0) + 1;
+            if (p.errorCount >= 3) {
+              p.disabled = true;
+              p.status = 'disabled';
+              toast(`Plugin ${p.id} disabled after 3 failures.`, 'error');
+            }
+            toast(`Failed to load plugin ${p.id}: ${error}`, 'error');
+          }
+          this._save();
+          this._renderList();
+        } else if (type === 'run_done') {
+          if (w._watchdog) {
+            clearTimeout(w._watchdog);
+            w._watchdog = null;
+          }
+          p.lastDuration = performance.now() - w._runStart;
+          p.lastRun = Date.now();
+          if (error) {
+            console.error(`[PLUGINS] Plugin ${p.id} hook ${hook} failed:`, error);
+            p.status = 'error';
+            p.errorCount = (p.errorCount || 0) + 1;
+            if (p.errorCount >= 3) {
+              p.disabled = true;
+              p.status = 'disabled';
+              toast(`Plugin ${p.id} disabled after 3 failures.`, 'error');
+            }
+          } else {
+            p.status = 'active';
+            p.errorCount = 0;
+            if (result) {
+              toast(result, 'warn');
+            }
+          }
+          this._save();
+          this._renderList();
+        }
+      };
+      w.onerror = (err) => {
+        console.error(`[PLUGINS] Worker error in plugin ${p.id}:`, err);
+        p.status = 'error';
+        p.errorCount = (p.errorCount || 0) + 1;
+        if (p.errorCount >= 3) {
+          p.disabled = true;
+          p.status = 'disabled';
+          toast(`Plugin ${p.id} disabled after 3 failures.`, 'error');
+        }
+        this._save();
+        this._renderList();
+      };
+    } catch (err) {
+      console.error(`[PLUGINS] Worker setup failed for plugin ${p.id}:`, err);
     }
   },
   
@@ -12867,19 +12971,37 @@ const PLUGINS = {
     if (!code) return toast('Please write plugin code first.', 'warn');
     
     const id = 'pl_' + Math.random().toString(36).slice(2, 9);
-    this._list.push({ id, code });
+    const p = { id, code, status: 'active', lastRun: null, lastDuration: null, errorCount: 0, disabled: false };
+    this._list.push(p);
     this._save();
     
-    const sandbox = $('plugin-sandbox');
-    sandbox.contentWindow.postMessage({ type: 'load', id, code }, '*');
+    this.initWorker(p);
     $('plugin-code').value = '';
+    this._renderList();
   },
   
   remove(id) {
+    if (this._workers[id]) {
+      this._workers[id].terminate();
+      delete this._workers[id];
+    }
     this._list = this._list.filter(p => p.id !== id);
     this._save();
     this._renderList();
     toast('Plugin removed.', 'info');
+  },
+
+  enable(id) {
+    const p = this._list.find(x => x.id === id);
+    if (p) {
+      p.disabled = false;
+      p.status = 'active';
+      p.errorCount = 0;
+      this.initWorker(p);
+      this._save();
+      this._renderList();
+      toast('Plugin re-enabled.', 'success');
+    }
   },
   
   _save() {
@@ -12893,22 +13015,77 @@ const PLUGINS = {
       container.innerHTML = '<div style="color:var(--t3);font-style:italic;">No plugins loaded.</div>';
       return;
     }
-    container.innerHTML = this._list.map((p, idx) => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);background:var(--bg-1);margin-bottom:4px;">
-        <span style="font-family:var(--mono);font-size:10px;">Plugin #${idx + 1} (${p.id})</span>
-        <button class="btn btn-d btn-sm" onclick="PLUGINS.remove('${p.id}')" style="padding:2px 6px;font-size:9px;">Remove</button>
-      </div>
-    `).join('');
+    container.innerHTML = this._list.map((p, idx) => {
+      const statusText = p.disabled ? 'Disabled' : p.status === 'timeout' ? 'Timeout' : p.status === 'error' ? 'Error' : 'Active';
+      const statusClass = p.disabled ? 'b-gray' : p.status === 'timeout' ? 'b-amber' : p.status === 'error' ? 'b-red' : 'b-green';
+      const lastRunStr = p.lastRun ? new Date(p.lastRun).toLocaleTimeString() : 'Never run';
+      const execTime = p.lastDuration ? `${p.lastDuration.toFixed(1)}ms` : '—';
+      const failCount = p.errorCount || 0;
+      return `
+        <div class="rc" style="margin-bottom:6px; background:var(--bg-2); border:1px solid var(--bdr); display:flex; flex-direction:column; gap:6px; padding:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <span style="font-family:var(--mono); font-size:10px; font-weight:bold; color:var(--amber);">${p.id}</span>
+            <div style="display:flex; gap:6px;">
+              ${p.disabled ? `
+                <button class="btn btn-xs" onclick="PLUGINS.enable('${p.id}')" title="Re-enable plugin" style="font-size:9.5px;" type="button">Enable</button>
+              ` : ''}
+              <button class="btn btn-g btn-xs" onclick="PLUGINS.remove('${p.id}')" title="Remove plugin" style="color:var(--red); font-size:9.5px;" type="button">✕</button>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; font-size:9px; color:var(--t3);">
+            <div>
+              <div style="color:var(--t4); font-size:8px;">STATUS</div>
+              <span class="badge ${statusClass}" style="font-size:8px; padding:1px 4px; margin-top:2px; display:inline-block;">${statusText}</span>
+            </div>
+            <div>
+              <div style="color:var(--t4); font-size:8px;">LAST RUN</div>
+              <div style="margin-top:2px;">${lastRunStr}</div>
+            </div>
+            <div>
+              <div style="color:var(--t4); font-size:8px;">EXEC TIME</div>
+              <div style="margin-top:2px;">${execTime}</div>
+            </div>
+            <div>
+              <div style="color:var(--t4); font-size:8px;">FAILURES</div>
+              <div style="margin-top:2px; color:${failCount > 0 ? 'var(--red)' : 'var(--t3)'};">${failCount} / 3</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
   },
   
   run(hook, payload) {
-    const sandbox = $('plugin-sandbox');
-    if (!sandbox || !sandbox.contentWindow) return;
     this._list.forEach(p => {
-      sandbox.contentWindow.postMessage({ type: 'run', id: p.id, hook, payload }, '*');
+      if (p.disabled || p.status === 'disabled') return;
+      let w = this._workers[p.id];
+      if (!w) {
+        this.initWorker(p);
+        w = this._workers[p.id];
+      }
+      if (w) {
+        w._runStart = performance.now();
+        w.postMessage({ type: 'run', hook, payload });
+        w._watchdog = setTimeout(() => {
+          console.warn(`[PLUGINS] Plugin ${p.id} hook ${hook} timed out. Terminating.`);
+          w.terminate();
+          delete this._workers[p.id];
+          p.status = 'timeout';
+          p.lastRun = Date.now();
+          p.lastDuration = 3000;
+          p.errorCount = (p.errorCount || 0) + 1;
+          if (p.errorCount >= 3) {
+            p.disabled = true;
+            p.status = 'disabled';
+            toast(`Plugin ${p.id} disabled after 3 failures.`, 'error');
+          }
+          this._save();
+          this._renderList();
+        }, 3000);
+      }
     });
   }
-};
+};;
 
 /* ================================================================
    §JS-38 3D LOG LANDSCAPE  — Three.js WebGL Edition
@@ -14474,13 +14651,26 @@ const GANTT_RESIZE = (() => {
     });
   }
 
-  // Observe DOM mutations to attach handles after Gantt re-renders
-  const _obs = new MutationObserver(() => {
+  let _obs = null;
+  function connectObserver() {
+    if (_obs) return;
+    const resEl = $('res');
+    if (!resEl) return;
+    _obs = new MutationObserver(() => {
+      if (document.querySelector('.g-lbl')) attachHandles();
+    });
+    _obs.observe(resEl, { childList: true, subtree: true });
+    // Run once initially
     if (document.querySelector('.g-lbl')) attachHandles();
-  });
-  _obs.observe(document.body, { childList: true, subtree: true });
+  }
+  function disconnectObserver() {
+    if (_obs) {
+      _obs.disconnect();
+      _obs = null;
+    }
+  }
 
-  return { applyWidth, attachHandles };
+  return { applyWidth, attachHandles, connectObserver, disconnectObserver };
 })();
 
 /* ================================================================
@@ -20589,49 +20779,7 @@ UI.svm(S.viewMode);
     });
   };
 
-  // 11. Custom plugins list override & status trackers
-  const originalRenderList = PLUGINS._renderList;
-  PLUGINS._renderList = function() {
-    const container = $('plugin-list');
-    if (!container) return;
-    if (PLUGINS._list.length === 0) {
-      container.innerHTML = '<div style="color:var(--t3);font-style:italic;">No plugins loaded.</div>';
-      return;
-    }
-    container.innerHTML = PLUGINS._list.map((p, idx) => {
-      const isError = p.isError || false;
-      const lastRun = p.lastRun ? new Date(p.lastRun).toLocaleTimeString() : 'Never run';
-      const statusText = isError ? 'Error' : 'Active';
-      const statusClass = isError ? 'b-red' : 'b-green';
-      const icon = '⚲';
-      return `
-        <div class="rc" style="margin-bottom:6px; background:var(--bg-2); border:1px solid var(--bdr);">
-          <div class="ric" style="background:var(--blue-g);color:var(--blue);">${icon}</div>
-          <div style="flex:1;min-width:0;padding-left:6px;">
-            <div class="rn trunc">${esc(p.id)}</div>
-            <div class="rm" style="display:flex; gap:6px; align-items:center; margin-top:2px;">
-              <span class="badge ${statusClass}" style="font-size:8px; padding:1px 4px;">${statusText}</span>
-              <span style="font-size:9px; color:var(--t4);">${lastRun}</span>
-            </div>
-          </div>
-          <div style="flex-shrink:0;">
-            <button class="btn btn-g btn-xs" onclick="PLUGINS.remove('${p.id}')" title="Remove plugin" style="color:var(--red);" type="button">✕</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  };
-
-  const originalPluginsRun = PLUGINS.run.bind(PLUGINS);
-  PLUGINS.run = function(hook, payload) {
-    const sandbox = $('plugin-sandbox');
-    if (!sandbox || !sandbox.contentWindow) return;
-    this._list.forEach(p => {
-      p.lastRun = Date.now();
-      sandbox.contentWindow.postMessage({ type: 'run', id: p.id, hook, payload }, '*');
-    });
-    this._renderList();
-  };
+  // 11. Custom plugins list override & status trackers (integrated into the core PLUGINS module)
 
   // 12. D3 Graph vignettes floating legends card
   const originalGraphRender = GRAPHIFY.render.bind(GRAPHIFY);
