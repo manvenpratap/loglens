@@ -1,0 +1,5 @@
+# LogLens Test Suite — Python Dependencies
+# Install with: pip install -r tests/requirements.txt
+playwright>=1.44.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
