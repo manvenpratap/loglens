@@ -2232,11 +2232,11 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
   transition:transform .18s var(--ease-snap);
 }
 .settings-section > .settings-section-hdr.open .ss-chev{transform:rotate(90deg)}
-.settings-section > .settings-section-body{
+.settings-section > .settings-sub-body{
   display:none;flex-direction:column;gap:10px;
   padding:12px 13px;
 }
-.settings-section > .settings-section-body.vis{display:flex}
+.settings-section > .settings-sub-body.vis{display:flex}
 
 .pref-row{
   display:flex;align-items:center;gap:10px;
@@ -14798,7 +14798,7 @@ const SETTINGS_ADDITIONS = (() => {
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Performance
           <span class="ss-chev">▶</span>
         </div>
-        <div class="settings-section-body" id="ss-perf-body">
+        <div class="settings-sub-body" id="ss-perf-body">
           <div class="pref-row">
             <div class="pref-label">
               <div>IDB Cache</div>
@@ -14826,7 +14826,7 @@ const SETTINGS_ADDITIONS = (() => {
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="11.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/></svg></span> Appearance
           <span class="ss-chev">▶</span>
         </div>
-        <div class="settings-section-body" id="ss-appear-body">
+        <div class="settings-sub-body" id="ss-appear-body">
           <div class="pref-row">
             <div class="pref-label">
               <div>Animation Speed</div>
