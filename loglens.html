@@ -2924,6 +2924,118 @@ mark.hl{
   to{opacity:1;transform:translateY(0) scale(1)}
 }
 /* ============================================================
+   CSS §27 · EVENT INSPECTOR DRAWER
+   ============================================================ */
+.inspector {
+  width: 360px;
+  background: var(--bg-1);
+  border-left: 1px solid var(--bdr);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+}
+.inspector.hidden {
+  display: none !important;
+}
+.ins-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--bg-2);
+  flex-shrink: 0;
+}
+.ins-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--display);
+}
+.ins-close {
+  background: transparent;
+  border: none;
+  color: var(--t4);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--rounded-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, color 0.1s;
+}
+.ins-close:hover {
+  background: var(--bg-3);
+  color: var(--t2);
+}
+.ins-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ins-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ins-sec-title {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--t4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--mono);
+}
+.ins-card {
+  background: var(--bg-0);
+  border: 1px solid var(--bdr-d);
+  border-radius: var(--rounded-md);
+  padding: 10px 12px;
+}
+.ins-grid {
+  display: grid;
+  grid-template-columns: 85px 1fr;
+  gap: 6px 12px;
+  font-size: 11px;
+}
+.ins-grid-lbl {
+  color: var(--t4);
+  font-family: var(--mono);
+}
+.ins-grid-val {
+  color: var(--t2);
+  word-break: break-all;
+}
+.ins-payload-pre {
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-sm);
+  padding: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--t3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 180px;
+  margin: 0;
+}
+.ins-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ============================================================
    CSS §20 · RESPONSIVE BREAKPOINTS (Step 5)
    1024px — compact sidebar  768px — stack layout  480px — mobile
    ============================================================ */
@@ -3521,7 +3633,7 @@ mark.hl{
     background: #fff !important;
     color: #000 !important;
   }
-  .hdr, .sb, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, .cfg-action-dock, #file-chips, .breadcrumb, #quick-edit-pop, #ctx-menu, #cmd-ov {
+  .hdr, .sb, .vtabs, #vtabs-pill, #btn-parse, #btn-abort, .cfg-action-dock, #file-chips, .breadcrumb, #quick-edit-pop, #ctx-menu, #cmd-palette {
     display: none !important;
   }
   .main {
@@ -6621,7 +6733,20 @@ label[for="watch-auto-reload"] {
         <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> IDB cache</div>
       </div>
     </div>
-  </div>
+  </main>
+
+  <!-- EVENT INSPECTOR DRAWER -->
+  <aside id="event-inspector" class="inspector hidden" role="complementary" aria-label="Event Inspector">
+    <div class="ins-hdr">
+      <div class="ins-title">Event Inspector</div>
+      <button class="ins-close" id="btn-ins-close" aria-label="Close inspector">✕</button>
+    </div>
+    <div class="ins-body" id="ins-body-content">
+      <div style="color:var(--t4); font-size:11px; text-align:center; margin-top:24px; font-family:var(--ui);">
+        Select an event in Gantt, Tree, or Swimlane view to inspect details.
+      </div>
+    </div>
+  </aside>
 </div>
 
 <!-- ================================================================ FOOTER -->
@@ -7032,13 +7157,13 @@ label[for="watch-auto-reload"] {
 <input type="file" id="fi-rule-imp" accept=".json" style="display:none"/>
 
 <!-- ================================================================ COMMAND PALETTE -->
-<div class="cmd-ov hidden" id="cmd-ov" role="dialog" aria-modal="true" aria-label="Command palette">
+<div class="cmd-ov hidden" id="cmd-palette" role="dialog" aria-modal="true" aria-label="Command palette">
   <div class="cmd-box" role="combobox" aria-expanded="true" aria-haspopup="listbox">
     <div class="cmd-search-row">
       <div class="cmd-search-ic" aria-hidden="true">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
-      <input class="cmd-inp" id="cmd-inp" type="text"
+      <input class="cmd-inp" id="cmd-input" type="text"
         placeholder="Search commands, views, exports…"
         aria-label="Command search"
         aria-autocomplete="list"
@@ -8858,6 +8983,9 @@ const TR={
     KBN._idx = idx;
     this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
     row.classList.add('kb-focus');
+    
+    // Open in Event Inspector
+    INSPECTOR.open(n);
     
     if (e.detail === 2) {
       UI.openAnn(n);
@@ -10692,13 +10820,37 @@ const STATS={
       container.querySelector('#btn-clear-comp').classList.add('hidden');
     });
 
-    // Expand on click to show D3 Histogram
+    // Expand on click to show D3 Histogram and open worst node in Inspector
     container.addEventListener('click', e => {
       const row = e.target.closest('.stats-row');
       if (row) {
         const rid = row.dataset.rid;
         const s = stats[rid];
-        if (s) GRAPHIFY.showHistogramModal(s);
+        if (s) {
+          GRAPHIFY.showHistogramModal(s);
+          const findMaxNodeForRule = (ruleId) => {
+            if (!S.trees) return null;
+            let maxNode = null;
+            const traverse = (nodes) => {
+              for (const n of nodes) {
+                if (n.ruleId === ruleId && n.duration != null) {
+                  if (!maxNode || n.duration > maxNode.duration) {
+                    maxNode = n;
+                  }
+                }
+                if (n.events && n.events.length) traverse(n.events);
+              }
+            };
+            for (const tree of Object.values(S.trees)) {
+              traverse(tree);
+            }
+            return maxNode;
+          };
+          const maxNode = findMaxNodeForRule(rid);
+          if (maxNode && typeof INSPECTOR !== 'undefined') {
+            INSPECTOR.open(maxNode);
+          }
+        }
       }
     });
 
@@ -14420,21 +14572,76 @@ const CMD = (() => {
     { id:'e-png',  cat:'Export', name:'Export Gantt PNG',      icon:'▤', action:()=>EXP.png() },
     { id:'e-html', cat:'Export', name:'Export HTML Report',    icon:'◐', action:()=>EXP.html() },
     { id:'e-lls',  cat:'Export', name:'Save Session (.lls)',   icon:'▣', action:()=>EXP.lls() },
-    // App
+    // App Actions
     { id:'a-theme',  cat:'App', name:'Toggle Theme',        hint:'Alt+T', icon:'◑', action:()=>Theme.toggle() },
     { id:'a-parse',  cat:'App', name:'Parse Log File',      icon:'▶',    action:()=>{ const btn=$('btn-parse'); if(btn && !btn.disabled) btn.click(); } },
     { id:'a-abort',  cat:'App', name:'Abort Parse',         icon:'■',    action:()=>{ const btn=$('btn-abort'); if(btn && !btn.disabled) btn.click(); } },
-    { id:'a-search', cat:'App', name:'Focus Search',        hint:'/',   icon:'⌕', action:()=>{ CMD.close();$('hdr-search').focus(); } },
-    { id:'a-idb',    cat:'App', name:'Clear IDB Cache',     icon:'⌧',   action:()=>{ IDB.clear&&IDB.clear();toast('IDB cache cleared.','info'); } },
-    { id:'a-sample', cat:'App', name:'Download Sample Log', icon:'⬇',   action:()=>{ CMD.close();dlSample&&dlSample(); } },
+    { id:'a-search', cat:'App', name:'Focus Search',        hint:'/',   icon:'⌕', action:()=>{ CMD.close(); $('hdr-search').focus(); } },
+    { id:'a-idb',    cat:'App', name:'Clear IDB Cache',     icon:'⌧',   action:()=>{ IDB.clear&&IDB.clear(); toast('IDB cache cleared.','info'); } },
+    { id:'a-sample', cat:'App', name:'Download Sample Log', icon:'⬇',   action:()=>{ CMD.close(); dlSample&&dlSample(); } },
+    // Themes
+    { id:'t-ivory', cat:'Theme', name:'Theme: Ivory (Light)', icon:'☼', action:()=>Theme.apply('ivory') },
+    { id:'t-dark', cat:'Theme', name:'Theme: Obsidian Terminal (Dark)', icon:'☾', action:()=>Theme.apply('dark') },
+    { id:'t-aurora', cat:'Theme', name:'Theme: Aurora (Navy/Cyan)', icon:'☼', action:()=>Theme.apply('aurora') },
+    { id:'t-midnight', cat:'Theme', name:'Theme: Midnight (OLED Black)', icon:'☾', action:()=>Theme.apply('midnight') },
+    { id:'t-forest', cat:'Theme', name:'Theme: Forest (Earthy Green)', icon:'☼', action:()=>Theme.apply('forest') },
+    { id:'t-crimson', cat:'Theme', name:'Theme: Crimson (Noir Red)', icon:'☾', action:()=>Theme.apply('crimson') },
+    // Settings Preferences
+    { id:'c-focus',  cat:'Settings', name:'Toggle Focus Mode', hint:'F', icon:'⛶', action:()=>UI.toggleFocusMode&&UI.toggleFocusMode() },
+    { id:'c-density-compact', cat:'Settings', name:'Set Density: Compact', icon:'▤', action:()=>{
+      if (SETTINGS_ADDITIONS && SETTINGS_ADDITIONS._applyDensity) {
+        SETTINGS_ADDITIONS._applyDensity('compact');
+        const el = $('pref-density'); if (el) el.value = 'compact';
+        toast('Font density set to compact.', 'success');
+      }
+    }},
+    { id:'c-density-normal', cat:'Settings', name:'Set Density: Normal', icon:'▤', action:()=>{
+      if (SETTINGS_ADDITIONS && SETTINGS_ADDITIONS._applyDensity) {
+        SETTINGS_ADDITIONS._applyDensity('normal');
+        const el = $('pref-density'); if (el) el.value = 'normal';
+        toast('Font density set to normal.', 'success');
+      }
+    }},
+    { id:'c-density-comfortable', cat:'Settings', name:'Set Density: Comfortable', icon:'▤', action:()=>{
+      if (SETTINGS_ADDITIONS && SETTINGS_ADDITIONS._applyDensity) {
+        SETTINGS_ADDITIONS._applyDensity('comfortable');
+        const el = $('pref-density'); if (el) el.value = 'comfortable';
+        toast('Font density set to comfortable.', 'success');
+      }
+    }},
+    { id:'c-highlight-toggle', cat:'Settings', name:'Toggle Search Highlighting', icon:'🗲', action:()=>{
+      S.appPrefs.enableHighlighting = !S.appPrefs.enableHighlighting;
+      const el = $('pref-hl-toggle'); if (el) el.checked = S.appPrefs.enableHighlighting;
+      if (!S.appPrefs.enableHighlighting) SEARCH_HL.clear();
+      else {
+        const q = $('hdr-search')?.value?.trim();
+        if (q) SEARCH_HL.highlight(q);
+      }
+      toast('Search highlighting ' + (S.appPrefs.enableHighlighting ? 'enabled' : 'disabled') + '.', 'success');
+    }},
   ];
+
+  function _getUniqueTraceIds() {
+    const ids = new Set();
+    if (!S.trees) return [];
+    function traverse(node) {
+      if (node.correlationId) ids.add(node.correlationId);
+      if (node.events && Array.isArray(node.events)) {
+        node.events.forEach(traverse);
+      }
+    }
+    Object.values(S.trees).forEach(rootNodes => {
+      if (Array.isArray(rootNodes)) rootNodes.forEach(traverse);
+    });
+    return Array.from(ids);
+  }
 
   function _getDynamic() {
     const out = [];
     if (S.cfg?.elementRules) {
       S.cfg.elementRules.forEach(r => {
         out.push({
-          id:'r-'+r.id, cat:'Rule', name:'Edit: '+r.name,
+          id:'r-'+r.id, cat:'Rule', name:'Edit Rule: '+r.name,
           icon: r.visualStyle?.icon||'▪',
           action:()=>{ CMD.close(); UI.editR&&UI.editR(r.id); }
         });
@@ -14443,11 +14650,23 @@ const CMD = (() => {
     if (S.threads?.length) {
       S.threads.forEach(t => {
         out.push({
-          id:'t-'+t, cat:'Thread', name:'Switch to: '+t,
+          id:'t-'+t, cat:'Thread', name:'Switch to Thread: '+t,
           icon:'⚬', action:()=>{ CMD.close(); UI.sw(t); }
         });
       });
     }
+    const traceIds = _getUniqueTraceIds();
+    traceIds.forEach(tid => {
+      out.push({
+        id:'tr-'+tid, cat:'Trace', name:'Filter by Trace: '+tid,
+        icon:'🔗', action:()=>{
+          CMD.close();
+          const el = $('trace-filter'); if (el) el.value = tid;
+          S.activeTraceId = tid;
+          UI.rv();
+        }
+      });
+    });
     return out;
   }
 
@@ -14455,14 +14674,71 @@ const CMD = (() => {
     return [...STATIC_CMDS, ..._getDynamic()];
   }
 
+  function fuzzyMatch(text, query) {
+    const cleanText = text.toLowerCase();
+    const cleanQuery = query.toLowerCase();
+    if (!cleanQuery) return { match: true, score: 0 };
+    if (cleanText.includes(cleanQuery)) {
+      return { match: true, score: 100 - cleanText.indexOf(cleanQuery) };
+    }
+    let qIdx = 0;
+    let score = 0;
+    for (let i = 0; i < cleanText.length; i++) {
+      if (cleanText[i] === cleanQuery[qIdx]) {
+        score += (10 - i);
+        qIdx++;
+        if (qIdx === cleanQuery.length) {
+          return { match: true, score: score };
+        }
+      }
+    }
+    return { match: false, score: 0 };
+  }
+
+  function recordExecution(cmdId) {
+    try {
+      let recent = JSON.parse(localStorage.getItem('loglens_recent_cmds') || '[]');
+      recent = recent.filter(id => id !== cmdId);
+      recent.unshift(cmdId);
+      recent = recent.slice(0, 5);
+      localStorage.setItem('loglens_recent_cmds', JSON.stringify(recent));
+    } catch(e) {}
+  }
+
+  function getRecentCmds() {
+    try {
+      const recentIds = JSON.parse(localStorage.getItem('loglens_recent_cmds') || '[]');
+      const all = _allCmds();
+      const out = [];
+      recentIds.forEach(id => {
+        const found = all.find(c => c.id === id);
+        if (found) {
+          out.push({ ...found, cat: 'Recent' });
+        }
+      });
+      return out;
+    } catch(e) {
+      return [];
+    }
+  }
+
   function _filter(q) {
     const all = _allCmds();
-    if (!q) return all;
-    const lq = q.toLowerCase();
-    return all.filter(c =>
-      c.name.toLowerCase().includes(lq) ||
-      c.cat.toLowerCase().includes(lq)
-    );
+    if (!q) {
+      return [...getRecentCmds(), ...all];
+    }
+    const cleanQuery = q.trim().toLowerCase();
+    const matches = [];
+    all.forEach(c => {
+      const nameMatch = fuzzyMatch(c.name, cleanQuery);
+      const catMatch = fuzzyMatch(c.cat, cleanQuery);
+      const match = nameMatch.match || catMatch.match;
+      if (match) {
+        matches.push({ c, score: Math.max(nameMatch.score, catMatch.score) });
+      }
+    });
+    matches.sort((a, b) => b.score - a.score);
+    return matches.map(m => m.c);
   }
 
   function _render() {
@@ -14472,7 +14748,6 @@ const CMD = (() => {
       el.innerHTML = '<div class="cmd-empty">No commands match</div>';
       return;
     }
-    // Group by category
     const groups = {};
     _filtered.forEach(c => {
       if (!groups[c.cat]) groups[c.cat] = [];
@@ -14496,7 +14771,6 @@ const CMD = (() => {
       });
     }
     el.innerHTML = html;
-    // Scroll active item into view
     const active = el.querySelector('.cmd-active');
     if (active) active.scrollIntoView({block:'nearest'});
   }
@@ -14505,8 +14779,8 @@ const CMD = (() => {
     if (_open) return;
     _open = true;
     _idx = 0;
-    $('cmd-ov').classList.remove('hidden');
-    const inp = $('cmd-inp');
+    $('cmd-palette').classList.remove('hidden');
+    const inp = $('cmd-input');
     inp.value = '';
     _filtered = _filter('');
     _render();
@@ -14516,8 +14790,8 @@ const CMD = (() => {
   function close() {
     if (!_open) return;
     _open = false;
-    $('cmd-ov').classList.add('hidden');
-    $('cmd-inp').value = '';
+    $('cmd-palette').classList.add('hidden');
+    $('cmd-input').value = '';
   }
 
   function navigate(dir) {
@@ -14530,14 +14804,14 @@ const CMD = (() => {
   function execute(idx) {
     const item = _filtered[idx ?? _idx];
     if (!item) return;
+    recordExecution(item.id);
     close();
     item.action();
   }
 
-  // Wire events after DOM ready
   function init() {
-    const ov = $('cmd-ov');
-    const inp = $('cmd-inp');
+    const ov = $('cmd-palette');
+    const inp = $('cmd-input');
     const res = $('cmd-results');
     if (!ov || !inp || !res) return;
 
@@ -14982,7 +15256,7 @@ const SETTINGS_ADDITIONS = (() => {
     }
   }
 
-  return { init };
+  return { init, _applyDensity, _applyAnimSpeed, _applyGanttH };
 })();
 
 SETTINGS_ADDITIONS.init();
@@ -15169,7 +15443,8 @@ document.addEventListener('keydown', e => {
   const tag = document.activeElement?.tagName;
   const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
   const modalOpen = !$('mm').classList.contains('hidden') || !$('ann-modal').classList.contains('hidden');
-  const cmdOpen = !$('cmd-ov').classList.contains('hidden');
+  const cmdOpen = !$('cmd-palette').classList.contains('hidden');
+  const inspectorOpen = !$('event-inspector').classList.contains('hidden');
 
   // Ctrl+K / Cmd+K — Command Palette
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -15195,9 +15470,10 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Escape — Enhanced: close cmd palette first, then search, then modal
+  // Escape — Enhanced: close cmd palette first, then inspector, then search, then modal
   if (e.key === 'Escape') {
     if (cmdOpen) { CMD.close(); return; }
+    if (inspectorOpen) { INSPECTOR.close(); return; }
     // Clear search if focused and non-empty
     const s = $('hdr-search');
     if (document.activeElement === s && s.value) {
@@ -15211,6 +15487,171 @@ document.addEventListener('keydown', e => {
     }
   }
 }, { capture: true });
+
+/* ================================================================
+   §JS-39 EVENT INSPECTOR
+   ================================================================ */
+const INSPECTOR = (() => {
+  let _activeNode = null;
+
+  function open(n) {
+    if (!n) return;
+    _activeNode = n;
+    
+    const panel = $('event-inspector');
+    if (!panel) return;
+    panel.classList.remove('hidden');
+
+    const content = $('ins-body-content');
+    if (!content) return;
+
+    // SLA calculations
+    let slaBadge = '<span class="badge b-gray">None</span>';
+    if (n.slaThresholdMs != null && n.duration != null) {
+      const breached = n.duration > n.slaThresholdMs;
+      slaBadge = breached
+        ? `<span class="badge b-red">⚠️ Breached (&gt;${n.slaThresholdMs}ms)</span>`
+        : `<span class="badge b-green">✓ Compliant (&lt;${n.slaThresholdMs}ms)</span>`;
+    }
+
+    // Annotation
+    const noteText = (S.annotations && S.annotations[n.id]) ? getAnnotationText(S.annotations[n.id]) : '';
+    const noteHtml = noteText
+      ? `<div class="ins-card" style="background:var(--glow-amber); border-color:var(--amber); color:var(--t1); font-family:var(--ui);">
+           <div style="font-weight:bold; font-size:10px; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Sticky Note</div>
+           <div style="font-size:11px; white-space:pre-wrap; line-height:1.4;">${esc(noteText)}</div>
+           <div class="ins-actions-row">
+             <button class="btn btn-xs" onclick="UI.openAnn(INSPECTOR.getActiveNode())">Edit Note</button>
+           </div>
+         </div>`
+      : `<div class="ins-actions-row">
+           <button class="btn btn-xs btn-d" onclick="UI.openAnn(INSPECTOR.getActiveNode())">✚ Add Sticky Note</button>
+         </div>`;
+
+    // Trace
+    const traceRow = n.correlationId
+      ? `<div class="ins-grid-lbl">Trace ID</div>
+         <div class="ins-grid-val">
+           <span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" style="cursor:pointer;" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>
+         </div>`
+      : '';
+
+    // Duration formatting
+    const durationVal = n.duration != null ? n.duration.toLocaleString(undefined, {maximumFractionDigits:2}) + ' ms' : 'None';
+    
+    // Level badge
+    let lvlBadge = 'None';
+    if (n.level) {
+      const lvl = n.level.toUpperCase();
+      let bc = 'b-gray';
+      if (lvl === 'ERROR' || lvl === 'FATAL') bc = 'b-red';
+      else if (lvl === 'WARN' || lvl === 'WARNING') bc = 'b-amber';
+      else if (lvl === 'INFO') bc = 'b-blue';
+      else if (lvl === 'DEBUG' || lvl === 'TRACE') bc = 'b-pur';
+      lvlBadge = `<span class="badge ${bc}">${esc(lvl)}</span>`;
+    }
+
+    content.innerHTML = `
+      <!-- Metadata Section -->
+      <div class="ins-sec">
+        <div class="ins-sec-title">Event Metadata</div>
+        <div class="ins-card">
+          <div class="ins-grid">
+            <div class="ins-grid-lbl">Rule Name</div>
+            <div class="ins-grid-val" style="font-weight:bold; color:var(--amber);">${esc(n.ruleName)}</div>
+            
+            ${n.elementName && n.elementName !== n.ruleName ? `
+              <div class="ins-grid-lbl">Element</div>
+              <div class="ins-grid-val">${esc(n.elementName)}</div>
+            ` : ''}
+            
+            <div class="ins-grid-lbl">Log Level</div>
+            <div class="ins-grid-val">${lvlBadge}</div>
+            
+            <div class="ins-grid-lbl">Thread</div>
+            <div class="ins-grid-val">
+              <span class="badge b-gray" style="cursor:pointer;" onclick="UI.sw('${esc(n.thread)}')" title="Switch to this thread">${esc(n.thread)}</span>
+            </div>
+
+            ${traceRow}
+            
+            <div class="ins-grid-lbl">Start Time</div>
+            <div class="ins-grid-val">${n.timestamp ? esc(new Date(n.timestamp).toLocaleString()) : 'None'}</div>
+            
+            <div class="ins-grid-lbl">End Time</div>
+            <div class="ins-grid-val">${n.endTimestamp ? esc(new Date(n.endTimestamp).toLocaleString()) : 'None'}</div>
+            
+            <div class="ins-grid-lbl">Duration</div>
+            <div class="ins-grid-val">${durationVal}</div>
+            
+            <div class="ins-grid-lbl">SLA Status</div>
+            <div class="ins-grid-val">${slaBadge}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payload Section -->
+      <div class="ins-sec">
+        <div class="ins-sec-title">Raw Payload / Log Line</div>
+        <div class="ins-card">
+          <pre class="ins-payload-pre" id="ins-payload-text">${esc(n.payload || n.rawLine || 'No payload')}</pre>
+          <div class="ins-actions-row">
+            <button class="btn btn-xs btn-bl" onclick="INSPECTOR.copyPayload()">Copy Payload</button>
+            <button class="btn btn-xs" onclick="INSPECTOR.copyJSON()">Copy Node JSON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Notes Section -->
+      <div class="ins-sec">
+        <div class="ins-sec-title">Sticky Notes</div>
+        ${noteHtml}
+      </div>
+    `;
+  }
+
+  function close() {
+    _activeNode = null;
+    const panel = $('event-inspector');
+    if (panel) panel.classList.add('hidden');
+  }
+
+  function getActiveNode() {
+    return _activeNode;
+  }
+
+  function copyPayload() {
+    if (!_activeNode) return;
+    const txt = _activeNode.payload || _activeNode.rawLine || '';
+    navigator.clipboard.writeText(txt).then(() => {
+      toast('Payload copied to clipboard.', 'success');
+    }).catch(() => {
+      toast('Could not copy payload.', 'warn');
+    });
+  }
+
+  function copyJSON() {
+    if (!_activeNode) return;
+    const copy = { ..._activeNode };
+    delete copy.events;
+    navigator.clipboard.writeText(JSON.stringify(copy, null, 2)).then(() => {
+      toast('Node JSON copied to clipboard.', 'success');
+    }).catch(() => {
+      toast('Could not copy JSON.', 'warn');
+    });
+  }
+
+  function init() {
+    const closeBtn = $('btn-ins-close');
+    if (closeBtn) closeBtn.addEventListener('click', close);
+  }
+
+  return { init, open, close, getActiveNode, copyPayload, copyJSON };
+})();
+
+// Initialize Inspector
+INSPECTOR.init();
+
 
 // Update BCB after parse completes
 const _uiRenderBCB = UI.render.bind(UI);
@@ -16218,7 +16659,9 @@ GR.render = function(tree, el) {
           rowsCont.querySelectorAll('.g-row.g-selected').forEach(r => r.classList.remove('g-selected'));
           const rowEl = rowsCont.querySelector(`.g-row[data-idx="${idx}"]`);
           if (rowEl) rowEl.classList.add('g-selected');
-          if (typeof OVERDRIVE !== 'undefined' && OVERDRIVE.OD) OVERDRIVE.OD.open(rowData.n);
+          if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(rowData.n);
+          // OVERDRIVE detail modal bypassed to keep Event Inspector persistent and non-blocking
+          // if (typeof OVERDRIVE !== 'undefined' && OVERDRIVE.OD) OVERDRIVE.OD.open(rowData.n);
         }
       }
     });
@@ -17605,7 +18048,7 @@ SWIMLANE.init = function(el) {
         ? `left:calc(${sp.toFixed(2)}% - 1px); width:3px; background:${col}; height:100%;`
         : `left:${sp.toFixed(2)}%; width:${wp.toFixed(2)}%; background:${col}; opacity:0.8; height:18px; border-radius:var(--rounded-sm);`;
       
-      return `<div style="position:absolute; top:calc(50% - 9px); ${style}" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
+      return `<div class="swim-bar" data-node-id="${n.id}" style="position:absolute; top:calc(50% - 9px); ${style} cursor:pointer;" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
     }).join('');
     
     const bg = idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)';
@@ -17675,6 +18118,36 @@ SWIMLANE.init = function(el) {
           UI.rv();
         }
       });
+    });
+  }
+
+  // Wire click to select event and show in Inspector
+  const swimRows = el.querySelector('#swim-lanes-rows');
+  if (swimRows) {
+    swimRows.addEventListener('click', e => {
+      const bar = e.target.closest('.swim-bar');
+      if (bar && bar.dataset.nodeId) {
+        const findNodeById = (id) => {
+          if (!S.trees) return null;
+          let found = null;
+          const traverse = (nodes) => {
+            if (found) return;
+            for (const n of nodes) {
+              if (n.id === id) { found = n; return; }
+              if (n.events && n.events.length) traverse(n.events);
+            }
+          };
+          for (const tree of Object.values(S.trees)) {
+            traverse(tree);
+            if (found) return found;
+          }
+          return null;
+        };
+        const node = findNodeById(bar.dataset.nodeId);
+        if (node && typeof INSPECTOR !== 'undefined') {
+          INSPECTOR.open(node);
+        }
+      }
     });
   }
 };
@@ -19172,7 +19645,9 @@ TR.handleClick = function(e) {
     const idx = parseInt(row.dataset.idx, 10);
     const n = this._visibleNodes[idx];
     if (n) {
-      OVERDRIVE.OD.open(n);
+      if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(n);
+      // OVERDRIVE detail modal bypassed to keep Event Inspector persistent and non-blocking
+      // OVERDRIVE.OD.open(n);
       // Also keep the kb-focus highlight
       this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
       row.classList.add('kb-focus');

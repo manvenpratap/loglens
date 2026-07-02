@@ -3,6 +3,14 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Command Palette & Event Inspector Drawer Feature Overhaul (v6.9.61 — COMPLETED)**:
+  - Injected persistent right-side Event Inspector Drawer (`#event-inspector`) side-by-side with `<main class="main">` in the workspace flex grid.
+  - Implemented the `INSPECTOR` namespace to populate details, copy raw payload, and edit comments on selection.
+  - Wired tree rows, Gantt rows, Swimlane bars, and Stats cards clicks to open the inspector with selected event telemetry details.
+  - Refactored `CMD` Command Palette to support fuzzy matched command searches, Recent Actions history powered by localStorage, and dynamic Trace ID filters.
+  - Resolved event conflict where the Overdrive modal dialog intercepted pointer events, by bypassing the full-screen modal on simple click.
+  - Wrote Playwright E2E verification suites `test_command_palette.py` and `test_event_inspector.py` and confirmed both suites pass successfully.
+
 - **App Preferences Visibility Conflict Fix (v6.9.60 — COMPLETED)**:
   - Fixed a CSS class collision where nested "Performance" and "Appearance" preference sub-sections (`#ss-perf-body` and `#ss-appear-body`) used the `.settings-section-body` class name.
   - This class name matched the main settings section transition rules setting `max-height: 0` and `opacity: 0` by default. Because the nested sections are not direct children of `.settings-section-wrap`, they never matched the main open override selector, leaving them collapsed/empty even when toggled open.
@@ -741,4 +749,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-02*  
-*Updated By: Antigravity (App Preferences Visibility Conflict Fix v6.9.60)*
+*Updated By: Antigravity (Command Palette & Event Inspector Drawer Feature Overhaul v6.9.61)*
