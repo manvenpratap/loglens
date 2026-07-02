@@ -2,6 +2,12 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **ChatGPT Review Code Quality & Security Fixes (v6.9.58 — COMPLETED)**:
+  - Standardized annotation comments lookup using a helper `getAnnotationText()` in `UTILS` object. Fixed tree details renderers, Gantt timeline labels, note MD exporters, and JIRA description formats to display comments correctly without crashes or rendering `[object Object]`.
+  - Added robust initialization guards (e.g. `QUICK_EDIT._clickWired`) to prevent memory leaks from duplicate document event listeners on repeat renders.
+  - Implemented keyboard accessibility & ARIA states for the Theme Picker Swatch Swapper (added `aria-selected` tracking, ArrowUp/ArrowDown selection navigation, Escape-key close triggers, and auto-focus coordinates target).
+  - Hardened default rules configurations by deeply freezing `DEF_CFG` elements.
+
 - **Enhanced Stack Behaviors: swap & popAll (v6.9.57 — COMPLETED)**:
   - Added support for two new stack behavior options: `swap` (closes current top stack node and opens a new one at the same level) and `popAll` (closes all open nodes on the stack and starts fresh at root).
   - Integrated the behaviors into all three parsing modules: Worker-based batch parser (`pl`), local stream parser (`STREAM_PARSER`), and WebSocket stream parser (`WS_STREAM_PARSER`).

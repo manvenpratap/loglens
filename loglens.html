@@ -7292,47 +7292,47 @@ const S={
 /* ================================================================
    §JS-2 DEFAULT CONFIGURATION
    ================================================================ */
-const DEF_CFG={
-  globalSettings:{
+const DEF_CFG=Object.freeze({
+  globalSettings:Object.freeze({
     appName:'LogLens',
     globalTimestampPattern:String.raw`(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})`,
     description:'Default configuration.'
-  },
-  elementRules:[
-    {id:'r_txs',name:'Transaction Begin',
+  }),
+  elementRules:Object.freeze([
+    Object.freeze({id:'r_txs',name:'Transaction Begin',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-BEGIN\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
-     stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'}},
-    {id:'r_txe',name:'Transaction End',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'var(--blue)',icon:'▶'})}),
+    Object.freeze({id:'r_txe',name:'Transaction End',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-END\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
-     stackBehavior:'pop',visualStyle:{accentColor:'var(--blue)',icon:'◀'}},
-    {id:'r_hs',name:'HTTP Request',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'var(--blue)',icon:'◀'})}),
+    Object.freeze({id:'r_hs',name:'HTTP Request',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'},
-     stackBehavior:'push',visualStyle:{accentColor:'#3fb950',icon:'❖'}},
-    {id:'r_he',name:'HTTP Response',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'}),
+     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#3fb950',icon:'❖'})}),
+    Object.freeze({id:'r_he',name:'HTTP Response',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-RESP\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
-     stackBehavior:'pop',visualStyle:{accentColor:'#3fb950',icon:'↩'}},
-    {id:'r_dbs',name:'DB Query Start',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'#3fb950',icon:'↩'})}),
+    Object.freeze({id:'r_dbs',name:'DB Query Start',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'},
-     stackBehavior:'push',visualStyle:{accentColor:'#f0883e',icon:'▤'}},
-    {id:'r_dbe',name:'DB Query End',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'}),
+     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#f0883e',icon:'▤'})}),
+    Object.freeze({id:'r_dbe',name:'DB Query End',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-END\s+(\S+)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'elementName'},
-     stackBehavior:'pop',visualStyle:{accentColor:'#f0883e',icon:'✓'}},
-    {id:'r_w',name:'Warning',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'#f0883e',icon:'✓'})}),
+    Object.freeze({id:'r_w',name:'Warning',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'payload'},
-     stackBehavior:'inline',visualStyle:{accentColor:'#d29922',icon:'⚠'}},
-    {id:'r_e',name:'Error',
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'payload'}),
+     stackBehavior:'inline',visualStyle:Object.freeze({accentColor:'#d29922',icon:'⚠'})}),
+    Object.freeze({id:'r_e',name:'Error',
      regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:{'1':'timestamp','2':'level','3':'thread','4':'payload'},
-     stackBehavior:'inline',visualStyle:{accentColor:'#f85149',icon:'✕'}},
-  ]
-};
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'payload'}),
+     stackBehavior:'inline',visualStyle:Object.freeze({accentColor:'#f85149',icon:'✕'})})
+  ])
+});;
 
 /* ================================================================
    §JS-3 WEB WORKER (Blob)
@@ -7455,6 +7455,19 @@ const UTILS={
       timer = setTimeout(() => fn.apply(this, args), delay);
     };
   },
+  getCSSColor(name) {
+    if (typeof name === 'string' && name.startsWith('var(--')) {
+      const prop = name.slice(4, -1);
+      const val = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+      if (val) return val;
+      if (prop === 'red') return '#f85149';
+      if (prop === 'amber') return '#ff9500';
+      if (prop === 'blue') return '#58a6ff';
+      if (prop === 't4') return '#8b949e';
+      if (prop === 'bg-2') return '#161b22';
+    }
+    return name;
+  },
   esc(s){
     return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -7510,6 +7523,14 @@ const UTILS={
       .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="ann-link">$1</a>');
     return h;
   },
+  getAnnotationText(ann) {
+    if (!ann) return '';
+    if (typeof ann === 'string') return ann;
+    if (ann.comments && Array.isArray(ann.comments) && ann.comments.length > 0) {
+      return ann.comments[ann.comments.length - 1]?.body || '';
+    }
+    return '';
+  },
   toast(msg,type='info',d=3200){
     const el=document.createElement('div');
     el.className='toast t-'+(type==='success'?'ok':type==='error'?'er':type==='warn'?'wa':'in');
@@ -7523,6 +7544,7 @@ const UTILS={
 const esc=UTILS.esc;
 const fmtB=UTILS.fmtB;
 const fmtMs=UTILS.fmtMs;
+const getCSSColor=UTILS.getCSSColor;
 const gid=UTILS.gid;
 const scol=UTILS.scol;
 const escRx=UTILS.escRx;
@@ -7532,6 +7554,7 @@ const cnt=UTILS.cnt;
 const mEnd=UTILS.mEnd;
 const ibg=UTILS.ibg;
 const renderMarkdown=UTILS.renderMarkdown;
+const getAnnotationText=UTILS.getAnnotationText;
 const toast=UTILS.toast;
 const debounce=UTILS.debounce;
 
@@ -7589,9 +7612,11 @@ const Theme={
   renderPicker(){
     const menu=$('theme-picker-menu');
     if(!menu)return;
+    const currTheme = document.documentElement.dataset.theme;
     menu.innerHTML=this.THEMES.map(m=>`
-      <div class="th-swatch${m.id===document.documentElement.dataset.theme?' ts-active':''}"
+      <div class="th-swatch${m.id===currTheme?' ts-active':''}"
            data-theme-id="${m.id}" role="option" tabindex="0"
+           aria-selected="${m.id===currTheme?'true':'false'}"
            aria-label="${m.label} theme" title="${m.label}">
         <div class="th-preview">
           <div class="th-preview-bg" style="background:${m.bg};"></div>
@@ -7620,7 +7645,33 @@ const Theme={
     menu.style.right=(window.innerWidth-r.right)+'px';
     menu.style.left='auto';
     menu.classList.add('tp-open');
+    btn.setAttribute('aria-expanded', 'true');
     this._pickerOpen=true;
+
+    // Focus active theme
+    const activeSwatch = menu.querySelector('.ts-active');
+    if (activeSwatch) activeSwatch.focus();
+
+    // Keyboard navigation helper
+    this._keyHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.closePicker();
+        btn.focus();
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        const swatches = Array.from(menu.querySelectorAll('.th-swatch'));
+        const currIdx = swatches.indexOf(document.activeElement);
+        if (currIdx !== -1) {
+          const nextIdx = e.key === 'ArrowDown'
+            ? (currIdx + 1) % swatches.length
+            : (currIdx - 1 + swatches.length) % swatches.length;
+          swatches[nextIdx].focus();
+          e.preventDefault();
+        }
+      }
+    };
+    menu.addEventListener('keydown', this._keyHandler);
+
     // Close on outside click
     if(this._closeFn)document.removeEventListener('click',this._closeFn,true);
     this._closeFn=(e)=>{
@@ -7631,8 +7682,16 @@ const Theme={
     setTimeout(()=>document.addEventListener('click',this._closeFn,true),10);
   },
   closePicker(){
+    const btn=$('btn-theme');
+    if(btn)btn.setAttribute('aria-expanded','false');
     const menu=$('theme-picker-menu');
-    if(menu)menu.classList.remove('tp-open');
+    if(menu) {
+      menu.classList.remove('tp-open');
+      if (this._keyHandler) {
+        menu.removeEventListener('keydown', this._keyHandler);
+        this._keyHandler = null;
+      }
+    }
     this._pickerOpen=false;
     if(this._closeFn){document.removeEventListener('click',this._closeFn,true);this._closeFn=null;}
   },
@@ -8511,10 +8570,10 @@ const GR={
       let tooltip = `${esc(n.elementName || n.ruleName)}: ${esc(dur)}`;
       if (n._isOutlier) tooltip += ` [OUTLIER]`;
       if (n._isSlaBreach) tooltip += ` [SLA BREACH (Limit: ${n.slaThresholdMs}ms)]`;
-      if (S.annotations && S.annotations[n.id]) tooltip += ` \nNote: ${esc(S.annotations[n.id])}`;
+      if (S.annotations && S.annotations[n.id]) tooltip += ` \nNote: ${esc(getAnnotationText(S.annotations[n.id]))}`;
 
       let inlineTooltip = `${esc(n.ruleName)}: ${esc(n.payload||n.elementName)}`;
-      if (S.annotations && S.annotations[n.id]) inlineTooltip += ` \nNote: ${esc(S.annotations[n.id])}`;
+      if (S.annotations && S.annotations[n.id]) inlineTooltip += ` \nNote: ${esc(getAnnotationText(S.annotations[n.id]))}`;
 
       const barOpacity = il ? 1 : Math.min(1, 0.4 + (wp / 50) * 0.6).toFixed(2);
       const bar=il
@@ -8616,7 +8675,7 @@ const TR={
 
     const elB=n.elementName&&n.elementName!==n.ruleName?`<span class="tel" style="color:${col};">${esc(n.elementName)}</span>`:'';
     const payB=n.payload?`<div class="tpy">${esc(n.payload)}</div>`:'';
-    const noteB=(S.annotations&&S.annotations[n.id])?`<div class="tnt"><span class="ico" style="font-size:10px;margin-right:4px;" aria-hidden="true"><svg viewBox="0 0 24 24" style="width:10px;height:10px;display:inline-block;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/></svg></span>${renderMarkdown(S.annotations[n.id])}</div>`:'';
+    const noteB=(S.annotations&&S.annotations[n.id])?`<div class="tnt"><span class="ico" style="font-size:10px;margin-right:4px;" aria-hidden="true"><svg viewBox="0 0 24 24" style="width:10px;height:10px;display:inline-block;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/></svg></span>${renderMarkdown(getAnnotationText(S.annotations[n.id]))}</div>`:'';
     const hd=`<span class="tchev">▶</span>
       <div class="tico" style="background:${bg};color:${col};">${ico}</div>
       <div class="tbd"><div class="thr"><span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>${elB}${durB}${hotB}${smB}${tsB}${ab}</div>${payB}${noteB}</div>`;
@@ -8737,7 +8796,10 @@ const TR={
 
     const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
     const payB = n.payload ? `<span class="tpy" style="margin-left:8px; color:var(--t3);">${esc(n.payload)}</span>` : '';
-    const noteB = (S.annotations && S.annotations[n.id]) ? `<span class="tnt" data-tip="Note: ${esc(S.annotations[n.id])}" style="margin-left:8px; color:var(--amber); display:inline-flex; align-items:center; cursor:help;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px; flex-shrink:0;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> ${esc(S.annotations[n.id].slice(0,15))}${S.annotations[n.id].length > 15 ? '…' : ''}</span>` : '';
+    const noteB = (S.annotations && S.annotations[n.id]) ? (() => {
+      const txt = getAnnotationText(S.annotations[n.id]);
+      return txt ? `<span class="tnt" data-tip="Note: ${esc(txt)}" style="margin-left:8px; color:var(--amber); display:inline-flex; align-items:center; cursor:help;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px; flex-shrink:0;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> ${esc(txt.slice(0,15))}${txt.length > 15 ? '…' : ''}</span>` : '';
+    })() : '';
     
     const chev = kids ? `<span class="tchev ${n.expanded ? 'expanded' : ''}" style="display:inline-block; transition:transform 0.15s; cursor:pointer; font-size:9px; margin-right:4px; color:var(--t4);">${n.expanded ? '▼' : '▶'}</span>` : '<span style="display:inline-block; width:13px;"></span>';
     
@@ -11392,7 +11454,7 @@ const SWIMLANE={
     const bg2 = isDark ? '#161b22' : '#f0ede9';
     const bdr = isDark ? '#30363d' : '#e0dbd3';
     const t1 = isDark ? '#e6edf3' : '#1c1917';
-    const t3 = isDark ? 'var(--t4)' : '#57534e';
+    const t3 = getCSSColor(isDark ? 'var(--t4)' : '#57534e');
 
     const threads = S.threads || [];
     const activeHeight = H - this.miniMapHeight - 30;
@@ -11454,7 +11516,7 @@ const SWIMLANE={
         const drawX = Math.max(this.labelWidth, x1);
         const drawW = w - (drawX - x1);
 
-        const col = n.visualStyle?.accentColor || 'var(--blue)';
+        const col = getCSSColor(n.visualStyle?.accentColor || 'var(--blue)');
         ctx.fillStyle = col;
         ctx.globalAlpha = 0.7;
 
@@ -11462,17 +11524,17 @@ const SWIMLANE={
         const by = y + 3 + (depth * 2);
         
         if (n._isOutlier) {
-          ctx.strokeStyle = 'var(--red)';
+          ctx.strokeStyle = getCSSColor('var(--red)');
           ctx.lineWidth = 1.5;
           ctx.strokeRect(drawX, by, drawW, bh);
         } else if (n._isSlaBreach) {
-          ctx.strokeStyle = 'var(--red)';
+          ctx.strokeStyle = getCSSColor('var(--red)');
           ctx.lineWidth = 1;
           ctx.setLineDash([2, 2]);
           ctx.strokeRect(drawX, by, drawW, bh);
           ctx.setLineDash([]);
         } else if (n._isCriticalPath) {
-          ctx.strokeStyle = 'var(--amber)';
+          ctx.strokeStyle = getCSSColor('var(--amber)');
           ctx.lineWidth = 1.5;
           ctx.strokeRect(drawX, by, drawW, bh);
         }
@@ -11541,7 +11603,7 @@ const SWIMLANE={
     const sW = Math.max(10, (ePct - sPct) * (W - this.labelWidth));
 
     ctx.fillStyle = 'rgba(88, 166, 255, 0.25)';
-    ctx.strokeStyle = 'var(--blue)';
+    ctx.strokeStyle = getCSSColor('var(--blue)');
     ctx.lineWidth = 1.5;
     ctx.fillRect(sX, mY + 2, sW, this.miniMapHeight - 4);
     ctx.strokeRect(sX, mY + 2, sW, this.miniMapHeight - 4);
@@ -12670,7 +12732,7 @@ const JIRA = {
 *Thread:* ${n.thread}
 *Log Payload:* {code}${n.payload || 'None'}{code}
 *Raw Log Line:* {code}${n.rawLine || 'None'}{code}
-${S.annotations[n.id] ? `\n*Annotation:* \n${S.annotations[n.id]}` : ''}`;
+${(S.annotations && S.annotations[n.id] && getAnnotationText(S.annotations[n.id])) ? `\n*Annotation:* \n${getAnnotationText(S.annotations[n.id])}` : ''}`;
 
     if (webhookUrl) {
       toast('Sending webhook payload to JIRA...', 'info');
@@ -12728,6 +12790,7 @@ const PLUGINS = {
   <script>
     const activePlugins = {};
     window.addEventListener('message', (e) => {
+      if (e.origin !== "null" && e.origin !== "file://" && !e.origin.startsWith("http")) return;
       const { type, id, code, hook, payload } = e.data;
       if (type === 'load') {
         try {
@@ -12744,12 +12807,14 @@ const PLUGINS = {
       } else if (type === 'run') {
         const plugin = activePlugins[id];
         if (plugin && typeof plugin[hook] === 'function') {
-          try {
-            const res = plugin[hook](payload);
+          Promise.race([
+            Promise.resolve().then(() => plugin[hook](payload)),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: execution exceeded 3000ms')), 3000))
+          ]).then(res => {
             window.parent.postMessage({ type: 'run_done', id, hook, result: res }, '*');
-          } catch (err) {
+          }).catch(err => {
             window.parent.postMessage({ type: 'run_done', id, hook, error: err.message }, '*');
-          }
+          });
         }
       }
     });
@@ -12760,6 +12825,7 @@ const PLUGINS = {
     sandbox.srcdoc = srcdoc;
     
     window.addEventListener('message', (e) => {
+      if (e.origin !== "null" && e.origin !== window.location.origin) return;
       if (e.source !== sandbox.contentWindow) return;
       const { type, id, success, error, hook, result } = e.data;
       if (type === 'load_done') {
@@ -14740,6 +14806,11 @@ const SETTINGS_IO = {
    * JIRA/Git/watcher settings + theme → single JSON file.
    */
   exportAll() {
+    const incSec = confirm(
+      "Include sensitive credentials (Git Tokens, AWS Keys, Jira Webhooks, and Auth Tokens) in this export?\n\n" +
+      "• Click OK to export WITH credentials.\n" +
+      "• Click Cancel to export SAFELY without credentials."
+    );
     const payload = {
       _type: 'loglens-settings',
       _version: '1.0',
@@ -14750,26 +14821,26 @@ const SETTINGS_IO = {
       datasource: {
         type: $('ds-type')?.value || '',
         url: $('ds-url')?.value || '',
-        auth: $('ds-auth')?.value || '',
+        auth: incSec ? ($('ds-auth')?.value || '') : '',
         awsRegion: $('ds-aws-region')?.value || '',
-        awsKey: $('ds-aws-key')?.value || '',
+        awsKey: incSec ? ($('ds-aws-key')?.value || '') : '',
         awsGroup: $('ds-aws-group')?.value || '',
         query: $('ds-query')?.value || ''
       },
       websocket: { url: $('stream-ws-url')?.value || '' },
       jira: {
         baseUrl: $('jira-url')?.value || '',
-        webhookUrl: $('jira-webhook')?.value || ''
+        webhookUrl: incSec ? ($('jira-webhook')?.value || '') : ''
       },
       git: {
         rawUrl: $('git-url')?.value || '',
-        token: $('git-token')?.value || ''
+        token: incSec ? ($('git-token')?.value || '') : ''
       }
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const name = (S.cfg?.globalSettings?.appName || 'loglens') + '.loglens-settings.json';
     EXP._dl(blob, name);
-    toast('All settings exported.', 'success');
+    toast(incSec ? 'Settings exported (with credentials).' : 'Settings exported (safely, no credentials).', 'success');
   },
 
   /**
@@ -17428,9 +17499,12 @@ UI.openAnn = function(node) {
   modal.classList.remove('hidden');
   
   // Migrate existing flat annotations
+  if (!S.annotations) S.annotations = {};
   let ann = S.annotations[node.id];
-  if (!ann) ann = { comments: [] };
-  if (typeof ann === 'string') {
+  if (!ann) {
+    ann = { comments: [] };
+    S.annotations[node.id] = ann;
+  } else if (typeof ann === 'string') {
     ann = {
       comments: [{
         id: 'c_' + Date.now(),
@@ -17440,6 +17514,9 @@ UI.openAnn = function(node) {
         resolved: false
       }]
     };
+    S.annotations[node.id] = ann;
+  } else if (!ann.comments || !Array.isArray(ann.comments)) {
+    ann.comments = [];
     S.annotations[node.id] = ann;
   }
   
@@ -17643,12 +17720,20 @@ const ANNOTATIONS_SUMMARY = {
     listCont.querySelector('#btn-export-notes-md')?.addEventListener('click', () => {
       let md = `# LogLens Annotations: ${S.logFile ? S.logFile.name : 'Unknown File'} — ${new Date().toLocaleDateString()}\n\n`;
       items.forEach(item => {
-        md += `## ${esc(item.node.thread)} › ${esc(item.node.elementName || item.node.ruleName)}\n`;
-        const ann = S.annotations[item.node.id];
-        ann.comments.forEach(c => {
-          md += `**${esc(c.author)}** · ${new Date(c.ts).toLocaleString()} · ${c.resolved?'[RESOLVED]':''}\n`;
-          md += `> ${c.body}\n\n`;
-        });
+        md += `## ${(item.node.thread || 'thread')} › ${(item.node.elementName || item.node.ruleName || 'node')}\n`;
+        const ann = S.annotations ? S.annotations[item.node.id] : null;
+        if (ann) {
+          if (typeof ann === 'string') {
+            md += `> ${ann}\n\n`;
+          } else if (ann.comments && Array.isArray(ann.comments)) {
+            ann.comments.forEach(c => {
+              if (c) {
+                md += `**${(c.author || 'author')}** · ${c.ts ? new Date(c.ts).toLocaleString() : ''} · ${c.resolved ? '[RESOLVED]' : ''}\n`;
+                md += `> ${c.body || ''}\n\n`;
+              }
+            });
+          }
+        }
         md += `---\n\n`;
       });
       
@@ -18117,7 +18202,7 @@ const SCREEN = {
     ctx.font = 'bold 22px Geist, sans-serif';
     ctx.fillText('LogLens Workbench Export Summary', 40, 50);
     
-    ctx.fillStyle = 'var(--t4)';
+    ctx.fillStyle = getCSSColor('var(--t4)');
     ctx.font = '13px Geist Mono, monospace';
     const filename = S.logFile ? S.logFile.name : 'Log File';
     ctx.fillText(`File: ${filename} | Date: ${new Date().toLocaleString()}`, 40, 76);
@@ -18145,7 +18230,7 @@ const SCREEN = {
       
       ctx.fillStyle = '#21262d';
       ctx.fillRect(40, 116, W - 80, 24);
-      ctx.fillStyle = 'var(--t4)';
+      ctx.fillStyle = getCSSColor('var(--t4)');
       ctx.font = '11px Geist Mono';
       ctx.fillText(new Date(rs).toLocaleTimeString(), 45, 132);
       ctx.fillText(new Date(re).toLocaleTimeString(), W - 140, 132);
@@ -18157,7 +18242,7 @@ const SCREEN = {
         const sp = n.timestamp ? (n.timestamp - rs) / rd : 0;
         const wp = n.duration ? n.duration / rd : 0.05;
         
-        const col = n.visualStyle?.accentColor || 'var(--blue)';
+        const col = getCSSColor(n.visualStyle?.accentColor || 'var(--blue)');
         
         ctx.fillStyle = '#161b22';
         ctx.fillRect(40, y, W - 80, 30);
@@ -18170,7 +18255,7 @@ const SCREEN = {
         
         // Check if critical path
         if (n._isCriticalPath) {
-          ctx.strokeStyle = 'var(--amber)';
+          ctx.strokeStyle = getCSSColor('var(--amber)');
           ctx.lineWidth = 1.5;
           ctx.strokeRect(barX, y + 6, barW, 18);
         }
@@ -18188,10 +18273,10 @@ const SCREEN = {
         ctx.fillText(n.elementName || n.ruleName, barX + 6 > W - 180 ? barX - 180 : barX + 6, y + 20);
         
         // Render annotation callout box if exists
-        const ann = S.annotations[n.id];
+        const ann = S.annotations ? S.annotations[n.id] : null;
         if (ann) {
           ctx.fillStyle = 'rgba(255,149,0,0.1)';
-          ctx.strokeStyle = 'var(--amber)';
+          ctx.strokeStyle = getCSSColor('var(--amber)');
           ctx.lineWidth = 1;
           const boxX = W - 320;
           ctx.fillRect(boxX, y + 2, 280, 26);
@@ -18199,7 +18284,7 @@ const SCREEN = {
           
           ctx.fillStyle = '#ffe3b3';
           ctx.font = 'italic 11px Geist';
-          const txt = typeof ann === 'string' ? ann : (ann.comments[ann.comments.length-1]?.body || '');
+          const txt = getAnnotationText(ann);
           ctx.fillText(`✎ Note: ${txt.slice(0, 32)}`, boxX + 8, y + 18);
         }
         
@@ -18213,7 +18298,7 @@ const SCREEN = {
         y += 36;
       });
     } else {
-      ctx.fillStyle = 'var(--t4)';
+      ctx.fillStyle = getCSSColor('var(--t4)');
       ctx.font = '14px Geist';
       ctx.fillText('No tree operations to draw.', W/2 - 80, H/2);
     }
@@ -18731,7 +18816,7 @@ const OVERDRIVE = (() => {
         else if (n._isCriticalPath) color = '#bc8cff';
         else {
           const col = n.visualStyle?.accentColor;
-          color = col && col !== 'var(--blue)' ? col : '#4f9eff';
+          color = getCSSColor(col && col !== 'var(--blue)' ? col : '#4f9eff');
         }
         const alpha = n.duration ? Math.min(1, 0.3 + (n.duration / 5000) * 0.7) : 0.25;
         this._ctx.globalAlpha = alpha;
@@ -18746,7 +18831,7 @@ const OVERDRIVE = (() => {
       if (this._hoverY != null) {
         this._ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
         this._ctx.fillRect(0, this._hoverY - 1, W, 2);
-        this._ctx.strokeStyle = 'var(--amber)';
+        this._ctx.strokeStyle = getCSSColor('var(--amber)');
         this._ctx.lineWidth = 1;
         this._ctx.beginPath();
         this._ctx.moveTo(0, this._hoverY);
@@ -19261,12 +19346,15 @@ CFG.rl = function() {
   });
   
   // Dismiss popover on click outside
-  document.addEventListener('click', e => {
-    const pop = $('quick-edit-pop');
-    if (pop && !pop.classList.contains('hidden') && !e.target.closest('#quick-edit-pop') && !e.target.closest('.rc')) {
-      pop.classList.add('hidden');
-    }
-  });
+  if (!QUICK_EDIT._clickWired) {
+    QUICK_EDIT._clickWired = true;
+    document.addEventListener('click', e => {
+      const pop = $('quick-edit-pop');
+      if (pop && !pop.classList.contains('hidden') && !e.target.closest('#quick-edit-pop') && !e.target.closest('.rc')) {
+        pop.classList.add('hidden');
+      }
+    });
+  }
 };
 
 /* ================================================================
