@@ -3160,6 +3160,123 @@ mark.hl{
   justify-content: flex-end;
 }
 
+/* ================================================================
+   CSS §29 · TIMELINE NAVIGATOR (Phase 7)
+   Mini-map panel with viewport indicator and density overlays
+   ================================================================ */
+.tl-nav-wrap {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border-top: 1px solid var(--bdr);
+  user-select: none;
+}
+.tl-nav-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--bdr-d);
+  font-size: 10px;
+  color: var(--t3);
+  flex-wrap: wrap;
+}
+.tl-nav-lbl {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-family: var(--display);
+  color: var(--t4);
+  margin-right: 4px;
+}
+.tl-nav-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--bdr);
+  margin: 0 2px;
+}
+.tl-overlay-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 9.5px;
+  font-weight: 600;
+  font-family: var(--display);
+  transition: background .15s, border-color .15s, color .15s;
+  background: var(--bg-1);
+  border-color: var(--bdr);
+  color: var(--t3);
+}
+.tl-overlay-chip.active {
+  border-color: currentColor;
+}
+.tl-overlay-chip.ov-activity.active  { color: var(--blue); background: rgba(79,158,255,.12); }
+.tl-overlay-chip.ov-error.active     { color: var(--red);  background: rgba(255,87,87,.12);  }
+.tl-overlay-chip.ov-sla.active       { color: var(--amber);background: rgba(255,149,0,.12);  }
+.tl-overlay-chip.ov-duration.active  { color: var(--green);background: rgba(64,196,128,.12); }
+.tl-nav-canvas-wrap {
+  position: relative;
+  height: 56px;
+  overflow: hidden;
+  cursor: crosshair;
+  background: var(--bg-0);
+}
+#tl-nav-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Viewport indicator (draggable ghost) */
+.tl-viewport-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(255,149,0,.18);
+  border-left: 2px solid var(--amber);
+  border-right: 2px solid var(--amber);
+  cursor: ew-resize;
+  pointer-events: all;
+  transition: background .1s;
+}
+.tl-viewport-indicator:hover,
+.tl-viewport-indicator.dragging {
+  background: rgba(255,149,0,.32);
+}
+/* Zoom presets strip */
+.tl-nav-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 4px;
+  font-size: 10px;
+  border-top: 1px solid var(--bdr-d);
+}
+.tl-zoom-preset {
+  padding: 1px 7px;
+  border-radius: var(--rounded-sm);
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  color: var(--t3);
+  cursor: pointer;
+  font-size: 9.5px;
+  font-weight: 600;
+  font-family: var(--display);
+  transition: background .14s, border-color .14s, color .14s;
+}
+.tl-zoom-preset:hover { background: var(--bg-3); border-color: var(--t4); color: var(--t1); }
+.tl-zoom-preset.tz-active { border-color: var(--amber); color: var(--amber); background: rgba(255,149,0,.1); }
+.tl-nav-pos-lbl {
+  margin-left: auto;
+  font-family: var(--mono);
+  color: var(--t4);
+  font-size: 9px;
+}
+
 /* ============================================================
    CSS §20 · RESPONSIVE BREAKPOINTS (Step 5)
    1024px — compact sidebar  768px — stack layout  480px — mobile
@@ -17036,6 +17153,15 @@ GR.render = function(tree, el) {
       }
     });
   }
+
+  // ── Mount Timeline Navigator mini-map below Gantt
+  if (typeof TIMELINE_NAV !== 'undefined') {
+    const gw = el.querySelector('.gw');
+    const rows = el.querySelector('.g-rows');
+    if (gw && rows) {
+      TIMELINE_NAV.mount(gw, rows);
+    }
+  }
 };
 
 /* ================================================================
@@ -18490,7 +18616,323 @@ SWIMLANE.init = function(el) {
       }
     });
   }
+
+  // ── Mount Timeline Navigator mini-map below Swimlane
+  if (typeof TIMELINE_NAV !== 'undefined') {
+    const gw = el.querySelector('.gw');
+    const swimRows = el.querySelector('#swim-lanes-rows');
+    if (gw && swimRows) {
+      TIMELINE_NAV.mount(gw, swimRows);
+    }
+  }
 };
+
+/* ================================================================
+   §JS-41 TIMELINE NAVIGATOR (Phase 7)
+   Mini-map with viewport indicator, density overlays, zoom presets
+   ================================================================ */
+const TIMELINE_NAV = (() => {
+  // Overlay state: which overlays are active
+  const OV = { activity: true, error: false, sla: false, duration: false };
+
+  // Store the last scroll container reference so we can synchronise
+  let _scrollEl = null;
+  let _totalWidth = 0;    // full content width of scroll area
+  let _canvasEl = null;
+  let _vpIndicator = null;
+  let _posLbl = null;
+  let _raf = null;
+
+  // Compute per-bucket density arrays from current S.trees
+  function _computeDensity(buckets) {
+    const trees = S.trees;
+    if (!trees) return { activity: [], error: [], sla: [], duration: [] };
+
+    // Flatten all events
+    let allEvents = [];
+    const walk = (nodes) => {
+      for (const n of nodes) {
+        allEvents.push(n);
+        if (n.events && n.events.length) walk(n.events);
+      }
+    };
+    for (const tree of Object.values(trees)) walk(tree);
+
+    if (!allEvents.length) return { activity: [], error: [], sla: [], duration: [] };
+
+    // Global time range
+    let minT = Infinity, maxT = -Infinity;
+    allEvents.forEach(n => {
+      if (n.timestamp != null) {
+        minT = Math.min(minT, n.timestamp);
+        const end = (n.duration != null && n.behavior !== 'inline')
+          ? n.timestamp + n.duration : n.timestamp;
+        maxT = Math.max(maxT, end);
+      }
+    });
+    if (minT === Infinity) return { activity: [], error: [], sla: [], duration: [] };
+    const span = maxT - minT || 1;
+
+    const act = new Array(buckets).fill(0);
+    const err = new Array(buckets).fill(0);
+    const sla = new Array(buckets).fill(0);
+    const dur = new Array(buckets).fill(0);
+
+    allEvents.forEach(n => {
+      if (n.timestamp == null) return;
+      const b = Math.min(buckets - 1, Math.floor((n.timestamp - minT) / span * buckets));
+      act[b]++;
+      if (n.level === 'ERROR' || n.level === 'FATAL') err[b]++;
+      if (n.slaBreached) sla[b]++;
+      if (n.duration != null) dur[b] = Math.max(dur[b], n.duration);
+    });
+
+    return { activity: act, error: err, sla, duration: dur, minT, maxT };
+  }
+
+  // Normalise an array to 0..1
+  function _norm(arr) {
+    const mx = Math.max(...arr, 1);
+    return arr.map(v => v / mx);
+  }
+
+  // Draw density bars on canvas
+  function _draw() {
+    const canvas = _canvasEl;
+    if (!canvas) return;
+    const W = canvas.width, H = canvas.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+
+    const buckets = Math.max(60, Math.floor(W / 4));
+    const data = _computeDensity(buckets);
+    const bW = W / buckets;
+
+    // Background subtle grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = Math.round(H * i / 4) + 0.5;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    const layers = [];
+    if (OV.activity) layers.push({ data: _norm(data.activity), color: 'rgba(79,158,255,0.55)' });
+    if (OV.duration)  layers.push({ data: _norm(data.duration), color: 'rgba(64,196,128,0.55)' });
+    if (OV.error)     layers.push({ data: _norm(data.error),    color: 'rgba(255,87,87,0.72)'  });
+    if (OV.sla)       layers.push({ data: _norm(data.sla),      color: 'rgba(255,149,0,0.72)'  });
+
+    layers.forEach(layer => {
+      const norm = layer.data;
+      if (!norm.length) return;
+      ctx.fillStyle = layer.color;
+      for (let i = 0; i < buckets; i++) {
+        const v = norm[i] || 0;
+        if (v < 0.01) continue;
+        const bH = Math.max(2, v * (H - 4));
+        ctx.fillRect(Math.floor(i * bW) + 0.5, H - bH, Math.ceil(bW) - 1, bH);
+      }
+    });
+
+    // Baseline stroke
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, H - 0.5); ctx.lineTo(W, H - 0.5); ctx.stroke();
+
+    // Update viewport indicator position
+    _updateVP();
+  }
+
+  // Synchronise the amber viewport indicator rectangle with the scroll position
+  function _updateVP() {
+    const el = _scrollEl;
+    const vp = _vpIndicator;
+    if (!el || !vp || !_canvasEl) return;
+
+    const totalW = el.scrollWidth;
+    const clientW = el.clientWidth;
+    const scrollL = el.scrollLeft;
+    if (totalW <= clientW) {
+      // All content visible — cover full width
+      vp.style.left = '0';
+      vp.style.width = '100%';
+      return;
+    }
+    const mapW = _canvasEl.offsetWidth;
+    const leftPct  = (scrollL / totalW);
+    const widthPct = (clientW / totalW);
+    vp.style.left  = (leftPct  * mapW) + 'px';
+    vp.style.width = Math.max(8, widthPct * mapW) + 'px';
+
+    // Update position label
+    if (_posLbl) {
+      const pct = Math.round(scrollL / (totalW - clientW) * 100);
+      _posLbl.textContent = `${pct}% scrolled`;
+    }
+  }
+
+  // Pan the scroll container to match a click/drag x on the mini-map canvas
+  function _panToX(x) {
+    const el = _scrollEl;
+    if (!el || !_canvasEl) return;
+    const mapW = _canvasEl.offsetWidth;
+    const ratio = Math.max(0, Math.min(1, x / mapW));
+    const totalW = el.scrollWidth;
+    el.scrollLeft = ratio * (totalW - el.clientWidth);
+  }
+
+  // Attach scroll listener to keep VP indicator synced
+  function _attachScroll(el) {
+    if (_scrollEl === el) return; // already attached
+    _scrollEl = el;
+    el.addEventListener('scroll', () => {
+      cancelAnimationFrame(_raf);
+      _raf = requestAnimationFrame(() => _updateVP());
+    }, { passive: true });
+  }
+
+  // Public: mount the mini-map panel below the Gantt/Swimlane container
+  function mount(containerEl, scrollEl) {
+    // containerEl: .gw or parent wrapper
+    // scrollEl:    .g-rows or #swim-lanes-rows (the horizontally scrolling element)
+
+    // Remove stale panel if present
+    const old = containerEl.querySelector('.tl-nav-wrap');
+    if (old) old.remove();
+
+    _attachScroll(scrollEl);
+
+    // Build the navigator panel
+    const wrap = document.createElement('div');
+    wrap.className = 'tl-nav-wrap';
+    wrap.setAttribute('aria-label', 'Timeline Navigator');
+
+    // ─── Toolbar row ─────────────────────────────────────────────
+    const toolbar = document.createElement('div');
+    toolbar.className = 'tl-nav-toolbar';
+    toolbar.innerHTML = `
+      <span class="tl-nav-lbl">Navigator</span>
+      <span class="tl-nav-sep"></span>
+      <span class="tl-overlay-chip ov-activity${OV.activity ? ' active' : ''}" data-ov="activity">● Activity</span>
+      <span class="tl-overlay-chip ov-error${OV.error ? ' active' : ''}" data-ov="error">● Errors</span>
+      <span class="tl-overlay-chip ov-sla${OV.sla ? ' active' : ''}" data-ov="sla">● SLA</span>
+      <span class="tl-overlay-chip ov-duration${OV.duration ? ' active' : ''}" data-ov="duration">● Duration</span>
+    `;
+    toolbar.querySelectorAll('.tl-overlay-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.ov;
+        OV[key] = !OV[key];
+        chip.classList.toggle('active', OV[key]);
+        _draw();
+      });
+    });
+
+    // ─── Canvas area ─────────────────────────────────────────────
+    const canvasWrap = document.createElement('div');
+    canvasWrap.className = 'tl-nav-canvas-wrap';
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'tl-nav-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    _canvasEl = canvas;
+    canvasWrap.appendChild(canvas);
+
+    // Viewport indicator
+    const vp = document.createElement('div');
+    vp.className = 'tl-viewport-indicator';
+    _vpIndicator = vp;
+    canvasWrap.appendChild(vp);
+
+    // Click-to-pan on canvas
+    canvasWrap.addEventListener('click', e => {
+      const rect = canvasWrap.getBoundingClientRect();
+      _panToX(e.clientX - rect.left);
+    });
+
+    // Drag viewport indicator
+    let vpDragging = false, vpStartX = 0, vpStartScroll = 0;
+    vp.addEventListener('mousedown', e => {
+      vpDragging = true;
+      vp.classList.add('dragging');
+      vpStartX = e.clientX;
+      vpStartScroll = scrollEl.scrollLeft;
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    document.addEventListener('mousemove', e => {
+      if (!vpDragging) return;
+      const dx = e.clientX - vpStartX;
+      const mapW = canvas.offsetWidth;
+      const totalW = scrollEl.scrollWidth;
+      const scale = totalW / mapW;
+      scrollEl.scrollLeft = Math.max(0, vpStartScroll + dx * scale);
+    });
+    document.addEventListener('mouseup', () => {
+      if (vpDragging) { vpDragging = false; vp.classList.remove('dragging'); }
+    });
+
+    // ─── Zoom presets row ─────────────────────────────────────────
+    const zoomRow = document.createElement('div');
+    zoomRow.className = 'tl-nav-zoom-row';
+    const PRESETS = [
+      { label: '0.5×', z: 0.5 },
+      { label: '1×',   z: 1   },
+      { label: '2×',   z: 2   },
+      { label: '4×',   z: 4   },
+      { label: '8×',   z: 8   },
+      { label: 'Fit',  z: null },
+    ];
+    PRESETS.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'tl-zoom-preset' + (p.z === (S.ganttZoom || 1) ? ' tz-active' : '');
+      btn.textContent = p.label;
+      btn.dataset.z = p.z != null ? p.z : 'fit';
+      btn.addEventListener('click', () => {
+        if (p.z === null) {
+          if (typeof GANTT_ZOOM_PAN !== 'undefined') GANTT_ZOOM_PAN.fitWindow();
+        } else {
+          if (typeof GANTT_ZOOM_PAN !== 'undefined') GANTT_ZOOM_PAN.applyZoom(p.z);
+        }
+        // Update active preset styles
+        zoomRow.querySelectorAll('.tl-zoom-preset').forEach(b => b.classList.remove('tz-active'));
+        btn.classList.add('tz-active');
+        // Redraw after a short delay to allow DOM to update
+        setTimeout(() => _draw(), 60);
+      });
+      zoomRow.appendChild(btn);
+    });
+    const posLbl = document.createElement('span');
+    posLbl.className = 'tl-nav-pos-lbl';
+    posLbl.textContent = '0% scrolled';
+    _posLbl = posLbl;
+    zoomRow.appendChild(posLbl);
+
+    wrap.append(toolbar, canvasWrap, zoomRow);
+    containerEl.appendChild(wrap);
+
+    // Size canvas to device pixel ratio
+    const dpr = window.devicePixelRatio || 1;
+    const ro = new ResizeObserver(() => {
+      canvas.width  = Math.floor(canvas.offsetWidth  * dpr);
+      canvas.height = Math.floor(canvas.offsetHeight * dpr);
+      const ctx = canvas.getContext('2d');
+      if (ctx) ctx.scale(dpr, dpr);
+      _draw();
+    });
+    ro.observe(canvas);
+
+    // Initial draw
+    requestAnimationFrame(() => _draw());
+  }
+
+  // Public: refresh the overlay (call after data changes)
+  function refresh() {
+    _draw();
+  }
+
+  return { mount, refresh, OV };
+})();
 
 /* ================================================================
    §JS-ANN THREADED ANNOTATION SYSTEM

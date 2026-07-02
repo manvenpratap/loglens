@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Timeline Navigator mini-map panel (v6.9.63 — COMPLETED)**:
+  - Added new `TIMELINE_NAV` IIFE module (`§JS-41`) providing a mini-map panel mounted at the bottom of Gantt waterfall and Swimlane views.
+  - The mini-map renders per-bucket density histograms using Canvas 2D for four overlay layers: **Activity** (blue), **Errors** (red), **SLA breaches** (amber), and **Duration intensity** (green). Each layer is toggled independently via colour-coded pill chips.
+  - An amber **viewport indicator** rectangle shows the current horizontal scroll position relative to the full timeline. The indicator is draggable left/right to pan the main scroll container, and clicking anywhere on the canvas jumps to that point in the timeline.
+  - A **zoom presets strip** provides one-click buttons for 0.5×, 1×, 2×, 4×, 8× and Fit, wired to `GANTT_ZOOM_PAN.applyZoom()` / `fitWindow()`.
+  - A **position label** in the zoom strip shows the current scroll percentage.
+  - All internals resize correctly on window/panel resize via `ResizeObserver` and scale to device pixel ratio.
+  - Wired `TIMELINE_NAV.mount()` into both `GR.render` override and `SWIMLANE.init` so the panel appears automatically in standard Gantt and multi-thread Swimlane view modes.
+  - Added CSS `§29 · TIMELINE NAVIGATOR` with variables-driven theming compatible with all 6 existing colour themes.
+  - Wrote Playwright E2E verification suite `test_timeline_nav.py` — all 15 assertions pass successfully.
+
 - **Trace Explorer view panel integration (v6.9.62 — COMPLETED)**:
   - Built the `TRACE_EXPLORER` namespace to scan parsed trees for correlation IDs, aggregate trace statistics (total unique traces, tracked events, SLA breaches, thread span list), and render the new full-screen Traces tab interface.
   - Linked trace row selection click events to filter all telemetry views to that specific trace ID, automatically opening and selecting the trace's slowest event in the right-side Event Inspector panel.
