@@ -2,6 +2,19 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+
+- **Dedicated Web Worker Plugins Sandbox, Scoped MutationObserver, and Offline Fonts (v6.9.59 — COMPLETED)**:
+  - Replaced the high-risk `iframe` sandbox execution system with a custom Blob URL-based dedicated Web Worker runner.
+  - Implemented a message validation gate (`MSG_VALIDATOR`) checking types and structure of all postMessage communication.
+  - Enforced a `3000ms` execution watchdog. If a plugin runs longer than 3 seconds, the worker is terminated and marked as timed out.
+  - Implemented automatic recovery (workers respawn on next hook run) and a failure limit (plugins are disabled after 3 consecutive failures).
+  - Added a new **Plugin Health Panel** showing live status badges (Active/Timeout/Error/Disabled), last run timestamps, execution times, and failure counters.
+  - Cleaned up obsolete window-level event listeners and removed the `#plugin-sandbox` iframe.
+  - Re-scoped `GANTT_RESIZE` MutationObserver to target only the `#res` container. Switched connection state dynamically: calls `connectObserver()` when switching to `gantt` or `split` view, and `disconnectObserver()` on all other views.
+  - Implemented `UI.cleanupCurrentView()` called during view transitions to release resources.
+  - Removed all Google Fonts preconnect and stylesheet link tags from the HTML header.
+  - Switched default CSS variables (`--ui`, `--display`, `--mono`) and all 6 themes to use fast, native system font stacks.
+
 - **ChatGPT Review Code Quality & Security Fixes (v6.9.58 — COMPLETED)**:
   - Standardized annotation comments lookup using a helper `getAnnotationText()` in `UTILS` object. Fixed tree details renderers, Gantt timeline labels, note MD exporters, and JIRA description formats to display comments correctly without crashes or rendering `[object Object]`.
   - Added robust initialization guards (e.g. `QUICK_EDIT._clickWired`) to prevent memory leaks from duplicate document event listeners on repeat renders.
@@ -722,5 +735,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-07-01*  
-*Updated By: Antigravity (Enhanced Stack Behaviors: swap & popAll v6.9.57)*
+*Last Updated: 2026-07-02*  
+*Updated By: Antigravity (Dedicated Web Worker Plugins Sandbox, Scoped MutationObserver, and Offline Fonts v6.9.59)*
