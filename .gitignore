@@ -6,3 +6,10 @@ package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Python & testing bytecode / caches
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+**/.pytest_cache/
+*.pyc
