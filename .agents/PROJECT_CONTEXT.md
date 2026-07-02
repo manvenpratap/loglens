@@ -3,6 +3,14 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **AI Insights, Focus Mode, First-Run UX & A11y Polish (v6.9.64 — COMPLETED)**:
+  - **Phase 8 — AI Insights Engine** (`§JS-42`): Zero-dependency heuristic analysis of `S.trees`. Produces 2–5 insight cards per session covering: slowest thread (avg + max duration), error hotspot (top rule by error count), SLA breach list (worst offender highlighted), statistical duration outliers (2.5σ above mean), and multi-thread parallelism summary. Cards rendered as `role="region"` in Stats view with amber/red/green/blue severity badges.
+  - **Phase 9 — Focus Mode** (`§JS-43`): `FOCUS_MODE` module toggled via the `F` key. Adds `body.focus-mode` CSS class to hide header, sidebar, action bar, and timeline mini-map — maximising the timeline viewport. Amber pill toast confirms state change. State persisted in `sessionStorage`. CSS `§31` controls all hide rules.
+  - **Phase 10 — First-Run Experience** (`§JS-44`): Patches `UI.svm()` to detect the empty `#emp` card and inject a 3-step getting-started guide (Configure Rules → Load Log → Explore & Analyse) plus a keyboard shortcut strip (`Alt+1`, `Ctrl+K`, `F`, `/`). Drag-over highlight added to drop zone.
+  - **Phase 11 — Accessibility Polish** (`§JS-45`): Skip-to-content link injected as first body element; focus traps applied to 5 modal dialogs (`#mm`, `#ann-modal`, `#cmd-palette`, `#ob-ov`, `#od-overlay`); `aria-live="polite"` on `#toast`; `role=status` on focus-mode toast; `role=switch` + `aria-checked` on all TIMELINE_NAV overlay chips (set at mount time).
+  - **CSS** `§30 · AI INSIGHTS CARD`, `§31 · FOCUS MODE`, `§32 · ACCESSIBILITY POLISH` added.
+  - **Phase 12 — Verification**: All 23 Playwright assertions in `test_phases_8_11.py` pass; JS syntax check clean.
+
 - **Timeline Navigator mini-map panel (v6.9.63 — COMPLETED)**:
   - Added new `TIMELINE_NAV` IIFE module (`§JS-41`) providing a mini-map panel mounted at the bottom of Gantt waterfall and Swimlane views.
   - The mini-map renders per-bucket density histograms using Canvas 2D for four overlay layers: **Activity** (blue), **Errors** (red), **SLA breaches** (amber), and **Duration intensity** (green). Each layer is toggled independently via colour-coded pill chips.

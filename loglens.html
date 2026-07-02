@@ -3277,6 +3277,164 @@ mark.hl{
   font-size: 9px;
 }
 
+/* ================================================================
+   CSS §30 · AI INSIGHTS CARD (Phase 8)
+   ================================================================ */
+.ai-insights-card {
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 0;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.ai-insights-hdr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--bdr-d);
+  font-weight: 700;
+  font-size: 12px;
+  font-family: var(--display);
+  color: var(--t1);
+  background: var(--bg-3);
+}
+.ai-insights-hdr .ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--amber);
+  background: rgba(255,149,0,.12);
+  border: 1px solid rgba(255,149,0,.3);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.ai-insights-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ai-insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--rounded-sm);
+  background: var(--bg-1);
+  border-left: 3px solid transparent;
+  transition: background .15s;
+  font-size: 11px;
+  line-height: 1.55;
+}
+.ai-insight-item:hover { background: var(--bg-3); }
+.ai-insight-item.sev-warn { border-left-color: var(--amber); }
+.ai-insight-item.sev-error { border-left-color: var(--red); }
+.ai-insight-item.sev-ok { border-left-color: var(--green); }
+.ai-insight-item.sev-info { border-left-color: var(--blue); }
+.ai-insight-ico {
+  font-size: 16px;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+.ai-insight-text strong {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--t1);
+  margin-bottom: 2px;
+  font-family: var(--display);
+}
+.ai-insight-text span {
+  color: var(--t3);
+}
+.ai-insights-empty {
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--t4);
+  font-size: 11px;
+}
+
+/* ================================================================
+   CSS §31 · FOCUS MODE (Phase 9)
+   ================================================================ */
+body.focus-mode .topbar,
+body.focus-mode .hdr,
+body.focus-mode .sb,
+body.focus-mode #action-bar,
+body.focus-mode #hdr-search-container,
+body.focus-mode .tl-nav-wrap {
+  display: none !important;
+}
+body.focus-mode .main {
+  padding: 0 !important;
+}
+body.focus-mode #res {
+  border-radius: 0;
+}
+/* Focus mode toast indicator */
+.focus-mode-toast {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(255,149,0,.95);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--display);
+  letter-spacing: 0.5px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  z-index: 9999;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.focus-mode-toast.show { opacity: 1; }
+
+/* ================================================================
+   CSS §32 · ACCESSIBILITY POLISH (Phase 11)
+   ================================================================ */
+/* Enhanced focus ring for all interactive elements */
+.tl-overlay-chip:focus-visible,
+.tl-zoom-preset:focus-visible,
+.tl-viewport-indicator:focus-visible,
+.trace-row-item:focus-visible,
+.ai-insight-item:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+/* Focus trap helper — used by modal dialogs */
+.focus-trap-sentinel {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+/* Skip-to-content link */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 12px;
+  z-index: 99999;
+  background: var(--amber);
+  color: #000;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: var(--rounded-sm);
+  transition: top .2s;
+}
+.skip-link:focus { top: 12px; }
+
 /* ============================================================
    CSS §20 · RESPONSIVE BREAKPOINTS (Step 5)
    1024px — compact sidebar  768px — stack layout  480px — mobile
@@ -16819,6 +16977,212 @@ STATS.render = async function(tree, container) {
 };
 
 /* ================================================================
+   §JS-42 AI INSIGHTS ENGINE (Phase 8)
+   Heuristic log analysis — runs entirely in-browser, zero ML deps
+   ================================================================ */
+const AI_INSIGHTS = (() => {
+
+  // ── Flatten all events from S.trees ──────────────────────────────
+  function _flatEvents() {
+    const all = [];
+    const walk = (nodes, thread) => {
+      for (const n of nodes) {
+        all.push({ ...n, _thread: thread });
+        if (n.events && n.events.length) walk(n.events, thread);
+      }
+    };
+    const trees = S.trees;
+    if (!trees) return all;
+    for (const [thr, tree] of Object.entries(trees)) walk(tree, thr);
+    return all;
+  }
+
+  // ── Heuristic analysis functions ──────────────────────────────────
+
+  function _findSlowestThread(events) {
+    const byThread = {};
+    for (const e of events) {
+      if (!e._thread) continue;
+      if (!byThread[e._thread]) byThread[e._thread] = { total: 0, count: 0, max: 0, maxNode: null };
+      const d = e.duration || 0;
+      byThread[e._thread].total += d;
+      byThread[e._thread].count++;
+      if (d > byThread[e._thread].max) {
+        byThread[e._thread].max = d;
+        byThread[e._thread].maxNode = e;
+      }
+    }
+    let slowest = null, maxAvg = 0;
+    for (const [thr, info] of Object.entries(byThread)) {
+      const avg = info.count ? info.total / info.count : 0;
+      if (avg > maxAvg) { maxAvg = avg; slowest = { thr, avg, ...info }; }
+    }
+    return slowest;
+  }
+
+  function _findErrorHotspot(events) {
+    const errors = events.filter(e =>
+      e.level === 'ERROR' || e.level === 'FATAL' || e.level === 'WARN'
+    );
+    if (!errors.length) return null;
+    // Count by ruleName
+    const byRule = {};
+    for (const e of errors) {
+      const k = e.ruleName || e.elementName || 'unknown';
+      byRule[k] = (byRule[k] || 0) + 1;
+    }
+    const top = Object.entries(byRule).sort((a, b) => b[1] - a[1])[0];
+    return top ? { rule: top[0], count: top[1], total: errors.length } : null;
+  }
+
+  function _slaBreaches(events) {
+    const breaches = events.filter(e => e.slaBreached);
+    if (!breaches.length) return null;
+    const maxBreach = breaches.reduce((a, b) => (b.duration || 0) > (a.duration || 0) ? b : a, breaches[0]);
+    return { count: breaches.length, worst: maxBreach };
+  }
+
+  function _findOutliers(events) {
+    const durs = events.map(e => e.duration || 0).filter(d => d > 0);
+    if (durs.length < 5) return null;
+    const mean = durs.reduce((a, b) => a + b, 0) / durs.length;
+    const sq = durs.reduce((a, b) => a + (b - mean) ** 2, 0) / durs.length;
+    const std = Math.sqrt(sq);
+    const threshold = mean + 2.5 * std;
+    const outliers = events.filter(e => (e.duration || 0) > threshold);
+    return outliers.length ? { count: outliers.length, threshold, worst: outliers.sort((a,b) => (b.duration||0)-(a.duration||0))[0] } : null;
+  }
+
+  function _parallelism(trees) {
+    const threadCount = Object.keys(trees || {}).length;
+    const eventCounts = Object.values(trees || {}).map(t => t.length);
+    const total = eventCounts.reduce((a, b) => a + b, 0);
+    const avgPerThread = threadCount ? total / threadCount : 0;
+    return { threadCount, total, avgPerThread };
+  }
+
+  // ── Build insight list ────────────────────────────────────────────
+  function analyse() {
+    const trees = S.trees;
+    if (!trees || !Object.keys(trees).length) return [];
+    const events = _flatEvents();
+    if (!events.length) return [];
+
+    const insights = [];
+
+    // 1. Slowest thread
+    const slow = _findSlowestThread(events);
+    if (slow) {
+      const isSlow = slow.avg > 500;
+      insights.push({
+        ico: isSlow ? '⚠️' : '✅',
+        sev: isSlow ? 'warn' : 'ok',
+        title: `Slowest thread: ${slow.thr}`,
+        desc: `Average event duration ${fmtMs(Math.round(slow.avg))}. Longest single event: ${esc(slow.maxNode?.elementName || 'unknown')} (${fmtMs(slow.max)}).`
+      });
+    }
+
+    // 2. Error hotspot
+    const errHot = _findErrorHotspot(events);
+    if (errHot) {
+      insights.push({
+        ico: '🔴',
+        sev: 'error',
+        title: `Error hotspot: ${esc(errHot.rule)}`,
+        desc: `${errHot.count} error/warn events matched this rule out of ${errHot.total} total errors. Investigate log lines matching this rule first.`
+      });
+    } else {
+      insights.push({
+        ico: '✅',
+        sev: 'ok',
+        title: 'No error hotspots detected',
+        desc: 'All parsed events are at INFO level or below. No critical failures found.'
+      });
+    }
+
+    // 3. SLA breaches
+    const sla = _slaBreaches(events);
+    if (sla) {
+      insights.push({
+        ico: '🟡',
+        sev: 'warn',
+        title: `${sla.count} SLA breach${sla.count > 1 ? 'es' : ''} detected`,
+        desc: `Worst breach: ${esc(sla.worst?.elementName || 'unknown')} (${fmtMs(sla.worst?.duration || 0)}) on thread "${esc(sla.worst?._thread || '?')}". SLA threshold may need review.`
+      });
+    }
+
+    // 4. Outliers
+    const out = _findOutliers(events);
+    if (out) {
+      insights.push({
+        ico: '📊',
+        sev: 'warn',
+        title: `${out.count} statistical duration outlier${out.count > 1 ? 's' : ''}`,
+        desc: `Events with duration > ${fmtMs(Math.round(out.threshold))} (2.5σ above mean). Worst: ${esc(out.worst?.elementName || 'unknown')} at ${fmtMs(out.worst?.duration || 0)}.`
+      });
+    }
+
+    // 5. Parallelism
+    const par = _parallelism(trees);
+    if (par.threadCount > 1) {
+      insights.push({
+        ico: '🔀',
+        sev: 'info',
+        title: `${par.threadCount} concurrent thread${par.threadCount > 1 ? 's' : ''} detected`,
+        desc: `${par.total} total events across ${par.threadCount} threads. Average ${Math.round(par.avgPerThread)} events/thread. Consider Swimlane view for concurrency analysis.`
+      });
+    }
+
+    return insights;
+  }
+
+  // ── Render card into a stats wrapper ─────────────────────────────
+  function renderCard(wrapper) {
+    // Remove stale card
+    wrapper.querySelector('.ai-insights-card')?.remove();
+
+    const insights = analyse();
+    const card = document.createElement('div');
+    card.className = 'ai-insights-card';
+    card.setAttribute('role', 'region');
+    card.setAttribute('aria-label', 'AI Insights');
+
+    card.innerHTML = `
+      <div class="ai-insights-hdr">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2"/><path d="M12 8v4l3 3"/></svg>
+        AI Insights
+        <span class="ai-badge">⚡ Heuristic</span>
+        <span style="margin-left:auto;font-size:9px;color:var(--t4);font-weight:400;font-family:var(--mono);">${insights.length} finding${insights.length !== 1 ? 's' : ''}</span>
+      </div>
+      ${insights.length ? `
+      <div class="ai-insights-body" role="list">
+        ${insights.map(ins => `
+          <div class="ai-insight-item sev-${ins.sev}" role="listitem" tabindex="0" aria-label="${ins.title}">
+            <span class="ai-insight-ico" aria-hidden="true">${ins.ico}</span>
+            <div class="ai-insight-text">
+              <strong>${ins.title}</strong>
+              <span>${ins.desc}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>` : `<div class="ai-insights-empty">No data to analyse yet. Load a log file first.</div>`}
+    `;
+
+    wrapper.appendChild(card);
+  }
+
+  return { renderCard, analyse };
+})();
+
+// Patch STATS.render to also show AI Insights card
+const _origStatsRenderWithAI = STATS.render;
+STATS.render = async function(tree, container) {
+  await _origStatsRenderWithAI.call(this, tree, container);
+  const extWrap = container.querySelector('.stats-layout-wrapper') || container;
+  if (extWrap) AI_INSIGHTS.renderCard(extWrap);
+};
+
+/* ================================================================
    §JS-STREAM STREAMING ENHANCEMENTS & SPARKLINE
    ================================================================ */
 // Redefining STREAM.buffer to act as FIFO rolling buffer
@@ -18924,6 +19288,15 @@ const TIMELINE_NAV = (() => {
 
     // Initial draw
     requestAnimationFrame(() => _draw());
+
+    // ─── A11y: set role+aria-checked on all overlay chips ──────────
+    wrap.querySelectorAll('.tl-overlay-chip').forEach(chip => {
+      chip.setAttribute('role', 'switch');
+      chip.setAttribute('aria-checked', chip.classList.contains('active') ? 'true' : 'false');
+      chip.addEventListener('click', () => {
+        chip.setAttribute('aria-checked', chip.classList.contains('active') ? 'true' : 'false');
+      });
+    });
   }
 
   // Public: refresh the overlay (call after data changes)
@@ -18932,6 +19305,242 @@ const TIMELINE_NAV = (() => {
   }
 
   return { mount, refresh, OV };
+})();
+
+/* ================================================================
+   §JS-43 FOCUS MODE (Phase 9)
+   Toggle via F key — hides header, sidebar, action bar, timeline nav
+   ================================================================ */
+const FOCUS_MODE = (() => {
+  let _active = false;
+  let _toastTimer = null;
+
+  function _getToast() {
+    let t = document.getElementById('focus-mode-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'focus-mode-toast';
+      t.className = 'focus-mode-toast';
+      t.setAttribute('role', 'status');
+      t.setAttribute('aria-live', 'polite');
+      document.body.appendChild(t);
+    }
+    return t;
+  }
+
+  function _showToast(msg) {
+    const t = _getToast();
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function toggle() {
+    _active = !_active;
+    document.body.classList.toggle('focus-mode', _active);
+    _showToast(_active ? '🔍 Focus Mode ON — press F to exit' : '↩ Focus Mode OFF');
+    // Persist in session
+    try { sessionStorage.setItem('ll_focus_mode', _active ? '1' : '0'); } catch(_) {}
+  }
+
+  function isActive() { return _active; }
+
+  // Restore from session on startup
+  function init() {
+    try {
+      if (sessionStorage.getItem('ll_focus_mode') === '1') {
+        _active = true;
+        document.body.classList.add('focus-mode');
+      }
+    } catch(_) {}
+  }
+
+  return { toggle, isActive, init };
+})();
+
+// Wire F key to Focus Mode toggle (only when not in an input field)
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if (!inInput && e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    // Check no modal is open
+    const modalOpen = !document.getElementById('mm')?.classList.contains('hidden') ||
+                      !document.getElementById('ann-modal')?.classList.contains('hidden') ||
+                      !document.getElementById('cmd-palette')?.classList.contains('hidden');
+    if (!modalOpen) {
+      e.preventDefault();
+      FOCUS_MODE.toggle();
+    }
+  }
+});
+
+// Init on load
+FOCUS_MODE.init();
+
+/* ================================================================
+   §JS-44 FIRST-RUN EXPERIENCE ENHANCEMENTS (Phase 10)
+   Step-by-step guide cards in the empty state dropzone
+   ================================================================ */
+(function enhanceEmptyState() {
+  // We patch UI.svm to upgrade the empty #res state with richer dropzone
+  const _origSvm = UI.svm.bind(UI);
+  UI.svm = function(vm) {
+    _origSvm(vm);
+    // After render, check if #emp exists (no data loaded) and upgrade it
+    requestAnimationFrame(() => {
+      const emp = document.getElementById('emp');
+      if (!emp || emp.dataset.enhanced) return;
+      emp.dataset.enhanced = '1';
+
+      // Inject drop event wiring on the zone
+      const dropZone = emp.querySelector('#emp-drop-zone');
+      if (dropZone) {
+        ['dragenter','dragover'].forEach(ev => {
+          dropZone.addEventListener(ev, e => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+          });
+        });
+        ['dragleave','drop'].forEach(ev => {
+          dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'));
+        });
+      }
+
+      // Inject step-by-step guide below the actions
+      const actionsEl = emp.querySelector('.emp-actions');
+      if (!actionsEl) return;
+      const guide = document.createElement('div');
+      guide.className = 'emp-guide';
+      guide.setAttribute('role', 'list');
+      guide.setAttribute('aria-label', 'Getting started steps');
+      guide.innerHTML = `
+        <div class="emp-guide-title">Get started in 3 steps</div>
+        <div class="emp-guide-steps">
+          <div class="emp-guide-step" role="listitem">
+            <div class="emp-step-num" aria-hidden="true">1</div>
+            <div class="emp-step-body">
+              <strong>Configure rules</strong>
+              <span>Open <b>Settings → Rules</b> (Alt+8) and paste a regex rule matching your log format, or import a <code>.json</code> config.</span>
+            </div>
+          </div>
+          <div class="emp-guide-step" role="listitem">
+            <div class="emp-step-num" aria-hidden="true">2</div>
+            <div class="emp-step-body">
+              <strong>Load a log file</strong>
+              <span>Drag &amp; drop a <code>.log</code> or <code>.gz</code> file here, use <b>Select Log File</b>, or try the built-in <b>Demo Log</b> to explore features.</span>
+            </div>
+          </div>
+          <div class="emp-guide-step" role="listitem">
+            <div class="emp-step-num" aria-hidden="true">3</div>
+            <div class="emp-step-body">
+              <strong>Explore &amp; analyse</strong>
+              <span>Use <b>Gantt</b> (Alt+1), <b>Tree</b> (Alt+2), <b>Stats</b> (Alt+4), <b>Traces</b> (Alt+7) views. Press <b>F</b> for Focus Mode, <b>Ctrl+K</b> for Command Palette.</span>
+            </div>
+          </div>
+        </div>
+        <div class="emp-guide-shortcuts">
+          <span class="emp-shortcut"><kbd>Alt+1</kbd> Gantt</span>
+          <span class="emp-shortcut"><kbd>Ctrl+K</kbd> Command Palette</span>
+          <span class="emp-shortcut"><kbd>F</kbd> Focus Mode</span>
+          <span class="emp-shortcut"><kbd>/</kbd> Search Tree</span>
+        </div>
+      `;
+      actionsEl.insertAdjacentElement('afterend', guide);
+
+      // Inject CSS inline if not already present
+      if (!document.getElementById('emp-guide-style')) {
+        const st = document.createElement('style');
+        st.id = 'emp-guide-style';
+        st.textContent = `
+          .emp-guide { margin-top: 20px; border-top: 1px solid var(--bdr); padding-top: 18px; }
+          .emp-guide-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--t4); margin-bottom: 12px; font-family: var(--mono); }
+          .emp-guide-steps { display: flex; flex-direction: column; gap: 10px; }
+          .emp-guide-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: var(--bg-2); border-radius: var(--rounded-sm); border: 1px solid var(--bdr); }
+          .emp-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--amber); color: #000; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+          .emp-step-body { font-size: 11px; line-height: 1.5; color: var(--t2); }
+          .emp-step-body strong { display: block; font-size: 11.5px; font-weight: 700; color: var(--t1); margin-bottom: 2px; }
+          .emp-step-body code, .emp-step-body b { color: var(--amber); font-weight: 600; font-family: var(--mono); }
+          .emp-guide-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+          .emp-shortcut { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--t3); }
+          .emp-shortcut kbd { background: var(--bg-3); border: 1px solid var(--bdr); border-radius: 3px; padding: 1px 5px; font-family: var(--mono); font-size: 9.5px; color: var(--t2); }
+          #emp-drop-zone.drag-over { border-color: var(--amber) !important; background: rgba(255,149,0,.07) !important; }
+        `;
+        document.head.appendChild(st);
+      }
+    });
+  };
+})();
+
+/* ================================================================
+   §JS-45 ACCESSIBILITY POLISH (Phase 11)
+   Focus traps, ARIA live regions, skip-to-content wiring
+   ================================================================ */
+(function a11yPolish() {
+  // ── 1. Skip-to-content link wiring ─────────────────────────────
+  // Inject skip link if not already present
+  if (!document.getElementById('skip-link')) {
+    const skip = document.createElement('a');
+    skip.id = 'skip-link';
+    skip.className = 'skip-link';
+    skip.href = '#res';
+    skip.textContent = 'Skip to main content';
+    document.body.insertBefore(skip, document.body.firstChild);
+    skip.addEventListener('click', e => {
+      e.preventDefault();
+      const main = document.getElementById('res');
+      if (main) { main.setAttribute('tabindex', '-1'); main.focus(); }
+    });
+  }
+
+  // ── 2. Focus trap for modal dialogs ────────────────────────────
+  function trapFocus(modalEl) {
+    if (!modalEl) return;
+    const focusable = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const getFocusable = () => [...modalEl.querySelectorAll(focusable)].filter(el => !el.disabled);
+    modalEl.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const els = getFocusable();
+      if (!els.length) return;
+      const first = els[0], last = els[els.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
+  // Apply focus trap to all modal dialogs
+  ['mm', 'ann-modal', 'cmd-palette', 'ob-ov', 'od-overlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) trapFocus(el);
+  });
+
+  // ── 3. ARIA live region for toast messages ────────────────────
+  const toastEl = document.getElementById('toast');
+  if (toastEl && !toastEl.hasAttribute('aria-live')) {
+    toastEl.setAttribute('aria-live', 'polite');
+    toastEl.setAttribute('aria-atomic', 'true');
+  }
+
+  // ── 4. Ensure all icon-only buttons have accessible labels ────
+  const iconBtns = document.querySelectorAll('button:not([aria-label]):not([title])');
+  iconBtns.forEach(btn => {
+    const text = btn.textContent?.trim();
+    if (!text || text.length < 2) {
+      btn.setAttribute('aria-label', 'Action');
+    }
+  });
+
+  // ── 5. Stats tab accessibility: mark overlay chip role ────────
+  document.querySelectorAll('.tl-overlay-chip').forEach(chip => {
+    chip.setAttribute('role', 'switch');
+    chip.setAttribute('aria-checked', chip.classList.contains('active') ? 'true' : 'false');
+    chip.addEventListener('click', () => {
+      chip.setAttribute('aria-checked', chip.classList.contains('active') ? 'true' : 'false');
+    });
+  });
 })();
 
 /* ================================================================
