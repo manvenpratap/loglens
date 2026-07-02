@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **App Preferences Visibility Conflict Fix (v6.9.60 — COMPLETED)**:
+  - Fixed a CSS class collision where nested "Performance" and "Appearance" preference sub-sections (`#ss-perf-body` and `#ss-appear-body`) used the `.settings-section-body` class name.
+  - This class name matched the main settings section transition rules setting `max-height: 0` and `opacity: 0` by default. Because the nested sections are not direct children of `.settings-section-wrap`, they never matched the main open override selector, leaving them collapsed/empty even when toggled open.
+  - Resolved this by renaming the nested sections' body class name to `.settings-sub-body` in both stylesheet rules and Javascript template builders.
+
 - **Dedicated Web Worker Plugins Sandbox, Scoped MutationObserver, and Offline Fonts (v6.9.59 — COMPLETED)**:
   - Replaced the high-risk `iframe` sandbox execution system with a custom Blob URL-based dedicated Web Worker runner.
   - Implemented a message validation gate (`MSG_VALIDATOR`) checking types and structure of all postMessage communication.
@@ -736,4 +741,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-07-02*  
-*Updated By: Antigravity (Dedicated Web Worker Plugins Sandbox, Scoped MutationObserver, and Offline Fonts v6.9.59)*
+*Updated By: Antigravity (App Preferences Visibility Conflict Fix v6.9.60)*
