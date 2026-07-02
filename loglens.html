@@ -3035,6 +3035,131 @@ mark.hl{
   margin-top: 4px;
 }
 
+/* ================================================================
+   CSS §28 · TRACE EXPLORER
+   ================================================================ */
+.trace-explorer-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.trace-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.trace-metric-card {
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform .2s, border-color .2s;
+}
+.trace-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--amber);
+}
+.trace-metric-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t1);
+  font-family: var(--display);
+}
+.trace-metric-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--t4);
+  letter-spacing: 0.5px;
+}
+.trace-table-card {
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.trace-table-hdr {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 100px;
+  padding: 10px 16px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--bdr);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--t3);
+  font-family: var(--display);
+}
+.trace-rows-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+  overflow-y: auto;
+}
+.trace-row-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 100px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bdr-d);
+  align-items: center;
+  font-size: 11px;
+  transition: background .15s;
+  cursor: pointer;
+}
+.trace-row-item:hover {
+  background: var(--bg-3);
+}
+.trace-row-item.active-trace {
+  border-left: 3px solid var(--amber);
+  background: var(--bg-3);
+}
+.trace-id-col {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--t1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+.trace-count-col {
+  color: var(--t2);
+}
+.trace-threads-col {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.trace-thread-chip {
+  font-size: 9px;
+  font-family: var(--mono);
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-xs);
+  padding: 1px 4px;
+  color: var(--t3);
+}
+.trace-duration-col {
+  font-family: var(--mono);
+  color: var(--t2);
+}
+.trace-sla-col {
+  display: flex;
+  align-items: center;
+}
+.trace-act-col {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ============================================================
    CSS §20 · RESPONSIVE BREAKPOINTS (Step 5)
    1024px — compact sidebar  768px — stack layout  480px — mobile
@@ -5883,6 +6008,7 @@ label[for="watch-auto-reload"] {
     <div class="vt active" data-v="split" title="Split Panel View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
     <div class="vt" data-v="gantt" title="Interactive Gantt Timeline View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Timeline</div>
     <div class="vt" data-v="tree" title="Execution Tree View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
+    <div class="vt" data-v="trace" title="Trace Explorer View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span> Traces</div>
     <div class="vt" data-v="diff" id="vt-diff" style="display:none;" title="Side-by-Side Log File Comparison"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Diff</div>
     <div class="vt" data-v="query" id="vt-query" title="LogLens Query Language (LQL) Terminal"><span class="ico" aria-hidden="true">>_</span> Query</div>
     <div class="vt" data-v="stats" title="Statistical Dashboard"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
@@ -9309,6 +9435,11 @@ const UI={
       } else {
         r.appendChild(d);GR.render(tree,d);
       }
+    } else if(vm==='trace'){
+      const d=document.createElement('div');
+      d.style.cssText='flex:1;display:flex;flex-direction:column;min-height:0;';
+      r.appendChild(d);
+      TRACE_EXPLORER.render(d);
     } else if(vm==='stats'){
       const d=document.createElement('div');r.appendChild(d);STATS.render(tree,d);
     } else if(vm==='graph'){
@@ -9491,12 +9622,12 @@ const UI={
       }
     }
     document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('active',t.dataset.v===vm));
-    const isSearchApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'graph'].includes(vm);
+    const isSearchApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'graph', 'trace'].includes(vm);
     const searchWrap = $('hdr-search-container');
     if (searchWrap) {
       searchWrap.style.setProperty('display', isSearchApplicable ? 'flex' : 'none', 'important');
     }
-    const isActionBarApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'stats', 'graph', '3d'].includes(vm);
+    const isActionBarApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'stats', 'graph', '3d', 'trace'].includes(vm);
     const actBar = $('action-bar');
     if (actBar) {
       actBar.style.setProperty('display', isActionBarApplicable ? 'flex' : 'none', 'important');
@@ -12371,7 +12502,8 @@ document.addEventListener('keydown',e=>{
     if(e.key==='4'){e.preventDefault();UI.svm('stats');}
     if(e.key==='5'){e.preventDefault();UI.svm('graph');}
     if(e.key==='6'){e.preventDefault();UI.svm('3d');}
-    if(e.key==='7'||e.key==='8'||e.key==='9'){e.preventDefault();UI.svm('cfg');}
+    if(e.key==='7'){e.preventDefault();UI.svm('trace');}
+    if(e.key==='8'||e.key==='9'){e.preventDefault();UI.svm('cfg');}
     if(e.key==='0'){e.preventDefault();UI.svm('hlp');}
     if((e.key==='['||e.key===']')&&S.threads.length>1){
       e.preventDefault();
@@ -15652,6 +15784,214 @@ const INSPECTOR = (() => {
 // Initialize Inspector
 INSPECTOR.init();
 
+/* ================================================================
+   §JS-40 TRACE EXPLORER
+   ================================================================ */
+const TRACE_EXPLORER = (function() {
+  let _container = null;
+  let _activeTraceId = null;
+  let _filterQuery = '';
+
+  function scanTraces() {
+    const traces = {};
+    
+    function traverse(node, threadName) {
+      if (node.correlationId) {
+        const cid = node.correlationId;
+        if (!traces[cid]) {
+          traces[cid] = {
+            id: cid,
+            startTimestamp: node.timestamp,
+            endTimestamp: node.endTimestamp || node.timestamp,
+            count: 0,
+            threads: new Set(),
+            slaBreaches: 0,
+            slowestNode: null
+          };
+        }
+        const t = traces[cid];
+        t.count++;
+        t.threads.add(threadName);
+        if (node.timestamp < t.startTimestamp) {
+          t.startTimestamp = node.timestamp;
+        }
+        const end = node.endTimestamp || node.timestamp;
+        if (end > t.endTimestamp) {
+          t.endTimestamp = end;
+        }
+        if (node.slaThresholdMs != null && node.duration != null && node.duration > node.slaThresholdMs) {
+          t.slaBreaches++;
+        }
+        if (node.duration != null) {
+          if (!t.slowestNode || node.duration > t.slowestNode.duration) {
+            t.slowestNode = node;
+          }
+        }
+      }
+      if (node.events && node.events.length) {
+        for (const child of node.events) {
+          traverse(child, threadName);
+        }
+      }
+    }
+
+    if (S.trees) {
+      for (const [threadName, nodes] of Object.entries(S.trees)) {
+        for (const node of nodes) {
+          traverse(node, threadName);
+        }
+      }
+    }
+
+    return Object.values(traces).map(t => {
+      return {
+        ...t,
+        duration: t.endTimestamp - t.startTimestamp,
+        threads: Array.from(t.threads)
+      };
+    });
+  }
+
+  function render(el) {
+    _container = el;
+    el.innerHTML = '';
+    
+    const list = scanTraces();
+    if (list.length === 0) {
+      el.innerHTML = `
+        <div class="emp-card" style="margin-top:40px;">
+          <div class="emp-title">No Trace correlation IDs found</div>
+          <div class="emp-desc">Configure capturing group mappings to extract correlation IDs under Settings -> Element Rules.</div>
+        </div>
+      `;
+      return;
+    }
+
+    // Filter traces by search bar query
+    const filtered = list.filter(t => {
+      const q = _filterQuery.trim().toLowerCase();
+      if (!q) return true;
+      return t.id.toLowerCase().includes(q) || t.threads.some(th => th.toLowerCase().includes(q));
+    });
+
+    const totalTraces = list.length;
+    const totalEvents = list.reduce((sum, t) => sum + t.count, 0);
+    const totalBreaches = list.reduce((sum, t) => sum + t.slaBreaches, 0);
+    const breachRate = totalTraces > 0 ? ((totalBreaches / totalEvents) * 100).toFixed(1) + '%' : '0%';
+
+    const metricsHtml = `
+      <div class="trace-metrics-grid">
+        <div class="trace-metric-card">
+          <div class="trace-metric-val">${totalTraces}</div>
+          <div class="trace-metric-lbl">Total Traces</div>
+        </div>
+        <div class="trace-metric-card">
+          <div class="trace-metric-val">${totalEvents}</div>
+          <div class="trace-metric-lbl">Traced Events</div>
+        </div>
+        <div class="trace-metric-card" style="${totalBreaches > 0 ? 'border-color:var(--red);' : ''}">
+          <div class="trace-metric-val" style="${totalBreaches > 0 ? 'color:var(--red);' : ''}">${totalBreaches} (${breachRate})</div>
+          <div class="trace-metric-lbl">SLA Breaches</div>
+        </div>
+      </div>
+    `;
+
+    const searchHtml = `
+      <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+        <input type="text" id="trace-search-input" class="inp" placeholder="Search Trace ID or thread name..." value="${esc(_filterQuery)}" style="flex:1; height:28px; font-size:11px;" />
+        ${S.activeTraceId ? `<button class="btn btn-sm btn-bl" onclick="TRACE_EXPLORER.clearFilter()">Clear Active Filter</button>` : ''}
+      </div>
+    `;
+
+    let rowsHtml = '';
+    filtered.forEach(t => {
+      const isActive = S.activeTraceId === t.id;
+      const slaBadge = t.slaBreaches > 0
+        ? `<span class="badge b-red">${t.slaBreaches} SLA</span>`
+        : `<span class="badge b-green">Healthy</span>`;
+      
+      const threadChips = t.threads.map(th => `<span class="trace-thread-chip">${esc(th)}</span>`).join('');
+      
+      rowsHtml += `
+        <div class="trace-row-item ${isActive ? 'active-trace' : ''}" onclick="TRACE_EXPLORER.selectTrace('${esc(t.id)}')">
+          <div class="trace-id-col" title="${esc(t.id)}">${esc(t.id)}</div>
+          <div class="trace-count-col">${t.count} events</div>
+          <div class="trace-threads-col">${threadChips}</div>
+          <div class="trace-duration-col">${fmtMs(t.duration)}</div>
+          <div class="trace-sla-col">${slaBadge}</div>
+          <div class="trace-act-col">
+            <button class="btn btn-xs ${isActive ? 'btn-bl' : ''}">${isActive ? 'Active' : 'Filter'}</button>
+          </div>
+        </div>
+      `;
+    });
+
+    const tableHtml = `
+      <div class="trace-table-card" style="margin-top:16px;">
+        <div class="trace-table-hdr">
+          <div>Trace ID</div>
+          <div>Events</div>
+          <div>Threads</div>
+          <div>Duration</div>
+          <div>SLA Status</div>
+          <div style="text-align:right;">Actions</div>
+        </div>
+        <div class="trace-rows-list">
+          ${rowsHtml || '<div style="padding:24px; text-align:center; color:var(--t4);">No matches found</div>'}
+        </div>
+      </div>
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'trace-explorer-wrap';
+    wrap.innerHTML = metricsHtml + searchHtml + tableHtml;
+    el.appendChild(wrap);
+
+    // Bind search input events
+    const searchInp = el.querySelector('#trace-search-input');
+    if (searchInp) {
+      searchInp.addEventListener('input', e => {
+        _filterQuery = e.target.value;
+        render(el);
+      });
+    }
+  }
+
+  function selectTrace(traceId) {
+    if (S.activeTraceId === traceId) {
+      clearFilter();
+      return;
+    }
+    S.activeTraceId = traceId;
+    const filterInput = $('trace-filter');
+    if (filterInput) {
+      filterInput.value = traceId;
+      filterInput.style.display = 'inline-block';
+    }
+    toast(`Filtered views to Trace: ${traceId}`, 'info');
+    const list = scanTraces();
+    const match = list.find(t => t.id === traceId);
+    if (match && match.slowestNode) {
+      if (typeof INSPECTOR !== 'undefined') {
+        INSPECTOR.open(match.slowestNode);
+      }
+    }
+    if (_container) render(_container);
+  }
+
+  function clearFilter() {
+    S.activeTraceId = null;
+    const filterInput = $('trace-filter');
+    if (filterInput) {
+      filterInput.value = '';
+      filterInput.style.display = 'none';
+    }
+    toast('Cleared Trace filter', 'info');
+    if (_container) render(_container);
+  }
+
+  return { render, selectTrace, clearFilter };
+})();
 
 // Update BCB after parse completes
 const _uiRenderBCB = UI.render.bind(UI);
