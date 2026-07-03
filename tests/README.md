@@ -111,7 +111,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | AI Insights Engine | test_09_ai_insights | 9 |
 | Focus Mode | test_10_focus_mode | 9 |
 | Accessibility Polish | test_11_accessibility | 8 |
-| **Total** | | **73** |
+| Log4j Config XML Import | test_12_log4j_import | 1 |
+| **Total** | | **74** |
 
 ---
 

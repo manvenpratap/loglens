@@ -6624,6 +6624,7 @@ label[for="watch-auto-reload"] {
             ready-to-use base regex patterns (no regex knowledge needed).
           </div>
           <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
+          <div id="lj-res" class="fcol gap2" style="margin-top: 12px;"></div>
         </div>
 
         <!-- Card: Community Packs -->
@@ -6793,8 +6794,7 @@ label[for="watch-auto-reload"] {
         </div>
       </div><!-- close .settings-section-wrap section 5 -->
 
-      <!-- Imported patterns output below the grid -->
-      <div id="lj-res" class="fcol gap2" style="padding: 0 24px 24px 24px;"></div>
+
 
       <!-- Element Rules (Full Width below cards) -->
       <div style="padding: 24px;">
@@ -10051,7 +10051,12 @@ const UI={
     $('sh-ov').classList.remove('hidden');
   },
   impSheet(){
-    if(!S.cfg)return;let n=0;
+    if(!S.cfg){
+      S.cfgHandle=null;
+      CFG.load(JSON.parse(JSON.stringify(DEF_CFG)));
+      CFG.stImp();
+    }
+    let n=0;
     document.querySelectorAll('[id^="ap"]').forEach((chk,i)=>{
       if(!chk.checked)return;const a=S.ljAppenders[i];if(!a||!a._c)return;
       const{regex,captureMapping,tsPattern}=a._c;

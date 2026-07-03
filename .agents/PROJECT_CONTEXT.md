@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Log4j Config XML Import Alignment & Fix (v6.9.66 — COMPLETED)**:
+  - **Inline Result Container**: Relocated the `#lj-res` element (which displays the appender count and the "Preview & Import" action button) from below Section 05 at the bottom of the Settings view, to sit inline directly inside Section 03 (Rule Generators) dashboard card under the "Import XML Config File" button (`#btn-lj-imp`). This places preview actions in the correct context for a seamless workflow.
+  - **Empty Configuration Initialization Guard**: Fixed a bug where clicking "Import Selected" on the preview modal did nothing when the app was in an empty/fresh state (`S.cfg === null`). Updated `UI.impSheet()` to check for a null configuration and automatically load default rules from `DEF_CFG` (mimicking "New Config" button behavior) before adding the imported appender rules and enabling configuration operations.
+  - **E2E Validation Suite**: Created a new Playwright E2E test file `tests/test_12_log4j_import.py` to verify the inline result container placement, correct class toggle transitions of `#sh-ov` modal, empty config fallback initialization, and overall rule count validation. Updated the Coverage Map in `tests/README.md`. All 74 tests pass.
+
 - **CSS background-clip Compatibility Fixes (v6.9.65 — COMPLETED)**:
   - Fixed stylesheet warnings by explicitly adding the standard `background-clip: text` CSS property alongside the existing vendor-prefixed `-webkit-background-clip: text` rules for both the primary header logo mark (`.logo .acc`) and the onboarding welcome panel branding wordmark (`.ob-wordmark .acc`).
 
