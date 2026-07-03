@@ -12,7 +12,7 @@ from conftest import assert_no_critical_errors
 async def _load_settings(page):
     """Helper: open the Settings tab after onboarding is dismissed and ensure configuration is loaded."""
     await page.evaluate("() => { if (S.cfg === null) CFG.load(JSON.parse(JSON.stringify(DEF_CFG))); }")
-    await page.click('.vt[data-v="cfg"]')
+    await page.evaluate("() => UI.svm('cfg')")
     await page.wait_for_timeout(500)
 
 
@@ -159,8 +159,9 @@ async def test_rule_creator_live_match_highlighting(page_with_data):
     await page.click('#btn-ar')
     await page.wait_for_timeout(400)
 
-    # Select Java Standard format (default)
-    await page.select_option('#wf-sel', 'java_std')
+    # 1. Verify format selector starts as 'auto'
+    sel_format = page.locator('#wf-sel')
+    await expect(sel_format).to_have_value('auto')
 
     # Add keyword
     await page.fill('#kw-inp', 'GET')
@@ -170,20 +171,206 @@ async def test_rule_creator_live_match_highlighting(page_with_data):
     # Verify chip exists
     await expect(page.locator('#kw-chips')).to_contain_text("GET")
 
-    # Fill sample log line
-    test_line = "2026-07-03 08:30:15,123 INFO  [http-nio-8080-exec-1] com.example.Controller - GET /items"
+    # 2. Fill sample log line (Spring Boot format)
+    test_line = "2026-07-03 08:30:15,123  INFO  12345 --- [nio-8080-exec-1] c.e.s.Svc   : GET /items"
     await page.fill('#e-tl', test_line)
+    await page.wait_for_timeout(400)
+
+    # 3. Assert format is auto-detected as 'spring'!
+    await expect(sel_format).to_have_value('spring')
+
+    # 4. Check that rx-pre highlights the matched tokens.
+    # Group 1 (timestamp): 2026-07-03 08:30:15,123
+    # Group 3 (thread): nio-8080-exec-1
+    grp_1 = page.locator('.rx-ln span.rx-grp-btn[data-gi="1"]')
+    grp_3 = page.locator('.rx-ln span.rx-grp-btn[data-gi="3"]')
+    await expect(grp_1).to_be_visible()
+    await expect(grp_3).to_be_visible()
+
+    # 5. Customize mapping by clicking group 3 in the preview
+    chk_custom = page.locator('#e-use-custom-rx')
+    assert not await chk_custom.is_checked(), "Custom checkbox should start unchecked"
+
+    await page.evaluate("() => document.querySelector('.rx-leg span.rx-grp-btn[data-gi=\"3\"]').click()")
     await page.wait_for_timeout(300)
 
-    # Check that rx-pre highlights the matched tokens.
-    # Because java_std defines capture group 1 (timestamp) and group 2 (thread).
-    # Group 1 should capture '2026-07-03 08:30:15,123'
-    # Group 2 should capture 'http-nio-8080-exec-1'
-    # Group 3 is not defined by default, but let's check that group 1 and 2 highlight buttons exist
-    grp_1 = page.locator('.rx-ln span.rx-grp-btn[data-gi="1"]')
-    grp_2 = page.locator('.rx-ln span.rx-grp-btn[data-gi="2"]')
-    await expect(grp_1).to_be_visible()
-    await expect(grp_2).to_be_visible()
+    # Context menu vgb-menu should be open
+    menu = page.locator('#vgb-menu')
+    await expect(menu).to_be_visible()
+
+    # Map to elementName (data-fid="cm-el")
+    btn_map_el = menu.locator('[data-fid="cm-el"]')
+    await btn_map_el.click()
+    await page.wait_for_timeout(300)
+
+    # 6. Verify custom checkbox is now automatically checked!
+    assert await chk_custom.is_checked(), "Custom checkbox should be checked after visual mapping"
+    # Verify cm-el mapping value is updated to 3
+    val_el = await page.locator('#cm-el').input_value()
+    assert val_el == "3"
 
     # Assert no critical errors
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_ar_button_enabled_on_blank_page(blank_page):
+    """Add Rule button must be enabled even on a blank configuration state and auto-bootstrap on click."""
+    page = blank_page
+    
+    # 0. Dismiss onboarding overlay
+    await page.evaluate("() => ONBOARD.dismiss()")
+    await page.wait_for_timeout(300)
+    
+    # 1. Switch to settings panel
+    await page.evaluate("() => UI.svm('cfg')")
+    await page.wait_for_timeout(500)
+    
+    # 2. Check S.cfg is null
+    is_null = await page.evaluate("() => S.cfg === null")
+    assert is_null, "S.cfg should start as null"
+    
+    # 3. Assert #btn-ar and #btn-rule-imp are enabled
+    btn_ar = page.locator('#btn-ar')
+    btn_imp = page.locator('#btn-rule-imp')
+    await expect(btn_ar).to_be_visible()
+    await expect(btn_ar).not_to_be_disabled()
+    await expect(btn_imp).to_be_visible()
+    await expect(btn_imp).not_to_be_disabled()
+    
+    # 4. Click #btn-ar
+    await btn_ar.click()
+    await page.wait_for_timeout(400)
+    
+    # 5. Assert S.cfg has been auto-bootstrapped (non-null) and modal is open
+    is_non_null = await page.evaluate("() => S.cfg !== null")
+    assert is_non_null, "S.cfg should be bootstrapped"
+    
+    await expect(page.locator('#m-ttl')).to_contain_text("Add New Rule")
+    
+    # Check that rules count badge has been updated to 0 (since it loaded an empty config)
+    rules_count = await page.evaluate("() => S.cfg.elementRules.length")
+    assert rules_count == 0, "Bootstrapped config should start with empty rules list"
+    
+    # Close modal
+    await page.click('#btn-mx')
+    await page.wait_for_timeout(200)
+    
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_class_method_mapping_and_explainer(page_with_data):
+    """Explainer must display capture group labels, class/method mapping inputs must exist and sync preview immediately."""
+    page = page_with_data
+    await _load_settings(page)
+
+    await page.click('#btn-ar')
+    await page.wait_for_timeout(400)
+
+    # 1. Verify className (#cm-cl) and methodName (#cm-me) inputs exist and are visible in Advanced
+    await page.click('#adv-hdr')
+    await page.wait_for_timeout(300)
+    
+    cm_cl = page.locator('#cm-cl')
+    cm_me = page.locator('#cm-me')
+    await expect(cm_cl).to_be_visible()
+    await expect(cm_me).to_be_visible()
+
+    # 2. Enter Spring Boot log line
+    test_line = "2026-07-03 08:30:15,123  INFO  12345 --- [nio-8080-exec-1] c.e.s.Svc   : GET /items"
+    await page.fill('#e-tl', test_line)
+    await page.wait_for_timeout(400)
+
+    # 3. Verify auto-detected format is 'spring'
+    await expect(page.locator('#wf-sel')).to_have_value('spring')
+
+    # 4. Verify className (Group 4) is auto-mapped
+    val_cl = await cm_cl.input_value()
+    assert val_cl == "4", f"className should be auto-mapped to Group 4, got {val_cl}"
+
+    # 5. Customize Regex (check custom checkbox to enable advanced modifications)
+    chk_custom = page.locator('#e-use-custom-rx')
+    await chk_custom.check()
+    await page.wait_for_timeout(300)
+
+    # 6. Click Explain Regex and verify group identifier labels (e.g. [G1], [G2]) inside tokens
+    btn_explain = page.locator('#btn-rex-explain')
+    await btn_explain.click()
+    await page.wait_for_timeout(300)
+
+    explain_results = page.locator('#rex-explain-results')
+    await expect(explain_results).to_be_visible()
+    await expect(explain_results).to_contain_text("[G1]")
+    await expect(explain_results).to_contain_text("[G2]")
+    await expect(explain_results).to_contain_text("[G3]")
+    await expect(explain_results).to_contain_text("[G4]")
+
+    # 7. Check match legend before change: Group 3 should be 'thread' (thr)
+    leg_3 = page.locator('.rx-leg span.rx-grp-btn[data-gi="3"]')
+    await expect(leg_3).to_contain_text("thr")
+
+    # 8. Modify mapping input (change thread mapping #cm-th from 3 to 5) and verify instant preview update
+    await page.fill('#cm-th', '5')
+    # Trigger a change event just in case (though input event listener is also registered)
+    await page.locator('#cm-th').evaluate("el => el.dispatchEvent(new Event('change'))")
+    await page.wait_for_timeout(300)
+
+    # Check match legend after change: Group 3 should now be generic 'group 3' and Group 5 should be 'thr'
+    await expect(leg_3).to_contain_text("group 3")
+
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_maximize_minimize_and_help_tips(page_with_data):
+    """Verify that maximize and minimize buttons work on the edit rules modal, and help tooltips show on top."""
+    page = page_with_data
+    await _load_settings(page)
+
+    await page.click('#btn-ar')
+    await page.wait_for_timeout(400)
+
+    modal = page.locator('#rule-modal')
+    await expect(modal).to_be_visible()
+
+    # 1. Test maximize
+    await page.click('#btn-rule-max')
+    await page.wait_for_timeout(300)
+    
+    # Check that maximized class is added
+    is_maximized = await modal.evaluate("el => el.classList.contains('maximized')")
+    assert is_maximized, "Modal should be maximized"
+
+    # 2. Test minimize
+    await page.click('#btn-rule-min')
+    await page.wait_for_timeout(300)
+    
+    is_minimized = await modal.evaluate("el => el.classList.contains('minimized')")
+    assert is_minimized, "Modal should be minimized"
+    # maximized class should be removed automatically
+    is_maximized = await modal.evaluate("el => el.classList.contains('maximized')")
+    assert not is_maximized, "Modal should not be maximized when minimized"
+
+    # 3. Restore by clicking minimize again (toggles it off)
+    await page.click('#btn-rule-min')
+    await page.wait_for_timeout(300)
+    is_minimized = await modal.evaluate("el => el.classList.contains('minimized')")
+    assert not is_minimized, "Modal should be restored (not minimized)"
+
+    # 4. Click a help tooltip icon (e.g. Stack Behavior help icon)
+    btn_help = page.locator('button[data-htip="behavior"]')
+    await btn_help.click()
+    await page.wait_for_timeout(300)
+
+    # Check help popover is visible and has correct contents
+    pop = page.locator('#htip-pop')
+    await expect(pop).to_be_visible()
+    await expect(pop).to_contain_text("Stack Behavior")
+
+    # Close help popover
+    await page.click('#htip-pop-close')
+    await page.wait_for_timeout(200)
+    await expect(pop).not_to_be_visible()
+
     assert_no_critical_errors(page)

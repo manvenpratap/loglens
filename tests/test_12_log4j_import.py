@@ -34,9 +34,9 @@ async def test_log4j_import_inline_and_empty_config(blank_page):
     cfg_val = await page.evaluate("() => S.cfg")
     assert cfg_val is None, "S.cfg should be null initially on a blank page"
 
-    # Verify that the Add Rule button is disabled initially
+    # Verify that the Add Rule button is enabled initially
     btn_ar = page.locator('#btn-ar')
-    await expect(btn_ar).to_be_disabled()
+    await expect(btn_ar).not_to_be_disabled()
 
     # 2. Create a temporary log4j XML file
     xml_content = """<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">

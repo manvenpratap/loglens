@@ -1336,6 +1336,44 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   box-shadow:var(--shd-lg);
   animation:modal-rise .22s var(--ease-snap);
 }
+.modal.maximized {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+}
+.modal.minimized {
+  position: fixed !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  top: auto !important;
+  left: auto !important;
+  width: 320px !important;
+  height: auto !important;
+  max-height: 48px !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  box-shadow: var(--shd-lg) !important;
+  border: 1px solid var(--bdr-h) !important;
+  z-index: 10000 !important;
+}
+.modal.minimized .m-body {
+  display: none !important;
+}
+.mm:has(.modal.minimized) {
+  background: transparent !important;
+  pointer-events: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.modal.minimized {
+  pointer-events: all !important;
+}
 @keyframes modal-rise{
   from{opacity:0;transform:translateY(12px) scale(.98)}
   to{opacity:1;transform:none}
@@ -2932,7 +2970,7 @@ mark.hl{
 
 /* Popover container — appended to body, positioned absolutely */
 #htip-pop{
-  position:fixed;z-index:8500;max-width:300px;
+  position:fixed;z-index:10000;max-width:300px;
   background:var(--bg-2);border:1px solid var(--bdr-h);
   border-radius:var(--rounded-lg);padding:12px 14px;
   box-shadow:var(--shd-lg),var(--glow-amber);
@@ -6842,13 +6880,13 @@ label[for="watch-auto-reload"] {
               <span class="rules-count-badge" id="rules-count-badge">0</span>
             </div>
             <div class="rules-hdr-actions">
-              <button class="rules-hdr-btn" id="btn-rule-imp" disabled title="Import rule from JSON file" aria-label="Import rule">
+              <button class="rules-hdr-btn" id="btn-rule-imp" title="Import rule from JSON file" aria-label="Import rule">
                 <svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </button>
               <button class="rules-hdr-btn" id="btn-rule-test" disabled title="Test all rules against sample log lines" aria-label="Test rules">
                 <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               </button>
-              <button class="rules-hdr-btn rules-hdr-btn-primary" id="btn-ar" disabled title="Add a new regex parse rule">
+              <button class="rules-hdr-btn rules-hdr-btn-primary" id="btn-ar" title="Add a new regex parse rule">
                 <svg viewBox="0 0 24 24" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add Rule
               </button>
@@ -7201,10 +7239,14 @@ label[for="watch-auto-reload"] {
 
 <!-- ================================================================ RULE MODAL -->
 <div class="mm hidden" id="mm">
-<div class="modal">
+<div class="modal" id="rule-modal">
   <div class="m-hdr">
     <div class="m-title" id="m-ttl">Add Rule</div>
-    <button class="btn btn-g btn-sm" id="btn-mx" aria-label="Close dialog">✕</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+      <button class="btn btn-g btn-sm" id="btn-rule-min" title="Minimize modal" aria-label="Minimize dialog" type="button">─</button>
+      <button class="btn btn-g btn-sm" id="btn-rule-max" title="Maximize modal" aria-label="Maximize dialog" type="button">⤢</button>
+      <button class="btn btn-g btn-sm" id="btn-mx" aria-label="Close dialog" type="button">✕</button>
+    </div>
   </div>
   <div class="m-body">
     <input type="hidden" id="e-id"/>
@@ -7235,6 +7277,7 @@ label[for="watch-auto-reload"] {
         <button class="htip-btn" data-htip="format" aria-label="Help: Log Format" type="button" style="margin-left:6px;">?</button>
       </div>
       <select class="inp" id="wf-sel">
+        <option value="auto">🔍 Auto-detect format from sample line</option>
         <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
         <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
         <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
@@ -7367,6 +7410,14 @@ label[for="watch-auto-reload"] {
           <div class="f">
             <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
             <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-cl">Group # → <span style="color:#d29922">className</span></label>
+            <input class="inp inp-m" id="cm-cl" type="number" min="1" max="30" placeholder="e.g. 7"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-me">Group # → <span style="color:#39d353">methodName</span></label>
+            <input class="inp inp-m" id="cm-me" type="number" min="1" max="30" placeholder="e.g. 8"/>
           </div>
         </div>
       </div>
@@ -7841,6 +7892,7 @@ const S={
   wizKw:[],               // keyword chips
   ljAppenders:[],         // parsed log4j appenders
   _wizRx:'',_wizCm:{},   // generated wizard regex + mappings
+  _userSelectedFormat:false,
   swimlaneMode:false,
   activeTraceId:null,
   outlierCount:0,
@@ -7924,6 +7976,8 @@ function pl(line,tf,stacks,trees,all){
       visualStyle:r.visualStyle||{},events:[],
       correlationId:c.correlationId||null,
       level:c.level||null,
+      className:c.className||null,
+      methodName:c.methodName||null,
       slaThresholdMs:r.slaThresholdMs||null,
       rawLine:line.length>260?line.slice(0,260)+'…':line};
     switch(r.stackBehavior){
@@ -8461,9 +8515,9 @@ const TOKS=[
 
 /* Pattern templates for Advanced mode */
 const TMPLS={
-  java_std:{rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'level','3':'thread'}},
-  spring:  {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+[\w.$-]+\s+:\s+`,cm:{'1':'timestamp','2':'level','3':'thread'}},
-  log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+[\w.$-]+\s+-\s+`,cm:{'1':'timestamp','2':'thread','3':'level'}},
+  java_std:{rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+(\S+)\s+-\s+`,cm:{'1':'timestamp','2':'level','3':'thread','4':'className'}},
+  spring:  {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+(\S+)\s+:\s+`,cm:{'1':'timestamp','2':'level','3':'thread','4':'className'}},
+  log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+(\S+)\s+-\s+`,cm:{'1':'timestamp','2':'thread','3':'level','4':'className'}},
   json_ts: {rx:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"([^"]+)","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,cm:{'1':'timestamp','2':'level','3':'thread'}},
   iso_bare:{rx:String.raw`^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})\s+`,cm:{'1':'timestamp'}},
   csv:     {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|([^|]+)\|([^|]+)\|`,cm:{'1':'timestamp','2':'level','3':'thread'}},
@@ -8472,14 +8526,14 @@ const TMPLS={
 /* Wizard format presets */
 const WIZ_FMTS={
   java_std:{ex:'2024-01-15 12:34:56.789 INFO  [main] com.example.Svc - TX-BEGIN Order/42',
-    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+\S+\s+-\s+`,
-    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\[(\S+)\]\s+(\S+)\s+-\s+`,
+    cm:{'1':'timestamp','2':'level','3':'thread','4':'className'},ng:5,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
   spring:  {ex:'2024-01-15 12:34:56.789  INFO 12345 --- [nio-8080-exec-1] c.e.s.Svc   : TX-BEGIN',
-    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+\S+\s+:\s+`,
-    cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+(\S+)\s+:\s+`,
+    cm:{'1':'timestamp','2':'level','3':'thread','4':'className'},ng:5,ts:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
   log4j2_t:{ex:'12:34:56.789 [main] INFO  com.example.Svc - TX-BEGIN Order/42',
-    base:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+\S+\s+-\s+`,
-    cm:{'1':'timestamp','2':'thread','3':'level'},ng:4,ts:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
+    base:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+(\S+)\s+-\s+`,
+    cm:{'1':'timestamp','2':'thread','3':'level','4':'className'},ng:5,ts:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
   json:    {ex:'{"timestamp":"2024-01-15T12:34:56.789Z","level":"INFO","thread":"main","message":"TX-BEGIN"}',
     base:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"([^"]+)","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,
     cm:{'1':'timestamp','2':'level','3':'thread'},ng:4,ts:String.raw`"timestamp"\s*:\s*"([^"]+)"`},
@@ -8524,9 +8578,26 @@ const RXB={
       this.update();toast('Template applied.','info');
     });
     $('e-rx').addEventListener('input',()=>this.update());
-    $('e-tl').addEventListener('input',()=>this.update());
-    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>{
+    $('e-tl').addEventListener('input',()=>{
+      if (!S._userSelectedFormat) {
+        if (!$('e-tl').value.trim()) {
+          $('wf-sel').value = 'auto';
+          WIZ.ex();
+          WIZ.gen();
+        } else if ($('wf-sel').value === 'auto') {
+          const detected = WIZ.autoDetectFormat($('e-tl').value);
+          if (detected) {
+            $('wf-sel').value = detected;
+            WIZ.ex();
+            WIZ.gen();
+          }
+        }
+      }
+      this.update();
+    });
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>{
       $(id).addEventListener('input',()=>this.update());
+      $(id).addEventListener('change',()=>this.update());
     });
   },
 
@@ -8538,7 +8609,7 @@ const RXB={
 
   _cm(){
     const cm={};
-    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
+    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
       .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
     return cm;
   },
@@ -8566,7 +8637,9 @@ const RXB={
       { id: 'cm-el', label: '🏷 elementName' },
       { id: 'cm-py', label: '📦 payload' },
       { id: 'cm-co', label: '🔗 correlationId' },
-      { id: 'cm-lv', label: '⚡ level' }
+      { id: 'cm-lv', label: '⚡ level' },
+      { id: 'cm-cl', label: '🏛 className' },
+      { id: 'cm-me', label: 'ƒ methodName' }
     ];
     
     const currentMappings = {};
@@ -8607,6 +8680,12 @@ const RXB={
         const fid = mi.dataset.fid;
         const action = mi.dataset.action;
         
+        if (!$('e-use-custom-rx').checked) {
+          $('e-use-custom-rx').checked = true;
+          UI.syncCustomRxUI();
+          toast('Switched to Custom Regex to allow manual mapping.', 'info');
+        }
+
         fields.forEach(f => {
           if ($(f.id).value.trim() === String(gi)) {
             $(f.id).value = '';
@@ -8645,7 +8724,7 @@ const RXB={
   _hl(line,rxStr,cm){
     /* Color palette for capture groups */
     const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
-    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr',level:'⚡ lvl'};
+    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr',level:'⚡ lvl',className:'🏛 class',methodName:'ƒ method'};
     try{
       let rx,hasIdx=false;
       try{rx=new RegExp(rxStr,'d');hasIdx=true;}catch{try{rx=new RegExp(rxStr);}catch(e){return`<span class="rx-nm">⚠ Regex error: ${esc(e.message)}</span>`;}}
@@ -8691,11 +8770,34 @@ const RXB={
    ================================================================ */
 const WIZ={
   init(){
-    $('wf-sel').addEventListener('change',()=>{this.ex();this.gen();});
+    $('wf-sel').addEventListener('change',()=>{
+      S._userSelectedFormat = ($('wf-sel').value !== 'auto');
+      this.ex();
+      this.gen();
+    });
     $('btn-kw').addEventListener('click',()=>this.addKw());
     $('kw-inp').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();this.addKw();}});
-    ['wf-sel','kw-mode','kw-cap'].forEach(id=>$(id).addEventListener('change',()=>this.gen()));
+    ['kw-mode','kw-cap'].forEach(id=>$(id).addEventListener('change',()=>this.gen()));
     this.ex();this.gen();
+  },
+  autoDetectFormat(line) {
+    if (!line) return null;
+    for (const [key, fmt] of Object.entries(WIZ_FMTS)) {
+      if (key === 'custom') continue;
+      try {
+        const rx = new RegExp(fmt.base);
+        if (rx.test(line)) {
+          return key;
+        }
+      } catch (e) {}
+    }
+    if (line.trim().startsWith('{') && line.trim().endsWith('}')) {
+      return 'json';
+    }
+    if (line.includes('|')) {
+      return 'csv';
+    }
+    return null;
   },
   ex(){
     const f=WIZ_FMTS[$('wf-sel').value]||WIZ_FMTS.java_std;
@@ -8716,6 +8818,15 @@ const WIZ={
   },
   gen(){
     const fid=$('wf-sel').value;
+    if (fid === 'auto') {
+      S._wizRx = '^'; S._wizCm = {}; S._wizTs = '';
+      if (!$('e-use-custom-rx').checked) {
+        $('e-rx').value = '';
+        ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
+      }
+      RXB.update();
+      return;
+    }
     const fmt=WIZ_FMTS[fid]||WIZ_FMTS.java_std;
     const kws=S.wizKw,mode=$('kw-mode').value,cap=$('kw-cap').value;
     
@@ -8734,12 +8845,13 @@ const WIZ={
     }
     if(cap==='word'){rx+=String.raw`\s+(\S+)`;cm[String(ng++)]='elementName';}
     else if(cap==='line'){rx+=String.raw`\s+(.+)$`;cm[String(ng++)]='elementName';}
+    rx = rx.replace(/\\s\+\\s\+/g, '\\s+');
     S._wizRx=rx;S._wizCm=cm;S._wizTs=fmt.ts;
 
     // Update advanced UI outputs if custom regex is disabled
     if(!$('e-use-custom-rx').checked){
       $('e-rx').value=rx;
-      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
+      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>$(id).value='');
       const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
       $('cm-ts').value=fg('timestamp');
       $('cm-th').value=fg('thread');
@@ -8747,6 +8859,8 @@ const WIZ={
       $('cm-py').value=fg('payload');
       $('cm-co').value=fg('correlationId');
       $('cm-lv').value=fg('level');
+      $('cm-cl').value=fg('className');
+      $('cm-me').value=fg('methodName');
     }
     RXB.update();
   },
@@ -9994,6 +10108,19 @@ const UI={
 
   /* Modal */
   openM(rule){
+    const modal = $('rule-modal');
+    if (modal) {
+      modal.classList.remove('maximized');
+      modal.classList.remove('minimized');
+    }
+    const maxBtn = $('btn-rule-max');
+    if (maxBtn) maxBtn.textContent = '⤢';
+    if (!S.cfg) {
+      CFG.load({
+        globalSettings: { defaultTimeZone: "UTC", maxParsingThreads: 4, enableLatencyTracking: true },
+        elementRules: []
+      });
+    }
     const isN=!rule;
     $('m-ttl').textContent=isN?'Add New Rule':'Edit Rule';
     $('e-id').value=rule?.id||gid();
@@ -10004,7 +10131,8 @@ const UI={
     const cm=rule?.captureMapping||{};
     const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
     $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');$('cm-el').value=fg('elementName');$('cm-py').value=fg('payload');
-    $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');$('e-sla').value=rule?.slaThresholdMs||'';
+    $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');
+    $('cm-cl').value=fg('className');$('cm-me').value=fg('methodName');$('e-sla').value=rule?.slaThresholdMs||'';
     
     // Set custom checkbox state
     const isCustom = isN ? false : (rule.isCustom !== false);
@@ -10014,6 +10142,8 @@ const UI={
     S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';
     $('e-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
     $('tmpl-sel').value='';
+    $('wf-sel').value='auto';
+    S._userSelectedFormat = false;
     
     // Expand/collapse advanced section based on whether it is custom
     $('adv-body').classList.toggle('hidden', !isCustom);
@@ -10025,6 +10155,26 @@ const UI={
     $('mm').classList.remove('hidden');$('e-name').focus();
   },
   closeM(){$('mm').classList.add('hidden');},
+  toggleMaximize(){
+    const modal = $('rule-modal');
+    if (!modal) return;
+    const isMax = modal.classList.toggle('maximized');
+    if (isMax) {
+      modal.classList.remove('minimized');
+      $('btn-rule-max').textContent = '⤡';
+    } else {
+      $('btn-rule-max').textContent = '⤢';
+    }
+  },
+  toggleMinimize(){
+    const modal = $('rule-modal');
+    if (!modal) return;
+    const isMin = modal.classList.toggle('minimized');
+    if (isMin) {
+      modal.classList.remove('maximized');
+      $('btn-rule-max').textContent = '⤢';
+    }
+  },
   openAnn(n){
     this._annNode=n;
     $('ann-node-info').textContent=`${n.visualStyle?.icon||'•'} ${n.elementName||n.ruleName} (${fmtMs(n.duration)})`;
@@ -10086,7 +10236,7 @@ const UI={
       rx=$('e-rx').value.trim();if(!rx){toast('Pattern required.','error');return;}
       try{new RegExp(rx);}catch(e){toast('Invalid regex: '+e.message,'error');return;}
       cm={};
-      [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
+      [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
         .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
     }
     const hex=$('e-hex').value.trim();
@@ -10420,7 +10570,13 @@ header.hdr-rep{display:flex!important;padding:8px 16px;border-bottom:1px solid v
   },
 
   importRule(file){
-    if(!file||!S.cfg)return;
+    if(!file)return;
+    if(!S.cfg){
+      CFG.load({
+        globalSettings: { defaultTimeZone: "UTC", maxParsingThreads: 4, enableLatencyTracking: true },
+        elementRules: []
+      });
+    }
     const rdr=new FileReader();
     rdr.onload=ev=>{
       try{
@@ -12796,6 +12952,8 @@ $('res').addEventListener('click',e=>{
 });
 
 // Modal
+$('btn-rule-min').addEventListener('click', () => UI.toggleMinimize());
+$('btn-rule-max').addEventListener('click', () => UI.toggleMaximize());
 $('btn-mx').addEventListener('click',()=>UI.closeM());
 $('btn-mc').addEventListener('click',()=>UI.closeM());
 $('btn-ms').addEventListener('click',()=>UI.saveM());
@@ -12976,6 +13134,8 @@ const STREAM_PARSER = {
         events: [],
         correlationId: c.correlationId || null,
         level: c.level || null,
+        className: c.className || null,
+        methodName: c.methodName || null,
         slaThresholdMs: r.slaThresholdMs || null,
         rawLine: line.length > 260 ? line.slice(0, 260) + '…' : line
       };
@@ -15007,7 +15167,6 @@ const _cfgUp=CFG.up.bind(CFG);
 CFG.up=function(rule){
   _cfgUp(rule);
   $('btn-rule-test').disabled=!(S.cfg?.elementRules?.length);
-  $('btn-rule-imp').disabled=!S.cfg;
 };
 
 // Patch CFG.load to enable rule tools
@@ -15015,7 +15174,6 @@ const _cfgLoad=CFG.load.bind(CFG);
 CFG.load=function(c){
   _cfgLoad(c);
   $('btn-rule-test').disabled=false;
-  $('btn-rule-imp').disabled=false;
 };
 
 // Add nid tags to tree nodes during rendering (for context menu lookup)
@@ -18421,7 +18579,8 @@ const REX = {
               end: closeBracket + 1,
               fragment: pattern.slice(i, closeBracket + 1),
               description: `Named capture group: "${name}"`,
-              color: colors[groupCount % colors.length]
+              color: colors[groupCount % colors.length],
+              groupIndex: groupCount + 1
             });
             groupCount++;
             i = closeBracket + 1;
@@ -18444,7 +18603,8 @@ const REX = {
           end: i + 1,
           fragment: '(',
           description: `Capture group ${++groupCount} start`,
-          color: colors[(groupCount - 1) % colors.length]
+          color: colors[(groupCount - 1) % colors.length],
+          groupIndex: groupCount
         });
         i++;
         continue;
@@ -18582,13 +18742,31 @@ const REX = {
         literals += pattern[i];
         i++;
       }
-      segments.push({
-        start,
-        end: i,
-        fragment: literals,
-        description: `Literal text: "${esc(literals)}"`,
-        color: 'var(--t4)'
-      });
+      if (literals) {
+        segments.push({
+          start,
+          end: i,
+          fragment: literals,
+          description: `Literal text: "${esc(literals)}"`,
+          color: 'var(--t4)'
+        });
+      } else if (i === start) {
+        const c = pattern[i];
+        let desc = `Literal character: "${esc(c)}"`;
+        let color = 'var(--t4)';
+        if (c === '+' || c === '*' || c === '?') {
+          desc = c === '+' ? 'Quantifier: matches 1 or more times' : c === '*' ? 'Quantifier: matches 0 or more times' : 'Quantifier: matches 0 or 1 time (optional)';
+          color = 'var(--blue)';
+        }
+        segments.push({
+          start: i,
+          end: i + 1,
+          fragment: c,
+          description: desc,
+          color: color
+        });
+        i++;
+      }
     }
     return segments;
   }
@@ -18604,9 +18782,15 @@ $('btn-rex-explain').addEventListener('click', () => {
   wrap.classList.remove('hidden');
   
   const chipsHtml = segments.map((seg, idx) => {
+    let text = seg.fragment;
+    if (seg.groupIndex !== undefined) {
+      if (text === '(' || text.startsWith('(?')) {
+        text = `${text} [G${seg.groupIndex}]`;
+      }
+    }
     return `<span class="rex-token-chip" data-idx="${idx}"
       style="background:${seg.color};" title="${esc(seg.description)}">
-      ${esc(seg.fragment)}
+      ${esc(text)}
     </span>`;
   }).join('');
   
@@ -22902,59 +23086,62 @@ UI.svm(S.viewMode);
   };
 
   // 18. Wrap WIZ.test backdrop highlights
-  const originalWizTest = WIZ.test.bind(WIZ);
-  WIZ.test = function() {
-    originalWizTest();
-    const line = $('g-tl').value;
-    const rx = S._wizRx;
-    let backdrop = $('g-tl-backdrop');
-    if (!backdrop) {
-      const container = document.createElement('div');
-      container.className = 'g-tl-container';
-      container.style.cssText = 'position:relative; width:100%;';
-      
-      const input = $('g-tl');
-      input.parentNode.insertBefore(container, input);
-      
-      backdrop = document.createElement('div');
-      backdrop.id = 'g-tl-backdrop';
-      backdrop.className = 'g-tl-backdrop';
-      backdrop.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; font-family:var(--mono); font-size:11px; padding:6px 10px; border:1px solid transparent; white-space:pre; color:var(--t1); background:var(--bg-1); overflow:hidden; border-radius:var(--radius-sm);';
-      
-      container.appendChild(backdrop);
-      container.appendChild(input);
-      input.style.cssText = 'position:relative; background:transparent !important; color:transparent !important; caret-color:var(--t1) !important; width:100%;';
-      
-      input.addEventListener('scroll', () => {
-        backdrop.scrollLeft = input.scrollLeft;
-      });
-    }
+  if (WIZ.test) {
+    const originalWizTest = WIZ.test.bind(WIZ);
+    WIZ.test = function() {
+      originalWizTest();
+      const line = $('g-tl').value;
+      const rx = S._wizRx;
+      let backdrop = $('g-tl-backdrop');
+      if (!backdrop) {
+        const container = document.createElement('div');
+        container.className = 'g-tl-container';
+        container.style.cssText = 'position:relative; width:100%;';
+        
+        const input = $('g-tl');
+        input.parentNode.insertBefore(container, input);
+        
+        backdrop = document.createElement('div');
+        backdrop.id = 'g-tl-backdrop';
+        backdrop.className = 'g-tl-backdrop';
+        backdrop.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; font-family:var(--mono); font-size:11px; padding:6px 10px; border:1px solid transparent; white-space:pre; color:var(--t1); background:var(--bg-1); overflow:hidden; border-radius:var(--radius-sm);';
+        
+        container.appendChild(backdrop);
+        container.appendChild(input);
+        input.style.cssText = 'position:relative; background:transparent !important; color:transparent !important; caret-color:var(--t1) !important; width:100%;';
+        
+        input.addEventListener('scroll', () => {
+          backdrop.scrollLeft = input.scrollLeft;
+        });
+      }
 
-    if (!line || !rx) {
-      backdrop.textContent = line;
-      return;
-    }
-    try {
-      const m = new RegExp(rx).exec(line);
-      if (m) {
-        const matchText = m[0];
-        const start = m.index;
-        const end = start + matchText.length;
-        const before = line.slice(0, start);
-        const matched = line.slice(start, end);
-        const after = line.slice(end);
-        backdrop.innerHTML = esc(before) + '<mark style="background:rgba(255,149,0,0.3); color:var(--amber); border-radius:2px;">' + esc(matched) + '</mark>' + esc(after);
-      } else {
+      if (!line || !rx) {
+        backdrop.textContent = line;
+        return;
+      }
+      try {
+        const m = new RegExp(rx).exec(line);
+        if (m) {
+          const matchText = m[0];
+          const start = m.index;
+          const end = start + matchText.length;
+          const before = line.slice(0, start);
+          const matched = line.slice(start, end);
+          const after = line.slice(end);
+          backdrop.innerHTML = esc(before) + '<mark style="background:rgba(255,149,0,0.3); color:var(--amber); border-radius:2px;">' + esc(matched) + '</mark>' + esc(after);
+        } else {
+          backdrop.textContent = line;
+        }
+      } catch(e) {
         backdrop.textContent = line;
       }
-    } catch(e) {
-      backdrop.textContent = line;
-    }
-  };
+    };
+  }
 
   // 19. Categorized Accordion Palette in Regex Builder (RXB) with Token Search & Visual Group Mapping
   const originalRxbInit = RXB.init.bind(RXB);
   RXB.init = function() {
+    originalRxbInit();
     const bd = $('rxb-bd');
     if (!bd) return;
     bd.innerHTML = `
@@ -23028,16 +23215,6 @@ UI.svm(S.viewMode);
       });
     });
 
-    bd.addEventListener('click', e => {
-      const tk = e.target.closest('.tok'); if (!tk) return;
-      this.ins('e-rx', tk.dataset.s); this.update();
-    });
-
-    $('rxb-hdr').addEventListener('click', () => {
-      const open = $('rxb-bd').classList.toggle('vis');
-      $('rxb-hdr').classList.toggle('open', open);
-    });
-
     // Wire visual group mapping context menu click
     $('rx-pre').addEventListener('click', e => {
       const btn = e.target.closest('.rx-grp-btn');
@@ -23050,22 +23227,8 @@ UI.svm(S.viewMode);
     document.addEventListener('click', () => {
       this.hideMappingMenu();
     });
-
-    $('tmpl-sel').addEventListener('change', e => {
-      const tmpl = TMPLS[e.target.value]; if (!tmpl) return;
-      $('e-rx').value = tmpl.rx;
-      const fg = f => Object.entries(tmpl.cm).find(([,v]) => v === f)?.[0] || '';
-      $('cm-ts').value = fg('timestamp');
-      $('cm-th').value = fg('thread');
-      $('cm-el').value = fg('elementName');
-      $('cm-py').value = fg('payload');
-      $('cm-co').value = fg('correlationId');
-      $('cm-lv').value = fg('level');
-      this.update(); toast('Template applied.', 'info');
-    });
-    $('e-rx').addEventListener('input', () => this.update());
-    $('a-tl').addEventListener('input', () => this.update());
   };
+  RXB.init();
 
   // 20. Explainer color-coding logic
   const originalRexExplain = REX.explain.bind(REX);
