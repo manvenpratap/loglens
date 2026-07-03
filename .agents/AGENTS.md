@@ -39,3 +39,20 @@
 ## Git Version Control Rule
 - **ALWAYS** perform a `git add`, `git commit` (with a descriptive message), and `git push` command after every major change or milestone is successfully finished and verified.
 
+## Regression Test Suite Rules (MANDATORY)
+The project maintains a formal regression test package at `tests/`. All agents MUST follow these rules:
+
+1. **Read** `tests/README.md` before adding or modifying any test.
+2. **Run tests before committing**: After implementing any feature or fixing any bug, run:
+   ```bash
+   ./run_tests.sh tests/test_NN_<feature>.py   # New/changed module only
+   ./run_tests.sh                               # Full suite — no regressions
+   ```
+3. **Write a test for every feature**: Every new feature added to `loglens.html` must have a corresponding test file in `tests/`. File naming: `test_NN_<feature_name>.py` where NN is sequential.
+4. **Never delete tests**: If a feature changes, update the existing test file rather than deleting it. Deleted tests = silent regressions.
+5. **Use shared fixtures**: Always use `page_with_data` (data loaded) or `blank_page` (empty state) from `conftest.py`. Never copy-paste browser setup code.
+6. **Keep tests independent**: Each test function must be self-contained — use the fixture's fresh browser instance.
+7. **Add `assert_no_critical_errors(page)`** at the end of any test that exercises JS module behaviour.
+8. **Update `tests/README.md` Coverage Map** when a new test file is added.
+9. **`pytest.ini` stays at project root** — do not move it.
+10. **`run_tests.sh` is the canonical runner** — document all test run invocations using it.

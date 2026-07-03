@@ -3,6 +3,9 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **CSS background-clip Compatibility Fixes (v6.9.65 — COMPLETED)**:
+  - Fixed stylesheet warnings by explicitly adding the standard `background-clip: text` CSS property alongside the existing vendor-prefixed `-webkit-background-clip: text` rules for both the primary header logo mark (`.logo .acc`) and the onboarding welcome panel branding wordmark (`.ob-wordmark .acc`).
+
 - **AI Insights, Focus Mode, First-Run UX & A11y Polish (v6.9.64 — COMPLETED)**:
   - **Phase 8 — AI Insights Engine** (`§JS-42`): Zero-dependency heuristic analysis of `S.trees`. Produces 2–5 insight cards per session covering: slowest thread (avg + max duration), error hotspot (top rule by error count), SLA breach list (worst offender highlighted), statistical duration outliers (2.5σ above mean), and multi-thread parallelism summary. Cards rendered as `role="region"` in Stats view with amber/red/green/blue severity badges.
   - **Phase 9 — Focus Mode** (`§JS-43`): `FOCUS_MODE` module toggled via the `F` key. Adds `body.focus-mode` CSS class to hide header, sidebar, action bar, and timeline mini-map — maximising the timeline viewport. Amber pill toast confirms state change. State persisted in `sessionStorage`. CSS `§31` controls all hide rules.
