@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Rule Creator UI fixes and Javascript Initialization Robustness (v6.9.68 — COMPLETED)**:
+  - **Javascript Startup Robustness**: Resolved a javascript `TypeError` at startup when trying to bind `WIZ.test` (which was undefined), ensuring sequential javascript initialization blocks (such as `RXB.init()`, regex explainer color-coding, and custom overlays) execute successfully without crashing.
+  - **Visual Group Mapping Restoration**: Fixed visual group mapping context menu activation inside `RXB.init` by calling `originalRxbInit` to register core change and input listeners correctly, resolving a regression where mapping fields did not auto-refresh preview layout.
+  - **Add Rule Bootstrapping & Tests**: Aligned the Add Rule modal triggers and XML import tests (`test_12_log4j_import.py` and `test_13_rule_creator.py`) to properly verify modal maximize/minimize toggles and blank page bootstrapping workflows.
+
 - **Unified Elements Rule Creator & Detailed Helper Tooltips (v6.9.67 — COMPLETED)**:
   - **Single-View Merger**: Eliminated the Guided and Advanced tabs (`#mb-g`, `#mb-a`, `.m-tog`) in the Elements Rule Creator modal (`#mm`). Replaced them with a unified view containing preset selection, keyword chips tagging, match options, and a single live match preview input (`#e-tl` / `#rx-pre`) with click-to-map group features.
   - **Customize Regex Pattern Accordion**: Grouped all custom regex fields, pattern template selector, token builder, and capture mappings under an expandable/collapsible advanced section accordion (`#adv-hdr` and `#adv-body`) with rotating chevrons.
