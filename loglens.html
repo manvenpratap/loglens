@@ -1367,6 +1367,41 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   box-shadow:0 1px 4px rgba(0,0,0,.25);
 }
 .m-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+/* Advanced section accordion styles */
+.adv-section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-2);border:1px solid var(--bdr);
+  border-radius:var(--rounded-md);padding:8px 12px;cursor:pointer;
+  font-family:var(--display);font-size:11px;font-weight:600;
+  transition:background .12s,border-color .12s;
+  user-select:none;
+}
+.adv-section-hdr:hover{
+  background:var(--bg-3) !important;
+  border-color:var(--amber-dim) !important;
+}
+.adv-section-hdr.open{
+  border-bottom-left-radius:0;border-bottom-right-radius:0;
+  border-color:var(--amber-dim) !important;
+}
+.adv-section-hdr.open .adv-chev{
+  transform:rotate(90deg);
+  color:var(--amber);
+}
+.adv-section-body{
+  border:1px solid var(--bdr);border-top:none;
+  border-radius:0 0 var(--rounded-md) var(--rounded-md);
+  padding:14px;background:var(--bg-1);
+  display:flex;flex-direction:column;gap:12px;
+}
+.adv-section-body.hidden{
+  display:none !important;
+}
+.adv-chev{
+  transition:transform .16s ease;
+  font-size:12px;
+  color:var(--t4);
+}
 .m-ftr{
   display:flex;justify-content:flex-end;gap:8px;
   padding:12px 18px;
@@ -7169,11 +7204,7 @@ label[for="watch-auto-reload"] {
 <div class="modal">
   <div class="m-hdr">
     <div class="m-title" id="m-ttl">Add Rule</div>
-    <div class="m-tog">
-      <button class="m-btn active" id="mb-g"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span> Guided</button>
-      <button class="m-btn" id="mb-a"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> Advanced</button>
-    </div>
-    <button class="btn btn-g btn-sm" id="btn-mx" style="margin-left:7px;" aria-label="Close dialog">✕</button>
+    <button class="btn btn-g btn-sm" id="btn-mx" aria-label="Close dialog">✕</button>
   </div>
   <div class="m-body">
     <input type="hidden" id="e-id"/>
@@ -7185,7 +7216,7 @@ label[for="watch-auto-reload"] {
         <input class="inp" id="e-name" placeholder="e.g. Transaction Start"/>
       </div>
       <div class="f">
-        <label class="fl" for="e-beh">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button">?</button></label>
+        <label class="fl" for="e-beh">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button" style="margin-left:6px;">?</button></label>
         <select class="inp" id="e-beh">
           <option value="push">push: opens block</option>
           <option value="pop">pop: closes block</option>
@@ -7196,142 +7227,147 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
 
-    <!-- GUIDED -->
-    <div id="g-body">
-      <div class="ws-step">
-        <div class="ws-hdr"><div class="ws-num">1</div><span>Select Log Format</span></div>
-        <select class="inp" id="wf-sel">
-          <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
-          <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
-          <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
-          <option value="json">JSON Structured  ({"timestamp":…,"thread":…,"message":…})</option>
-          <option value="csv">CSV / Pipe-delimited  (ts|level|thread|msg)</option>
-          <option value="custom">Custom: see Log4j tab or use Advanced mode</option>
-        </select>
-        <div id="wf-ex" class="grx" style="color:var(--t4);font-size:9px;"></div>
+    <!-- RULE BUILDER (UNIFIED) -->
+    <div class="ws-step">
+      <div class="ws-hdr">
+        <div class="ws-num">1</div>
+        <span>Select Log Format</span>
+        <button class="htip-btn" data-htip="format" aria-label="Help: Log Format" type="button" style="margin-left:6px;">?</button>
       </div>
+      <select class="inp" id="wf-sel">
+        <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
+        <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
+        <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
+        <option value="json">JSON Structured  ({"timestamp":…,"thread":…,"message":…})</option>
+        <option value="csv">CSV / Pipe-delimited  (ts|level|thread|msg)</option>
+        <option value="custom">Custom (requires Custom Regex)</option>
+      </select>
+      <div id="wf-ex" class="grx" style="color:var(--t4);font-size:9px;"></div>
+    </div>
 
-      <div class="ws-step">
-        <div class="ws-hdr">
-          <div class="ws-num">2</div>
-          <span>Keywords / Markers</span>
-          <span class="cm" style="font-size:10px;font-weight:400;margin-left:4px;">(exact strings this rule looks for)</span>
-        </div>
-        <div class="kw-row">
-          <input class="inp" id="kw-inp" placeholder="e.g.  TX-BEGIN  or  entering method" style="flex:1"/>
-          <button class="btn btn-sm" id="btn-kw">+ Add</button>
-        </div>
-        <div id="kw-chips" class="kw-box"></div>
-        <div class="g2" style="margin-top:4px;">
-          <div class="f">
-            <div class="fl">Match mode</div>
-            <select class="inp" id="kw-mode">
-              <option value="any">Any keyword (OR)</option>
-              <option value="all">All keywords (AND, via lookahead)</option>
-            </select>
-          </div>
-          <div class="f">
-            <div class="fl">After keywords, capture…</div>
-            <select class="inp" id="kw-cap">
-              <option value="word">Next word → elementName</option>
-              <option value="line">Rest of line → elementName</option>
-              <option value="none">Nothing (just detect)</option>
-            </select>
-          </div>
-        </div>
+    <div class="ws-step">
+      <div class="ws-hdr">
+        <div class="ws-num">2</div>
+        <span>Keywords / Markers</span>
+        <span class="cm" style="font-size:10px;font-weight:400;margin-left:4px;">(exact strings this rule looks for)</span>
+        <button class="htip-btn" data-htip="keywords" aria-label="Help: Keywords" type="button" style="margin-left:6px;">?</button>
       </div>
-
-      <div class="ws-step">
-        <div class="ws-hdr"><div class="ws-num">3</div><span>Generated Pattern Preview</span></div>
-        <div class="grx-l">Regex (auto-generated: switch to Advanced to edit manually)</div>
-        <div id="g-rx-out" class="grx">add keywords above to generate</div>
-        <div class="g2" style="margin-top:6px;">
-          <div class="f">
-            <div class="fl">Capture Mappings</div>
-            <div id="g-cm-prev" style="font-size:10px;font-family:var(--mono);color:var(--t3);line-height:1.8;">-</div>
-          </div>
-          <div class="f">
-            <label class="fl" for="g-tl">Quick Test</label>
-            <input class="inp inp-m" id="g-tl" placeholder="Paste sample line…"/>
-            <div id="g-to" style="font-size:11px;margin-top:3px;"></div>
-          </div>
+      <div class="kw-row">
+        <input class="inp" id="kw-inp" placeholder="e.g.  TX-BEGIN  or  entering method" style="flex:1"/>
+        <button class="btn btn-sm" id="btn-kw">+ Add</button>
+      </div>
+      <div id="kw-chips" class="kw-box"></div>
+      <div class="g2" style="margin-top:4px;">
+        <div class="f">
+          <div class="fl">Match mode</div>
+          <select class="inp" id="kw-mode">
+            <option value="any">Any keyword (OR)</option>
+            <option value="all">All keywords (AND, via lookahead)</option>
+          </select>
+        </div>
+        <div class="f">
+          <div class="fl">After keywords, capture…</div>
+          <select class="inp" id="kw-cap">
+            <option value="word">Next word → elementName</option>
+            <option value="line">Rest of line → elementName</option>
+            <option value="none">Nothing (just detect)</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <!-- ADVANCED -->
-    <div id="a-body" class="hidden">
+    <!-- Live Preview & Match Test (Always Visible) -->
+    <div class="ws-step">
+      <div class="ws-hdr"><div class="ws-num">3</div><span>Live Match Preview &amp; Test</span></div>
       <div class="f">
-        <label class="fl" for="tmpl-sel">Pattern Template <span class="cm">(optional: loads a preset base)</span></label>
-        <select class="inp" id="tmpl-sel">
-          <option value="">- none -</option>
-          <option value="java_std">Java Standard (Log4j): ts level [thread] logger - </option>
-          <option value="spring">Spring Boot: ts level PID --- [thread] logger : </option>
-          <option value="log4j2">Log4j2 Time: HH:mm:ss.SSS [thread] level logger - </option>
-          <option value="json_ts">JSON: {timestamp, level, thread, message…</option>
-          <option value="csv">CSV / Pipe-delimited: ts|level|thread|msg</option>
-          <option value="iso_bare">ISO timestamp + anything</option>
-        </select>
-      </div>
-      <div class="f">
-        <div class="fl" style="display:flex; justify-content:space-between; align-items:center;">
-          <label for="e-rx">Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></label>
-          <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
-        </div>
-        <textarea class="inp inp-m" id="e-rx" rows="3"
-          placeholder="^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\w+\s+\[(\S+)\].*TX-BEGIN\s+(\S+)">
-        </textarea>
-        <div id="rex-explain-results" class="hidden"></div>
-      </div>
-
-      <!-- Token builder -->
-      <div class="rxb">
-        <div class="rxb-hdr" id="rxb-hdr">
-          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
-          <span>Pattern Token Builder</span>
-          <span style="font-size:10px;color:var(--t4);margin-left:4px;">(click to insert at cursor)</span>
-          <span class="chev">▶</span>
-        </div>
-        <div class="rxb-bd" id="rxb-bd"></div>
-      </div>
-
-      <!-- Live preview -->
-      <div class="f">
-        <label class="fl" for="a-tl">Live Match Preview</label>
-        <input class="inp inp-m" id="a-tl"
-          placeholder="Paste a sample log line. Preview updates as you type…"/>
-        <div class="rx-pre" id="rx-pre">
+        <input class="inp inp-m" id="e-tl" placeholder="Paste a sample log line here to test the pattern…"/>
+        <div class="rx-pre" id="rx-pre" style="margin-top: 6px;">
           <span class="rx-em">Type a sample line above to see live match highlighting.</span>
         </div>
       </div>
+    </div>
 
-      <!-- Capture mappings -->
-      <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg></span> Capture Group → Field Mapping<button class="htip-btn" data-htip="capture" aria-label="Help: Capture Groups" type="button" style="margin-left:6px">?</button></div>
-      <div class="fh">Enter the capture group index (1, 2, 3…) for each field.</div>
-      <div class="g2">
-        <div class="f">
-          <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
-          <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
+    <!-- Collapsible Advanced Section -->
+    <div class="adv-section-wrap" style="margin-top: 16px;">
+      <div class="adv-section-hdr" id="adv-hdr" tabindex="0">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span>⚙</span>
+          <span>Customize Regex Pattern &amp; Mappings (Advanced)</span>
         </div>
-        <div class="f">
-          <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
-          <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
+        <span class="adv-chev" style="margin-left:auto;">›</span>
+      </div>
+      
+      <div class="adv-section-body hidden" id="adv-body">
+        <!-- Custom regex enable checkbox -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="e-use-custom-rx" style="cursor:pointer;"/>
+          <label for="e-use-custom-rx" style="cursor:pointer;font-size:11px;font-weight:600;color:var(--t2);">Customize Regex Pattern (overrides auto-generated pattern)</label>
+          <button class="htip-btn" data-htip="custom_regex" aria-label="Help: Customize Regex" type="button" style="margin-left:6px;">?</button>
         </div>
-        <div class="f">
-          <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
-          <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
+
+        <div class="f" id="adv-tmpl-row">
+          <label class="fl" for="tmpl-sel">Pattern Template <span class="cm">(optional: loads a preset base)</span></label>
+          <select class="inp" id="tmpl-sel">
+            <option value="">- none -</option>
+            <option value="java_std">Java Standard (Log4j): ts level [thread] logger - </option>
+            <option value="spring">Spring Boot: ts level PID --- [thread] logger : </option>
+            <option value="log4j2">Log4j2 Time: HH:mm:ss.SSS [thread] level logger - </option>
+            <option value="json_ts">JSON: {timestamp, level, thread, message…</option>
+            <option value="csv">CSV / Pipe-delimited: ts|level|thread|msg</option>
+            <option value="iso_bare">ISO timestamp + anything</option>
+          </select>
         </div>
+
         <div class="f">
-          <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
-          <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
+          <div class="fl" style="display:flex; justify-content:space-between; align-items:center;">
+            <label for="e-rx">Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></label>
+            <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
+          </div>
+          <textarea class="inp inp-m" id="e-rx" rows="3" placeholder="Regex pattern..."></textarea>
+          <div id="rex-explain-results" class="hidden"></div>
         </div>
-        <div class="f">
-          <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
-          <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
+
+        <!-- Token builder -->
+        <div class="rxb" id="adv-token-builder">
+          <div class="adv-token-hdr" id="rxb-hdr" style="cursor:pointer;padding:6px 10px;background:var(--bg-2);border-bottom:1px solid var(--bdr);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+              <span>Pattern Token Builder</span>
+              <span style="font-size:10px;color:var(--t4);font-weight:normal;">(click to insert)</span>
+            </div>
+            <span class="chev">▶</span>
+          </div>
+          <div class="rxb-bd" id="rxb-bd"></div>
         </div>
-        <div class="f">
-          <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
-          <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
+
+        <!-- Capture mappings -->
+        <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg></span> Capture Group → Field Mapping<button class="htip-btn" data-htip="capture" aria-label="Help: Capture Groups" type="button" style="margin-left:6px">?</button></div>
+        <div class="fh">Enter the capture group index (1, 2, 3…) for each field, or click on a highlighted segment above to map it.</div>
+        <div class="g2">
+          <div class="f">
+            <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
+            <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
+            <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
+            <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
+            <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
+            <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
+          </div>
+          <div class="f">
+            <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
+            <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
+          </div>
         </div>
       </div>
     </div>
@@ -7801,7 +7837,6 @@ const S={
   logFile:null,threads:[],trees:{},activeThr:null,
   worker:null,wUrl:null,parseStart:0,
   viewMode:'cfg',         // 'cfg'|'hlp'|'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
-  modalMode:'guided',     // 'guided'|'advanced'
   sbCollapsed:false,
   wizKw:[],               // keyword chips
   ljAppenders:[],         // parsed log4j appenders
@@ -8478,13 +8513,21 @@ const RXB={
     $('tmpl-sel').addEventListener('change',e=>{
       const tmpl=TMPLS[e.target.value];if(!tmpl)return;
       $('e-rx').value=tmpl.rx;
+      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
       const fg=f=>Object.entries(tmpl.cm).find(([,v])=>v===f)?.[0]||'';
-      $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');
-      $('cm-el').value='';$('cm-py').value='';
+      $('cm-ts').value=fg('timestamp');
+      $('cm-th').value=fg('thread');
+      $('cm-el').value=fg('elementName');
+      $('cm-py').value=fg('payload');
+      $('cm-co').value=fg('correlationId');
+      $('cm-lv').value=fg('level');
       this.update();toast('Template applied.','info');
     });
     $('e-rx').addEventListener('input',()=>this.update());
-    $('a-tl').addEventListener('input',()=>this.update());
+    $('e-tl').addEventListener('input',()=>this.update());
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>{
+      $(id).addEventListener('input',()=>this.update());
+    });
   },
 
   ins(id,snip){
@@ -8495,13 +8538,13 @@ const RXB={
 
   _cm(){
     const cm={};
-    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload']]
+    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
       .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
     return cm;
   },
 
   update(){
-    const line=$('a-tl').value,rxStr=$('e-rx').value.trim(),cm=this._cm();
+    const line=$('e-tl').value,rxStr=$('e-rx').value.trim(),cm=this._cm();
     const pre=$('rx-pre');
     if(!line){pre.innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';return;}
     if(!rxStr){pre.innerHTML='<span class="rx-em">Enter a regex pattern to preview matches.</span>';return;}
@@ -8652,7 +8695,6 @@ const WIZ={
     $('btn-kw').addEventListener('click',()=>this.addKw());
     $('kw-inp').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();this.addKw();}});
     ['wf-sel','kw-mode','kw-cap'].forEach(id=>$(id).addEventListener('change',()=>this.gen()));
-    $('g-tl').addEventListener('input',()=>this.test());
     this.ex();this.gen();
   },
   ex(){
@@ -8676,7 +8718,14 @@ const WIZ={
     const fid=$('wf-sel').value;
     const fmt=WIZ_FMTS[fid]||WIZ_FMTS.java_std;
     const kws=S.wizKw,mode=$('kw-mode').value,cap=$('kw-cap').value;
-    if(fid==='custom'){$('g-rx-out').textContent='Switch to Advanced mode to write a custom pattern.';$('g-cm-prev').textContent='-';return;}
+    
+    if(fid==='custom'){
+      if(!$('e-use-custom-rx').checked){
+        $('e-use-custom-rx').checked=true;
+        UI.syncCustomRxUI();
+      }
+    }
+
     let rx=fmt.base;const cm={...fmt.cm};let ng=fmt.ng;
     if(kws.length>0){
       const esc2=kws.map(k=>escRx(k));
@@ -8686,23 +8735,20 @@ const WIZ={
     if(cap==='word'){rx+=String.raw`\s+(\S+)`;cm[String(ng++)]='elementName';}
     else if(cap==='line'){rx+=String.raw`\s+(.+)$`;cm[String(ng++)]='elementName';}
     S._wizRx=rx;S._wizCm=cm;S._wizTs=fmt.ts;
-    $('g-rx-out').textContent=rx;
-    const FL={timestamp:'⏱ timestamp',thread:'🧵 thread',elementName:'🏷 elementName',payload:'📦 payload'};
-    $('g-cm-prev').innerHTML=Object.entries(cm).map(([g,f])=>
-      `<span style="color:var(--amber);">[${g}]</span> → ${FL[f]||f}<br/>`).join('')||'—';
-    this.test();
-  },
-  test(){
-    const line=$('g-tl').value,rx=S._wizRx,out=$('g-to');
-    if(!line||!rx){out.textContent='';return;}
-    try{
-      const m=new RegExp(rx).exec(line);
-      if(m){
-        out.innerHTML=`<span style="color:var(--green);">✓ Match</span>`+
-          (m.length>1?`<span style="color:var(--t3);font-size:10px;margin-left:6px;">`+
-          m.slice(1).map((v,i)=>`[${i+1}] ${esc(v)}`).join('  ')+'</span>':'');
-      }else out.innerHTML=`<span style="color:var(--red);">✕ No match</span>`;
-    }catch{out.innerHTML=`<span style="color:var(--red);">Regex error</span>`;}
+
+    // Update advanced UI outputs if custom regex is disabled
+    if(!$('e-use-custom-rx').checked){
+      $('e-rx').value=rx;
+      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
+      const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
+      $('cm-ts').value=fg('timestamp');
+      $('cm-th').value=fg('thread');
+      $('cm-el').value=fg('elementName');
+      $('cm-py').value=fg('payload');
+      $('cm-co').value=fg('correlationId');
+      $('cm-lv').value=fg('level');
+    }
+    RXB.update();
   },
 };
 
@@ -9959,9 +10005,23 @@ const UI={
     const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
     $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');$('cm-el').value=fg('elementName');$('cm-py').value=fg('payload');
     $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');$('e-sla').value=rule?.slaThresholdMs||'';
-    S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';$('g-tl').value='';$('g-to').textContent='';
-    $('a-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
-    $('tmpl-sel').value='';WIZ.ex();WIZ.gen();this.setMM(S.modalMode);
+    
+    // Set custom checkbox state
+    const isCustom = isN ? false : (rule.isCustom !== false);
+    $('e-use-custom-rx').checked = isCustom;
+
+    // Reset inputs
+    S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';
+    $('e-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
+    $('tmpl-sel').value='';
+    
+    // Expand/collapse advanced section based on whether it is custom
+    $('adv-body').classList.toggle('hidden', !isCustom);
+    $('adv-hdr').classList.toggle('open', isCustom);
+
+    WIZ.ex();WIZ.gen();
+    this.syncCustomRxUI();
+    
     $('mm').classList.remove('hidden');$('e-name').focus();
   },
   closeM(){$('mm').classList.add('hidden');},
@@ -9990,22 +10050,43 @@ const UI={
     this.closeAnn();
     this.rv();
   },
-  setMM(m){
-    S.modalMode=m;
-    $('g-body').classList.toggle('hidden',m!=='guided');$('a-body').classList.toggle('hidden',m!=='advanced');
-    $('mb-g').classList.toggle('active',m==='guided');$('mb-a').classList.toggle('active',m==='advanced');
+  syncCustomRxUI(){
+    const custom=$('e-use-custom-rx').checked;
+    $('tmpl-sel').disabled = !custom;
+    $('e-rx').disabled = !custom;
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>{
+      $(id).disabled = !custom;
+    });
+    
+    const tb = $('adv-token-builder');
+    if (tb) {
+      tb.style.opacity = custom ? '1' : '0.5';
+      tb.style.pointerEvents = custom ? 'all' : 'none';
+    }
+    
+    if (custom) {
+      if (!$('e-rx').value.trim()) {
+        WIZ.gen();
+        $('e-rx').value = S._wizRx || '';
+      }
+    } else {
+      WIZ.gen();
+    }
+    RXB.update();
   },
   saveM(){
     const name=$('e-name').value.trim(),beh=$('e-beh').value;
     if(!name){toast('Name required.','error');return;}
     let rx,cm;
-    if(S.modalMode==='guided'){
+    const isCustom = $('e-use-custom-rx').checked;
+    if(!isCustom){
       rx=S._wizRx||'';cm=S._wizCm||{};
       if(!rx||rx==='^'){toast('Add keywords to generate a pattern.','error');return;}
     } else {
       rx=$('e-rx').value.trim();if(!rx){toast('Pattern required.','error');return;}
       try{new RegExp(rx);}catch(e){toast('Invalid regex: '+e.message,'error');return;}
-      cm={};[['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
+      cm={};
+      [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level']]
         .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
     }
     const hex=$('e-hex').value.trim();
@@ -10014,7 +10095,8 @@ const UI={
     const slaThresholdMs=slaVal?parseInt(slaVal,10):undefined;
     CFG.up({id:$('e-id').value,name,regexPattern:rx,captureMapping:cm,stackBehavior:beh,
       visualStyle:{accentColor:col,icon:$('e-ico').value.trim()||'•'},
-      slaThresholdMs});
+      slaThresholdMs,
+      isCustom});
     toast(`Rule "${name}" saved.`,'success');this.closeM();
   },
 
@@ -10061,7 +10143,8 @@ const UI={
       if(!chk.checked)return;const a=S.ljAppenders[i];if(!a||!a._c)return;
       const{regex,captureMapping,tsPattern}=a._c;
       CFG.up({id:gid(),name:`${a.name}: Start (Log4j import)`,regexPattern:regex,
-        captureMapping,stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'}});
+        captureMapping,stackBehavior:'push',visualStyle:{accentColor:'var(--blue)',icon:'▶'},
+        isCustom:true});
       if(tsPattern&&S.cfg.globalSettings&&!S.cfg.globalSettings.globalTimestampPattern){
         S.cfg.globalSettings.globalTimestampPattern=tsPattern;CFG.sgs();
       }
@@ -12717,8 +12800,19 @@ $('btn-mx').addEventListener('click',()=>UI.closeM());
 $('btn-mc').addEventListener('click',()=>UI.closeM());
 $('btn-ms').addEventListener('click',()=>UI.saveM());
 $('mm').addEventListener('click',e=>{if(e.target===$('mm'))UI.closeM();});
-$('mb-g').addEventListener('click',()=>UI.setMM('guided'));
-$('mb-a').addEventListener('click',()=>UI.setMM('advanced'));
+$('adv-hdr').addEventListener('click',()=>{
+  const body=$('adv-body');
+  const hdr=$('adv-hdr');
+  const open=!body.classList.toggle('hidden');
+  hdr.classList.toggle('open', open);
+});
+$('adv-hdr').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('adv-hdr').click();
+  }
+});
+$('e-use-custom-rx').addEventListener('change',()=>UI.syncCustomRxUI());
 $('e-col').addEventListener('input',e=>$('e-hex').value=e.target.value);
 $('e-hex').addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))$('e-col').value=e.target.value;});
 
@@ -21971,6 +22065,33 @@ const HTIP = (() => {
         <code>(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[.,]\\d{3})</code><br>
         <code>(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z?)</code><br><br>
         LogLens supports ISO 8601, epoch milliseconds, and common log date formats.`
+    },
+    format: {
+      title: 'Log Format Presets',
+      body: `Select the predefined log format that matches your logs:<br><br>
+        • <strong>Java Standard (Log4j/Logback)</strong>: Matches typical timestamp, log level, thread in brackets, class name, and message.<br><br>
+        • <strong>Spring Boot Default</strong>: Matches typical Spring Boot console logs, including PID and the double-dash marker.<br><br>
+        • <strong>Log4j2 Time-only</strong>: Presets for logs with time-only timestamp (HH:mm:ss.SSS).<br><br>
+        • <strong>JSON Structured</strong>: Matches parsed JSON fields natively.<br><br>
+        • <strong>CSV / Pipe-delimited</strong>: Matches log columns separated by the pipe character (<code>|</code>).`
+    },
+    keywords: {
+      title: 'Keywords / Markers Help',
+      body: `Keywords are literal strings that this rule looks for inside a log line:<br><br>
+        • <strong>Match Mode</strong>:<br>
+          &nbsp;&nbsp;- <i>Any keyword (OR)</i>: Matches if the log line contains at least one of the added keywords.<br>
+          &nbsp;&nbsp;- <i>All keywords (AND)</i>: Matches only if the log line contains all of the added keywords (useful for filtering specific logs).<br><br>
+        • <strong>After keywords, capture...</strong>:<br>
+          &nbsp;&nbsp;- <i>Next word → elementName</i>: Extracts the next whitespace-separated word following the matched keyword and sets it as the transaction name (e.g., matching 'Order/' in 'Order/42' captures 'Order/42').<br>
+          &nbsp;&nbsp;- <i>Rest of line → elementName</i>: Captures everything in the log line after the keyword.<br>
+          &nbsp;&nbsp;- <i>Nothing (just detect)</i>: Only registers a match without capturing extra transaction name info.`
+    },
+    custom_regex: {
+      title: 'Custom Regex Customization',
+      body: `For users who need custom patterns beyond the guided presets:<br><br>
+        • When enabled, the auto-generated regex is overridden, and you can edit the regular expression directly.<br><br>
+        • You must map your regex's capture group numbers (1, 2, 3...) to target LogLens fields like <code>timestamp</code>, <code>thread</code>, and <code>elementName</code>.<br><br>
+        • Use the <strong>Pattern Token Builder</strong> to quickly insert common patterns like timestamp regexes, thread groups, levels, or JSON property matchers.`
     }
   };
 

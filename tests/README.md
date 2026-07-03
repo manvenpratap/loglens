@@ -112,7 +112,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Focus Mode | test_10_focus_mode | 9 |
 | Accessibility Polish | test_11_accessibility | 8 |
 | Log4j Config XML Import | test_12_log4j_import | 1 |
-| **Total** | | **74** |
+| Unified Rule Creator & Tooltips | test_13_rule_creator | 4 |
+| **Total** | | **78** |
 
 ---
 

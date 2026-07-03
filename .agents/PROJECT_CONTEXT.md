@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Unified Elements Rule Creator & Detailed Helper Tooltips (v6.9.67 — COMPLETED)**:
+  - **Single-View Merger**: Eliminated the Guided and Advanced tabs (`#mb-g`, `#mb-a`, `.m-tog`) in the Elements Rule Creator modal (`#mm`). Replaced them with a unified view containing preset selection, keyword chips tagging, match options, and a single live match preview input (`#e-tl` / `#rx-pre`) with click-to-map group features.
+  - **Customize Regex Pattern Accordion**: Grouped all custom regex fields, pattern template selector, token builder, and capture mappings under an expandable/collapsible advanced section accordion (`#adv-hdr` and `#adv-body`) with rotating chevrons.
+  - **Regex-Free Checkbox Guard**: Added a "Customize Regex Pattern (Advanced)" checkbox (`#e-use-custom-rx`). When unchecked, advanced fields are read-only and display the auto-generated regex and capture mappings live as keywords are typed/deleted. Checking it enables editing to let advanced users tweak the auto-generated baseline.
+  - **Contextual Help Popovers**: Extended the `HTIP` module's `TIPS` dictionary with detailed help descriptions for `format` (presets details), `keywords` (OR/AND match modes, next word/rest of line capture), and `custom_regex` (advanced editing instructions). Added interactive `?` help buttons to log format selector, keywords, and custom regex checkboxes.
+  - **Regression Test Coverage**: Created `tests/test_13_rule_creator.py` containing Playwright assertions for tab-less modal checks, tooltip popovers rendering, custom regex enabling, and match previews highlighting. Updated coverage map in `tests/README.md`. All 78 tests pass successfully.
+
 - **Log4j Config XML Import Alignment & Fix (v6.9.66 — COMPLETED)**:
   - **Inline Result Container**: Relocated the `#lj-res` element (which displays the appender count and the "Preview & Import" action button) from below Section 05 at the bottom of the Settings view, to sit inline directly inside Section 03 (Rule Generators) dashboard card under the "Import XML Config File" button (`#btn-lj-imp`). This places preview actions in the correct context for a seamless workflow.
   - **Empty Configuration Initialization Guard**: Fixed a bug where clicking "Import Selected" on the preview modal did nothing when the app was in an empty/fresh state (`S.cfg === null`). Updated `UI.impSheet()` to check for a null configuration and automatically load default rules from `DEF_CFG` (mimicking "New Config" button behavior) before adding the imported appender rules and enabling configuration operations.
@@ -782,5 +789,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-07-02*  
-*Updated By: Antigravity (Trace Explorer view panel integration v6.9.62)*
+*Last Updated: 2026-07-03*  
+*Updated By: Antigravity (Unified Elements Rule Creator & Detailed Helper Tooltips v6.9.67)*
