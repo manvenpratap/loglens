@@ -168,6 +168,17 @@ async def test_rule_creator_advanced_accordion_interaction(page_with_data):
     await expect(page.locator('#cm-th')).not_to_be_disabled()
     await expect(page.locator('#cm-el')).not_to_be_disabled()
 
+    # Test Capture Group Mapping accordion collapse toggling
+    map_hdr = page.locator('#map-hdr')
+    map_body = page.locator('#map-body')
+    await expect(map_body).not_to_have_class("map-section-body hidden")
+    await map_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(map_body).to_have_class("map-section-body hidden")
+    await map_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(map_body).not_to_have_class("map-section-body hidden")
+
     # Uncheck custom regex -> Disables inputs again
     await chk_custom.click()
     await page.wait_for_timeout(300)

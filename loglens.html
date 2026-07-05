@@ -1406,7 +1406,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .m-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
 /* Advanced section accordion styles */
-.adv-section-hdr, .ovr-section-hdr, .vis-section-hdr {
+.adv-section-hdr, .ovr-section-hdr, .vis-section-hdr, .map-section-hdr {
   display:flex;align-items:center;justify-content:space-between;
   background:var(--bg-2);border:1px solid var(--bdr);
   border-radius:var(--rounded-md);padding:8px 12px;cursor:pointer;
@@ -1414,15 +1414,15 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   transition:background .12s,border-color .12s;
   user-select:none;
 }
-.adv-section-hdr:hover, .ovr-section-hdr:hover, .vis-section-hdr:hover {
+.adv-section-hdr:hover, .ovr-section-hdr:hover, .vis-section-hdr:hover, .map-section-hdr:hover {
   background:var(--bg-3) !important;
   border-color:var(--amber-dim) !important;
 }
-.adv-section-hdr.open, .ovr-section-hdr.open, .vis-section-hdr.open {
+.adv-section-hdr.open, .ovr-section-hdr.open, .vis-section-hdr.open, .map-section-hdr.open {
   border-bottom-left-radius:0;border-bottom-right-radius:0;
   border-color:var(--amber-dim) !important;
 }
-.adv-section-hdr::after, .ovr-section-hdr::after, .vis-section-hdr::after {
+.adv-section-hdr::after, .ovr-section-hdr::after, .vis-section-hdr::after, .map-section-hdr::after {
   content: "+";
   font-family: var(--mono);
   font-size: 13px;
@@ -1431,17 +1431,17 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   margin-left: auto;
   transition: color 0.12s ease;
 }
-.adv-section-hdr.open::after, .ovr-section-hdr.open::after, .vis-section-hdr.open::after {
+.adv-section-hdr.open::after, .ovr-section-hdr.open::after, .vis-section-hdr.open::after, .map-section-hdr.open::after {
   content: "−";
   color: var(--amber);
 }
-.adv-section-body, .ovr-section-body, .vis-section-body {
+.adv-section-body, .ovr-section-body, .vis-section-body, .map-section-body {
   border:1px solid var(--bdr);border-top:none;
   border-radius:0 0 var(--rounded-md) var(--rounded-md);
   padding:14px;background:var(--bg-1);
   display:flex;flex-direction:column;gap:12px;
 }
-.adv-section-body.hidden, .ovr-section-body.hidden, .vis-section-body.hidden {
+.adv-section-body.hidden, .ovr-section-body.hidden, .vis-section-body.hidden, .map-section-body.hidden {
   display:none !important;
 }
 .m-ftr{
@@ -7381,7 +7381,7 @@ label[for="watch-auto-reload"] {
 
         <!-- Token builder -->
         <div class="rxb" id="adv-token-builder">
-          <div class="adv-token-hdr" id="rxb-hdr" style="cursor:pointer;padding:6px 10px;background:var(--bg-2);border-bottom:1px solid var(--bdr);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:space-between;">
+          <div class="adv-token-hdr rxb-hdr" id="rxb-hdr" style="cursor:pointer;padding:6px 10px;background:var(--bg-2);border-bottom:1px solid var(--bdr);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
               <span>Pattern Token Builder</span>
@@ -7393,40 +7393,51 @@ label[for="watch-auto-reload"] {
         </div>
 
         <!-- Capture mappings -->
-        <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg></span> Capture Group → Field Mapping<button class="htip-btn" data-htip="capture" aria-label="Help: Capture Groups" type="button" style="margin-left:6px">?</button></div>
-        <div class="fh">Enter the capture group index (1, 2, 3…) for each field, or click on a highlighted segment above to map it.</div>
-        <div class="g2">
-          <div class="f">
-            <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
-            <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
+        <div class="map-section-wrap" style="margin-top: 8px;">
+          <div class="map-section-hdr open" id="map-hdr" tabindex="0">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg></span>
+              <span>Capture Group → Field Mapping</span>
+              <button class="htip-btn" data-htip="capture" aria-label="Help: Capture Groups" type="button" style="margin-left:6px" onclick="event.stopPropagation()">?</button>
+            </div>
           </div>
-          <div class="f">
-            <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
-            <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
-            <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
-            <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
-            <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
-            <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-cl">Group # → <span style="color:#d29922">className</span></label>
-            <input class="inp inp-m" id="cm-cl" type="number" min="1" max="30" placeholder="e.g. 7"/>
-          </div>
-          <div class="f">
-            <label class="fl" for="cm-me">Group # → <span style="color:#39d353">methodName</span></label>
-            <input class="inp inp-m" id="cm-me" type="number" min="1" max="30" placeholder="e.g. 8"/>
+          
+          <div class="map-section-body" id="map-body">
+            <div class="fh">Enter the capture group index (1, 2, 3…) for each field, or click on a highlighted segment above to map it.</div>
+            <div class="g2">
+              <div class="f">
+                <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
+                <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
+                <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
+                <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
+                <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
+                <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
+                <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-cl">Group # → <span style="color:#d29922">className</span></label>
+                <input class="inp inp-m" id="cm-cl" type="number" min="1" max="30" placeholder="e.g. 7"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-me">Group # → <span style="color:#39d353">methodName</span></label>
+                <input class="inp inp-m" id="cm-me" type="number" min="1" max="30" placeholder="e.g. 8"/>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -8734,6 +8745,48 @@ const RXB={
         badge.className = 'badge b-gray';
       } else {
         badge.className = 'badge b-green';
+      }
+    }
+
+    const pillsContainer = $('cap-diagram-pills');
+    if (pillsContainer) {
+      const fields = [
+        { id: 'cm-ts', name: 'timestamp' },
+        { id: 'cm-th', name: 'thread' },
+        { id: 'cm-el', name: 'elementName' },
+        { id: 'cm-py', name: 'payload' },
+        { id: 'cm-co', name: 'correlationId' },
+        { id: 'cm-lv', name: 'level' },
+        { id: 'cm-cl', name: 'className' },
+        { id: 'cm-me', name: 'methodName' }
+      ];
+      const mapped = [];
+      fields.forEach(f => {
+        const val = $(f.id).value.trim();
+        if (val && !isNaN(val)) {
+          mapped.push({ grp: parseInt(val, 10), name: f.name });
+        }
+      });
+      mapped.sort((a, b) => a.grp - b.grp);
+      
+      const FIELD_COLORS = {
+        timestamp: { bg: 'rgba(88,166,255,0.12)', fg: 'var(--blue)', border: 'var(--blue-g)' },
+        thread: { bg: 'rgba(63,185,80,0.12)', fg: 'var(--green)', border: 'var(--green-g)' },
+        elementName: { bg: 'rgba(255,149,0,0.12)', fg: 'var(--amber)', border: 'var(--amber-g)' },
+        payload: { bg: 'rgba(220,38,38,0.12)', fg: 'var(--red)', border: 'var(--red-g)' },
+        correlationId: { bg: 'rgba(197,130,255,0.12)', fg: 'var(--purple)', border: 'var(--purple-g)' },
+        level: { bg: 'rgba(210,153,34,0.12)', fg: 'var(--yellow)', border: 'var(--yellow-g)' },
+        className: { bg: 'rgba(210,153,34,0.12)', fg: '#d29922', border: '#d29922' },
+        methodName: { bg: 'rgba(57,211,83,0.12)', fg: '#39d353', border: '#39d353' }
+      };
+
+      if (mapped.length === 0) {
+        pillsContainer.innerHTML = '<span style="color:var(--t4);font-style:italic;">No fields mapped yet</span>';
+      } else {
+        pillsContainer.innerHTML = mapped.map(m => {
+          const colors = FIELD_COLORS[m.name];
+          return `<span style="background:${colors.bg}; color:${colors.fg}; border:1px solid ${colors.border}; padding:2px 4px; border-radius:var(--radius-sm);">[Group ${m.grp}: ${m.name}]</span>`;
+        }).join(' ');
       }
     }
 
@@ -10272,6 +10325,8 @@ const UI={
     $('ovr-hdr').classList.remove('open');
     $('vis-body').classList.add('hidden');
     $('vis-hdr').classList.remove('open');
+    $('map-body').classList.remove('hidden');
+    $('map-hdr').classList.add('open');
 
     // Reset the format indicator badge
     const badge = $('preview-format-badge');
@@ -13104,6 +13159,18 @@ $('vis-hdr').addEventListener('keydown', e => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
     $('vis-hdr').click();
+  }
+});
+$('map-hdr').addEventListener('click',()=>{
+  const body=$('map-body');
+  const hdr=$('map-hdr');
+  const open=!body.classList.toggle('hidden');
+  hdr.classList.toggle('open', open);
+});
+$('map-hdr').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('map-hdr').click();
   }
 });
 $('e-use-custom-rx').addEventListener('change',()=>UI.syncCustomRxUI());
@@ -23297,26 +23364,16 @@ UI.svm(S.viewMode);
   };
 
   // 21. Dynamic Preset Legend capture mapping visual diagram
-  const capHeader = document.querySelector('button[data-htip="capture"]')?.closest('.sh');
-  if (capHeader) {
-    const parent = capHeader.nextElementSibling;
-    if (parent) {
-      const diag = document.createElement('div');
-      diag.className = 'cap-diagram';
-      diag.style.cssText = 'margin-top:12px; padding:10px; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--radius-md); font-family:var(--mono); font-size:10px; line-height:1.5; color:var(--t3);';
-      diag.innerHTML = `
-        <div style="font-size:9px; text-transform:uppercase; color:var(--t4); font-weight:bold; margin-bottom:6px;">Visual Group Mapping Guide</div>
-        <div style="display:flex; flex-wrap:wrap; gap:4px; font-family:var(--mono);">
-          <span style="background:rgba(88,166,255,0.12); color:var(--blue); border:1px solid var(--blue-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 1: timestamp]</span>
-          <span style="background:rgba(63,185,80,0.12); color:var(--green); border:1px solid var(--green-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 2: thread]</span>
-          <span style="background:rgba(255,149,0,0.12); color:var(--amber); border:1px solid var(--amber-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 3: elementName]</span>
-          <span style="background:rgba(220,38,38,0.12); color:var(--red); border:1px solid var(--red-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 4: payload]</span>
-          <span style="background:rgba(197,130,255,0.12); color:var(--purple); border:1px solid var(--purple-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 5: correlationId]</span>
-          <span style="background:rgba(210,153,34,0.12); color:var(--yellow); border:1px solid var(--yellow-g); padding:2px 4px; border-radius:var(--radius-sm);">[Group 6: level]</span>
-        </div>
-      `;
-      parent.appendChild(diag);
-    }
+  const mapBody = $('map-body');
+  if (mapBody) {
+    const diag = document.createElement('div');
+    diag.className = 'cap-diagram';
+    diag.style.cssText = 'margin-top:12px; padding:10px; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--radius-md); font-family:var(--mono); font-size:10px; line-height:1.5; color:var(--t3);';
+    diag.innerHTML = `
+      <div style="font-size:9px; text-transform:uppercase; color:var(--t4); font-weight:bold; margin-bottom:6px;">Visual Group Mapping Guide</div>
+      <div style="display:flex; flex-wrap:wrap; gap:4px; font-family:var(--mono);" id="cap-diagram-pills"></div>
+    `;
+    mapBody.appendChild(diag);
   }
 
   // 22. Preset SLA Threshold helper text in guided wizard
