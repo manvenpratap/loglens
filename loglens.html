@@ -12029,6 +12029,19 @@ const RX_HIST = {
    §JS-33b UNPARSED LINE ANALYZER
    ================================================================ */
 const UNPARSED = {
+  currentClusters: [],
+
+  createRuleFromIndex(idx) {
+    const c = this.currentClusters?.[idx];
+    if (!c) return;
+    const rawSigForRegex = c.sig.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
+    let pattern = '^' + rawSigForRegex;
+    if (pattern.endsWith('…')) {
+      pattern = pattern.slice(0, -1) + '.*';
+    }
+    this.createRuleFromPattern(pattern, c.sampleLine);
+  },
+
   createRuleFromPattern(pattern, sampleLine) {
     UI.openM(null);
     if (sampleLine) {
@@ -12072,6 +12085,7 @@ const UNPARSED = {
   render() {
     const stats = S.stats;
     const clusters = this.cluster(stats.unparsedSample);
+    this.currentClusters = clusters;
     if (clusters.length === 0) {
       $('unparsed-results').innerHTML = '<div style="color:var(--green);">✓ All log lines successfully parsed! 100% rule coverage.</div>';
       return;
@@ -12080,8 +12094,6 @@ const UNPARSED = {
     let html = '<div style="font-weight:bold;margin-bottom:4px;">Top Unparsed Patterns:</div>';
     clusters.forEach((c, idx) => {
       const escSig = esc(c.sig);
-      const rawSigForRegex = c.sig.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
-      const escSampleLine = c.sampleLine.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       html += `
         <div style="background:var(--bg-1); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); padding:6px; margin-bottom:4px;">
           <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--amber); margin-bottom:2px;">
@@ -12089,7 +12101,7 @@ const UNPARSED = {
             <span>${c.count} occurrence${c.count!==1?'s':''}</span>
           </div>
           <div style="font-family:var(--mono); word-break:break-all; margin-bottom:4px;">${escSig}</div>
-          <button class="btn btn-xs btn-bl" onclick="UNPARSED.createRuleFromPattern('^' + '${rawSigForRegex.replace(/'/g, "\\'")}', '${escSampleLine}')" style="padding:2px 4px; font-size:9px;">+ Create Rule</button>
+          <button class="btn btn-xs btn-bl" onclick="UNPARSED.createRuleFromIndex(${idx})" style="padding:2px 4px; font-size:9px;">+ Create Rule</button>
         </div>
       `;
     });

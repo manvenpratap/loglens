@@ -3,6 +3,10 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Unparsed Regex Index-Based Handlers Fix (v6.9.75 — COMPLETED)**:
+  - **Memory-Based Index Referencing**: Added `UNPARSED.currentClusters` and `UNPARSED.createRuleFromIndex()` to hold cluster references in memory and pass clean indices in the HTML `onclick` handlers, eliminating JavaScript evaluation corruption of regex backslashes.
+  - **Ellipsis Truncation Guard**: Handled ellipsis `…` termination inside signature conversions, safely replacing them with `.*` to guarantee valid, compileable regular expressions.
+
 - **Unparsed Analyzer Representative Pre-population Fix (v6.9.74 — COMPLETED)**:
   - **Sample Line Tracking**: Modified `UNPARSED.cluster()` to track and store a representative raw `sampleLine` for each structural cluster.
   - **Modal Pre-population**: Updated `UNPARSED.createRuleFromPattern()` to populate `#e-tl` with the representative log line and dispatch the input event, enabling automatic match highlighting in Step 1 of the Rule Creator modal instantly.
