@@ -1406,7 +1406,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .m-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
 /* Advanced section accordion styles */
-.adv-section-hdr{
+.adv-section-hdr, .ovr-section-hdr, .vis-section-hdr {
   display:flex;align-items:center;justify-content:space-between;
   background:var(--bg-2);border:1px solid var(--bdr);
   border-radius:var(--rounded-md);padding:8px 12px;cursor:pointer;
@@ -1414,25 +1414,25 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   transition:background .12s,border-color .12s;
   user-select:none;
 }
-.adv-section-hdr:hover{
+.adv-section-hdr:hover, .ovr-section-hdr:hover, .vis-section-hdr:hover {
   background:var(--bg-3) !important;
   border-color:var(--amber-dim) !important;
 }
-.adv-section-hdr.open{
+.adv-section-hdr.open, .ovr-section-hdr.open, .vis-section-hdr.open {
   border-bottom-left-radius:0;border-bottom-right-radius:0;
   border-color:var(--amber-dim) !important;
 }
-.adv-section-hdr.open .adv-chev{
+.adv-section-hdr.open .adv-chev, .ovr-section-hdr.open .adv-chev, .vis-section-hdr.open .adv-chev {
   transform:rotate(90deg);
   color:var(--amber);
 }
-.adv-section-body{
+.adv-section-body, .ovr-section-body, .vis-section-body {
   border:1px solid var(--bdr);border-top:none;
   border-radius:0 0 var(--rounded-md) var(--rounded-md);
   padding:14px;background:var(--bg-1);
   display:flex;flex-direction:column;gap:12px;
 }
-.adv-section-body.hidden{
+.adv-section-body.hidden, .ovr-section-body.hidden, .vis-section-body.hidden {
   display:none !important;
 }
 .adv-chev{
@@ -7243,8 +7243,6 @@ label[for="watch-auto-reload"] {
   <div class="m-hdr">
     <div class="m-title" id="m-ttl">Add Rule</div>
     <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-      <button class="btn btn-g btn-sm" id="btn-rule-min" title="Minimize modal" aria-label="Minimize dialog" type="button">─</button>
-      <button class="btn btn-g btn-sm" id="btn-rule-max" title="Maximize modal" aria-label="Maximize dialog" type="button">⤢</button>
       <button class="btn btn-g btn-sm" id="btn-mx" aria-label="Close dialog" type="button">✕</button>
     </div>
   </div>
@@ -7269,59 +7267,13 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
 
-    <!-- RULE BUILDER (UNIFIED) -->
+    <!-- Step 1: Paste Sample Log Line (Auto-Detect Layout) -->
     <div class="ws-step">
       <div class="ws-hdr">
         <div class="ws-num">1</div>
-        <span>Select Log Format</span>
-        <button class="htip-btn" data-htip="format" aria-label="Help: Log Format" type="button" style="margin-left:6px;">?</button>
+        <span>Paste Sample Log Line</span>
+        <span id="preview-format-badge" class="badge b-gray" style="margin-left:auto;font-size:10px;text-transform:uppercase;">Format: Auto-detecting…</span>
       </div>
-      <select class="inp" id="wf-sel">
-        <option value="auto">🔍 Auto-detect format from sample line</option>
-        <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
-        <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
-        <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
-        <option value="json">JSON Structured  ({"timestamp":…,"thread":…,"message":…})</option>
-        <option value="csv">CSV / Pipe-delimited  (ts|level|thread|msg)</option>
-        <option value="custom">Custom (requires Custom Regex)</option>
-      </select>
-      <div id="wf-ex" class="grx" style="color:var(--t4);font-size:9px;"></div>
-    </div>
-
-    <div class="ws-step">
-      <div class="ws-hdr">
-        <div class="ws-num">2</div>
-        <span>Keywords / Markers</span>
-        <span class="cm" style="font-size:10px;font-weight:400;margin-left:4px;">(exact strings this rule looks for)</span>
-        <button class="htip-btn" data-htip="keywords" aria-label="Help: Keywords" type="button" style="margin-left:6px;">?</button>
-      </div>
-      <div class="kw-row">
-        <input class="inp" id="kw-inp" placeholder="e.g.  TX-BEGIN  or  entering method" style="flex:1"/>
-        <button class="btn btn-sm" id="btn-kw">+ Add</button>
-      </div>
-      <div id="kw-chips" class="kw-box"></div>
-      <div class="g2" style="margin-top:4px;">
-        <div class="f">
-          <div class="fl">Match mode</div>
-          <select class="inp" id="kw-mode">
-            <option value="any">Any keyword (OR)</option>
-            <option value="all">All keywords (AND, via lookahead)</option>
-          </select>
-        </div>
-        <div class="f">
-          <div class="fl">After keywords, capture…</div>
-          <select class="inp" id="kw-cap">
-            <option value="word">Next word → elementName</option>
-            <option value="line">Rest of line → elementName</option>
-            <option value="none">Nothing (just detect)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Preview & Match Test (Always Visible) -->
-    <div class="ws-step">
-      <div class="ws-hdr"><div class="ws-num">3</div><span>Live Match Preview &amp; Test</span></div>
       <div class="f">
         <input class="inp inp-m" id="e-tl" placeholder="Paste a sample log line here to test the pattern…"/>
         <div class="rx-pre" id="rx-pre" style="margin-top: 6px;">
@@ -7330,8 +7282,63 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
 
+    <!-- Collapsible Accordion: Manual Override (Format & Keywords) -->
+    <div class="ovr-section-wrap" style="margin-top: 8px;">
+      <div class="ovr-section-hdr" id="ovr-hdr" tabindex="0">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span>🛠</span>
+          <span>Manual Override (Format &amp; Keywords)</span>
+        </div>
+        <span class="adv-chev" style="margin-left:auto;">›</span>
+      </div>
+      
+      <div class="ovr-section-body hidden" id="ovr-body">
+        <!-- Log Format Preset -->
+        <div class="f">
+          <label class="fl" for="wf-sel">Log Format Preset <button class="htip-btn" data-htip="format" aria-label="Help: Log Format" type="button" style="margin-left:6px;">?</button></label>
+          <select class="inp" id="wf-sel">
+            <option value="auto">🔍 Auto-detect format from sample line</option>
+            <option value="java_std">Java Standard: Log4j / Logback  (ts level [thread] logger - msg)</option>
+            <option value="spring">Spring Boot Default  (ts level PID --- [thread] logger : msg)</option>
+            <option value="log4j2_t">Log4j2 Time-only  (HH:mm:ss.SSS [thread] level logger - msg)</option>
+            <option value="json">JSON Structured  ({"timestamp":…,"thread":…,"message":…})</option>
+            <option value="csv">CSV / Pipe-delimited  (ts|level|thread|msg)</option>
+            <option value="custom">Custom (requires Custom Regex)</option>
+          </select>
+          <div id="wf-ex" class="grx" style="color:var(--t4);font-size:9px;"></div>
+        </div>
+
+        <!-- Keywords / Markers -->
+        <div class="f">
+          <label class="fl" for="kw-inp">Keywords / Markers <span class="cm">(exact strings this rule looks for)</span> <button class="htip-btn" data-htip="keywords" aria-label="Help: Keywords" type="button" style="margin-left:6px;">?</button></label>
+          <div class="kw-row">
+            <input class="inp" id="kw-inp" placeholder="e.g.  TX-BEGIN  or  entering method" style="flex:1"/>
+            <button class="btn btn-sm" id="btn-kw">+ Add</button>
+          </div>
+          <div id="kw-chips" class="kw-box" style="margin-top:4px;"></div>
+          <div class="g2" style="margin-top:4px;">
+            <div class="f">
+              <div class="fl">Match mode</div>
+              <select class="inp" id="kw-mode">
+                <option value="any">Any keyword (OR)</option>
+                <option value="all">All keywords (AND, via lookahead)</option>
+              </select>
+            </div>
+            <div class="f">
+              <div class="fl">After keywords, capture…</div>
+              <select class="inp" id="kw-cap">
+                <option value="word">Next word → elementName</option>
+                <option value="line">Rest of line → elementName</option>
+                <option value="none">Nothing (just detect)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Collapsible Advanced Section -->
-    <div class="adv-section-wrap" style="margin-top: 16px;">
+    <div class="adv-section-wrap" style="margin-top: 8px;">
       <div class="adv-section-hdr" id="adv-hdr" tabindex="0">
         <div style="display:flex;align-items:center;gap:6px;">
           <span>⚙</span>
@@ -7423,30 +7430,41 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
 
-    <!-- Shared: visual style -->
-    <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="11.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/></svg></span> Visual Style</div>
-    <div class="g2">
-      <div class="f">
-        <label class="fl" for="e-col">Accent Color</label>
-        <div class="flex gap1 ic">
-          <input type="color" id="e-col" value="#58a6ff"
-            style="width:32px;height:28px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);
-            background:transparent;cursor:pointer;padding:1px;flex-shrink:0;"/>
-          <input class="inp inp-m" id="e-hex" placeholder="#58a6ff" style="flex:1"/>
+    <!-- Collapsible Visual Style & SLA Settings Section -->
+    <div class="vis-section-wrap" style="margin-top: 8px;">
+      <div class="vis-section-hdr" id="vis-hdr" tabindex="0">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span>🎨</span>
+          <span>Appearance &amp; SLA Settings (Optional)</span>
         </div>
+        <span class="adv-chev" style="margin-left:auto;">›</span>
       </div>
-      <div class="f">
-        <label class="fl" for="e-ico">Icon <span class="cm">(emoji or symbol)</span></label>
-        <input class="inp" id="e-ico" placeholder="▶ 🌐 🗄 ⚠ ✕" style="font-size:15px;"/>
-      </div>
-    </div>
+      
+      <div class="vis-section-body hidden" id="vis-body">
+        <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="11.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/></svg></span> Visual Style</div>
+        <div class="g2">
+          <div class="f">
+            <label class="fl" for="e-col">Accent Color</label>
+            <div class="flex gap1 ic">
+              <input type="color" id="e-col" value="#58a6ff"
+                style="width:32px;height:28px;border:1px solid var(--bdr);border-radius:var(--rounded-sm);
+                background:transparent;cursor:pointer;padding:1px;flex-shrink:0;"/>
+              <input class="inp inp-m" id="e-hex" placeholder="#58a6ff" style="flex:1"/>
+            </div>
+          </div>
+          <div class="f">
+            <label class="fl" for="e-ico">Icon <span class="cm">(emoji or symbol)</span></label>
+            <input class="inp" id="e-ico" placeholder="▶ 🌐 🗄 ⚠ ✕" style="font-size:15px;"/>
+          </div>
+        </div>
 
-    <!-- Shared: SLA Settings -->
-    <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> SLA Settings<button class="htip-btn" data-htip="sla" aria-label="Help: SLA Threshold" type="button" style="margin-left:6px">?</button></div>
-    <div class="g2">
-      <div class="f">
-        <label class="fl" for="e-sla">SLA Threshold (ms) <span class="cm">(optional)</span></label>
-        <input class="inp" id="e-sla" type="number" min="0" placeholder="e.g. 500"/>
+        <div class="sh"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> SLA Settings<button class="htip-btn" data-htip="sla" aria-label="Help: SLA Threshold" type="button" style="margin-left:6px">?</button></div>
+        <div class="g2">
+          <div class="f">
+            <label class="fl" for="e-sla">SLA Threshold (ms) <span class="cm">(optional)</span></label>
+            <input class="inp" id="e-sla" type="number" min="0" placeholder="e.g. 500"/>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -8617,6 +8635,27 @@ const RXB={
   update(){
     const line=$('e-tl').value,rxStr=$('e-rx').value.trim(),cm=this._cm();
     const pre=$('rx-pre');
+
+    const fid = $('wf-sel').value;
+    const badge = $('preview-format-badge');
+    const FMT_LABELS = {
+      auto: 'Auto-detecting…',
+      java_std: 'Java Standard',
+      spring: 'Spring Boot Default',
+      log4j2_t: 'Log4j2 Time-only',
+      json: 'JSON Structured',
+      csv: 'CSV / Pipe-delimited',
+      custom: 'Custom Regex'
+    };
+    if (badge) {
+      badge.textContent = `Format: ${FMT_LABELS[fid] || fid}`;
+      if (fid === 'auto') {
+        badge.className = 'badge b-gray';
+      } else {
+        badge.className = 'badge b-green';
+      }
+    }
+
     if(!line){pre.innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';return;}
     if(!rxStr){pre.innerHTML='<span class="rx-em">Enter a regex pattern to preview matches.</span>';return;}
     pre.innerHTML=this._hl(line,rxStr,cm);
@@ -10113,8 +10152,6 @@ const UI={
       modal.classList.remove('maximized');
       modal.classList.remove('minimized');
     }
-    const maxBtn = $('btn-rule-max');
-    if (maxBtn) maxBtn.textContent = '⤢';
     if (!S.cfg) {
       CFG.load({
         globalSettings: { defaultTimeZone: "UTC", maxParsingThreads: 4, enableLatencyTracking: true },
@@ -10149,32 +10186,25 @@ const UI={
     $('adv-body').classList.toggle('hidden', !isCustom);
     $('adv-hdr').classList.toggle('open', isCustom);
 
+    // Reset/collapse override and appearance/SLA accordions by default
+    $('ovr-body').classList.add('hidden');
+    $('ovr-hdr').classList.remove('open');
+    $('vis-body').classList.add('hidden');
+    $('vis-hdr').classList.remove('open');
+
+    // Reset the format indicator badge
+    const badge = $('preview-format-badge');
+    if (badge) {
+      badge.textContent = 'Format: Auto-detecting…';
+      badge.className = 'badge b-gray';
+    }
+
     WIZ.ex();WIZ.gen();
     this.syncCustomRxUI();
     
     $('mm').classList.remove('hidden');$('e-name').focus();
   },
   closeM(){$('mm').classList.add('hidden');},
-  toggleMaximize(){
-    const modal = $('rule-modal');
-    if (!modal) return;
-    const isMax = modal.classList.toggle('maximized');
-    if (isMax) {
-      modal.classList.remove('minimized');
-      $('btn-rule-max').textContent = '⤡';
-    } else {
-      $('btn-rule-max').textContent = '⤢';
-    }
-  },
-  toggleMinimize(){
-    const modal = $('rule-modal');
-    if (!modal) return;
-    const isMin = modal.classList.toggle('minimized');
-    if (isMin) {
-      modal.classList.remove('maximized');
-      $('btn-rule-max').textContent = '⤢';
-    }
-  },
   openAnn(n){
     this._annNode=n;
     $('ann-node-info').textContent=`${n.visualStyle?.icon||'•'} ${n.elementName||n.ruleName} (${fmtMs(n.duration)})`;
@@ -12952,8 +12982,6 @@ $('res').addEventListener('click',e=>{
 });
 
 // Modal
-$('btn-rule-min').addEventListener('click', () => UI.toggleMinimize());
-$('btn-rule-max').addEventListener('click', () => UI.toggleMaximize());
 $('btn-mx').addEventListener('click',()=>UI.closeM());
 $('btn-mc').addEventListener('click',()=>UI.closeM());
 $('btn-ms').addEventListener('click',()=>UI.saveM());
@@ -12968,6 +12996,30 @@ $('adv-hdr').addEventListener('keydown', e => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
     $('adv-hdr').click();
+  }
+});
+$('ovr-hdr').addEventListener('click',()=>{
+  const body=$('ovr-body');
+  const hdr=$('ovr-hdr');
+  const open=!body.classList.toggle('hidden');
+  hdr.classList.toggle('open', open);
+});
+$('ovr-hdr').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('ovr-hdr').click();
+  }
+});
+$('vis-hdr').addEventListener('click',()=>{
+  const body=$('vis-body');
+  const hdr=$('vis-hdr');
+  const open=!body.classList.toggle('hidden');
+  hdr.classList.toggle('open', open);
+});
+$('vis-hdr').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('vis-hdr').click();
   }
 });
 $('e-use-custom-rx').addEventListener('change',()=>UI.syncCustomRxUI());

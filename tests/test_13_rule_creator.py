@@ -18,7 +18,7 @@ async def _load_settings(page):
 
 @pytest.mark.asyncio
 async def test_rule_creator_unified_modal(page_with_data):
-    """Rule creator modal must not have mode tabs, and must show steps and advanced accordion."""
+    """Rule creator modal must not have mode tabs, and must show steps and accordion sections."""
     page = page_with_data
     await _load_settings(page)
 
@@ -32,27 +32,28 @@ async def test_rule_creator_unified_modal(page_with_data):
     m_ttl = page.locator('#m-ttl')
     await expect(m_ttl).to_contain_text("Add New Rule")
 
-    # 3. Assert mode tabs (.m-tog, mb-g, mb-a) do NOT exist on the modal
+    # 3. Assert mode tabs do NOT exist
     mb_g = page.locator('#mb-g')
     mb_a = page.locator('#mb-a')
     await expect(mb_g).not_to_be_visible()
     await expect(mb_a).not_to_be_visible()
 
-    # 4. Check unified layout steps are visible
-    step_1 = page.locator('.ws-step >> text=Select Log Format')
-    step_2 = page.locator('.ws-step >> text=Keywords / Markers')
-    step_3 = page.locator('.ws-step >> text=Live Match Preview & Test')
+    # 4. Check unified layout Step 1 is visible
+    step_1 = page.locator('.ws-step >> text=Paste Sample Log Line')
     await expect(step_1).to_be_visible()
-    await expect(step_2).to_be_visible()
-    await expect(step_3).to_be_visible()
 
-    # 5. Check collapsible advanced section header is visible
+    # 5. Check collapsible accordion headers are visible
+    ovr_hdr = page.locator('#ovr-hdr')
     adv_hdr = page.locator('#adv-hdr')
+    vis_hdr = page.locator('#vis-hdr')
+    await expect(ovr_hdr).to_be_visible()
     await expect(adv_hdr).to_be_visible()
+    await expect(vis_hdr).to_be_visible()
 
-    # Check that advanced body starts collapsed/hidden
-    adv_body = page.locator('#adv-body')
-    await expect(adv_body).to_have_class("adv-section-body hidden")
+    # Check that bodies start collapsed/hidden
+    await expect(page.locator('#ovr-body')).to_have_class("ovr-section-body hidden")
+    await expect(page.locator('#adv-body')).to_have_class("adv-section-body hidden")
+    await expect(page.locator('#vis-body')).to_have_class("vis-section-body hidden")
 
     # Check for critical console errors
     assert_no_critical_errors(page)
@@ -67,6 +68,10 @@ async def test_rule_creator_tooltip_helpers(page_with_data):
     # Open Add Rule modal
     await page.click('#btn-ar')
     await page.wait_for_timeout(400)
+
+    # Expand manual override to make format/keyword help buttons visible
+    await page.click('#ovr-hdr')
+    await page.wait_for_timeout(300)
 
     # 1. Test format help tooltip
     btn_fmt_help = page.locator('button[data-htip="format"]')
@@ -106,19 +111,42 @@ async def test_rule_creator_tooltip_helpers(page_with_data):
 
 @pytest.mark.asyncio
 async def test_rule_creator_advanced_accordion_interaction(page_with_data):
-    """Advanced accordion must expand/collapse, toggle custom regex checkbox, and update field states."""
+    """Accordion sections must expand/collapse, toggle custom regex checkbox, and update field states."""
     page = page_with_data
     await _load_settings(page)
 
     await page.click('#btn-ar')
     await page.wait_for_timeout(400)
 
+    ovr_hdr = page.locator('#ovr-hdr')
+    ovr_body = page.locator('#ovr-body')
     adv_hdr = page.locator('#adv-hdr')
     adv_body = page.locator('#adv-body')
+    vis_hdr = page.locator('#vis-hdr')
+    vis_body = page.locator('#vis-body')
     chk_custom = page.locator('#e-use-custom-rx')
     inp_rx = page.locator('#e-rx')
 
-    # 1. Expand accordion
+    # 1. Test Manual Override Accordion collapse toggling
+    await expect(ovr_body).to_have_class("ovr-section-body hidden")
+    await ovr_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(ovr_body).not_to_have_class("ovr-section-body hidden")
+    await ovr_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(ovr_body).to_have_class("ovr-section-body hidden")
+
+    # 2. Test Appearance & SLA Accordion collapse toggling
+    await expect(vis_body).to_have_class("vis-section-body hidden")
+    await vis_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(vis_body).not_to_have_class("vis-section-body hidden")
+    await vis_hdr.click()
+    await page.wait_for_timeout(300)
+    await expect(vis_body).to_have_class("vis-section-body hidden")
+
+    # 3. Test Advanced Accordion
+    await expect(adv_body).to_have_class("adv-section-body hidden")
     await adv_hdr.click()
     await page.wait_for_timeout(300)
     await expect(adv_body).not_to_have_class("adv-section-body hidden")
@@ -129,13 +157,13 @@ async def test_rule_creator_advanced_accordion_interaction(page_with_data):
     assert not is_checked, "Custom regex checkbox should be unchecked by default"
     await expect(inp_rx).to_be_disabled()
 
-    # 2. Check Custom Regex Checkbox -> Enables the inputs
+    # Check Custom Regex Checkbox -> Enables the inputs
     await chk_custom.click()
     await page.wait_for_timeout(300)
     assert await chk_custom.is_checked()
     await expect(inp_rx).not_to_be_disabled()
 
-    # 3. Mappings inputs must also be enabled
+    # Mappings inputs must also be enabled
     await expect(page.locator('#cm-ts')).not_to_be_disabled()
     await expect(page.locator('#cm-th')).not_to_be_disabled()
     await expect(page.locator('#cm-el')).not_to_be_disabled()
@@ -162,6 +190,10 @@ async def test_rule_creator_live_match_highlighting(page_with_data):
     # 1. Verify format selector starts as 'auto'
     sel_format = page.locator('#wf-sel')
     await expect(sel_format).to_have_value('auto')
+
+    # Expand manual override accordion to expose keyword inputs
+    await page.click('#ovr-hdr')
+    await page.wait_for_timeout(300)
 
     # Add keyword
     await page.fill('#kw-inp', 'GET')
@@ -323,42 +355,15 @@ async def test_rule_creator_class_method_mapping_and_explainer(page_with_data):
 
 
 @pytest.mark.asyncio
-async def test_rule_creator_maximize_minimize_and_help_tips(page_with_data):
-    """Verify that maximize and minimize buttons work on the edit rules modal, and help tooltips show on top."""
+async def test_rule_creator_help_tips(page_with_data):
+    """Verify that help tooltips show correctly."""
     page = page_with_data
     await _load_settings(page)
 
     await page.click('#btn-ar')
     await page.wait_for_timeout(400)
 
-    modal = page.locator('#rule-modal')
-    await expect(modal).to_be_visible()
-
-    # 1. Test maximize
-    await page.click('#btn-rule-max')
-    await page.wait_for_timeout(300)
-    
-    # Check that maximized class is added
-    is_maximized = await modal.evaluate("el => el.classList.contains('maximized')")
-    assert is_maximized, "Modal should be maximized"
-
-    # 2. Test minimize
-    await page.click('#btn-rule-min')
-    await page.wait_for_timeout(300)
-    
-    is_minimized = await modal.evaluate("el => el.classList.contains('minimized')")
-    assert is_minimized, "Modal should be minimized"
-    # maximized class should be removed automatically
-    is_maximized = await modal.evaluate("el => el.classList.contains('maximized')")
-    assert not is_maximized, "Modal should not be maximized when minimized"
-
-    # 3. Restore by clicking minimize again (toggles it off)
-    await page.click('#btn-rule-min')
-    await page.wait_for_timeout(300)
-    is_minimized = await modal.evaluate("el => el.classList.contains('minimized')")
-    assert not is_minimized, "Modal should be restored (not minimized)"
-
-    # 4. Click a help tooltip icon (e.g. Stack Behavior help icon)
+    # Click a help tooltip icon (e.g. Stack Behavior help icon)
     btn_help = page.locator('button[data-htip="behavior"]')
     await btn_help.click()
     await page.wait_for_timeout(300)
