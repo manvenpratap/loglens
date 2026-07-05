@@ -64,5 +64,10 @@ async def test_unparsed_analyzer_create_rule_button(page_with_data):
     assert len(rx_val) > 0
     assert "^" in rx_val
 
+    # 7. Sample log line (e-tl) must be pre-populated
+    e_tl = page.locator('#e-tl')
+    tl_val = await e_tl.input_value()
+    assert tl_val == "2026-07-05 10:00:00 [main] ERROR - Database connection timeout"
+
     # Ensure no critical console errors occurred during the flow
     assert_no_critical_errors(page)
