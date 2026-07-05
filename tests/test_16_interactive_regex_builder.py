@@ -35,15 +35,17 @@ async def test_interactive_regex_builder_flow(page_with_data):
 
     # 3. Match badges should be rendered as options in the tracks container
     tracks_container = page.locator('#rg-tracks-container')
-    date_badge = tracks_container.locator('.rg-match-badge', has_text="Date")
+    # Use exact text to avoid matching "DateTime" when looking for "Date"
+    date_badge = tracks_container.get_by_role('button', name='Date', exact=True)
     await expect(date_badge).to_be_visible()
 
     # 4. Click the Date option badge to select it
-    await date_badge.click()
+    await date_badge.first.click()
     await page.wait_for_timeout(400)
 
-    # 5. Badge state should turn into selected (checked)
-    await expect(date_badge).to_contain_text("✓ Date")
+    # 5. Badge state should turn into selected (checked) — re-query after re-render
+    selected_date_badge = tracks_container.get_by_role('button', name='✓ Date', exact=True)
+    await expect(selected_date_badge).to_be_visible()
 
     # 6. Active selections container should display the badge
     selections = page.locator('#rg-active-selections')

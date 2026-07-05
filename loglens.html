@@ -7294,23 +7294,37 @@ label[for="watch-auto-reload"] {
       </div>
       <div class="f">
         <div class="fh" style="font-size:10px; color:var(--t3); margin-bottom:4px; line-height:1.4;">
-          Paste a sample log line above, then <strong>highlight any section</strong> to see matching patterns, or click the color-coded bars to select a pattern.
+          Paste a sample log line above, then <strong>highlight any section</strong> to see matching patterns, or click the color-coded bars below to select a pattern.
         </div>
-        <div style="width: 100%; overflow-x: auto; background: var(--bg-2); border: 1px solid var(--bdr-d); border-radius: var(--rounded-sm); padding: 12px; font-family: var(--mono); font-size: 12px; box-sizing: border-box;">
-          <div id="rg-text-row" style="display: flex; white-space: pre; position: relative; margin-bottom: 8px; color: var(--t1); font-weight: 600;">
-            <span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>
+        <!-- Unified scroll wrapper: text row + tracks share the same ch coordinate space -->
+        <div style="width:100%; overflow-x:auto; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); box-sizing:border-box;">
+          <div id="rg-inner" style="display:inline-block; min-width:100%; padding:12px; font-family:var(--mono); font-size:12px; box-sizing:border-box; position:relative; white-space:nowrap;">
+            <!-- Line display: text on top of highlight overlays, both using ch units -->
+            <div style="position:relative; height:20px; margin-bottom:6px;">
+              <div id="rg-text-highlights" style="position:absolute; top:0; left:0; height:100%; pointer-events:none;"></div>
+              <div id="rg-text-row" style="position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</div>
+            </div>
+            <!-- Track badges: position:absolute left:Xch aligned with text above -->
+            <div id="rg-tracks-container" style="position:relative; height:0;"></div>
           </div>
-          <div id="rg-tracks-container" style="position: relative; width: max-content; min-width: 100%;"></div>
         </div>
         <!-- Active selections display -->
-        <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;"></div>
+        <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
         <!-- Selection suggestions panel -->
-        <div id="rg-selection-suggestions" style="display: none; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--amber); border-radius: var(--rounded-sm); background: rgba(234, 179, 8, 0.07); box-sizing: border-box;">
-          <div style="font-size: 10px; font-weight: 600; color: var(--amber); margin-bottom: 8px; display:flex; align-items:center; gap:6px;">
+        <div id="rg-selection-suggestions" style="display:none; padding:10px 12px; border:1px solid var(--amber); border-radius:var(--rounded-sm); background:rgba(234,179,8,0.07); box-sizing:border-box;">
+          <div style="font-size:10px; font-weight:600; color:var(--amber); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
             <span>Matching patterns for:</span>
-            <code id="rg-selected-text-preview" style="font-family: var(--mono); color: var(--t1); background: var(--bg-2); border: 1px solid var(--bdr-d); padding: 1px 5px; border-radius: 3px;"></code>
+            <code id="rg-selected-text-preview" style="font-family:var(--mono); color:var(--t1); background:var(--bg-2); border:1px solid var(--bdr-d); padding:1px 5px; border-radius:3px;"></code>
           </div>
-          <div id="rg-suggestions-list" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+          <div id="rg-suggestions-list" style="display:flex; flex-wrap:wrap; gap:6px; max-height:180px; overflow-y:auto;"></div>
+        </div>
+        <!-- Regex preview panel -->
+        <div id="rg-preview" style="display:none; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); padding:10px 12px; box-sizing:border-box;">
+          <div style="font-size:10px; font-weight:600; color:var(--t3); margin-bottom:5px; font-family:var(--display); letter-spacing:.04em;">REGEX PREVIEW</div>
+          <div id="rg-preview-pattern" style="font-family:var(--mono); font-size:11px; color:var(--amber); word-break:break-all; margin-bottom:8px;"></div>
+          <div style="font-size:10px; font-weight:600; color:var(--t3); margin-bottom:4px; font-family:var(--display); letter-spacing:.04em;">CAPTURED GROUPS ON SAMPLE LINE</div>
+          <div id="rg-preview-match" style="font-family:var(--mono); font-size:11px; white-space:pre-wrap; word-break:break-all; line-height:1.8;"></div>
+          <div id="rg-preview-groups" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
         </div>
       </div>
     </div>
@@ -12078,6 +12092,7 @@ const RG = {
     this.renderInteractiveLine(line);
     this.renderSelections();
     $('rg-selection-suggestions').style.display = 'none';
+    $('rg-preview').style.display = 'none';
   },
 
   onTextSelection() {
@@ -12091,76 +12106,74 @@ const RG = {
     }
     const selectedText = input.value.slice(start, end);
     const suggestions = [];
+    const seen = new Set();
 
+    // Check all TOKS patterns against the selected text
+    const STRUCTURAL = new Set(['^','$','(',')','(?:','?','\\s+','\\s*','.*?','.*',
+      '-','\\|',':','\\.','\\[','\\]','\\{','\\}','\\t']);
     TOKS.forEach(cat => {
       cat.toks.forEach(tk => {
-        if (['^', '(', ')', '?', '?:'].includes(tk.s) || tk.s.startsWith('literal')) return;
-        
+        if (!tk.s || STRUCTURAL.has(tk.s)) return;
         try {
-          let cleanPattern = tk.s;
-          if (cleanPattern.startsWith('(') && cleanPattern.endsWith(')')) {
-            cleanPattern = cleanPattern.slice(1, -1);
-          }
-          if (cleanPattern.startsWith('(?:') && cleanPattern.endsWith(')')) {
-            cleanPattern = cleanPattern.slice(3, -1);
-          }
+          // Convert all capture groups to non-capturing for clean testing
+          let testPat = tk.s
+            .replace(/\(\?:/g, '\x00NC\x00')  // protect (?:
+            .replace(/\(/g, '(?:')             // convert ( to (?:
+            .replace(/\x00NC\x00/g, '(?:');    // restore (?:
 
-          const rx = new RegExp('^' + cleanPattern + '$');
+          const rx = new RegExp('^(?:' + testPat + ')$');
           if (rx.test(selectedText)) {
-            suggestions.push({
-              label: `${cat.cat}: ${tk.n}`,
-              pattern: cleanPattern,
-              color: this.getCategoryColor(cat.cat)
-            });
+            const key = tk.n + '|' + tk.s;
+            if (!seen.has(key)) {
+              seen.add(key);
+              suggestions.push({
+                label: `${cat.cat}: ${tk.n}`,
+                pattern: tk.s,
+                color: this.getCategoryColor(cat.cat)
+              });
+            }
           }
         } catch(e) {}
       });
     });
 
-    const escaped = selectedText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    suggestions.push({
-      label: 'Literal',
-      pattern: escaped,
-      color: '#6b7280'
+    // Also include any auto-detected matches at this exact range
+    const allMatches = this.findMatches(input.value);
+    allMatches.forEach(m => {
+      if (m.start === start && m.end === end) {
+        const key = m.label + '|' + m.pattern;
+        if (!seen.has(key)) {
+          seen.add(key);
+          suggestions.push({ label: m.label, pattern: m.pattern, color: m.color });
+        }
+      }
     });
+
+    // Always append Literal as last resort
+    const escaped = selectedText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    suggestions.push({ label: 'Literal', pattern: escaped, color: '#6b7280' });
 
     $('rg-selected-text-preview').textContent = selectedText;
     const list = $('rg-suggestions-list');
     list.innerHTML = '';
-
     suggestions.forEach(s => {
       const btn = document.createElement('button');
       btn.className = 'btn btn-xs';
-      btn.style.cssText = `background:var(--bg-1); border:1px solid ${s.color}; color:${s.color}; padding:4px 8px; font-size:10px; cursor:pointer; border-radius:var(--rounded-xs, 3px); display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap;`;
-      
-      const labelSpan = document.createElement('span');
-      labelSpan.textContent = s.label;
-      
-      const codeEl = document.createElement('code');
-      codeEl.style.fontFamily = 'var(--mono)';
-      codeEl.textContent = s.pattern;
-      
-      btn.appendChild(labelSpan);
+      btn.style.cssText = `background:var(--bg-1); border:1px solid ${s.color}; color:${s.color}; padding:4px 8px; font-size:10px; cursor:pointer; border-radius:3px; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;`;
+      const lbl = document.createElement('span');
+      lbl.textContent = s.label;
+      const code = document.createElement('code');
+      code.style.cssText = 'font-family:var(--mono); font-size:9px; opacity:.8;';
+      code.textContent = s.pattern;
+      btn.appendChild(lbl);
       btn.appendChild(document.createTextNode(' ('));
-      btn.appendChild(codeEl);
+      btn.appendChild(code);
       btn.appendChild(document.createTextNode(')'));
-      
-      btn.addEventListener('click', () => {
-        RG.applySelection(start, end, s.pattern, s.label, s.color);
-      });
-
-      btn.addEventListener('mouseover', () => {
-        btn.style.background = s.color;
-        btn.style.color = '#fff';
-      });
-      btn.addEventListener('mouseout', () => {
-        btn.style.background = 'var(--bg-1)';
-        btn.style.color = s.color;
-      });
-
+      btn.addEventListener('click', () => RG.applySelection(start, end, s.pattern, s.label, s.color));
+      btn.addEventListener('mouseover', () => { btn.style.background = s.color; btn.style.color = '#fff'; });
+      btn.addEventListener('mouseout', () => { btn.style.background = 'var(--bg-1)'; btn.style.color = s.color; });
       list.appendChild(btn);
     });
-    
     $('rg-selection-suggestions').style.display = 'block';
   },
 
@@ -12180,82 +12193,72 @@ const RG = {
     this.onSelectionChanged();
     const input = $('e-tl');
     if (input) {
-      try {
-        input.focus();
-        input.setSelectionRange(0, 0);
-      } catch(e) {}
+      try { input.focus(); input.setSelectionRange(0, 0); } catch(e) {}
     }
-    try {
-      window.getSelection()?.removeAllRanges();
-    } catch(e) {}
+    try { window.getSelection()?.removeAllRanges(); } catch(e) {}
     $('rg-selection-suggestions').style.display = 'none';
   },
 
   findMatches(line) {
     const matches = [];
     const addMatch = (regex, label, pattern, color) => {
-      let m;
-      regex.lastIndex = 0;
+      let m; regex.lastIndex = 0;
       while ((m = regex.exec(line)) !== null) {
-        matches.push({
-          start: m.index,
-          end: regex.lastIndex,
-          text: m[0],
-          label,
-          pattern,
-          color
-        });
+        matches.push({ start: m.index, end: regex.lastIndex, text: m[0], label, pattern, color });
       }
     };
 
-    addMatch(/\b\d{4}-\d{2}-\d{2}\b/g, 'Date', '\\d{4}-\\d{2}-\\d{2}', '#3b82f6');
-    addMatch(/\b\d{2}:\d{2}:\d{2}(\.\d{3,6})?\b/g, 'Time', '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?', '#22c55e');
-    addMatch(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, 'IP Address', '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}', '#a855f7');
-    addMatch(/\b(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)\b/gi, 'Log Level', '(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)', '#ef4444');
-    addMatch(/\[[^\]\s]+\]/g, 'Bracketed', '\\[[^\\]]+\\]', '#06b6d4');
+    // --- High-priority named patterns ---
+    addMatch(/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?\b/g,     'ISO DateTime',   '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z?', '#3b82f6');
+    addMatch(/\b\d{4}-\d{2}-\d{2}[ _]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?\b/g,   'DateTime',       '\\d{4}-\\d{2}-\\d{2}[ _]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d+)?', '#3b82f6');
+    addMatch(/\b\d{4}-\d{2}-\d{2}\b/g,                                      'Date',           '\\d{4}-\\d{2}-\\d{2}', '#60a5fa');
+    addMatch(/\b\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?\b/g,                     'Time',           '\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d+)?', '#22c55e');
+    addMatch(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, 'UUID', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', '#8b5cf6');
+    addMatch(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,                    'IP Address',     '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}', '#a855f7');
+    addMatch(/\b(INFO|WARN|WARNING|ERROR|DEBUG|TRACE|FATAL|SEVERE)\b/gi,    'Log Level',      '(?:INFO|WARN(?:ING)?|ERROR|DEBUG|TRACE|FATAL|SEVERE)', '#ef4444');
+    addMatch(/\[[^\]\s]+\]/g,                                                'Bracketed [ ]',  '\\[([^\\]]+)\\]', '#06b6d4');
+    addMatch(/"[^"]{1,80}"/g,                                               'Quoted String',  '"[^"]+"', '#f59e0b');
 
+    // --- Dotted class names (e.g. com.example.Service) ---
     let m;
-    const wordRegex = /\b[a-zA-Z_]{3,}\b/g;
-    while ((m = wordRegex.exec(line)) !== null) {
-      if (!/^(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)$/i.test(m[0])) {
-        matches.push({
-          start: m.index,
-          end: wordRegex.lastIndex,
-          text: m[0],
-          label: 'Word',
-          pattern: '[a-zA-Z_]+',
-          color: '#eab308'
-        });
+    const dottedRx = /\b[a-zA-Z_][a-zA-Z0-9_$]*(?:\.[a-zA-Z_][a-zA-Z0-9_$]+){1,}\b/g;
+    while ((m = dottedRx.exec(line)) !== null) {
+      matches.push({ start: m.index, end: dottedRx.lastIndex, text: m[0],
+        label: 'Dotted Class', pattern: '[\\w$]+(?:\\.[\\w$]+)+', color: '#10b981' });
+    }
+
+    // --- key=value pairs ---
+    const kvRx = /\b(\w[\w.-]*)=(\S+)/g;
+    while ((m = kvRx.exec(line)) !== null) {
+      matches.push({ start: m.index, end: kvRx.lastIndex, text: m[0],
+        label: 'key=value', pattern: '(\\w[\\w.-]*)=(\\S+)', color: '#f97316' });
+    }
+
+    // --- Generic words ---
+    const wordRx = /\b[a-zA-Z_][a-zA-Z0-9_]{2,}\b/g;
+    while ((m = wordRx.exec(line)) !== null) {
+      if (!/^(INFO|WARN|WARNING|ERROR|DEBUG|TRACE|FATAL|SEVERE)$/i.test(m[0])) {
+        matches.push({ start: m.index, end: wordRx.lastIndex, text: m[0],
+          label: 'Word', pattern: '[a-zA-Z_][a-zA-Z0-9_]+', color: '#eab308' });
       }
     }
 
-    const numRegex = /\b\d{2,}\b/g;
-    while ((m = numRegex.exec(line)) !== null) {
-      // Don't duplicate matches that overlap with IP or date/time
-      const isDateOrTimeOrIP = /\b\d{4}-\d{2}-\d{2}\b|\b\d{2}:\d{2}:\d{2}\b|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(line.slice(Math.max(0, m.index - 10), m.index + m[0].length + 10));
-      if (!isDateOrTimeOrIP) {
-        matches.push({
-          start: m.index,
-          end: numRegex.lastIndex,
-          text: m[0],
-          label: 'Number',
-          pattern: '\\d+',
-          color: '#f97316'
-        });
+    // --- Numbers ---
+    const numRx = /\b\d{2,}\b/g;
+    while ((m = numRx.exec(line)) !== null) {
+      const ctx = line.slice(Math.max(0, m.index - 12), m.index + m[0].length + 12);
+      if (!/\d{4}-\d{2}-\d{2}|\d{2}:\d{2}:\d{2}|\d{1,3}\.\d{1,3}\.\d{1,3}/.test(ctx)) {
+        matches.push({ start: m.index, end: numRx.lastIndex, text: m[0],
+          label: 'Number', pattern: '\\d+', color: '#f97316' });
       }
     }
 
-    const tokenRegex = /\b[a-zA-Z0-9_-]+\b/g;
-    while ((m = tokenRegex.exec(line)) !== null) {
+    // --- Literal tokens (lowest priority) ---
+    const tokRx = /\b[a-zA-Z0-9_-]+\b/g;
+    while ((m = tokRx.exec(line)) !== null) {
       const escaped = m[0].replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-      matches.push({
-        start: m.index,
-        end: tokenRegex.lastIndex,
-        text: m[0],
-        label: m[0],
-        pattern: escaped,
-        color: '#6b7280'
-      });
+      matches.push({ start: m.index, end: tokRx.lastIndex, text: m[0],
+        label: m[0], pattern: escaped, color: '#6b7280' });
     }
 
     return matches;
@@ -12263,129 +12266,99 @@ const RG = {
 
   renderInteractiveLine(line) {
     const textRow = $('rg-text-row');
-    const tracksContainer = $('rg-tracks-container');
-    if (!textRow || !tracksContainer) return;
+    const textHL  = $('rg-text-highlights');
+    const tracksC = $('rg-tracks-container');
+    if (!textRow || !tracksC) return;
 
     if (!line) {
-      textRow.innerHTML = `<span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>`;
-      tracksContainer.innerHTML = '';
-      tracksContainer.style.height = '0px';
+      textRow.textContent = 'Enter a sample log line above to begin interactive generation.';
+      textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t4); font-style:italic;';
+      if (textHL) textHL.innerHTML = '';
+      tracksC.innerHTML = '';
+      tracksC.style.height = '0';
       return;
     }
 
-    textRow.innerHTML = [...line].map((char, idx) => {
-      const sel = this.selections.find(s => idx >= s.start && idx < s.end);
-      const bg = sel ? 'rgba(234, 179, 8, 0.15)' : 'none';
-      const border = sel ? '1px solid var(--amber)' : 'none';
-      return `<span style="width:1ch; display:inline-block; text-align:center; background:${bg}; border-top:${border}; border-bottom:${border}; box-sizing:border-box;">${esc(char)}</span>`;
-    }).join('');
+    // Render plain text (textContent is XSS-safe, no esc() needed)
+    textRow.textContent = line;
+    textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t1); font-weight:600; font-style:normal;';
+
+    // Render selection highlights (behind the text)
+    if (textHL) {
+      textHL.innerHTML = '';
+      this.selections.forEach(s => {
+        const hl = document.createElement('span');
+        hl.style.cssText = `position:absolute; left:${s.start}ch; width:${s.end - s.start}ch; top:0; height:100%; background:${s.color}22; border-top:2px solid ${s.color}; border-bottom:2px solid ${s.color}; pointer-events:none; box-sizing:border-box;`;
+        textHL.appendChild(hl);
+      });
+    }
 
     const matches = this.findMatches(line);
-
+    // Sort: longer spans first, then by position; this ensures better track assignment
     matches.sort((a, b) => (b.end - b.start) - (a.end - a.start) || a.start - b.start);
 
+    // Assign tracks (rows) to avoid overlaps
     const tracks = [];
     matches.forEach(m => {
-      let trackIdx = 0;
+      let ti = 0;
       while (true) {
-        if (!tracks[trackIdx]) {
-          tracks[trackIdx] = [];
+        if (!tracks[ti]) tracks[ti] = [];
+        if (!tracks[ti].some(e => !(m.end <= e.start || m.start >= e.end))) {
+          tracks[ti].push(m); m.track = ti; break;
         }
-        const overlap = tracks[trackIdx].some(existing => {
-          return !(m.end <= existing.start || m.start >= existing.end);
-        });
-        if (!overlap) {
-          tracks[trackIdx].push(m);
-          m.track = trackIdx;
-          break;
-        }
-        trackIdx++;
+        ti++;
       }
     });
 
-    tracksContainer.innerHTML = '';
-    tracksContainer.style.height = `${tracks.length * 28 + 10}px`;
+    tracksC.innerHTML = '';
+    tracksC.style.height = tracks.length > 0 ? `${tracks.length * 26 + 4}px` : '0';
 
     matches.forEach(m => {
-      const left = m.start;
       const width = m.end - m.start;
-
       const isSelected = this.selections.some(s => s.start === m.start && s.end === m.end && s.pattern === m.pattern);
-      const isOverlappingSelected = this.selections.some(s => {
-        const overlaps = !(m.end <= s.start || m.start >= s.end);
-        const isSame = (s.start === m.start && s.end === m.end && s.pattern === m.pattern);
-        return overlaps && !isSame;
+      const isBlocked  = this.selections.some(s => {
+        const ov = !(m.end <= s.start || m.start >= s.end);
+        return ov && !(s.start === m.start && s.end === m.end && s.pattern === m.pattern);
       });
 
       const btn = document.createElement('button');
       btn.className = 'rg-match-badge';
-      btn.title = `${m.label} → ${m.pattern}`;
-      btn.style.cssText = `
-        position: absolute;
-        left: ${left}ch;
-        min-width: ${width}ch;
-        max-width: ${Math.max(width, m.label.length) + 2}ch;
-        top: ${m.track * 28}px;
-        height: 22px;
-        font-family: var(--mono);
-        font-size: 9.5px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        border-radius: var(--rounded-xs, 3px);
-        cursor: pointer;
-        padding: 0 4px;
-        transition: all 0.15s ease;
-        box-sizing: border-box;
-        z-index: 1;
-      `;
+      btn.title = m.label + ' → ' + m.pattern;
+      // min-width = matched char count; enough room to read short labels
+      const minW = Math.max(width, 3);
+      btn.style.cssText = `position:absolute; left:${m.start}ch; min-width:${minW}ch; max-width:28ch; top:${m.track * 26}px; height:22px; font-family:var(--mono); font-size:9px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; cursor:pointer; padding:0 3px; transition:background .1s,color .1s; box-sizing:border-box; z-index:1;`;
 
       if (isSelected) {
-        btn.style.background = m.color;
-        btn.style.border = `1px solid ${m.color}`;
-        btn.style.color = '#fff';
-        btn.style.fontWeight = 'bold';
-        btn.style.boxShadow = '0 0 0 2px var(--bg-1)';
-        btn.style.zIndex = '2';
-        btn.textContent = '✓ ' + m.label;
-      } else if (isOverlappingSelected) {
-        btn.style.background = 'var(--bg-1)';
-        btn.style.border = '1px dashed var(--bdr-d)';
-        btn.style.color = 'var(--t4)';
-        btn.style.opacity = '0.3';
-        btn.style.cursor = 'not-allowed';
+        btn.style.cssText += `background:${m.color}; border:1px solid ${m.color}; color:#fff; font-weight:700; box-shadow:0 0 0 2px var(--bg-2),0 0 0 3px ${m.color}; z-index:3;`;
+        btn.textContent = '\u2713 ' + m.label;
+      } else if (isBlocked) {
+        btn.style.cssText += `background:var(--bg-1); border:1px dashed var(--bdr); color:var(--t4); opacity:.3; cursor:not-allowed;`;
         btn.textContent = m.label;
       } else {
-        btn.style.background = 'var(--bg-1)';
-        btn.style.border = `1px solid ${m.color}`;
-        btn.style.color = m.color;
+        btn.style.cssText += `background:${m.color}15; border:1px solid ${m.color}; color:${m.color};`;
         btn.textContent = m.label;
-
         btn.addEventListener('mouseover', () => {
-          btn.style.background = m.color;
-          btn.style.color = '#fff';
-          btn.style.zIndex = '3';
+          btn.style.background = m.color; btn.style.color = '#fff'; btn.style.zIndex = '4';
+          btn.style.overflow = 'visible'; btn.style.maxWidth = 'none';
         });
         btn.addEventListener('mouseout', () => {
-          btn.style.background = 'var(--bg-1)';
-          btn.style.color = m.color;
-          btn.style.zIndex = '1';
+          btn.style.background = m.color + '15'; btn.style.color = m.color; btn.style.zIndex = '1';
+          btn.style.overflow = 'hidden'; btn.style.maxWidth = '28ch';
         });
-      }
-
-      if (!isOverlappingSelected) {
         btn.addEventListener('click', () => {
-          if (isSelected) {
-            this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
-          } else {
-            this.selectPattern(m.start, m.end, m.pattern, m.label, m.color);
-          }
+          this.selectPattern(m.start, m.end, m.pattern, m.label, m.color);
           this.onSelectionChanged();
         });
       }
 
-      tracksContainer.appendChild(btn);
+      if (isSelected) {
+        btn.addEventListener('click', () => {
+          this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
+          this.onSelectionChanged();
+        });
+      }
+
+      tracksC.appendChild(btn);
     });
   },
 
@@ -12406,74 +12379,140 @@ const RG = {
   renderSelections() {
     const container = $('rg-active-selections');
     if (!container) return;
-    
-    if (this.selections.length === 0) {
-      container.innerHTML = '';
-      return;
-    }
-
-    container.innerHTML = this.selections.map((s, idx) => `
-      <span class="badge" style="font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px; background:${s.color}; color:#fff; border-radius:var(--rounded-sm);">
-        <span>${esc(s.label)}:</span>
-        <code style="font-family:var(--mono); color:#fff;">${esc(s.pattern)}</code>
-        <span style="cursor:pointer; font-weight:bold; margin-left:2px;" onclick="RG.removeSelection(${idx})">✕</span>
-      </span>
-    `).join('');
+    container.innerHTML = '';
+    this.selections.forEach((s, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'badge';
+      chip.style.cssText = `font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px; background:${s.color}; color:#fff; border-radius:var(--rounded-sm); cursor:default;`;
+      const lbl = document.createElement('span'); lbl.textContent = s.label + ':';
+      const code = document.createElement('code');
+      code.style.cssText = 'font-family:var(--mono); color:#fff;';
+      code.textContent = s.pattern;
+      const rm = document.createElement('span');
+      rm.textContent = '✕'; rm.style.cssText = 'cursor:pointer; font-weight:bold; margin-left:2px;';
+      rm.addEventListener('click', () => { this.selections.splice(idx, 1); this.onSelectionChanged(); });
+      chip.appendChild(lbl); chip.appendChild(code); chip.appendChild(rm);
+      container.appendChild(chip);
+    });
   },
 
-  removeSelection(idx) {
-    this.selections.splice(idx, 1);
-    this.onSelectionChanged();
+  renderPreview() {
+    const line   = $('e-tl')?.value;
+    const rxVal  = $('e-rx')?.value;
+    const preview = $('rg-preview');
+    if (!preview) return;
+
+    if (!rxVal || !line || this.selections.length === 0) {
+      preview.style.display = 'none'; return;
+    }
+    preview.style.display = 'block';
+    $('rg-preview-pattern').textContent = rxVal;
+
+    const matchEl  = $('rg-preview-match');
+    const groupsEl = $('rg-preview-groups');
+    matchEl.innerHTML = ''; groupsEl.innerHTML = '';
+
+    try {
+      const rx = new RegExp(rxVal);
+      const match = rx.exec(line);
+      if (!match) {
+        const no = document.createElement('span');
+        no.style.color = 'var(--red, #ef4444)'; no.textContent = '✗  No match on sample line';
+        matchEl.appendChild(no); return;
+      }
+
+      // Build sorted list of captured group positions in the source line
+      const groups = [];
+      let searchFrom = match.index;
+      this.selections.forEach((s, idx) => {
+        const captured = match[idx + 1];
+        if (captured === undefined) return;
+        const pos = line.indexOf(captured, searchFrom);
+        if (pos >= 0) {
+          groups.push({ gIdx: idx + 1, start: pos, end: pos + captured.length, captured, sel: s });
+          searchFrom = pos + captured.length;
+        }
+      });
+      groups.sort((a, b) => a.start - b.start);
+
+      // Render line with group highlights
+      let cursor = 0;
+      groups.forEach(g => {
+        if (g.start > cursor) {
+          const pre = document.createElement('span');
+          pre.style.color = 'var(--t4)'; pre.textContent = line.slice(cursor, g.start);
+          matchEl.appendChild(pre);
+        }
+        const mark = document.createElement('mark');
+        mark.style.cssText = `background:${g.sel.color}28; color:${g.sel.color}; border-bottom:2px solid ${g.sel.color}; padding:0 1px; font-weight:600;`;
+        mark.textContent = g.captured;
+        matchEl.appendChild(mark);
+        cursor = g.end;
+      });
+      if (cursor < line.length) {
+        const post = document.createElement('span');
+        post.style.color = 'var(--t4)'; post.textContent = line.slice(cursor);
+        matchEl.appendChild(post);
+      }
+
+      // Group chips
+      groups.forEach(g => {
+        const chip = document.createElement('div');
+        chip.style.cssText = `display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:4px; font-size:10px; background:${g.sel.color}15; border:1px solid ${g.sel.color};`;
+        const lbl = document.createElement('span');
+        lbl.style.cssText = `color:${g.sel.color}; font-weight:600; font-family:var(--display);`;
+        lbl.textContent = `$${g.gIdx} ${g.sel.label}`;
+        const val = document.createElement('code');
+        val.style.cssText = 'font-family:var(--mono); color:var(--t1);';
+        val.textContent = g.captured;
+        chip.appendChild(lbl); chip.appendChild(val);
+        groupsEl.appendChild(chip);
+      });
+
+    } catch(e) {
+      const err = document.createElement('span');
+      err.style.color = 'var(--red, #ef4444)'; err.textContent = 'Invalid regex: ' + e.message;
+      matchEl.appendChild(err);
+    }
   },
 
   buildRegex() {
     const line = $('e-tl').value;
     if (!line) return;
 
-    let regex = '^';
-    let lastIdx = 0;
+    let regex = '^', lastIdx = 0;
 
-    // Reset current capture mappings before auto-populating
+    // Reset capture mapping fields
     ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id => {
       $(id).value = '';
     });
 
     this.selections.forEach((s, idx) => {
       const groupNum = idx + 1;
-      
       if (s.start > lastIdx) {
         const gap = line.slice(lastIdx, s.start);
-        if (/^\s+$/.test(gap)) {
-          regex += '\\s+';
-        } else {
-          const escapedGap = gap.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-          regex += escapedGap;
-        }
+        regex += /^\s+$/.test(gap) ? '\\s+' : gap.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       }
       regex += `(${s.pattern})`;
       lastIdx = s.end;
 
+      // Auto-populate capture mapping
       const lbl = s.label.toLowerCase();
-      if (lbl.includes('date') || lbl.includes('time') || lbl.includes('timestamp')) {
+      if (lbl.includes('date') || lbl.includes('time') || lbl.includes('timestamp') || lbl.includes('datetime')) {
         $('cm-ts').value = groupNum;
-      } else if (lbl.includes('thread')) {
+      } else if (lbl.includes('thread') || lbl.includes('bracketed')) {
         $('cm-th').value = groupNum;
       } else if (lbl.includes('level')) {
         $('cm-lv').value = groupNum;
-      } else if (lbl.includes('word') || lbl.includes('class')) {
+      } else if (lbl.includes('class') || lbl.includes('dotted') || lbl.includes('word')) {
         $('cm-el').value = groupNum;
-      } else if (lbl.includes('payload') || lbl.includes('anything') || lbl.includes('rest of line')) {
+      } else if (lbl.includes('payload') || lbl.includes('anything') || lbl.includes('rest')) {
         $('cm-py').value = groupNum;
       }
     });
 
     if (lastIdx < line.length) {
-      const suffix = line.slice(lastIdx);
-      if (/^\s+$/.test(suffix)) {
-        regex += '\\s*';
-      } else {
-        regex += '.*';
-      }
+      regex += /^\s+$/.test(line.slice(lastIdx)) ? '\\s*' : '.*';
     } else {
       regex += '$';
     }
@@ -12482,8 +12521,11 @@ const RG = {
     UI.syncCustomRxUI();
     $('e-rx').value = regex;
     $('btn-rex-explain').click();
+    this.renderPreview();
   }
 };
+
+
 
 /* ================================================================
    §JS-33b UNPARSED LINE ANALYZER
