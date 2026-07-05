@@ -8567,21 +8567,101 @@ const WIZ_FMTS={
 const RXB={
   init(){
     const bd=$('rxb-bd');
-    bd.innerHTML=TOKS.map(cat=>`
-      <div><div class="cat-lbl">${esc(cat.cat)}</div>
-      <div class="tok-grid">${cat.toks.map(tk=>
-        `<div class="tok" data-s="${esc(tk.s)}" title="${esc(tk.s)}">
-          <span class="tok-n">${esc(tk.n)}</span>
-          <span class="tok-ex">${esc(tk.ex)}</span>
-        </div>`).join('')}</div></div>`).join('');
+    if (!bd) return;
+    bd.innerHTML = `
+      <div style="padding:6px 8px; border-bottom:1px solid var(--bdr-d); background:var(--bg-1); display:flex; align-items:center; gap:8px;">
+        <input class="inp" id="rxb-search" placeholder="🔍 Search tokens..." style="flex:1; font-size:11px; padding:4px 8px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t1); outline:none;"/>
+      </div>
+      <div id="rxb-toks-container">
+        ${TOKS.map((cat, idx) => `
+          <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
+            <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:11px; font-weight:600; color:var(--t2);">
+              <span>${esc(cat.cat)}</span>
+              <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
+            </div>
+            <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
+              <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:6px;">
+                ${cat.toks.map(tk => `
+                  <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
+                    <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
+                    <span class="tok-ex" style="font-family:var(--mono); font-size:9.5px; color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
     bd.addEventListener('click',e=>{
       const tk=e.target.closest('.tok');if(!tk)return;
       this.ins('e-rx',tk.dataset.s);this.update();
     });
+
     $('rxb-hdr').addEventListener('click',()=>{
       const open=$('rxb-bd').classList.toggle('vis');
       $('rxb-hdr').classList.toggle('open',open);
     });
+
+    bd.querySelectorAll('.tok-accordion-hdr').forEach(hdr => {
+      hdr.addEventListener('click', () => {
+        const sec = hdr.parentElement;
+        const isOpen = sec.classList.toggle('open');
+        const body = sec.querySelector('.tok-accordion-body');
+        const arrow = sec.querySelector('.tok-accordion-arrow');
+        body.style.maxHeight = isOpen ? '500px' : '0px';
+        arrow.textContent = isOpen ? '▼' : '▶';
+      });
+    });
+
+    $('rxb-search')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase().trim();
+      const container = $('rxb-toks-container');
+      if (!container) return;
+      
+      container.querySelectorAll('.tok').forEach(el => {
+        const name = el.querySelector('.tok-n')?.textContent.toLowerCase() || '';
+        const s = el.dataset.s.toLowerCase();
+        const matches = name.includes(q) || s.includes(q);
+        el.style.display = matches ? 'flex' : 'none';
+      });
+      
+      container.querySelectorAll('.tok-accordion-sec').forEach(sec => {
+        const grid = sec.querySelector('.tok-grid');
+        const visibleToks = [...grid.children].filter(el => el.style.display !== 'none');
+        sec.style.display = visibleToks.length > 0 ? '' : 'none';
+        
+        const body = sec.querySelector('.tok-accordion-body');
+        const arrow = sec.querySelector('.tok-accordion-arrow');
+        if (q) {
+          if (visibleToks.length > 0) {
+            sec.classList.add('open');
+            body.style.maxHeight = '500px';
+            arrow.textContent = '▼';
+          }
+        } else {
+          const isFirst = sec === container.firstElementChild;
+          sec.classList.toggle('open', isFirst);
+          body.style.maxHeight = isFirst ? '500px' : '0px';
+          arrow.textContent = isFirst ? '▼' : '▶';
+        }
+      });
+    });
+
+    // Wire visual group mapping context menu click
+    $('rx-pre').addEventListener('click', e => {
+      const btn = e.target.closest('.rx-grp-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      const gi = parseInt(btn.dataset.gi, 10);
+      this.showMappingMenu(gi, e.clientX, e.clientY);
+    });
+
+    document.addEventListener('click', () => {
+      this.hideMappingMenu();
+    });
+
     $('tmpl-sel').addEventListener('change',e=>{
       const tmpl=TMPLS[e.target.value];if(!tmpl)return;
       $('e-rx').value=tmpl.rx;
@@ -10241,7 +10321,10 @@ const UI={
     const tb = $('adv-token-builder');
     if (tb) {
       tb.style.opacity = custom ? '1' : '0.5';
-      tb.style.pointerEvents = custom ? 'all' : 'none';
+    }
+    const rxbBd = $('rxb-bd');
+    if (rxbBd) {
+      rxbBd.style.pointerEvents = custom ? 'all' : 'none';
     }
     
     if (custom) {
@@ -23190,97 +23273,7 @@ UI.svm(S.viewMode);
     };
   }
 
-  // 19. Categorized Accordion Palette in Regex Builder (RXB) with Token Search & Visual Group Mapping
-  const originalRxbInit = RXB.init.bind(RXB);
-  RXB.init = function() {
-    originalRxbInit();
-    const bd = $('rxb-bd');
-    if (!bd) return;
-    bd.innerHTML = `
-      <div style="padding:6px 8px; border-bottom:1px solid var(--bdr-d); background:var(--bg-1); display:flex; align-items:center; gap:8px;">
-        <input class="inp" id="rxb-search" placeholder="🔍 Search tokens..." style="flex:1; font-size:11px; padding:4px 8px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--rounded-sm); color:var(--t1); outline:none;"/>
-      </div>
-      <div id="rxb-toks-container">
-        ${TOKS.map((cat, idx) => `
-          <div class="tok-accordion-sec ${idx === 0 ? 'open' : ''}" style="border-bottom:1px solid var(--bdr-d);">
-            <div class="tok-accordion-hdr" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:var(--bg-2); font-size:11px; font-weight:600; color:var(--t2);">
-              <span>${esc(cat.cat)}</span>
-              <span class="tok-accordion-arrow" style="font-size:8px; color:var(--t4); transition:transform 0.15s var(--ease-spring);">${idx === 0 ? '▼' : '▶'}</span>
-            </div>
-            <div class="tok-accordion-body" style="overflow:hidden; max-height:${idx === 0 ? '500px' : '0px'}; transition:max-height 0.22s var(--ease-spring);">
-              <div class="tok-grid" style="padding:6px; display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:6px;">
-                ${cat.toks.map(tk => `
-                  <div class="tok" data-s="${esc(tk.s)}" title="Click to insert: ${esc(tk.s)}" style="cursor:pointer; padding:6px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:2px; transition:all 0.15s var(--ease-spring);">
-                    <span class="tok-n" style="font-size:11px; font-weight:600; color:var(--t1);">${esc(tk.n)}</span>
-                    <span class="tok-ex" style="font-family:var(--mono); font-size:9.5px; color:var(--amber); word-break:break-all;">${esc(tk.s)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
 
-    bd.querySelectorAll('.tok-accordion-hdr').forEach(hdr => {
-      hdr.addEventListener('click', () => {
-        const sec = hdr.parentElement;
-        const isOpen = sec.classList.toggle('open');
-        const body = sec.querySelector('.tok-accordion-body');
-        const arrow = sec.querySelector('.tok-accordion-arrow');
-        body.style.maxHeight = isOpen ? '500px' : '0px';
-        arrow.textContent = isOpen ? '▼' : '▶';
-      });
-    });
-
-    $('rxb-search')?.addEventListener('input', e => {
-      const q = e.target.value.toLowerCase().trim();
-      const container = $('rxb-toks-container');
-      if (!container) return;
-      
-      container.querySelectorAll('.tok').forEach(el => {
-        const name = el.querySelector('.tok-n')?.textContent.toLowerCase() || '';
-        const s = el.dataset.s.toLowerCase();
-        const matches = name.includes(q) || s.includes(q);
-        el.style.display = matches ? 'flex' : 'none';
-      });
-      
-      container.querySelectorAll('.tok-accordion-sec').forEach(sec => {
-        const grid = sec.querySelector('.tok-grid');
-        const visibleToks = [...grid.children].filter(el => el.style.display !== 'none');
-        sec.style.display = visibleToks.length > 0 ? '' : 'none';
-        
-        const body = sec.querySelector('.tok-accordion-body');
-        const arrow = sec.querySelector('.tok-accordion-arrow');
-        if (q) {
-          if (visibleToks.length > 0) {
-            sec.classList.add('open');
-            body.style.maxHeight = '500px';
-            arrow.textContent = '▼';
-          }
-        } else {
-          const isFirst = sec === container.firstElementChild;
-          sec.classList.toggle('open', isFirst);
-          body.style.maxHeight = isFirst ? '500px' : '0px';
-          arrow.textContent = isFirst ? '▼' : '▶';
-        }
-      });
-    });
-
-    // Wire visual group mapping context menu click
-    $('rx-pre').addEventListener('click', e => {
-      const btn = e.target.closest('.rx-grp-btn');
-      if (!btn) return;
-      e.stopPropagation();
-      const gi = parseInt(btn.dataset.gi, 10);
-      this.showMappingMenu(gi, e.clientX, e.clientY);
-    });
-
-    document.addEventListener('click', () => {
-      this.hideMappingMenu();
-    });
-  };
-  RXB.init();
 
   // 20. Explainer color-coding logic
   const originalRexExplain = REX.explain.bind(REX);

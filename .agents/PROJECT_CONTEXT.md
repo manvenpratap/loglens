@@ -8,6 +8,7 @@
   - **Manual Override Accordion**: Grouped manual format selectors (`#wf-sel`) and keyword marking parameters (`#kw-inp` chip builder, match modes, capture options) inside a collapsible accordion section (`#ovr-hdr` / `#ovr-body`) that starts collapsed by default.
   - **Appearance & SLA Settings Accordion**: Moved visual styles (Accent Color `#e-col` / `#e-hex`, Emoji Icon `#e-ico`) and SLA Threshold settings (`#e-sla`) into a collapsible accordion section (`#vis-hdr` / `#vis-body`) that starts collapsed by default.
   - **Removed Minimize/Maximize Buttons**: Cleaned up the modal header by removing the `#btn-rule-min` and `#btn-rule-max` buttons, UI toggle methods, and event bindings, streamlining rule creation viewports.
+  - **Pattern Token Builder Click Fix**: Fixed a bug where the Pattern Token Builder accordion header (`#rxb-hdr`) could not be clicked. Cleaned up the initialization flow by merging the Token Builder structure directly into the original `RXB.init` (avoiding duplicate binding/listener execution). Restricted `pointer-events: none` to the token grid container (`#rxb-bd`) rather than the entire token builder wrapper to ensure the header remains interactive at all times.
   - **Regression Test Updates**: Updated E2E validation test suites (`tests/test_13_rule_creator.py`) to align with restructured steps, verify accordion expand/collapse toggles, and ensure all 81 regression assertions pass successfully.
 
 - **Rule Creator UI fixes and Javascript Initialization Robustness (v6.9.68 — COMPLETED)**:
