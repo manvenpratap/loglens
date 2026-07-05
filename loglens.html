@@ -12252,7 +12252,7 @@ const RG = {
         start: m.index,
         end: tokenRegex.lastIndex,
         text: m[0],
-        label: `"${m[0]}"`,
+        label: m[0],
         pattern: escaped,
         color: '#6b7280'
       });
@@ -12319,10 +12319,12 @@ const RG = {
 
       const btn = document.createElement('button');
       btn.className = 'rg-match-badge';
+      btn.title = `${m.label} → ${m.pattern}`;
       btn.style.cssText = `
         position: absolute;
         left: ${left}ch;
-        width: ${width}ch;
+        min-width: ${width}ch;
+        max-width: ${Math.max(width, m.label.length) + 2}ch;
         top: ${m.track * 28}px;
         height: 22px;
         font-family: var(--mono);
@@ -12336,6 +12338,7 @@ const RG = {
         padding: 0 4px;
         transition: all 0.15s ease;
         box-sizing: border-box;
+        z-index: 1;
       `;
 
       if (isSelected) {
@@ -12344,27 +12347,30 @@ const RG = {
         btn.style.color = '#fff';
         btn.style.fontWeight = 'bold';
         btn.style.boxShadow = '0 0 0 2px var(--bg-1)';
-        btn.innerHTML = `✓ ${esc(m.label)}`;
+        btn.style.zIndex = '2';
+        btn.textContent = '✓ ' + m.label;
       } else if (isOverlappingSelected) {
         btn.style.background = 'var(--bg-1)';
         btn.style.border = '1px dashed var(--bdr-d)';
         btn.style.color = 'var(--t4)';
         btn.style.opacity = '0.3';
         btn.style.cursor = 'not-allowed';
-        btn.textContent = esc(m.label);
+        btn.textContent = m.label;
       } else {
         btn.style.background = 'var(--bg-1)';
         btn.style.border = `1px solid ${m.color}`;
         btn.style.color = m.color;
-        btn.textContent = esc(m.label);
+        btn.textContent = m.label;
 
         btn.addEventListener('mouseover', () => {
           btn.style.background = m.color;
           btn.style.color = '#fff';
+          btn.style.zIndex = '3';
         });
         btn.addEventListener('mouseout', () => {
           btn.style.background = 'var(--bg-1)';
           btn.style.color = m.color;
+          btn.style.zIndex = '1';
         });
       }
 
