@@ -18,7 +18,7 @@ async def _load_settings_and_open_modal(page):
 
 @pytest.mark.asyncio
 async def test_interactive_regex_builder_flow(page_with_data):
-    """Interactive regex builder must parse tokens, accept clicks, show dropdown, add selection badge, and generate regex."""
+    """Interactive regex builder must parse tracks, accept clicks on match options, and generate regex."""
     page = page_with_data
     await _load_settings_and_open_modal(page)
 
@@ -31,33 +31,23 @@ async def test_interactive_regex_builder_flow(page_with_data):
     await e_tl.focus()
     await e_tl.fill("2026-07-05 10:00:00 [main] ERROR - connection timeout")
     await page.evaluate("() => document.getElementById('e-tl').dispatchEvent(new Event('input', { bubbles: true }))")
+    await page.wait_for_timeout(450)
+
+    # 3. Match badges should be rendered as options in the tracks container
+    tracks_container = page.locator('#rg-tracks-container')
+    date_badge = tracks_container.locator('.rg-match-badge', has_text="Date")
+    await expect(date_badge).to_be_visible()
+
+    # 4. Click the Date option badge to select it
+    await date_badge.click()
     await page.wait_for_timeout(400)
 
-    # 3. Tokens should be rendered as clickable spans in the interactive line
-    interactive_line = page.locator('#rg-interactive-line')
-    first_tok = interactive_line.locator('.rg-tok-btn').first
-    await expect(first_tok).to_be_visible()
-    await expect(first_tok).to_have_text("2026-07-05")
+    # 5. Badge state should turn into selected (checked)
+    await expect(date_badge).to_contain_text("✓ Date")
 
-    # 4. Click the first token to open the pattern dropdown
-    await first_tok.click()
-    await page.wait_for_timeout(300)
-
-    # Dropdown should appear on the body
-    dropdown = page.locator('#rg-dropdown')
-    await expect(dropdown).to_be_visible()
-
-    # 5. Click the Date pattern option (first pattern option)
-    opt = dropdown.locator('.rg-dropdown-item').first
-    await opt.click()
-    await page.wait_for_timeout(400)
-
-    # Dropdown should be removed
-    await expect(dropdown).not_to_be_visible()
-
-    # 6. Active selections container should display a badge
+    # 6. Active selections container should display the badge
     selections = page.locator('#rg-active-selections')
-    await expect(selections).to_contain_text("Date (YYYY-MM-DD):")
+    await expect(selections).to_contain_text("Date:")
 
     # 7. Regex pattern input e-rx must be populated with a capture group matching the date pattern
     e_rx = page.locator('#e-rx')

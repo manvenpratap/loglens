@@ -7296,8 +7296,11 @@ label[for="watch-auto-reload"] {
         <div class="fh" style="font-size:10px; color:var(--t3); margin-bottom:6px; line-height:1.4;">
           Click segments of the log line below to select patterns and build your regular expression interactively.
         </div>
-        <div id="rg-interactive-line" style="display:flex; flex-wrap:wrap; gap:4px; padding:8px; border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); background:var(--bg-2); min-height:36px; font-family:var(--mono); font-size:11px; line-height:1.5;">
-          <span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>
+        <div style="width: 100%; overflow-x: auto; background: var(--bg-2); border: 1px solid var(--bdr-d); border-radius: var(--rounded-sm); padding: 12px; font-family: var(--mono); font-size: 12px; box-sizing: border-box;">
+          <div id="rg-text-row" style="display: flex; white-space: pre; position: relative; margin-bottom: 8px; color: var(--t1); font-weight: 600;">
+            <span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>
+          </div>
+          <div id="rg-tracks-container" style="position: relative; width: max-content; min-width: 100%;"></div>
         </div>
         <!-- Active selections display -->
         <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"></div>
@@ -12051,7 +12054,6 @@ const RX_HIST = {
    ================================================================ */
 const RG = {
   selections: [],
-  tokens: [],
 
   init() {
     $('e-tl')?.addEventListener('input', () => this.onLineInput());
@@ -12064,209 +12066,201 @@ const RG = {
     this.renderSelections();
   },
 
+  findMatches(line) {
+    const matches = [];
+    const addMatch = (regex, label, pattern, color) => {
+      let m;
+      regex.lastIndex = 0;
+      while ((m = regex.exec(line)) !== null) {
+        matches.push({
+          start: m.index,
+          end: regex.lastIndex,
+          text: m[0],
+          label,
+          pattern,
+          color
+        });
+      }
+    };
+
+    addMatch(/\b\d{4}-\d{2}-\d{2}\b/g, 'Date', '\\d{4}-\\d{2}-\\d{2}', '#3b82f6');
+    addMatch(/\b\d{2}:\d{2}:\d{2}(\.\d{3,6})?\b/g, 'Time', '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?', '#22c55e');
+    addMatch(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, 'IP Address', '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}', '#a855f7');
+    addMatch(/\b(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)\b/gi, 'Log Level', '(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)', '#ef4444');
+    addMatch(/\[[^\]\s]+\]/g, 'Bracketed', '\\[[^\\]]+\\]', '#06b6d4');
+
+    let m;
+    const wordRegex = /\b[a-zA-Z_]{3,}\b/g;
+    while ((m = wordRegex.exec(line)) !== null) {
+      if (!/^(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)$/i.test(m[0])) {
+        matches.push({
+          start: m.index,
+          end: wordRegex.lastIndex,
+          text: m[0],
+          label: 'Word',
+          pattern: '[a-zA-Z_]+',
+          color: '#eab308'
+        });
+      }
+    }
+
+    const numRegex = /\b\d{2,}\b/g;
+    while ((m = numRegex.exec(line)) !== null) {
+      // Don't duplicate matches that overlap with IP or date/time
+      const isDateOrTimeOrIP = /\b\d{4}-\d{2}-\d{2}\b|\b\d{2}:\d{2}:\d{2}\b|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(line.slice(Math.max(0, m.index - 10), m.index + m[0].length + 10));
+      if (!isDateOrTimeOrIP) {
+        matches.push({
+          start: m.index,
+          end: numRegex.lastIndex,
+          text: m[0],
+          label: 'Number',
+          pattern: '\\d+',
+          color: '#f97316'
+        });
+      }
+    }
+
+    const tokenRegex = /\b[a-zA-Z0-9_-]+\b/g;
+    while ((m = tokenRegex.exec(line)) !== null) {
+      const escaped = m[0].replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+      matches.push({
+        start: m.index,
+        end: tokenRegex.lastIndex,
+        text: m[0],
+        label: `"${m[0]}"`,
+        pattern: escaped,
+        color: '#6b7280'
+      });
+    }
+
+    return matches;
+  },
+
   renderInteractiveLine(line) {
-    const container = $('rg-interactive-line');
-    if (!container) return;
+    const textRow = $('rg-text-row');
+    const tracksContainer = $('rg-tracks-container');
+    if (!textRow || !tracksContainer) return;
+
     if (!line) {
-      container.innerHTML = `<span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>`;
+      textRow.innerHTML = `<span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>`;
+      tracksContainer.innerHTML = '';
+      tracksContainer.style.height = '0px';
       return;
     }
 
-    const regex = /(\d{4}-\d{2}-\d{2})|(\d{2}:\d{2}:\d{2})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\s+)|([\[\]\-:=,()./]+)|([a-zA-Z_]+)|(\d+)|(.)/g;
-    let match;
-    this.tokens = [];
-    while ((match = regex.exec(line)) !== null) {
-      this.tokens.push({
-        text: match[0],
-        start: match.index,
-        end: regex.lastIndex
-      });
-    }
+    textRow.innerHTML = [...line].map((char, idx) => {
+      const sel = this.selections.find(s => idx >= s.start && idx < s.end);
+      const bg = sel ? 'rgba(234, 179, 8, 0.15)' : 'none';
+      const border = sel ? '1px solid var(--amber)' : 'none';
+      return `<span style="width:1ch; display:inline-block; text-align:center; background:${bg}; border-top:${border}; border-bottom:${border}; box-sizing:border-box;">${esc(char)}</span>`;
+    }).join('');
 
-    container.innerHTML = '';
-    this.tokens.forEach((tok, idx) => {
-      const span = document.createElement('span');
-      span.className = 'rg-tok-btn';
-      span.textContent = tok.text;
-      span.dataset.idx = idx;
-      span.style.cssText = `
-        cursor: pointer;
-        padding: 2px 4px;
+    const matches = this.findMatches(line);
+
+    matches.sort((a, b) => (b.end - b.start) - (a.end - a.start) || a.start - b.start);
+
+    const tracks = [];
+    matches.forEach(m => {
+      let trackIdx = 0;
+      while (true) {
+        if (!tracks[trackIdx]) {
+          tracks[trackIdx] = [];
+        }
+        const overlap = tracks[trackIdx].some(existing => {
+          return !(m.end <= existing.start || m.start >= existing.end);
+        });
+        if (!overlap) {
+          tracks[trackIdx].push(m);
+          m.track = trackIdx;
+          break;
+        }
+        trackIdx++;
+      }
+    });
+
+    tracksContainer.innerHTML = '';
+    tracksContainer.style.height = `${tracks.length * 28 + 10}px`;
+
+    matches.forEach(m => {
+      const left = m.start;
+      const width = m.end - m.start;
+
+      const isSelected = this.selections.some(s => s.start === m.start && s.end === m.end && s.pattern === m.pattern);
+      const isOverlappingSelected = this.selections.some(s => {
+        const overlaps = !(m.end <= s.start || m.start >= s.end);
+        const isSame = (s.start === m.start && s.end === m.end && s.pattern === m.pattern);
+        return overlaps && !isSame;
+      });
+
+      const btn = document.createElement('button');
+      btn.className = 'rg-match-badge';
+      btn.style.cssText = `
+        position: absolute;
+        left: ${left}ch;
+        width: ${width}ch;
+        top: ${m.track * 28}px;
+        height: 22px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         border-radius: var(--rounded-xs, 3px);
+        cursor: pointer;
+        padding: 0 4px;
         transition: all 0.15s ease;
-        background: var(--bg-1);
-        border: 1px solid var(--bdr-d);
-        user-select: none;
+        box-sizing: border-box;
       `;
-      
-      const sel = this.getSelectionForToken(tok);
-      if (sel) {
-        span.style.background = 'var(--amber-g)';
-        span.style.borderColor = 'var(--amber)';
-        span.style.color = 'var(--bg-0)';
+
+      if (isSelected) {
+        btn.style.background = m.color;
+        btn.style.border = `1px solid ${m.color}`;
+        btn.style.color = '#fff';
+        btn.style.fontWeight = 'bold';
+        btn.style.boxShadow = '0 0 0 2px var(--bg-1)';
+        btn.innerHTML = `✓ ${esc(m.label)}`;
+      } else if (isOverlappingSelected) {
+        btn.style.background = 'var(--bg-1)';
+        btn.style.border = '1px dashed var(--bdr-d)';
+        btn.style.color = 'var(--t4)';
+        btn.style.opacity = '0.3';
+        btn.style.cursor = 'not-allowed';
+        btn.textContent = esc(m.label);
+      } else {
+        btn.style.background = 'var(--bg-1)';
+        btn.style.border = `1px solid ${m.color}`;
+        btn.style.color = m.color;
+        btn.textContent = esc(m.label);
+
+        btn.addEventListener('mouseover', () => {
+          btn.style.background = m.color;
+          btn.style.color = '#fff';
+        });
+        btn.addEventListener('mouseout', () => {
+          btn.style.background = 'var(--bg-1)';
+          btn.style.color = m.color;
+        });
       }
 
-      span.addEventListener('mouseover', () => {
-        if (!sel) span.style.background = 'var(--bg-active)';
-      });
-      span.addEventListener('mouseout', () => {
-        if (!sel) span.style.background = 'var(--bg-1)';
-      });
-      span.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.showPatternsDropdown(idx, e.clientX, e.clientY);
-      });
+      if (!isOverlappingSelected) {
+        btn.addEventListener('click', () => {
+          if (isSelected) {
+            this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
+          } else {
+            this.selectPattern(m.start, m.end, m.pattern, m.label, m.color);
+          }
+          this.onSelectionChanged();
+        });
+      }
 
-      container.appendChild(span);
+      tracksContainer.appendChild(btn);
     });
   },
 
-  getSelectionForToken(tok) {
-    return this.selections.find(s => tok.start >= s.start && tok.end <= s.end);
-  },
-
-  showPatternsDropdown(tokIdx, x, y) {
-    $('rg-dropdown')?.remove();
-
-    const tok = this.tokens[tokIdx];
-    if (!tok) return;
-
-    const patterns = this.detectPatterns(tok.text);
-
-    const dropdown = document.createElement('div');
-    dropdown.id = 'rg-dropdown';
-    dropdown.style.cssText = `
-      position: fixed;
-      left: ${x}px;
-      top: ${y + 10}px;
-      background: var(--bg-1);
-      border: 1px solid var(--bdr);
-      border-radius: var(--rounded-sm);
-      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1));
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      padding: 4px;
-      min-width: 180px;
-    `;
-
-    patterns.forEach(p => {
-      const opt = document.createElement('div');
-      opt.className = 'rg-dropdown-item';
-      opt.style.cssText = `
-        padding: 6px 12px;
-        font-size: 11px;
-        cursor: pointer;
-        border-radius: var(--rounded-xs, 3px);
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        color: var(--t1);
-      `;
-      opt.innerHTML = `
-        <span style="font-weight:600;">${esc(p.label)}</span>
-        <span style="font-family:var(--mono); color:var(--amber);">${esc(p.pattern)}</span>
-      `;
-      opt.addEventListener('mouseover', () => {
-        opt.style.background = 'var(--bg-active)';
-      });
-      opt.addEventListener('mouseout', () => {
-        opt.style.background = 'none';
-      });
-      opt.addEventListener('click', () => {
-        this.selectPattern(tok.start, tok.end, p.pattern, p.label);
-        dropdown.remove();
-      });
-      dropdown.appendChild(opt);
-    });
-
-    const existing = this.getSelectionForToken(tok);
-    if (existing) {
-      const clearOpt = document.createElement('div');
-      clearOpt.style.cssText = `
-        padding: 6px 12px;
-        font-size: 11px;
-        cursor: pointer;
-        border-radius: var(--rounded-xs, 3px);
-        color: var(--red);
-        border-top: 1px solid var(--bdr-d);
-        margin-top: 4px;
-      `;
-      clearOpt.textContent = '✕ Clear Selection';
-      clearOpt.addEventListener('mouseover', () => {
-        clearOpt.style.background = 'rgba(220,38,38,0.12)';
-      });
-      clearOpt.addEventListener('mouseout', () => {
-        clearOpt.style.background = 'none';
-      });
-      clearOpt.addEventListener('click', () => {
-        this.selections = this.selections.filter(s => !(tok.start >= s.start && tok.end <= s.end));
-        this.onSelectionChanged();
-        dropdown.remove();
-      });
-      dropdown.appendChild(clearOpt);
-    }
-
-    const parent = $('mm') || document.body;
-    parent.appendChild(dropdown);
-
-    const closeHandler = () => {
-      dropdown.remove();
-      document.removeEventListener('click', closeHandler);
-    };
-    setTimeout(() => {
-      document.addEventListener('click', closeHandler);
-    }, 100);
-  },
-
-  detectPatterns(text) {
-    const list = [];
-    const cleanText = text.trim();
-
-    if (/^(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)$/i.test(cleanText)) {
-      list.push({ label: 'Log Level', pattern: '(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)' });
-    }
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(cleanText)) {
-      list.push({ label: 'Date (YYYY-MM-DD)', pattern: '\\d{4}-\\d{2}-\\d{2}' });
-    }
-    if (/^\d{2}:\d{2}:\d{2}$/.test(cleanText)) {
-      list.push({ label: 'Time (HH:MM:SS)', pattern: '\\d{2}:\\d{2}:\\d{2}' });
-    }
-    if (/^\d{4}$/.test(cleanText)) {
-      list.push({ label: 'Year (4 digits)', pattern: '\\d{4}' });
-    }
-
-    if (/^\d+$/.test(cleanText)) {
-      list.push({ label: 'Number', pattern: '\\d+' });
-    }
-
-    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(cleanText)) {
-      list.push({ label: 'IP Address', pattern: '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}' });
-    }
-
-    if (/^[a-zA-Z_]+$/.test(cleanText)) {
-      list.push({ label: 'Word (letters)', pattern: '[a-zA-Z_]+' });
-    }
-
-    if (/^\s+$/.test(text)) {
-      list.push({ label: 'Whitespace', pattern: '\\s+' });
-    }
-
-    const escaped = text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    list.push({ label: `Literal: "${text}"`, pattern: escaped });
-
-    if (!/^\s+$/.test(text)) {
-      list.push({ label: 'Non-whitespace', pattern: '\\S+' });
-    }
-    list.push({ label: 'Anything', pattern: '.*?' });
-
-    return list;
-  },
-
-  selectPattern(start, end, pattern, label) {
+  selectPattern(start, end, pattern, label, color) {
     this.selections = this.selections.filter(s => s.end <= start || s.start >= end);
-    this.selections.push({ start, end, pattern, label });
+    this.selections.push({ start, end, pattern, label, color });
     this.selections.sort((a, b) => a.start - b.start);
     this.onSelectionChanged();
   },
@@ -12288,9 +12282,9 @@ const RG = {
     }
 
     container.innerHTML = this.selections.map((s, idx) => `
-      <span class="badge b-amber" style="font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px;">
+      <span class="badge" style="font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px; background:${s.color}; color:#fff; border-radius:var(--rounded-sm);">
         <span>${esc(s.label)}:</span>
-        <code style="font-family:var(--mono);">${esc(s.pattern)}</code>
+        <code style="font-family:var(--mono); color:#fff;">${esc(s.pattern)}</code>
         <span style="cursor:pointer; font-weight:bold; margin-left:2px;" onclick="RG.removeSelection(${idx})">✕</span>
       </span>
     `).join('');

@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Interactive Regex Builder Stacked Gantt Layout (v6.9.77 — COMPLETED)**:
+  - **Stacked Color-Coded Matches**: Redesigned the visual builder to parse all possible matching patterns across the log line simultaneously and map them to vertical rows (tracks). Represented options as color-coded horizontal bars aligned to the log line characters using monospace `ch` units.
+  - **Dynamic State Overlapping**: Handled active highlights for selected options and automatically disabled overlapping tracks with a lower-opacity warning state to guide the user.
+  - **Updated E2E Test Suite**: Updated `tests/test_16_interactive_regex_builder.py` to cover the badge layout clicking and toggle state selections.
+
 - **Interactive Regex Builder (v6.9.76 — COMPLETED)**:
   - **Olaf Neumann Style Replication**: Built an interactive builder (`RG` module) where a sample log line is split into words, numbers, delimiters, and spaces. Clicking segments displays floating option dialogs showing matching regex patterns (e.g. Log Level, Date, Time, Number, IP Address, literals).
   - **Dynamic Composition Engine**: Real-time regex generation stitching selected tokens with capture groups and escaping unselected segments dynamically.
