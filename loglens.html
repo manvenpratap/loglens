@@ -7298,11 +7298,11 @@ label[for="watch-auto-reload"] {
         </div>
         <!-- Unified scroll wrapper: text row + tracks share the same ch coordinate space -->
         <div style="width:100%; overflow-x:auto; background:var(--bg-2); border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); box-sizing:border-box;">
-          <div id="rg-inner" style="display:inline-block; min-width:100%; padding:12px; font-family:var(--mono); font-size:12px; box-sizing:border-box; position:relative; white-space:nowrap;">
+          <div id="rg-inner" style="display:inline-block; min-width:100%; padding:12px; font-family:var(--mono); font-size:15px; box-sizing:border-box; position:relative; white-space:nowrap;">
             <!-- Line display: text on top of highlight overlays, both using ch units -->
-            <div style="position:relative; height:20px; margin-bottom:6px;">
+            <div style="position:relative; height:24px; margin-bottom:6px;">
               <div id="rg-text-highlights" style="position:absolute; top:0; left:0; height:100%; pointer-events:none;"></div>
-              <div id="rg-text-row" style="position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</div>
+              <div id="rg-text-row" style="position:absolute; top:0; left:0; white-space:pre; line-height:24px; color:var(--t4); font-style:italic; pointer-events:none;">Enter a sample log line above to begin interactive generation.</div>
             </div>
             <!-- Track badges: position:absolute left:Xch aligned with text above -->
             <div id="rg-tracks-container" style="position:relative; height:0;"></div>
@@ -12272,7 +12272,7 @@ const RG = {
 
     if (!line) {
       textRow.textContent = 'Enter a sample log line above to begin interactive generation.';
-      textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t4); font-style:italic;';
+      textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:24px; color:var(--t4); font-style:italic; pointer-events:none;';
       if (textHL) textHL.innerHTML = '';
       tracksC.innerHTML = '';
       tracksC.style.height = '0';
@@ -12281,7 +12281,7 @@ const RG = {
 
     // Render plain text (textContent is XSS-safe, no esc() needed)
     textRow.textContent = line;
-    textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:20px; color:var(--t1); font-weight:600; font-style:normal;';
+    textRow.style.cssText = 'position:absolute; top:0; left:0; white-space:pre; line-height:24px; color:var(--t1); font-weight:600; font-style:normal; pointer-events:none;';
 
     // Render selection highlights (behind the text)
     if (textHL) {
@@ -12313,6 +12313,28 @@ const RG = {
     tracksC.innerHTML = '';
     tracksC.style.height = tracks.length > 0 ? `${tracks.length * 26 + 4}px` : '0';
 
+    // Helper: show/hide the transient hover-highlight span in the text row
+    const showHoverHL = (start, end, color) => {
+      if (!textHL) return;
+      let hl = document.getElementById('rg-hover-hl');
+      if (!hl) {
+        hl = document.createElement('span');
+        hl.id = 'rg-hover-hl';
+        hl.style.cssText = 'position:absolute; top:0; height:100%; pointer-events:none; box-sizing:border-box; border-radius:2px; transition:left .08s,width .08s;';
+        textHL.appendChild(hl);
+      }
+      hl.style.left    = `${start}ch`;
+      hl.style.width   = `${end - start}ch`;
+      hl.style.background = color + '44';
+      hl.style.borderTop    = `2px solid ${color}`;
+      hl.style.borderBottom = `2px solid ${color}`;
+      hl.style.display = 'block';
+    };
+    const hideHoverHL = () => {
+      const hl = document.getElementById('rg-hover-hl');
+      if (hl) hl.style.display = 'none';
+    };
+
     matches.forEach(m => {
       const width = m.end - m.start;
       const isSelected = this.selections.some(s => s.start === m.start && s.end === m.end && s.pattern === m.pattern);
@@ -12324,13 +12346,25 @@ const RG = {
       const btn = document.createElement('button');
       btn.className = 'rg-match-badge';
       btn.title = m.label + ' → ' + m.pattern;
-      // min-width = matched char count; enough room to read short labels
-      const minW = Math.max(width, 3);
-      btn.style.cssText = `position:absolute; left:${m.start}ch; min-width:${minW}ch; max-width:28ch; top:${m.track * 26}px; height:22px; font-family:var(--mono); font-size:9px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; cursor:pointer; padding:0 3px; transition:background .1s,color .1s; box-sizing:border-box; z-index:1;`;
+      // Exact width = matched char count. No min-width bleed — badges expand only on hover.
+      btn.style.cssText = `position:absolute; left:${m.start}ch; width:${width}ch; top:${m.track * 26}px; height:22px; font-family:var(--mono); font-size:10px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; cursor:pointer; padding:0 2px; transition:background .1s,color .1s; box-sizing:border-box; z-index:1;`;
 
       if (isSelected) {
         btn.style.cssText += `background:${m.color}; border:1px solid ${m.color}; color:#fff; font-weight:700; box-shadow:0 0 0 2px var(--bg-2),0 0 0 3px ${m.color}; z-index:3;`;
         btn.textContent = '\u2713 ' + m.label;
+        // Selected badge: hover expands + highlights text
+        btn.addEventListener('mouseover', () => {
+          btn.style.overflow = 'visible'; btn.style.width = 'max-content'; btn.style.zIndex = '10';
+          showHoverHL(m.start, m.end, m.color);
+        });
+        btn.addEventListener('mouseout', () => {
+          btn.style.overflow = 'hidden'; btn.style.width = `${width}ch`; btn.style.zIndex = '3';
+          hideHoverHL();
+        });
+        btn.addEventListener('click', () => {
+          this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
+          this.onSelectionChanged();
+        });
       } else if (isBlocked) {
         btn.style.cssText += `background:var(--bg-1); border:1px dashed var(--bdr); color:var(--t4); opacity:.3; cursor:not-allowed;`;
         btn.textContent = m.label;
@@ -12338,22 +12372,17 @@ const RG = {
         btn.style.cssText += `background:${m.color}15; border:1px solid ${m.color}; color:${m.color};`;
         btn.textContent = m.label;
         btn.addEventListener('mouseover', () => {
-          btn.style.background = m.color; btn.style.color = '#fff'; btn.style.zIndex = '4';
-          btn.style.overflow = 'visible'; btn.style.maxWidth = 'none';
+          btn.style.background = m.color; btn.style.color = '#fff'; btn.style.zIndex = '10';
+          btn.style.overflow = 'visible'; btn.style.width = 'max-content';
+          showHoverHL(m.start, m.end, m.color);
         });
         btn.addEventListener('mouseout', () => {
           btn.style.background = m.color + '15'; btn.style.color = m.color; btn.style.zIndex = '1';
-          btn.style.overflow = 'hidden'; btn.style.maxWidth = '28ch';
+          btn.style.overflow = 'hidden'; btn.style.width = `${width}ch`;
+          hideHoverHL();
         });
         btn.addEventListener('click', () => {
           this.selectPattern(m.start, m.end, m.pattern, m.label, m.color);
-          this.onSelectionChanged();
-        });
-      }
-
-      if (isSelected) {
-        btn.addEventListener('click', () => {
-          this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
           this.onSelectionChanged();
         });
       }
