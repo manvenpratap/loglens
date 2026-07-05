@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Elements Rule Creator Modal Simplification (v6.9.69 — COMPLETED)**:
+  - **Prioritized Auto-Detection Flow**: Moved the sample log line input (`#e-tl`) and live highlighted match preview (`#rx-pre`) to Step 1 at the top of the modal. Added a dynamic format status badge (`#preview-format-badge`) to visually display the current auto-detected preset layout (e.g., Spring Boot, Java Standard) or custom state.
+  - **Manual Override Accordion**: Grouped manual format selectors (`#wf-sel`) and keyword marking parameters (`#kw-inp` chip builder, match modes, capture options) inside a collapsible accordion section (`#ovr-hdr` / `#ovr-body`) that starts collapsed by default.
+  - **Appearance & SLA Settings Accordion**: Moved visual styles (Accent Color `#e-col` / `#e-hex`, Emoji Icon `#e-ico`) and SLA Threshold settings (`#e-sla`) into a collapsible accordion section (`#vis-hdr` / `#vis-body`) that starts collapsed by default.
+  - **Removed Minimize/Maximize Buttons**: Cleaned up the modal header by removing the `#btn-rule-min` and `#btn-rule-max` buttons, UI toggle methods, and event bindings, streamlining rule creation viewports.
+  - **Regression Test Updates**: Updated E2E validation test suites (`tests/test_13_rule_creator.py`) to align with restructured steps, verify accordion expand/collapse toggles, and ensure all 81 regression assertions pass successfully.
+
 - **Rule Creator UI fixes and Javascript Initialization Robustness (v6.9.68 — COMPLETED)**:
   - **Javascript Startup Robustness**: Resolved a javascript `TypeError` at startup when trying to bind `WIZ.test` (which was undefined), ensuring sequential javascript initialization blocks (such as `RXB.init()`, regex explainer color-coding, and custom overlays) execute successfully without crashing.
   - **Visual Group Mapping Restoration**: Fixed visual group mapping context menu activation inside `RXB.init` by calling `originalRxbInit` to register core change and input listeners correctly, resolving a regression where mapping fields did not auto-refresh preview layout.
