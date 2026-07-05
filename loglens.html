@@ -7286,6 +7286,24 @@ label[for="watch-auto-reload"] {
       </div>
     </div>
 
+    <!-- Olaf Neumann style Visual Regex Generator -->
+    <div class="ws-step" id="visual-regex-generator-step" style="margin-top: 8px;">
+      <div class="ws-hdr" style="font-size: 11px;">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        <span>Interactive Regex Builder (Click text to generate)</span>
+      </div>
+      <div class="f">
+        <div class="fh" style="font-size:10px; color:var(--t3); margin-bottom:6px; line-height:1.4;">
+          Click segments of the log line below to select patterns and build your regular expression interactively.
+        </div>
+        <div id="rg-interactive-line" style="display:flex; flex-wrap:wrap; gap:4px; padding:8px; border:1px solid var(--bdr-d); border-radius:var(--rounded-sm); background:var(--bg-2); min-height:36px; font-family:var(--mono); font-size:11px; line-height:1.5;">
+          <span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>
+        </div>
+        <!-- Active selections display -->
+        <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"></div>
+      </div>
+    </div>
+
     <!-- Collapsible Accordion: Manual Override (Format & Keywords) -->
     <div class="ovr-section-wrap" style="margin-top: 8px;">
       <div class="ovr-section-hdr" id="ovr-hdr" tabindex="0">
@@ -10357,6 +10375,9 @@ const UI={
     // Reset inputs
     S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';
     $('e-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
+    if (typeof RG !== 'undefined') {
+      RG.onLineInput();
+    }
     $('tmpl-sel').value='';
     $('wf-sel').value='auto';
     S._userSelectedFormat = false;
@@ -12022,6 +12043,300 @@ const RX_HIST = {
     const btnRedo = $('btn-rx-redo');
     if (btnUndo) btnUndo.disabled = (this.index <= 0);
     if (btnRedo) btnRedo.disabled = (this.index >= this.stack.length - 1);
+  }
+};
+
+/* ================================================================
+   §JS-33d OLAF NEUMANN REGEX BUILDER
+   ================================================================ */
+const RG = {
+  selections: [],
+  tokens: [],
+
+  init() {
+    $('e-tl')?.addEventListener('input', () => this.onLineInput());
+  },
+
+  onLineInput() {
+    const line = $('e-tl').value;
+    this.selections = [];
+    this.renderInteractiveLine(line);
+    this.renderSelections();
+  },
+
+  renderInteractiveLine(line) {
+    const container = $('rg-interactive-line');
+    if (!container) return;
+    if (!line) {
+      container.innerHTML = `<span style="color:var(--t4); font-style:italic;">Enter a sample log line above to begin interactive generation.</span>`;
+      return;
+    }
+
+    const regex = /(\d{4}-\d{2}-\d{2})|(\d{2}:\d{2}:\d{2})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\s+)|([\[\]\-:=,()./]+)|([a-zA-Z_]+)|(\d+)|(.)/g;
+    let match;
+    this.tokens = [];
+    while ((match = regex.exec(line)) !== null) {
+      this.tokens.push({
+        text: match[0],
+        start: match.index,
+        end: regex.lastIndex
+      });
+    }
+
+    container.innerHTML = '';
+    this.tokens.forEach((tok, idx) => {
+      const span = document.createElement('span');
+      span.className = 'rg-tok-btn';
+      span.textContent = tok.text;
+      span.dataset.idx = idx;
+      span.style.cssText = `
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: var(--rounded-xs, 3px);
+        transition: all 0.15s ease;
+        background: var(--bg-1);
+        border: 1px solid var(--bdr-d);
+        user-select: none;
+      `;
+      
+      const sel = this.getSelectionForToken(tok);
+      if (sel) {
+        span.style.background = 'var(--amber-g)';
+        span.style.borderColor = 'var(--amber)';
+        span.style.color = 'var(--bg-0)';
+      }
+
+      span.addEventListener('mouseover', () => {
+        if (!sel) span.style.background = 'var(--bg-active)';
+      });
+      span.addEventListener('mouseout', () => {
+        if (!sel) span.style.background = 'var(--bg-1)';
+      });
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.showPatternsDropdown(idx, e.clientX, e.clientY);
+      });
+
+      container.appendChild(span);
+    });
+  },
+
+  getSelectionForToken(tok) {
+    return this.selections.find(s => tok.start >= s.start && tok.end <= s.end);
+  },
+
+  showPatternsDropdown(tokIdx, x, y) {
+    $('rg-dropdown')?.remove();
+
+    const tok = this.tokens[tokIdx];
+    if (!tok) return;
+
+    const patterns = this.detectPatterns(tok.text);
+
+    const dropdown = document.createElement('div');
+    dropdown.id = 'rg-dropdown';
+    dropdown.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y + 10}px;
+      background: var(--bg-1);
+      border: 1px solid var(--bdr);
+      border-radius: var(--rounded-sm);
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1));
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      padding: 4px;
+      min-width: 180px;
+    `;
+
+    patterns.forEach(p => {
+      const opt = document.createElement('div');
+      opt.className = 'rg-dropdown-item';
+      opt.style.cssText = `
+        padding: 6px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        border-radius: var(--rounded-xs, 3px);
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--t1);
+      `;
+      opt.innerHTML = `
+        <span style="font-weight:600;">${esc(p.label)}</span>
+        <span style="font-family:var(--mono); color:var(--amber);">${esc(p.pattern)}</span>
+      `;
+      opt.addEventListener('mouseover', () => {
+        opt.style.background = 'var(--bg-active)';
+      });
+      opt.addEventListener('mouseout', () => {
+        opt.style.background = 'none';
+      });
+      opt.addEventListener('click', () => {
+        this.selectPattern(tok.start, tok.end, p.pattern, p.label);
+        dropdown.remove();
+      });
+      dropdown.appendChild(opt);
+    });
+
+    const existing = this.getSelectionForToken(tok);
+    if (existing) {
+      const clearOpt = document.createElement('div');
+      clearOpt.style.cssText = `
+        padding: 6px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        border-radius: var(--rounded-xs, 3px);
+        color: var(--red);
+        border-top: 1px solid var(--bdr-d);
+        margin-top: 4px;
+      `;
+      clearOpt.textContent = '✕ Clear Selection';
+      clearOpt.addEventListener('mouseover', () => {
+        clearOpt.style.background = 'rgba(220,38,38,0.12)';
+      });
+      clearOpt.addEventListener('mouseout', () => {
+        clearOpt.style.background = 'none';
+      });
+      clearOpt.addEventListener('click', () => {
+        this.selections = this.selections.filter(s => !(tok.start >= s.start && tok.end <= s.end));
+        this.onSelectionChanged();
+        dropdown.remove();
+      });
+      dropdown.appendChild(clearOpt);
+    }
+
+    const parent = $('mm') || document.body;
+    parent.appendChild(dropdown);
+
+    const closeHandler = () => {
+      dropdown.remove();
+      document.removeEventListener('click', closeHandler);
+    };
+    setTimeout(() => {
+      document.addEventListener('click', closeHandler);
+    }, 100);
+  },
+
+  detectPatterns(text) {
+    const list = [];
+    const cleanText = text.trim();
+
+    if (/^(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)$/i.test(cleanText)) {
+      list.push({ label: 'Log Level', pattern: '(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)' });
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cleanText)) {
+      list.push({ label: 'Date (YYYY-MM-DD)', pattern: '\\d{4}-\\d{2}-\\d{2}' });
+    }
+    if (/^\d{2}:\d{2}:\d{2}$/.test(cleanText)) {
+      list.push({ label: 'Time (HH:MM:SS)', pattern: '\\d{2}:\\d{2}:\\d{2}' });
+    }
+    if (/^\d{4}$/.test(cleanText)) {
+      list.push({ label: 'Year (4 digits)', pattern: '\\d{4}' });
+    }
+
+    if (/^\d+$/.test(cleanText)) {
+      list.push({ label: 'Number', pattern: '\\d+' });
+    }
+
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(cleanText)) {
+      list.push({ label: 'IP Address', pattern: '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}' });
+    }
+
+    if (/^[a-zA-Z_]+$/.test(cleanText)) {
+      list.push({ label: 'Word (letters)', pattern: '[a-zA-Z_]+' });
+    }
+
+    if (/^\s+$/.test(text)) {
+      list.push({ label: 'Whitespace', pattern: '\\s+' });
+    }
+
+    const escaped = text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    list.push({ label: `Literal: "${text}"`, pattern: escaped });
+
+    if (!/^\s+$/.test(text)) {
+      list.push({ label: 'Non-whitespace', pattern: '\\S+' });
+    }
+    list.push({ label: 'Anything', pattern: '.*?' });
+
+    return list;
+  },
+
+  selectPattern(start, end, pattern, label) {
+    this.selections = this.selections.filter(s => s.end <= start || s.start >= end);
+    this.selections.push({ start, end, pattern, label });
+    this.selections.sort((a, b) => a.start - b.start);
+    this.onSelectionChanged();
+  },
+
+  onSelectionChanged() {
+    const line = $('e-tl').value;
+    this.renderInteractiveLine(line);
+    this.renderSelections();
+    this.buildRegex();
+  },
+
+  renderSelections() {
+    const container = $('rg-active-selections');
+    if (!container) return;
+    
+    if (this.selections.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = this.selections.map((s, idx) => `
+      <span class="badge b-amber" style="font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px;">
+        <span>${esc(s.label)}:</span>
+        <code style="font-family:var(--mono);">${esc(s.pattern)}</code>
+        <span style="cursor:pointer; font-weight:bold; margin-left:2px;" onclick="RG.removeSelection(${idx})">✕</span>
+      </span>
+    `).join('');
+  },
+
+  removeSelection(idx) {
+    this.selections.splice(idx, 1);
+    this.onSelectionChanged();
+  },
+
+  buildRegex() {
+    const line = $('e-tl').value;
+    if (!line) return;
+
+    let regex = '^';
+    let lastIdx = 0;
+
+    this.selections.forEach(s => {
+      if (s.start > lastIdx) {
+        const gap = line.slice(lastIdx, s.start);
+        if (/^\s+$/.test(gap)) {
+          regex += '\\s+';
+        } else {
+          const escapedGap = gap.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+          regex += escapedGap;
+        }
+      }
+      regex += `(${s.pattern})`;
+      lastIdx = s.end;
+    });
+
+    if (lastIdx < line.length) {
+      const suffix = line.slice(lastIdx);
+      if (/^\s+$/.test(suffix)) {
+        regex += '\\s*';
+      } else {
+        regex += '.*';
+      }
+    } else {
+      regex += '$';
+    }
+
+    $('e-use-custom-rx').checked = true;
+    UI.syncCustomRxUI();
+    $('e-rx').value = regex;
+    $('btn-rex-explain').click();
   }
 };
 
@@ -15431,6 +15746,7 @@ const LANDSCAPE3D = {
    §JS-20 BOOTSTRAP
    ================================================================ */
 RX_HIST.init();
+RG.init();
 RXB.init();
 WIZ.init();
 

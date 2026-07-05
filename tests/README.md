@@ -25,7 +25,8 @@ tests/
 ├── test_12_log4j_import.py        # Log4j Config XML Import
 ├── test_13_rule_creator.py        # Unified Rule Creator & Tooltips
 ├── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
-└── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
+├── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
+└── test_16_interactive_regex_builder.py # Interactive Regex Builder flow
 ```
 
 ---
@@ -119,7 +120,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Unified Rule Creator & Tooltips | test_13_rule_creator | 8 |
 | Unparsed Analyzer | test_14_unparsed_analyzer | 1 |
 | Regex Pattern Undo/Redo | test_15_regex_undo_redo | 1 |
-| **Total** | | **84** |
+| Interactive Regex Builder | test_16_interactive_regex_builder | 1 |
+| **Total** | | **85** |
 
 ---
 

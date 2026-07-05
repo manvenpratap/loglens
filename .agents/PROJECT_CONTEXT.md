@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Interactive Regex Builder (v6.9.76 — COMPLETED)**:
+  - **Olaf Neumann Style Replication**: Built an interactive builder (`RG` module) where a sample log line is split into words, numbers, delimiters, and spaces. Clicking segments displays floating option dialogs showing matching regex patterns (e.g. Log Level, Date, Time, Number, IP Address, literals).
+  - **Dynamic Composition Engine**: Real-time regex generation stitching selected tokens with capture groups and escaping unselected segments dynamically.
+  - **E2E Validation Suite**: Created E2E test file `tests/test_16_interactive_regex_builder.py` to assert correct token highlighting, dropdown clicks, selection badges, and output regex matches.
+
 - **Unparsed Regex Index-Based Handlers Fix (v6.9.75 — COMPLETED)**:
   - **Memory-Based Index Referencing**: Added `UNPARSED.currentClusters` and `UNPARSED.createRuleFromIndex()` to hold cluster references in memory and pass clean indices in the HTML `onclick` handlers, eliminating JavaScript evaluation corruption of regex backslashes.
   - **Ellipsis Truncation Guard**: Handled ellipsis `…` termination inside signature conversions, safely replacing them with `.*` to guarantee valid, compileable regular expressions.
