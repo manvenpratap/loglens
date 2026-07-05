@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Unparsed Analyzer Create Rule Button Fix (v6.9.72 — COMPLETED)**:
+  - **Fixed Undefined Handlers**: Replaced obsolete `CFG.openM` inline click handler with a new robust helper `UNPARSED.createRuleFromPattern(pattern)` to open the rule creator modal, check the customize regex pattern checkbox, call `UI.syncCustomRxUI()`, expand the advanced accordion, populate `e-rx` with the generated regex, and trigger a regex explanation.
+  - **Auto-Suggest Wire Fix**: Replaced obsolete `UI.setMM` references inside the auto-suggest try and cluster-add click listeners with calls to the new helper `UNPARSED.createRuleFromPattern`.
+  - **E2E Validation Suite**: Created a new Playwright E2E test file `tests/test_14_unparsed_analyzer.py` to verify the "Create Rule" flow from the Unparsed Analyzer. Updated the Coverage Map in `tests/README.md`.
+
 - **Equal Height Settings Cards Layout Alignment (v6.9.71 — COMPLETED)**:
   - **Equal-Height Dashboard Grid**: Changed `align-items: start !important;` to `align-items: stretch !important;` in the `#res .dashboard-grid` selector class definitions. This forces all dashboard configuration settings cards (e.g. System & Aesthetics, Log Sources, Parse Rules, Sessions) within the same row of the responsive CSS grid to stretch to equal heights, eliminating jagged border lines and organizing the dashboard.
 

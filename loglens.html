@@ -11923,6 +11923,16 @@ const ANOMALY={
    §JS-33b UNPARSED LINE ANALYZER
    ================================================================ */
 const UNPARSED = {
+  createRuleFromPattern(pattern) {
+    UI.openM(null);
+    $('e-use-custom-rx').checked = true;
+    UI.syncCustomRxUI();
+    $('adv-body').classList.remove('hidden');
+    $('adv-hdr').classList.add('open');
+    $('e-rx').value = pattern;
+    $('btn-rex-explain').click();
+  },
+
   getSignature(line) {
     let sig = line.replace(/\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d{3,6})?Z?/g, '*');
     sig = sig.replace(/\b\d{2}:\d{2}:\d{2}(\.\d{3})?\b/g, '*');
@@ -11965,7 +11975,7 @@ const UNPARSED = {
             <span>${c.count} occurrence${c.count!==1?'s':''}</span>
           </div>
           <div style="font-family:var(--mono); word-break:break-all; margin-bottom:4px;">${escSig}</div>
-          <button class="btn btn-xs btn-bl" onclick="CFG.openM('new'); setTimeout(() => { $('e-pat').value='^'+'${rawSigForRegex.replace(/'/g, "\\'")}' }, 100);" style="padding:2px 4px; font-size:9px;">+ Create Rule</button>
+          <button class="btn btn-xs btn-bl" onclick="UNPARSED.createRuleFromPattern('^' + '${rawSigForRegex.replace(/'/g, "\\'")}')" style="padding:2px 4px; font-size:9px;">+ Create Rule</button>
         </div>
       `;
     });
@@ -19165,18 +19175,12 @@ UNPARSED.render = function() {
   
   // Wire suggests
   container.querySelector('#btn-unparsed-suggest-try')?.addEventListener('click', () => {
-    UI.openM(); // Open rule modal
-    UI.setMM('advanced');
-    $('e-rx').value = suggestedRx;
-    $('btn-rex-explain').click();
+    UNPARSED.createRuleFromPattern(suggestedRx);
   });
   
   container.querySelectorAll('.btn-cluster-add').forEach(btn => {
     btn.addEventListener('click', () => {
-      UI.openM();
-      UI.setMM('advanced');
-      $('e-rx').value = btn.dataset.rx;
-      $('btn-rex-explain').click();
+      UNPARSED.createRuleFromPattern(btn.dataset.rx);
     });
   });
 };

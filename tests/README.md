@@ -21,7 +21,10 @@ tests/
 ├── test_08_timeline_nav.py        # Mini-map panel, chips, zoom presets, ARIA
 ├── test_09_ai_insights.py         # AI Insights card, severity, ARIA, empty state
 ├── test_10_focus_mode.py          # F-key toggle, toast, sidebar, sessionStorage
-└── test_11_accessibility.py       # Skip link, aria-live, chip ARIA, keyboard access
+├── test_11_accessibility.py       # Skip link, aria-live, chip ARIA, keyboard access
+├── test_12_log4j_import.py        # Log4j Config XML Import
+├── test_13_rule_creator.py        # Unified Rule Creator & Tooltips
+└── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
 ```
 
 ---
@@ -112,8 +115,9 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Focus Mode | test_10_focus_mode | 9 |
 | Accessibility Polish | test_11_accessibility | 8 |
 | Log4j Config XML Import | test_12_log4j_import | 1 |
-| Unified Rule Creator & Tooltips | test_13_rule_creator | 4 |
-| **Total** | | **78** |
+| Unified Rule Creator & Tooltips | test_13_rule_creator | 8 |
+| Unparsed Analyzer | test_14_unparsed_analyzer | 1 |
+| **Total** | | **83** |
 
 ---
 
