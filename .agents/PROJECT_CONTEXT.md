@@ -3,6 +3,9 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Equal Height Settings Cards Layout Alignment (v6.9.71 — COMPLETED)**:
+  - **Equal-Height Dashboard Grid**: Changed `align-items: start !important;` to `align-items: stretch !important;` in the `#res .dashboard-grid` selector class definitions. This forces all dashboard configuration settings cards (e.g. System & Aesthetics, Log Sources, Parse Rules, Sessions) within the same row of the responsive CSS grid to stretch to equal heights, eliminating jagged border lines and organizing the dashboard.
+
 - **Rule Icon Dropdown & Semantic Auto-Suggestion (v6.9.70 — COMPLETED)**:
   - **Dropdown Selection**: Replaced the text input for `#e-ico` with a styled `<select>` element populated with standard log emojis and symbols (Bullet, Play/Start, Network/API, Database/SQL, Service/System, Warning/Alert, Error/Failure, Info, Latency, Auth, Queue, Ingress/Request, Egress/Response, Test/Debug).
   - **Dynamic Rule Name suggestions**: Added an `input` event listener to `#e-name` that monitors the Rule Name in real-time. If the current icon is the default bullet `•`, it automatically suggests and selects a matching semantic icon based on keyword matching (e.g., `query` -> `🗄`, `api` -> `🌐`, `error` -> `✕`, `warn` -> `⚠`, `auth` -> `🔒`, `latency` -> `🕒`, `queue` -> `📨`).
