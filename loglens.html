@@ -7304,6 +7304,11 @@ label[for="watch-auto-reload"] {
         </div>
         <!-- Active selections display -->
         <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"></div>
+        <!-- Selection suggestions -->
+        <div id="rg-selection-suggestions" style="margin-top: 8px; display: none; padding: 10px; border: 1px solid var(--amber); border-radius: var(--rounded-sm); background: rgba(234, 179, 8, 0.08); box-sizing: border-box;">
+          <div style="font-size: 11px; font-weight: bold; color: var(--amber); margin-bottom: 6px;">Matching patterns for selection: "<span id="rg-selected-text-preview" style="font-family: var(--mono); color: var(--t1);"></span>"</div>
+          <div id="rg-suggestions-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+        </div>
       </div>
     </div>
 
@@ -12056,7 +12061,12 @@ const RG = {
   selections: [],
 
   init() {
-    $('e-tl')?.addEventListener('input', () => this.onLineInput());
+    const input = $('e-tl');
+    if (!input) return;
+    input.addEventListener('input', () => this.onLineInput());
+    ['mouseup', 'keyup', 'select'].forEach(evt => {
+      input.addEventListener(evt, () => this.onTextSelection());
+    });
   },
 
   onLineInput() {
@@ -12064,6 +12074,89 @@ const RG = {
     this.selections = [];
     this.renderInteractiveLine(line);
     this.renderSelections();
+    $('rg-selection-suggestions').style.display = 'none';
+  },
+
+  onTextSelection() {
+    const input = $('e-tl');
+    if (!input) return;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    if (start === end) {
+      $('rg-selection-suggestions').style.display = 'none';
+      return;
+    }
+    const selectedText = input.value.slice(start, end);
+    const suggestions = [];
+
+    TOKS.forEach(cat => {
+      cat.toks.forEach(tk => {
+        if (['^', '(', ')', '?', '?:'].includes(tk.s) || tk.s.startsWith('literal')) return;
+        
+        try {
+          let cleanPattern = tk.s;
+          if (cleanPattern.startsWith('(') && cleanPattern.endsWith(')')) {
+            cleanPattern = cleanPattern.slice(1, -1);
+          }
+          if (cleanPattern.startsWith('(?:') && cleanPattern.endsWith(')')) {
+            cleanPattern = cleanPattern.slice(3, -1);
+          }
+
+          const rx = new RegExp('^' + cleanPattern + '$');
+          if (rx.test(selectedText)) {
+            suggestions.push({
+              label: `${cat.cat}: ${tk.n}`,
+              pattern: cleanPattern,
+              color: this.getCategoryColor(cat.cat)
+            });
+          }
+        } catch(e) {}
+      });
+    });
+
+    const escaped = selectedText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    suggestions.push({
+      label: 'Literal',
+      pattern: escaped,
+      color: '#6b7280'
+    });
+
+    $('rg-selected-text-preview').textContent = selectedText;
+    const list = $('rg-suggestions-list');
+    list.innerHTML = suggestions.map(s => `
+      <button class="btn btn-xs" style="background:var(--bg-1); border:1px solid ${s.color}; color:${s.color}; padding:4px 8px; font-size:10px; cursor:pointer;" onclick="RG.applySelection(${start}, ${end}, '${s.pattern.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}', '${s.label.replace(/'/g, "\\'")}', '${s.color}')">
+        ${esc(s.label)} (<code style="font-family:var(--mono);">${esc(s.pattern)}</code>)
+      </button>
+    `).join('');
+    
+    $('rg-selection-suggestions').style.display = 'block';
+  },
+
+  getCategoryColor(cat) {
+    const map = {
+      'Timestamps': '#3b82f6',
+      'Thread / Context': '#06b6d4',
+      'Log Levels': '#ef4444',
+      'Identifiers & Values': '#eab308',
+      'Structure & Anchors': '#6b7280'
+    };
+    return map[cat] || '#8b5cf6';
+  },
+
+  applySelection(start, end, pattern, label, color) {
+    this.selectPattern(start, end, pattern, label, color);
+    this.onSelectionChanged();
+    const input = $('e-tl');
+    if (input) {
+      try {
+        input.focus();
+        input.setSelectionRange(0, 0);
+      } catch(e) {}
+    }
+    try {
+      window.getSelection()?.removeAllRanges();
+    } catch(e) {}
+    $('rg-selection-suggestions').style.display = 'none';
   },
 
   findMatches(line) {
@@ -12302,7 +12395,14 @@ const RG = {
     let regex = '^';
     let lastIdx = 0;
 
-    this.selections.forEach(s => {
+    // Reset current capture mappings before auto-populating
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id => {
+      $(id).value = '';
+    });
+
+    this.selections.forEach((s, idx) => {
+      const groupNum = idx + 1;
+      
       if (s.start > lastIdx) {
         const gap = line.slice(lastIdx, s.start);
         if (/^\s+$/.test(gap)) {
@@ -12314,6 +12414,19 @@ const RG = {
       }
       regex += `(${s.pattern})`;
       lastIdx = s.end;
+
+      const lbl = s.label.toLowerCase();
+      if (lbl.includes('date') || lbl.includes('time') || lbl.includes('timestamp')) {
+        $('cm-ts').value = groupNum;
+      } else if (lbl.includes('thread')) {
+        $('cm-th').value = groupNum;
+      } else if (lbl.includes('level')) {
+        $('cm-lv').value = groupNum;
+      } else if (lbl.includes('word') || lbl.includes('class')) {
+        $('cm-el').value = groupNum;
+      } else if (lbl.includes('payload') || lbl.includes('anything') || lbl.includes('rest of line')) {
+        $('cm-py').value = groupNum;
+      }
     });
 
     if (lastIdx < line.length) {

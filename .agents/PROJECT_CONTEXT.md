@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Interactive Selection Suggestions & Auto-Mapping (v6.9.78 — COMPLETED)**:
+  - **Arbitrary Selection Scans**: Integrated text selection listeners on the sample log input (`#e-tl`). Highlighting any section immediately queries the `TOKS` dictionary for matches, offering matching presets and a literal escaping generator.
+  - **Capture Map Auto-Population**: Tied selections directly to Step 2 (Custom Mappings). Adding an interactive pattern (e.g. Timestamp, Level, Thread) automatically writes the capture group index into the corresponding configuration field (`cm-ts`, `cm-lv`, `cm-th`, etc.), eliminating manual group mapping.
+  - **Robust E2E Validation**: Extended the E2E test file to select ranges, click suggestions, check panel dismissals, and verify mapped values.
+
 - **Interactive Regex Builder Stacked Gantt Layout (v6.9.77 — COMPLETED)**:
   - **Stacked Color-Coded Matches**: Redesigned the visual builder to parse all possible matching patterns across the log line simultaneously and map them to vertical rows (tracks). Represented options as color-coded horizontal bars aligned to the log line characters using monospace `ch` units.
   - **Dynamic State Overlapping**: Handled active highlights for selected options and automatically disabled overlapping tracks with a lower-opacity warning state to guide the user.

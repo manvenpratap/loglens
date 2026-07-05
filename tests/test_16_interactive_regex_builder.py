@@ -18,7 +18,7 @@ async def _load_settings_and_open_modal(page):
 
 @pytest.mark.asyncio
 async def test_interactive_regex_builder_flow(page_with_data):
-    """Interactive regex builder must parse tracks, accept clicks on match options, and generate regex."""
+    """Interactive regex builder must parse tracks, accept selections in input, suggest matches, and auto-populate capture mappings."""
     page = page_with_data
     await _load_settings_and_open_modal(page)
 
@@ -54,6 +54,33 @@ async def test_interactive_regex_builder_flow(page_with_data):
     rx_val = await e_rx.input_value()
     assert len(rx_val) > 0
     assert "(\\d{4}-\\d{2}-\\d{2})" in rx_val
+
+    # 8. Check auto-population of Timestamp custom mapping
+    cm_ts = page.locator('#cm-ts')
+    await expect(cm_ts).to_have_value("1")
+
+    # 9. Test selecting an arbitrary range to get suggestions (e.g. select "ERROR" at index 28 to 33)
+    # "2026-07-05 10:00:00 [main] ERROR - connection timeout"
+    # Index of "ERROR" is 27 to 32.
+    await page.evaluate("() => { const el = document.getElementById('e-tl'); el.focus(); el.setSelectionRange(27, 32); el.dispatchEvent(new Event('select')); }")
+    await page.wait_for_timeout(400)
+
+    # Suggestions container should become visible
+    suggestions_container = page.locator('#rg-selection-suggestions')
+    await expect(suggestions_container).to_be_visible()
+    await expect(page.locator('#rg-selected-text-preview')).to_have_text("ERROR")
+
+    # Click the Log Levels suggestion button (using .first to avoid strict mode violation on multiple pattern options)
+    log_level_sug = page.locator('#rg-suggestions-list button', has_text="Log Levels:").first
+    await log_level_sug.click()
+    await page.wait_for_timeout(400)
+
+    # Suggestions container should now be hidden
+    await expect(suggestions_container).not_to_be_visible()
+
+    # Custom mapping for Log Level (#cm-lv) should be auto-populated to 2 (since ERROR is the second capture group)
+    cm_lv = page.locator('#cm-lv')
+    await expect(cm_lv).to_have_value("2")
 
     # Ensure no critical console errors occurred during the flow
     assert_no_critical_errors(page)
