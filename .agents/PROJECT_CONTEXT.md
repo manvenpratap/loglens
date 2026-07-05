@@ -3,6 +3,12 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Rule Icon Dropdown & Semantic Auto-Suggestion (v6.9.70 — COMPLETED)**:
+  - **Dropdown Selection**: Replaced the text input for `#e-ico` with a styled `<select>` element populated with standard log emojis and symbols (Bullet, Play/Start, Network/API, Database/SQL, Service/System, Warning/Alert, Error/Failure, Info, Latency, Auth, Queue, Ingress/Request, Egress/Response, Test/Debug).
+  - **Dynamic Rule Name suggestions**: Added an `input` event listener to `#e-name` that monitors the Rule Name in real-time. If the current icon is the default bullet `•`, it automatically suggests and selects a matching semantic icon based on keyword matching (e.g., `query` -> `🗄`, `api` -> `🌐`, `error` -> `✕`, `warn` -> `⚠`, `auth` -> `🔒`, `latency` -> `🕒`, `queue` -> `📨`).
+  - **Custom Value Safety**: Enhanced `UI.openM()` to check if a rule's saved icon is in the list of select options. If not, it dynamically creates a `(Custom)` option to preserve the icon selection gracefully without losing data.
+  - **E2E Assertions**: Created `test_rule_creator_icon_dropdown_and_auto_suggestion` in `tests/test_13_rule_creator.py` validating select element visibility, default states, and real-time semantic name suggests.
+
 - **Elements Rule Creator Modal Simplification (v6.9.69 — COMPLETED)**:
   - **Prioritized Auto-Detection Flow**: Moved the sample log line input (`#e-tl`) and live highlighted match preview (`#rx-pre`) to Step 1 at the top of the modal. Added a dynamic format status badge (`#preview-format-badge`) to visually display the current auto-detected preset layout (e.g., Spring Boot, Java Standard) or custom state.
   - **Manual Override Accordion**: Grouped manual format selectors (`#wf-sel`) and keyword marking parameters (`#kw-inp` chip builder, match modes, capture options) inside a collapsible accordion section (`#ovr-hdr` / `#ovr-body`) that starts collapsed by default.

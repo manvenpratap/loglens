@@ -390,3 +390,47 @@ async def test_rule_creator_help_tips(page_with_data):
     await expect(pop).not_to_be_visible()
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_icon_dropdown_and_auto_suggestion(page_with_data):
+    """Verify that rule icon is a dropdown and suggested icons are prepopulated based on the rule name."""
+    page = page_with_data
+    await _load_settings(page)
+
+    await page.click('#btn-ar')
+    await page.wait_for_timeout(400)
+
+    # 1. Expand visual / appearance accordion to expose icon select dropdown
+    await page.click('#vis-hdr')
+    await page.wait_for_timeout(300)
+
+    # 2. Check that #e-ico is a select dropdown
+    sel_ico = page.locator('#e-ico')
+    await expect(sel_ico).to_be_visible()
+    await expect(sel_ico).to_have_value('•')
+
+    # 3. Enter a rule name containing "Database" -> should auto-suggest 🗄
+    await page.fill('#e-name', 'My Database Rule')
+    await page.wait_for_timeout(300)
+    await expect(sel_ico).to_have_value('🗄')
+
+    # 4. Enter a rule name containing "api network" -> should auto-suggest 🌐
+    await sel_ico.select_option('•')
+    await page.fill('#e-name', 'API Network controller')
+    await page.wait_for_timeout(300)
+    await expect(sel_ico).to_have_value('🌐')
+
+    # 5. Check warning
+    await sel_ico.select_option('•')
+    await page.fill('#e-name', 'Warning breach alert')
+    await page.wait_for_timeout(300)
+    await expect(sel_ico).to_have_value('⚠')
+
+    # 6. Check error
+    await sel_ico.select_option('•')
+    await page.fill('#e-name', 'Fatal Crash Exception')
+    await page.wait_for_timeout(300)
+    await expect(sel_ico).to_have_value('✕')
+
+    assert_no_critical_errors(page)

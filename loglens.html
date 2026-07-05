@@ -7466,7 +7466,22 @@ label[for="watch-auto-reload"] {
           </div>
           <div class="f">
             <label class="fl" for="e-ico">Icon <span class="cm">(emoji or symbol)</span></label>
-            <input class="inp" id="e-ico" placeholder="▶ 🌐 🗄 ⚠ ✕" style="font-size:15px;"/>
+            <select class="inp" id="e-ico" style="font-size:15px;">
+              <option value="•">• Bullet (Default)</option>
+              <option value="▶">▶ Play/Start</option>
+              <option value="🌐">🌐 Network/API</option>
+              <option value="🗄">🗄 Database/SQL</option>
+              <option value="⚙">⚙ Service/System</option>
+              <option value="⚠">⚠ Warning/Alert</option>
+              <option value="✕">✕ Error/Failure</option>
+              <option value="ℹ">ℹ Info/Log</option>
+              <option value="🕒">🕒 Time/Latency</option>
+              <option value="🔒">🔒 Security/Auth</option>
+              <option value="📨">📨 Message/Queue</option>
+              <option value="📥">📥 Ingress/Request</option>
+              <option value="📤">📤 Egress/Response</option>
+              <option value="🧪">🧪 Test/Debug</option>
+            </select>
           </div>
         </div>
 
@@ -10297,7 +10312,26 @@ const UI={
     $('e-id').value=rule?.id||gid();
     $('e-name').value=rule?.name||'';$('e-beh').value=rule?.stackBehavior||'push';
     const col=rule?.visualStyle?.accentColor||'var(--blue)';
-    $('e-col').value=col;$('e-hex').value=col;$('e-ico').value=rule?.visualStyle?.icon||'';
+    $('e-col').value=col;$('e-hex').value=col;
+    const select = $('e-ico');
+    const iconVal = rule?.visualStyle?.icon || '•';
+    const customOpt = select.querySelector('option[data-custom]');
+    if (customOpt) customOpt.remove();
+    let found = false;
+    for (let i = 0; i < select.options.length; i++) {
+      if (select.options[i].value === iconVal) {
+        found = true;
+        break;
+      }
+    }
+    if (!found && iconVal) {
+      const opt = document.createElement('option');
+      opt.value = iconVal;
+      opt.textContent = `${iconVal} (Custom)`;
+      opt.dataset.custom = 'true';
+      select.appendChild(opt);
+    }
+    select.value = iconVal;
     $('e-rx').value=rule?.regexPattern||'';
     const cm=rule?.captureMapping||{};
     const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
@@ -13174,6 +13208,23 @@ $('map-hdr').addEventListener('keydown', e => {
   }
 });
 $('e-use-custom-rx').addEventListener('change',()=>UI.syncCustomRxUI());
+$('e-name').addEventListener('input', () => {
+  const currentVal = $('e-ico').value;
+  if (currentVal === '•' || !currentVal) {
+    const name = $('e-name').value.toLowerCase();
+    let suggested = '•';
+    if (/db|sql|database|query|postgres|mongo|mysql|redis/.test(name)) suggested = '🗄';
+    else if (/api|http|rest|controller|network|web|request|client|url|fetch/.test(name)) suggested = '🌐';
+    else if (/warn|warning|alert|sla|breach/.test(name)) suggested = '⚠';
+    else if (/error|fail|failure|exception|crash|fatal/.test(name)) suggested = '✕';
+    else if (/auth|login|security|lock|sign|key|token/.test(name)) suggested = '🔒';
+    else if (/queue|kafka|mq|rabbit|jms|topic|event|publish|subscribe|message/.test(name)) suggested = '📨';
+    else if (/time|latency|duration|delay|slow|speed/.test(name)) suggested = '🕒';
+    else if (/test|debug|assert|spec/.test(name)) suggested = '🧪';
+    else if (/start|boot|init|run/.test(name)) suggested = '▶';
+    $('e-ico').value = suggested;
+  }
+});
 $('e-col').addEventListener('input',e=>$('e-hex').value=e.target.value);
 $('e-hex').addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))$('e-col').value=e.target.value;});
 
