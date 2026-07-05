@@ -24,7 +24,8 @@ tests/
 ├── test_11_accessibility.py       # Skip link, aria-live, chip ARIA, keyboard access
 ├── test_12_log4j_import.py        # Log4j Config XML Import
 ├── test_13_rule_creator.py        # Unified Rule Creator & Tooltips
-└── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
+├── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
+└── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
 ```
 
 ---
@@ -117,7 +118,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Log4j Config XML Import | test_12_log4j_import | 1 |
 | Unified Rule Creator & Tooltips | test_13_rule_creator | 8 |
 | Unparsed Analyzer | test_14_unparsed_analyzer | 1 |
-| **Total** | | **83** |
+| Regex Pattern Undo/Redo | test_15_regex_undo_redo | 1 |
+| **Total** | | **84** |
 
 ---
 

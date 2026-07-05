@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Regex Editor Undo-Redo Option (v6.9.73 — COMPLETED)**:
+  - **Undo/Redo History Stack**: Added a new global module `RX_HIST` to manage a history state stack specifically for the `#e-rx` regex pattern input field. Redefined its property descriptor to automatically capture programmatic assignments alongside standard user keyboard input.
+  - **Interactive Controls & Shortcuts**: Added Undo (`↶ Undo`) and Redo (`↷ Redo`) action buttons with custom SVG icons in the Rule Creator modal. Enabled standard keybindings (`Ctrl+Z`, `Ctrl+Y`, `Cmd+Z`, `Cmd+Shift+Z`) scoped to the regex textarea.
+  - **E2E Test Validation**: Added a new regression test `tests/test_15_regex_undo_redo.py` asserting history states, visual button visibility/disabled states, value restorations, and zero runtime script errors.
+
 - **Unparsed Analyzer Create Rule Button Fix (v6.9.72 — COMPLETED)**:
   - **Fixed Undefined Handlers**: Replaced obsolete `CFG.openM` inline click handler with a new robust helper `UNPARSED.createRuleFromPattern(pattern)` to open the rule creator modal, check the customize regex pattern checkbox, call `UI.syncCustomRxUI()`, expand the advanced accordion, populate `e-rx` with the generated regex, and trigger a regex explanation.
   - **Auto-Suggest Wire Fix**: Replaced obsolete `UI.setMM` references inside the auto-suggest try and cluster-add click listeners with calls to the new helper `UNPARSED.createRuleFromPattern`.

@@ -7373,7 +7373,15 @@ label[for="watch-auto-reload"] {
         <div class="f">
           <div class="fl" style="display:flex; justify-content:space-between; align-items:center;">
             <label for="e-rx">Regex Pattern <span class="ca">*</span> <span class="cm">(applied to each log line)</span></label>
-            <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn btn-xs btn-g" id="btn-rx-undo" type="button" title="Undo (Ctrl+Z)" style="padding:2px 6px; font-size:10px; display:inline-flex; align-items:center; gap:2px;" disabled>
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg></span> Undo
+              </button>
+              <button class="btn btn-xs btn-g" id="btn-rx-redo" type="button" title="Redo (Ctrl+Y)" style="padding:2px 6px; font-size:10px; display:inline-flex; align-items:center; gap:2px;" disabled>
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg></span> Redo
+              </button>
+              <button class="btn btn-xs btn-g" id="btn-rex-explain" type="button" style="padding:2px 6px;">Explain Regex</button>
+            </div>
           </div>
           <textarea class="inp inp-m" id="e-rx" rows="3" placeholder="Regex pattern..."></textarea>
           <div id="rex-explain-results" class="hidden"></div>
@@ -10332,6 +10340,9 @@ const UI={
       select.appendChild(opt);
     }
     select.value = iconVal;
+    if (typeof RX_HIST !== 'undefined') {
+      RX_HIST.reset(rule?.regexPattern || '');
+    }
     $('e-rx').value=rule?.regexPattern||'';
     const cm=rule?.captureMapping||{};
     const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
@@ -11916,6 +11927,101 @@ const ANOMALY={
 
     S.outlierCount = outlierCount;
     S.slaBreachCount = slaBreachCount;
+  }
+};
+
+/* ================================================================
+   §JS-33c REGEX PATTERN UNDO-REDO HISTORY
+   ================================================================ */
+const RX_HIST = {
+  stack: [],
+  index: -1,
+  isOperating: false,
+
+  init() {
+    const rxInput = $('e-rx');
+    if (!rxInput) return;
+
+    rxInput.addEventListener('input', () => {
+      this.push(rxInput.value);
+    });
+
+    const originalValueProp = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+    const self = this;
+    Object.defineProperty(rxInput, 'value', {
+      get() {
+        return originalValueProp.get.call(this);
+      },
+      set(val) {
+        originalValueProp.set.call(this, val);
+        self.push(val);
+        rxInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+
+    $('btn-rx-undo')?.addEventListener('click', () => this.undo());
+    $('btn-rx-redo')?.addEventListener('click', () => this.redo());
+
+    rxInput.addEventListener('keydown', (e) => {
+      const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+      if (isCmdOrCtrl) {
+        if (e.key.toLowerCase() === 'z') {
+          e.preventDefault();
+          if (e.shiftKey) {
+            this.redo();
+          } else {
+            this.undo();
+          }
+        } else if (e.key.toLowerCase() === 'y') {
+          e.preventDefault();
+          this.redo();
+        }
+      }
+    });
+  },
+
+  reset(initialVal = '') {
+    this.stack = [initialVal];
+    this.index = 0;
+    this.updateButtons();
+  },
+
+  push(val) {
+    if (this.isOperating) return;
+    if (this.stack[this.index] === val) return;
+    this.stack = this.stack.slice(0, this.index + 1);
+    this.stack.push(val);
+    this.index = this.stack.length - 1;
+    this.updateButtons();
+  },
+
+  undo() {
+    if (this.index > 0) {
+      this.isOperating = true;
+      this.index--;
+      const val = this.stack[this.index];
+      $('e-rx').value = val;
+      this.isOperating = false;
+      this.updateButtons();
+    }
+  },
+
+  redo() {
+    if (this.index < this.stack.length - 1) {
+      this.isOperating = true;
+      this.index++;
+      const val = this.stack[this.index];
+      $('e-rx').value = val;
+      this.isOperating = false;
+      this.updateButtons();
+    }
+  },
+
+  updateButtons() {
+    const btnUndo = $('btn-rx-undo');
+    const btnRedo = $('btn-rx-redo');
+    if (btnUndo) btnUndo.disabled = (this.index <= 0);
+    if (btnRedo) btnRedo.disabled = (this.index >= this.stack.length - 1);
   }
 };
 
@@ -15304,6 +15410,7 @@ const LANDSCAPE3D = {
 /* ================================================================
    §JS-20 BOOTSTRAP
    ================================================================ */
+RX_HIST.init();
 RXB.init();
 WIZ.init();
 
