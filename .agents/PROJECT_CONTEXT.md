@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Olaf Neumann Recognizer Registry Rewrite (v6.9.79 — COMPLETED)**:
+  - **Full 40-Recognizer Registry**: Completely rewrote `RG.findMatches()` to use a structured `RECOGNIZERS` array mirroring Olaf Neumann's `regex-generator.olafneumann.org` engine. Registry is lazy-built once via `_buildRecognizers()`.
+  - **7-Tier Priority System**: Tier 0 (Log Semantics: ISO8601, space-sep timestamps, Log Level, Dotted Class Name, Thread Name in brackets, Method Signature, File Path, HTTP Status/Method, Request ID, key=value, Quoted Strings) → Tier 1 (UUID, IPv4, Email, Hashtag, URL-encoded, Hex Color) → Tier 2 (Date, Time components) → Tier 3 (Brackets, Strings) → Tier 4 (Numeric) → Tier 5 (Text) → Tier 6 (Character-level).
+  - **Eliminated literal-per-word badges**: Generic Alphanumeric/Multiple chars patterns replace the old one-badge-per-word approach.
+  - **Correct track sort**: Start-position ascending, span-length descending for ties (matches Olaf's layout exactly).
+  - **Auto-map label expansion**: `buildRegex()` capture-mapping heuristics updated for new label names.
+
 - **Interactive Selection Suggestions & Auto-Mapping (v6.9.78 — COMPLETED)**:
   - **Arbitrary Selection Scans**: Integrated text selection listeners on the sample log input (`#e-tl`). Highlighting any section immediately queries the `TOKS` dictionary for matches, offering matching presets and a literal escaping generator.
   - **Capture Map Auto-Population**: Tied selections directly to Step 2 (Custom Mappings). Adding an interactive pattern (e.g. Timestamp, Level, Thread) automatically writes the capture group index into the corresponding configuration field (`cm-ts`, `cm-lv`, `cm-th`, etc.), eliminating manual group mapping.
