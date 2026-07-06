@@ -4542,6 +4542,81 @@ input:disabled, select:disabled, textarea:disabled, button:disabled {
   transform: translateY(0);
 }
 
+/* Regex Builder hover popover / overlay styling */
+.rg-match-badge-wrap {
+  position: absolute;
+  height: 22px;
+  box-sizing: border-box;
+  z-index: 1;
+  overflow: visible;
+}
+.rg-match-badge-wrap:hover {
+  z-index: 100 !important;
+}
+.rg-match-details-overlay {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 8px;
+  box-shadow: var(--shd-lg);
+  z-index: 1000;
+  width: max-content;
+  min-width: 240px;
+  max-width: 380px;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  pointer-events: auto;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.4;
+}
+.rg-match-badge-wrap:hover .rg-match-details-overlay {
+  display: flex;
+}
+.rg-overlay-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+  color: var(--t1);
+}
+.rg-overlay-option:hover {
+  background: var(--bg-2);
+}
+.rg-overlay-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.rg-overlay-option-label {
+  font-weight: 600;
+  flex-grow: 1;
+  color: var(--t1);
+}
+.rg-overlay-option-pattern {
+  font-size: 10px;
+  opacity: .7;
+  color: var(--t2);
+  font-family: var(--mono);
+  margin-left: 8px;
+}
+.rg-overlay-option-chk {
+  font-weight: bold;
+  color: var(--amber);
+  margin-left: auto;
+  font-size: 12px;
+}
+
 /* Rule card 3-dot actions dropdown menu */
 .rc-more-dropdown {
   position: absolute;
@@ -12219,15 +12294,15 @@ const RG = {
     const R = (n, rx, out, col) => ({ name: n, search: rx, output: out, color: col });
     this.RECOGNIZERS = [
       // ── Tier 0: Log Semantics ────────────────────────────────────
-      R('Timestamp (ISO8601)',
+      R('ISO8601',
         /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:?[0-9]{2})?/g,
         '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:?[0-9]{2})?',
         '#3b82f6'),
-      R('Timestamp (space-sep)',
+      R('DateTime',
         /[0-9]{4}-[0-9]{2}-[0-9]{2}[ _][0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.,][0-9]+)?/g,
         '[0-9]{4}-[0-9]{2}-[0-9]{2}[ _][0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.,][0-9]+)?',
         '#3b82f6'),
-      R('Log Level',
+      R('Log level',
         /(TRACE|DEBUG|INFO|NOTICE|WARN|WARNING|ERROR|SEVERE|FATAL)/g,
         '(?:TRACE|DEBUG|INFO|NOTICE|WARN(?:ING)?|ERROR|SEVERE|FATAL)',
         '#ef4444'),
@@ -12235,7 +12310,7 @@ const RG = {
         /\b[a-zA-Z_][a-zA-Z0-9_$]*(?:\.[a-zA-Z_][a-zA-Z0-9_$]+){1,}\b/g,
         '[\\w$]+(?:\\.[\\w$]+)+',
         '#10b981'),
-      R('Thread Name (brackets)',
+      R('Thread name',
         /\[([^\]\s][^\]]*)\]/g,
         '\\[([^\\]]+)\\]',
         '#06b6d4'),
@@ -12263,11 +12338,11 @@ const RG = {
         /\b(\w[\w.-]*)=(\S+)/g,
         '(\\w[\\w.-]*)=(\\S+)',
         '#f97316'),
-      R('Quoted String (double)',
+      R('String (quotation mark)',
         /"[^"]*"/g,
         '"[^"]*"',
         '#fbbf24'),
-      R('Quoted String (single)',
+      R('String (apostrophe)',
         /'[^']*'/g,
         "'[^']*'",
         '#fbbf24'),
@@ -12277,11 +12352,11 @@ const RG = {
         /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/g,
         '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
         '#8b5cf6'),
-      R('IPv4 Address',
+      R('IPv4 address',
         /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g,
         '\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b',
         '#a855f7'),
-      R('RFC2822 E-mail',
+      R('RFC2822 e-mail',
         /[-a-z0-9!#$%&'*+/=?^_`{|}~]+(?:\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*@(?:[a-z0-9](?:[-a-z0-9]*[a-z0-9])?\.)+[a-z0-9](?:[-a-z0-9]*[a-z0-9])?/gi,
         '[-a-z0-9!#$%&\'*+/=?^_`{|}~]+(?:\\.[-a-z0-9!#$%&\'*+/=?^_`{|}~]+)*@(?:[a-z0-9](?:[-a-z0-9]*[a-z0-9])?\\.)+[a-z0-9](?:[-a-z0-9]*[a-z0-9])?',
         '#ec4899'),
@@ -12289,21 +12364,21 @@ const RG = {
         /\B#([a-z0-9]{2,})(?![~!@#$%^&*()+_`\-|/'[\]{}]|[?.,]*\w)/gi,
         '\\B#([a-z0-9]{2,})',
         '#14b8a6'),
-      R('URL Encoded Char',
+      R('URL encoded character',
         /%[0-9A-Fa-f][0-9A-Fa-f]/g,
         '%[0-9A-Fa-f][0-9A-Fa-f]',
         '#64748b'),
-      R('CSS / Hex Color',
+      R('Simple CSS Color',
         /#(?:[a-f0-9]{3}){1,2}\b/gi,
         '#(?:[a-f0-9]{3}){1,2}\\b',
         '#e879f9'),
 
       // ── Tier 2: Datetime components ──────────────────────────────
-      R('Date (yyyy-mm-dd)',
+      R('Date',
         /[0-9]{4}-[0-9]{2}-[0-9]{2}/g,
-        '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+        '\\d{4}-\\d{2}-\\d{2}',
         '#60a5fa'),
-      R('Time (HH:mm:ss)',
+      R('Time',
         /[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?/g,
         '[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?',
         '#34d399'),
@@ -12311,7 +12386,7 @@ const RG = {
         /(0?[0-9]|1[0-9]|2[0-3])(?=:)/g,
         '(0?[0-9]|1[0-9]|2[0-3])',
         '#6ee7b7'),
-      R('Minute / Second',
+      R('Minute/ Second',
         /(0?[0-9]|[1-5][0-9])(?=:|$|\s)/g,
         '(0?[0-9]|[1-5][0-9])',
         '#6ee7b7'),
@@ -12325,25 +12400,25 @@ const RG = {
         '#93c5fd'),
 
       // ── Tier 3: Bracket / String matchers ───────────────────────
-      R('Square brackets [ ]',
+      R('Square brackets',
         /\[[^\]]*\]/g,
         '\\[([^\\]]*)\\]',
         '#38bdf8'),
-      R('Parentheses ( )',
+      R('Parentheses',
         /\([^)]*\)/g,
         '\\(([^)]*)\\)',
         '#7dd3fc'),
-      R('Curly braces { }',
+      R('Curly braces',
         /\{[^}]*\}/g,
         '\\{([^}]*)\\}',
         '#5eead4'),
 
       // ── Tier 4: Numeric ─────────────────────────────────────────
-      R('Floating Point',
+      R('Floating point number (with optional exponent)',
         /[+-]?(?:\d+\.\d*|\.\d+)(?:[eE][+-]?\d+)?/g,
-        '[+-]?(?:\\d+\\.\\d*|\\.\\d+)(?:[eE][+-]?\d+)?',
+        '[+-]?(?:\\d+\\.\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?',
         '#fb923c'),
-      R('Decimal Number',
+      R('Decimal number',
         /[0-9]*\.[0-9]+/g,
         '[0-9]*\\.[0-9]+',
         '#fdba74'),
@@ -12357,7 +12432,7 @@ const RG = {
         '#fed7aa'),
 
       // ── Tier 5: Text ────────────────────────────────────────────
-      R('Alphanumeric',
+      R('Alphanumeric characters',
         /[A-Za-z0-9]+/g,
         '[A-Za-z0-9]+',
         '#a3e635'),
@@ -12379,7 +12454,7 @@ const RG = {
         /(.)(\1{2,})/g,
         '(.)\\1{2,}',
         '#64748b'),
-      R('Character (any)',
+      R('Character',
         /./g,
         '.',
         '#475569'),
@@ -12442,17 +12517,25 @@ const RG = {
     }
 
     const matches = this.findMatches(line);
-    // Sort: longer spans first, then by position; this ensures better track assignment
-    matches.sort((a, b) => (b.end - b.start) - (a.end - a.start) || a.start - b.start);
-
-    // Assign tracks (rows) to avoid overlaps
-    const tracks = [];
+    // Group matches by exact (start, end) range
+    const grouped = [];
     matches.forEach(m => {
+      let g = grouped.find(x => x.start === m.start && x.end === m.end);
+      if (!g) {
+        g = { start: m.start, end: m.end, text: m.text, items: [] };
+        grouped.push(g);
+      }
+      g.items.push(m);
+    });
+
+    // Assign tracks (rows) to groups to avoid overlaps
+    const tracks = [];
+    grouped.forEach(g => {
       let ti = 0;
       while (true) {
         if (!tracks[ti]) tracks[ti] = [];
-        if (!tracks[ti].some(e => !(m.end <= e.start || m.start >= e.end))) {
-          tracks[ti].push(m); m.track = ti; break;
+        if (!tracks[ti].some(e => !(g.end <= e.start || g.start >= e.end))) {
+          tracks[ti].push(g); g.track = ti; break;
         }
         ti++;
       }
@@ -12483,59 +12566,115 @@ const RG = {
       if (hl) hl.style.display = 'none';
     };
 
-    matches.forEach(m => {
-      const width = m.end - m.start;
-      const isSelected = this.selections.some(s => s.start === m.start && s.end === m.end && s.pattern === m.pattern);
+    grouped.forEach(g => {
+      const width = g.end - g.start;
+      const selectedItem = g.items.find(item => this.selections.some(s => s.start === item.start && s.end === item.end && s.pattern === item.pattern));
+      const isSelected = !!selectedItem;
       const isBlocked  = this.selections.some(s => {
-        const ov = !(m.end <= s.start || m.start >= s.end);
-        return ov && !(s.start === m.start && s.end === m.end && s.pattern === m.pattern);
+        const ov = !(g.end <= s.start || g.start >= s.end);
+        return ov && !(s.start === g.start && s.end === g.end);
       });
+
+      const wrap = document.createElement('div');
+      wrap.className = 'rg-match-badge-wrap';
+      wrap.style.cssText = `position:absolute; left:${g.start}ch; width:${width}ch; top:${g.track * 26}px; height:22px; box-sizing:border-box; z-index:1;`;
 
       const btn = document.createElement('button');
       btn.className = 'rg-match-badge';
-      btn.title = m.label + ' → ' + m.pattern;
-      // Exact width = matched char count. No min-width bleed — badges expand only on hover.
-      btn.style.cssText = `position:absolute; left:${m.start}ch; width:${width}ch; top:${m.track * 26}px; height:22px; font-family:var(--mono); font-size:10px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; cursor:pointer; padding:0 2px; transition:background .1s,color .1s; box-sizing:border-box; z-index:1;`;
+      const displayItem = selectedItem || g.items[0];
+      btn.title = displayItem.label + ' → ' + displayItem.pattern;
+      btn.style.cssText = `width:100%; height:100%; font-family:var(--mono); font-size:10px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:3px; cursor:pointer; padding:0 2px; transition:background .1s,color .1s; box-sizing:border-box; border:none; outline:none;`;
 
       if (isSelected) {
-        btn.style.cssText += `background:${m.color}; border:1px solid ${m.color}; color:#fff; font-weight:700; box-shadow:0 0 0 2px var(--bg-2),0 0 0 3px ${m.color}; z-index:3;`;
-        btn.textContent = '\u2713 ' + m.label;
-        // Selected badge: hover expands + highlights text
+        wrap.style.zIndex = '3';
+        btn.style.cssText += `background:${displayItem.color}; border:1px solid ${displayItem.color}; color:#fff; font-weight:700; box-shadow:0 0 0 2px var(--bg-2),0 0 0 3px ${displayItem.color};`;
+        btn.textContent = '\u2713 ' + displayItem.label;
         btn.addEventListener('mouseover', () => {
-          btn.style.overflow = 'visible'; btn.style.width = 'max-content'; btn.style.zIndex = '10';
-          showHoverHL(m.start, m.end, m.color);
+          showHoverHL(g.start, g.end, displayItem.color);
         });
         btn.addEventListener('mouseout', () => {
-          btn.style.overflow = 'hidden'; btn.style.width = `${width}ch`; btn.style.zIndex = '3';
           hideHoverHL();
         });
         btn.addEventListener('click', () => {
-          this.selections = this.selections.filter(s => !(s.start === m.start && s.end === m.end && s.pattern === m.pattern));
+          // Deselect whatever is selected in this range
+          this.selections = this.selections.filter(s => !(s.start === g.start && s.end === g.end));
           this.onSelectionChanged();
         });
       } else if (isBlocked) {
         btn.style.cssText += `background:var(--bg-1); border:1px dashed var(--bdr); color:var(--t4); opacity:.3; cursor:not-allowed;`;
-        btn.textContent = m.label;
+        btn.textContent = displayItem.label;
       } else {
-        btn.style.cssText += `background:${m.color}15; border:1px solid ${m.color}; color:${m.color};`;
-        btn.textContent = m.label;
+        btn.style.cssText += `background:${displayItem.color}15; border:1px solid ${displayItem.color}; color:${displayItem.color};`;
+        btn.textContent = displayItem.label;
         btn.addEventListener('mouseover', () => {
-          btn.style.background = m.color; btn.style.color = '#fff'; btn.style.zIndex = '10';
-          btn.style.overflow = 'visible'; btn.style.width = 'max-content';
-          showHoverHL(m.start, m.end, m.color);
+          showHoverHL(g.start, g.end, displayItem.color);
         });
         btn.addEventListener('mouseout', () => {
-          btn.style.background = m.color + '15'; btn.style.color = m.color; btn.style.zIndex = '1';
-          btn.style.overflow = 'hidden'; btn.style.width = `${width}ch`;
           hideHoverHL();
         });
         btn.addEventListener('click', () => {
-          this.selectPattern(m.start, m.end, m.pattern, m.label, m.color);
+          this.selectPattern(g.items[0].start, g.items[0].end, g.items[0].pattern, g.items[0].label, g.items[0].color);
           this.onSelectionChanged();
         });
       }
 
-      tracksC.appendChild(btn);
+      // Add detailed hover overlay if not blocked
+      if (!isBlocked) {
+        const overlay = document.createElement('div');
+        overlay.className = 'rg-match-details-overlay';
+
+        // Add a header showing matched string preview
+        const header = document.createElement('div');
+        header.style.cssText = 'font-weight:bold; border-bottom:1px solid var(--bdr); padding-bottom:4px; margin-bottom:4px; color:var(--amber); font-size:10px;';
+        header.textContent = `Text: "${g.text}"`;
+        overlay.appendChild(header);
+
+        g.items.forEach(item => {
+          const opt = document.createElement('div');
+          opt.className = 'rg-overlay-option';
+
+          const isItemSel = this.selections.some(s => s.start === item.start && s.end === item.end && s.pattern === item.pattern);
+
+          const dot = document.createElement('span');
+          dot.className = 'rg-overlay-color-dot';
+          dot.style.background = item.color;
+          opt.appendChild(dot);
+
+          const lbl = document.createElement('span');
+          lbl.className = 'rg-overlay-option-label';
+          lbl.textContent = item.label;
+          opt.appendChild(lbl);
+
+          const pat = document.createElement('code');
+          pat.className = 'rg-overlay-option-pattern';
+          pat.textContent = item.pattern;
+          opt.appendChild(pat);
+
+          if (isItemSel) {
+            const chk = document.createElement('span');
+            chk.className = 'rg-overlay-option-chk';
+            chk.textContent = '\u2713';
+            opt.appendChild(chk);
+          }
+
+          opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isItemSel) {
+              this.selections = this.selections.filter(s => !(s.start === item.start && s.end === item.end && s.pattern === item.pattern));
+            } else {
+              this.selectPattern(item.start, item.end, item.pattern, item.label, item.color);
+            }
+            this.onSelectionChanged();
+          });
+
+          overlay.appendChild(opt);
+        });
+
+        wrap.appendChild(overlay);
+      }
+
+      wrap.appendChild(btn);
+      tracksC.appendChild(wrap);
     });
   },
 

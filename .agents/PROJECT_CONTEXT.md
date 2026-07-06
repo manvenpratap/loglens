@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Interactive Visual Match Badges Alignment & Hover Details Overlay (v6.9.80 — COMPLETED)**:
+  - **Perfect Character Alignment**: Positioned visual match badges using parent wrapper `div` blocks (`.rg-match-badge-wrap`) styled in `ch` units inheriting the text container's 15px monospace font size, keeping them aligned with the sample log line.
+  - **Overlapping Matches Merged**: Grouped matches by unique range `(start, end)`, assigning tracks to grouped blocks to eliminate redundant rows and visual badge overlapping.
+  - **Premium Hover Options Overlay**: Added a CSS-driven popover panel (`.rg-match-details-overlay`) inside the badge wrappers. Hovering a badge displays all overlapping pattern choices for that segment (color-coded, with pattern name, regex string, and matched text preview), allowing users to toggle selections directly from the overlay.
+  - **Olaf Naming Restored**: Standardized names to match Olaf Neumann's exact patterns (`Date`, `Time`, `ISO8601`, `DateTime`, `Log level`), ensuring test runner compatibility.
+  - **E2E Test Success**: All 85 verification checks passed.
+
 - **Olaf Neumann Recognizer Registry Rewrite (v6.9.79 — COMPLETED)**:
   - **Full 40-Recognizer Registry**: Completely rewrote `RG.findMatches()` to use a structured `RECOGNIZERS` array mirroring Olaf Neumann's `regex-generator.olafneumann.org` engine. Registry is lazy-built once via `_buildRecognizers()`.
   - **7-Tier Priority System**: Tier 0 (Log Semantics: ISO8601, space-sep timestamps, Log Level, Dotted Class Name, Thread Name in brackets, Method Signature, File Path, HTTP Status/Method, Request ID, key=value, Quoted Strings) → Tier 1 (UUID, IPv4, Email, Hashtag, URL-encoded, Hex Color) → Tier 2 (Date, Time components) → Tier 3 (Brackets, Strings) → Tier 4 (Numeric) → Tier 5 (Text) → Tier 6 (Character-level).
