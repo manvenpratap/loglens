@@ -116,18 +116,22 @@
 }
 /* Ivory = explicit name for light theme (backwards-compat alias) */
 [data-theme=ivory]{
-  --bg-0: oklch(96% 0.01 55);
-  --bg-1: oklch(98% 0.005 55);
-  --bg-2: oklch(94% 0.012 55);
-  --bg-3: oklch(91% 0.015 55);
-  --bg-4: oklch(86% 0.018 55);
-  --bdr-d: oklch(88% 0.015 55);
-  --bdr: oklch(80% 0.02 55);
-  --bdr-h: oklch(70% 0.02 55);
+  /* Page bg is warm cream; cards are clean white for clear separation */
+  --bg-0: oklch(94.5% 0.012 55);
+  --bg-1: oklch(99% 0.003 55);
+  --bg-2: oklch(92% 0.015 55);
+  --bg-3: oklch(88% 0.018 55);
+  --bg-4: oklch(83% 0.020 55);
+  /* Borders: darker for clear card edges on light backgrounds */
+  --bdr-d: oklch(85% 0.015 55);
+  --bdr: oklch(75% 0.022 55);
+  --bdr-h: oklch(62% 0.025 55);
+  /* Text: same proven values */
   --t1: oklch(25% 0.015 55);
   --t2: oklch(35% 0.015 55);
   --t3: oklch(45% 0.015 55);
-  --t4: oklch(65% 0.01 55);
+  --t4: oklch(58% 0.012 55);
+  /* Accent colors */
   --amber: oklch(60% 0.18 55);
   --amber-g: oklch(60% 0.18 55 / 0.15);
   --amber-d: oklch(60% 0.18 55 / 0.08);
@@ -143,16 +147,19 @@
   --purple-g: oklch(55% 0.20 310 / 0.15);
   --cyan: oklch(60% 0.15 210);
   --cyan-g: oklch(60% 0.15 210 / 0.15);
-  --glass:rgba(0,0,0,.03);
-  --glass-bdr:rgba(0,0,0,.07);
+  /* Glass and overlays: slightly more opaque for light bg */
+  --glass:rgba(0,0,0,.045);
+  --glass-bdr:rgba(0,0,0,.10);
   --bar-t:rgba(0,0,0,.88);
-  --shd:0 4px 16px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.07);
-  --shd-lg:0 12px 40px rgba(0,0,0,.14),0 4px 12px rgba(0,0,0,.08);
-  --shd-xs:0 1px 4px rgba(0,0,0,.09);
-  --rounded-sm: 0px;
-  --rounded-md: 0px;
-  --rounded-lg: 0px;
-  --rounded-full: 0px;
+  /* Shadows: stronger to give cards lift on cream background */
+  --shd:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.06);
+  --shd-lg:0 12px 40px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);
+  --shd-xs:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  /* Rounded: subtle radius for softer card edges */
+  --rounded-sm: 4px;
+  --rounded-md: 6px;
+  --rounded-lg: 8px;
+  --rounded-full: 9999px;
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --display: 'Georgia', 'Times New Roman', serif;
   --mono: Consolas, "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
@@ -396,8 +403,8 @@ html,body{
 }
 [data-theme=light] .hdr,
 [data-theme=ivory] .hdr{
-  background:rgba(242,239,234,.88);
-  box-shadow:0 1px 0 rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.06);
+  background:rgba(235,231,224,.92);
+  box-shadow:0 1px 0 rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.06);
 }
 [data-theme=aurora] .hdr{
   background:rgba(8,12,36,.82);
@@ -3578,6 +3585,21 @@ body.focus-mode #res {
   }
   .sb-backdrop.vis { display: block }
 
+  /* Inspector drawer overlays on mobile */
+  .inspector {
+    position: fixed;
+    right: 0;
+    top: var(--hh);
+    bottom: 0;
+    z-index: 500;
+    width: 100%;
+    max-width: 360px;
+    height: calc(100% - var(--hh));
+    border-left: 1px solid var(--bdr);
+    border-top: none;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.25);
+  }
+
   /* Main area takes full width */
   .ws { flex-direction: column }
   .main { overflow-x: auto }
@@ -4411,16 +4433,45 @@ textarea.inp { line-height: 1.55 !important; }
 
 /* Light theme: darken --t4 caption to meet WCAG 4.5:1 */
 [data-theme=light] { --t4: oklch(50% 0.01 55) !important; }
-[data-theme=ivory] { --t4: oklch(50% 0.01 55) !important; }
+[data-theme=ivory] { --t4: oklch(55% 0.012 55) !important; }
 
 /* Light/Ivory theme header glassmorphism */
 [data-theme=light] .hdr,
 [data-theme=ivory] .hdr {
-  background: rgba(242,239,234,.88) !important;
+  background: rgba(235,231,224,.92) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
 
+
+/* ── Ivory theme: card depth & table contrast fixes ────────────── */
+[data-theme=ivory] .summary-card,
+[data-theme=ivory] .stats-panel-card,
+[data-theme=ivory] .dashboard-card {
+  box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 2px 8px rgba(0,0,0,.04);
+}
+[data-theme=ivory] .summary-card:hover,
+[data-theme=ivory] .dashboard-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+}
+/* Table header row: more visible on ivory */
+[data-theme=ivory] thead tr {
+  background: var(--bg-3) !important;
+}
+/* Table body row borders */
+[data-theme=ivory] tbody tr {
+  border-bottom: 1px solid var(--bdr-d);
+}
+/* Input fields: clearer inset on white card bg */
+[data-theme=ivory] .inp {
+  background: var(--bg-2) !important;
+  border-color: var(--bdr) !important;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.06) !important;
+}
+[data-theme=ivory] .inp:focus {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 3px var(--amber-g), inset 0 1px 3px rgba(0,0,0,.04) !important;
+}
 
 /* Gantt selected row: neutral outline instead of left-border accent */
 .g-row.g-selected {
