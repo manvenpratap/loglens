@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Project Folder Cleanup & Documentation Assets Reorganization (v6.9.83 — COMPLETED)**:
+  - **Removed Scratch & Junk Files**: Removed obsolete `scratch.js` (unreferenced test scratchpad), `.DS_Store` metadata files, and temporary test cache directories (`tests/__pycache__`, `.pytest_cache`, `.impeccable/critique`).
+  - **Reorganized Loose Screenshots**: Moved all 9 unreferenced root screenshots (`header_vtabs_active.png`, `layout_with_footer.png`, and 7 `theme_*.png` files) into `docs/screenshots/` to keep root pristine.
+  - **Reorganized Sample Files**: Relocated `log4j.xml` from the project root into `docs/samples/log4j.xml`.
+  - **Full Regression Suite Passed**: All 85 Playwright E2E tests verified and passing.
+
+
 - **Active Log & Parse Actions Control Well Redesign & Spacing Polish (v6.9.82 — COMPLETED)**:
   - **Recessed Control Well**: Redesigned `.cfg-action-dock` from an unstyled container with conflicting inline styles into an intentional, rounded control well with `border-radius: var(--rounded-md)`, `padding: 16px 20px`, `background: var(--bg-0)` in Ivory theme (`var(--bg-2)` in dark themes), and `border: 1px solid var(--bdr)`.
   - **Removed Conflicting Inner Drop Shadow**: Removed `.cfg-action-dock` from the global raised surfaces selector (`box-shadow: var(--shd) !important`), enforcing `box-shadow: none !important` to prevent unnatural dark drop shadows inside the parent card.
