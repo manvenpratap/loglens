@@ -693,11 +693,12 @@ html,body{
   border-bottom: none !important;
   height: 100% !important;
   margin: 0 auto !important;
-  padding: 0 16px !important;
+  padding: 0 8px !important;
   overflow-x: auto !important;
   scrollbar-width: none !important;
   gap: 2px !important;
-  max-width: 50% !important;
+  max-width: none !important;
+  flex: 0 1 auto !important;
 }
 .hdr .vtabs::-webkit-scrollbar {
   display: none !important;
@@ -709,12 +710,15 @@ html,body{
   height: 100%;
   display: inline-flex;
   align-items: center;
-  padding: 0 12px !important;
-  border-bottom: 2px solid transparent !important;
+  padding: 0 10px !important;
+  border-bottom: none !important;
   font-size: 11px !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 .hdr .vt.active {
-  border-bottom-color: var(--amber) !important;
+  border-bottom: none !important;
+  border-bottom-color: transparent !important;
   color: var(--amber) !important;
 }
 .vt-gap{flex:1}
@@ -4462,15 +4466,53 @@ textarea.inp { line-height: 1.55 !important; }
 [data-theme=ivory] tbody tr {
   border-bottom: 1px solid var(--bdr-d);
 }
-/* Input fields: clearer inset on white card bg */
-[data-theme=ivory] .inp {
-  background: var(--bg-2) !important;
-  border-color: var(--bdr) !important;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,.06) !important;
+/* Input fields & textareas: crisp white inside cards for clean modern contrast */
+[data-theme=ivory] .inp,
+[data-theme=ivory] textarea.inp,
+[data-theme=ivory] select.inp {
+  background: #ffffff !important;
+  border: 1px solid var(--bdr) !important;
+  color: var(--t1) !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.04) !important;
 }
-[data-theme=ivory] .inp:focus {
+[data-theme=ivory] .inp:focus,
+[data-theme=ivory] textarea.inp:focus,
+[data-theme=ivory] select.inp:focus {
   border-color: var(--amber) !important;
-  box-shadow: 0 0 0 3px var(--amber-g), inset 0 1px 3px rgba(0,0,0,.04) !important;
+  box-shadow: 0 0 0 3px var(--amber-g), inset 0 1px 2px rgba(0,0,0,.02) !important;
+}
+[data-theme=ivory] .inp::placeholder {
+  color: var(--t4) !important;
+}
+/* Secondary / default buttons inside cards: crisp white card buttons with subtle shadow */
+[data-theme=ivory] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog) {
+  background: #ffffff !important;
+  border: 1px solid var(--bdr) !important;
+  color: var(--t1) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
+}
+[data-theme=ivory] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog):hover {
+  background: var(--bg-2) !important;
+  border-color: var(--bdr-h) !important;
+  color: var(--t1) !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,.08) !important;
+}
+/* Disabled button styling: clean neutral, not muddy */
+[data-theme=ivory] .btn:disabled,
+[data-theme=ivory] .btn[disabled] {
+  background: var(--bg-2) !important;
+  border-color: var(--bdr-d) !important;
+  color: var(--t4) !important;
+  opacity: 0.65 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+[data-theme=ivory] .btn-p:disabled,
+[data-theme=ivory] .btn-p[disabled] {
+  background: oklch(91% 0.025 55) !important;
+  border: 1px solid var(--bdr-d) !important;
+  color: var(--t4) !important;
+  box-shadow: none !important;
 }
 /* Parse button: softer gradient on warm cream bg so it doesn't scorch */
 [data-theme=ivory] .btn-p {
@@ -4506,9 +4548,95 @@ textarea.inp { line-height: 1.55 !important; }
 [data-theme=ivory] .cfg-action-dock {
   background: transparent !important;
 }
+.cfg-action-dock #btn-parse {
+  height: 32px;
+  font-size: 12px;
+}
+.cfg-action-dock #btn-abort {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px !important;
+}
 /* Split-menu dropdown: softer shadow */
 [data-theme=ivory] .btn-split-menu {
   box-shadow: 0 6px 20px rgba(0,0,0,.12) !important;
+}
+/* Query tab icon: subtle badge styling in Ivory */
+[data-theme=ivory] .vt[data-v="query"] .ico {
+  background: var(--glass) !important;
+  border-color: var(--bdr) !important;
+  color: var(--t2) !important;
+}
+[data-theme=ivory] .vt[data-v="query"].active .ico {
+  background: var(--amber-g) !important;
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+}
+/* Theme selector button in topbar */
+[data-theme=ivory] #btn-theme {
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  background: var(--bg-1) !important;
+}
+[data-theme=ivory] #btn-theme:hover {
+  background: var(--bg-2) !important;
+}
+/* Header bottom accent line in Ivory: subtle blend */
+[data-theme=ivory] .hdr::after {
+  opacity: 0.35 !important;
+}
+/* Toast notifications in Ivory: solid white background with colored left border */
+[data-theme=ivory] .toast {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  color: var(--t1) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.06) !important;
+}
+[data-theme=ivory] .t-in { border-left: 3px solid var(--blue) !important; }
+[data-theme=ivory] .t-ok { border-left: 3px solid var(--green) !important; }
+[data-theme=ivory] .t-er { border-left: 3px solid var(--red) !important; }
+[data-theme=ivory] .t-wa { border-left: 3px solid var(--amber) !important; }
+/* Datasource segmented control styling */
+.ds-type-segmented {
+  display: inline-flex;
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 3px;
+  gap: 3px;
+}
+.ds-segment-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--rounded-sm);
+  padding: 4px 14px;
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ds-segment-btn:hover {
+  color: var(--t1);
+  background: var(--glass);
+}
+.ds-segment-btn.active {
+  background: var(--bg-1);
+  color: var(--amber);
+  box-shadow: var(--shd-xs);
+  font-weight: 700;
+}
+[data-theme=ivory] .ds-type-segmented {
+  background: var(--bg-2);
+  border-color: var(--bdr);
+}
+[data-theme=ivory] .ds-segment-btn.active {
+  background: #ffffff;
+  color: var(--amber);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
 
 /* Gantt selected row: neutral outline instead of left-border accent */
@@ -5146,9 +5274,10 @@ label[for="watch-auto-reload"] {
 }
 #p-watch-body .f[style*="display:flex"] {
   display: flex !important;
+  flex-direction: row !important;
   align-items: center !important;
   gap: 8px !important;
-  margin-top: 4px !important;
+  margin-top: 6px !important;
 }
 
 /* Plugin list and textarea */

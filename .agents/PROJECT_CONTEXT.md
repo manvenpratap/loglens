@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Top Bar & Settings Menu Visual Polish & Ivory Theme Overhaul (v6.9.81 — COMPLETED)**:
+  - **Top Bar View Tabs Uncapped**: Removed arbitrary `max-width: 50%` constraint from `.hdr .vtabs`, allowing all 10 navigation tabs (`Split`, `Timeline`, `Tree`, `Traces`, `Query`, `Stats`, `Graph`, `3D View`, `Settings`, `Help`) to render cleanly on desktop viewports without truncating `Settings` or hiding `Help`.
+  - **Clean Active Tab Indicator**: Removed duplicate `border-bottom` on `.hdr .vt.active` and added `position: relative; z-index: 1;` so the sliding rounded `vtabs-pill` acts as the sole, crisp indicator without bottom border artifact lines.
+  - **Ivory Theme Contrast & Depth Overhaul**: Rebalanced the Ivory palette (`--bg-0: 94.5%`, `--bg-1: 99%`, `--bdr: 75%`, rounded corners `4px`/`6px`/`8px`/`9999px`) to eliminate washed-out flat appearance and restore visual hierarchy.
+  - **Settings Menu Inputs & Buttons Polish**: In Ivory theme, inputs and textareas now render in crisp white (`#ffffff`) with subtle inset shadows and clean borders instead of muddy dark grey slabs. Secondary buttons are styled as clean, tactile card buttons with hover elevation.
+  - **Parse & Abort Button Height & State Alignment**: Standardized button heights in the Action Dock (32px), aligned `btn-abort` vertically, and replaced muddy disabled orange bar with a subtle, light-neutral disabled state.
+  - **Segmented Datasource Controls**: Added CSS for `.ds-type-segmented` and `.ds-segment-btn` to turn raw browser buttons into modern segmented pill controls across all themes.
+  - **Directory Watcher Checkbox Alignment**: Corrected `flex-direction: row` to ensure checkbox and label sit side-by-side horizontally instead of stacking awkwardly.
+  - **Toast Notifications Polish**: Added solid card background with colored left border for toasts in Ivory theme, ensuring high-contrast readability.
+  - **Full Regression Suite Passed**: All 85 Playwright E2E tests verified and passing.
+
 - **Interactive Visual Match Badges Alignment & Hover Details Overlay (v6.9.80 — COMPLETED)**:
   - **Perfect Character Alignment**: Positioned visual match badges using parent wrapper `div` blocks (`.rg-match-badge-wrap`) styled in `ch` units inheriting the text container's 15px monospace font size, keeping them aligned with the sample log line.
   - **Overlapping Matches Merged**: Grouped matches by unique range `(start, end)`, assigning tracks to grouped blocks to eliminate redundant rows and visual badge overlapping.
