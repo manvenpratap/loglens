@@ -3,6 +3,16 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Active Log & Parse Actions Control Well Redesign & Spacing Polish (v6.9.82 — COMPLETED)**:
+  - **Recessed Control Well**: Redesigned `.cfg-action-dock` from an unstyled container with conflicting inline styles into an intentional, rounded control well with `border-radius: var(--rounded-md)`, `padding: 16px 20px`, `background: var(--bg-0)` in Ivory theme (`var(--bg-2)` in dark themes), and `border: 1px solid var(--bdr)`.
+  - **Removed Conflicting Inner Drop Shadow**: Removed `.cfg-action-dock` from the global raised surfaces selector (`box-shadow: var(--shd) !important`), enforcing `box-shadow: none !important` to prevent unnatural dark drop shadows inside the parent card.
+  - **Action Button Proportions & Alignment**: Removed the full-width stretch class (`wf`) from `#btn-parse` and standardized it with balanced proportions (`min-width: 140px; height: 36px; padding: 0 24px; font-weight: 700;`). Aligned `#btn-abort` to an identical 36px height, placing them side-by-side with a 12px gap.
+  - **Keyboard Shortcut Affordance**: Added `(Ctrl+Enter)` shortcut indicator alongside parse buttons for keyboard accessibility.
+  - **Eliminated Phantom Horizontal Line**: Removed default bottom border on `#file-chips` and added `#file-chips:empty { display: none !important; }`, preventing empty file-chip containers from rendering artifact lines across the dock.
+  - **Split Button & Filename Polish**: Styled the Select File split button (`#btn-sel-wrap`) with a crisp white surface in Ivory theme and refined filename label typography.
+  - **Full Regression Suite Passed**: All 85 Playwright E2E tests verified and passing.
+
+
 - **Top Bar & Settings Menu Visual Polish & Ivory Theme Overhaul (v6.9.81 — COMPLETED)**:
   - **Top Bar View Tabs Uncapped**: Removed arbitrary `max-width: 50%` constraint from `.hdr .vtabs`, allowing all 10 navigation tabs (`Split`, `Timeline`, `Tree`, `Traces`, `Query`, `Stats`, `Graph`, `3D View`, `Settings`, `Help`) to render cleanly on desktop viewports without truncating `Settings` or hiding `Help`.
   - **Clean Active Tab Indicator**: Removed duplicate `border-bottom` on `.hdr .vt.active` and added `position: relative; z-index: 1;` so the sliding rounded `vtabs-pill` acts as the sole, crisp indicator without bottom border artifact lines.

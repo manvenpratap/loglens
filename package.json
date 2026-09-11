@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "copy-assets": "node -e \"const fs = require('fs'); fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('loglens.html', 'dist/index.html');\"",
+    "build:dist": "npm run copy-assets",
+    "ship": "bash ./ship.sh",
     "dev": "npm run copy-assets && tauri dev",
     "build": "npm run copy-assets && tauri build"
   },

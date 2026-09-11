@@ -1,7 +1,11 @@
 # Node / Build directories
 node_modules/
-dist/
+dist/*
+!dist/index.html
 package-lock.json
+
+# Design critiques
+.impeccable/critique/
 
 # OS files
 .DS_Store

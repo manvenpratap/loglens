@@ -36,8 +36,16 @@
 - All Graphify code goes in `§JS-22 GRAPHIFY ENGINE` in `loglens.html`.
 - If D3 fails to load (offline), fall back gracefully and toast a warning.
 
-## Git Version Control Rule
-- **ALWAYS** perform a `git add`, `git commit` (with a descriptive message), and `git push` command after every major change or milestone is successfully finished and verified.
+## Git Version Control & Distribution Build Rule (MANDATORY)
+- **ALWAYS** build the distribution package and perform `git add`, `git commit` (with a descriptive message), and `git push` after every change or milestone is successfully finished and verified.
+- **Automated Workflow**:
+  - Run `./ship.sh "<descriptive commit message>"` (or `npm run ship -- "<descriptive commit message>"`).
+  - This script automatically:
+    1. Synchronizes and builds the distribution artifact (`dist/index.html` via `npm run copy-assets`).
+    2. Stages changed files (`loglens.html`, `dist/index.html`, `.agents/PROJECT_CONTEXT.md`, etc.).
+    3. Creates a git commit with the specified message.
+    4. Pushes changes upstream to `origin main`.
+- **Distribution Package Consistency**: `dist/index.html` must always stay strictly identical to `loglens.html`. Never edit `dist/index.html` directly.
 
 ## Regression Test Suite Rules (MANDATORY)
 The project maintains a formal regression test package at `tests/`. All agents MUST follow these rules:
