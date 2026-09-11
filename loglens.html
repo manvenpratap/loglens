@@ -4472,6 +4472,44 @@ textarea.inp { line-height: 1.55 !important; }
   border-color: var(--amber) !important;
   box-shadow: 0 0 0 3px var(--amber-g), inset 0 1px 3px rgba(0,0,0,.04) !important;
 }
+/* Parse button: softer gradient on warm cream bg so it doesn't scorch */
+[data-theme=ivory] .btn-p {
+  background: linear-gradient(135deg, #f0a040, #d07820) !important;
+  box-shadow: 0 2px 8px rgba(192,98,10,.18) !important;
+}
+[data-theme=ivory] .btn-p:hover {
+  background: linear-gradient(135deg, #f5b050, #d88828) !important;
+  box-shadow: 0 4px 14px rgba(192,98,10,.25) !important;
+}
+/* Abort button: warm red instead of cold pink */
+[data-theme=ivory] .btn-d {
+  background: rgba(180,60,40,.08) !important;
+  border-color: rgba(180,60,40,.35) !important;
+  color: oklch(48% 0.16 25) !important;
+}
+[data-theme=ivory] .btn-d:hover {
+  background: oklch(48% 0.16 25) !important;
+  color: #fff !important;
+  border-color: oklch(48% 0.16 25) !important;
+}
+/* Dashboard card title: thinner, softer bottom border */
+[data-theme=ivory] .dashboard-card-title {
+  border-bottom: 1px solid var(--bdr-d) !important;
+  color: var(--t2) !important;
+}
+/* Split-button wrap: lighter background on white card */
+[data-theme=ivory] .btn-split-wrap {
+  background: var(--bg-2) !important;
+  border-color: var(--bdr) !important;
+}
+/* Action dock bg: transparent to blend with card interior */
+[data-theme=ivory] .cfg-action-dock {
+  background: transparent !important;
+}
+/* Split-menu dropdown: softer shadow */
+[data-theme=ivory] .btn-split-menu {
+  box-shadow: 0 6px 20px rgba(0,0,0,.12) !important;
+}
 
 /* Gantt selected row: neutral outline instead of left-border accent */
 .g-row.g-selected {
