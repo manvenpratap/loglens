@@ -3,6 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Developer Console Aesthetic & Glassmorphism Elimination (v6.9.85 — COMPLETED)**:
+  - **Eliminated Heavy Glassmorphism & Backdrop Filters**: Removed all `backdrop-filter: blur(...)` across the entire application — including header (`.hdr`), modal overlays (`.mm`, `.sh-ov`, `.cmd-ov`), contextual dropdown menus (`#ctx-menu`), drag-and-drop overlays (`#drop-ov`, `#drop-ov-inner`), timeline mini-maps (`#ll-minimap-wrap`), and 3D visual landscape controls/tooltips.
+  - **Solid Developer Console Header**: Replaced translucent glassmorphism in `.hdr` across all 6 themes (Dark, Light, Ivory, Aurora, Midnight, Forest, Crimson) with a solid surface (`background: var(--bg-1); border-bottom: 1px solid var(--bdr); box-shadow: none;`), removing distracting bottom center amber gradient glowing accent lines (`.hdr::after`).
+  - **Crisp Buttons & Solid Accents**: Replaced gradient fills and neon blur glows on primary action buttons (`.btn-p`), danger hover states (`.btn-d:hover`), and blue outlines (`.btn-bl:hover`) with solid tokens, crisp 1px borders, and subtle 1px/2px drop shadows. Updated Ivory theme primary button to solid amber with crisp dark/light contrast.
+  - **Refined Selection & Row Highlights**: Replaced heavy 2px/3px colored left borders with crisp 1px outlines (`outline: 1px solid var(--amber-g); outline-offset: -1px; background: var(--amber-d)`) for selected Gantt timeline rows (`.g-row.g-selected`) and Trace Explorer active rows (`.trace-row-item.active-trace`).
+  - **Restrained Progress Indicators**: Replaced animated gradient shimmer sweeps on `.prog-f` with clean, solid progress fills.
+  - **Full Regression Suite Passed**: All 85 Playwright E2E tests verified and passing (0 regressions).
+
+
 - **Impeccable Action 1: Typography & Shape Standardization across Themes (v6.9.84 — COMPLETED)**:
   - **Eliminated Font Family Drift**: Replaced theme font overrides (`Georgia, serif` in Light/Ivory, `Century Gothic` in Aurora, `Impact` in Midnight) with a unified high-clarity sans stack (`Inter, Geist, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`) for UI and display, and `JetBrains Mono / Consolas` for log data across ALL 6 themes.
   - **Eliminated Hardcoded Font Names in Views**: Replaced inline `'Space Grotesk'` and `'Geist'` references with semantic CSS custom properties (`var(--display)`, `var(--ui)`, `var(--mono)`).
