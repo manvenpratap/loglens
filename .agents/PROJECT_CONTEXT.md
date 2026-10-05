@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Impeccable Action 1: Typography & Shape Standardization across Themes (v6.9.84 — COMPLETED)**:
+  - **Eliminated Font Family Drift**: Replaced theme font overrides (`Georgia, serif` in Light/Ivory, `Century Gothic` in Aurora, `Impact` in Midnight) with a unified high-clarity sans stack (`Inter, Geist, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`) for UI and display, and `JetBrains Mono / Consolas` for log data across ALL 6 themes.
+  - **Eliminated Hardcoded Font Names in Views**: Replaced inline `'Space Grotesk'` and `'Geist'` references with semantic CSS custom properties (`var(--display)`, `var(--ui)`, `var(--mono)`).
+  - **Standardized Border-Radius Tokens**: Unified component border-radius across all themes to `sm: 6px`, `md: 8px`, `lg: 10px`, `full: 99px`, removing brutalist `0px` in Light theme and extreme `20px` in Forest/Midnight.
+  - **Detector Validation**: Completely eliminated all `overused-font` and `design-system-font` detector warnings.
+
+
 - **Project Folder Cleanup & Documentation Assets Reorganization (v6.9.83 — COMPLETED)**:
   - **Removed Scratch & Junk Files**: Removed obsolete `scratch.js` (unreferenced test scratchpad), `.DS_Store` metadata files, and temporary test cache directories (`tests/__pycache__`, `.pytest_cache`, `.impeccable/critique`).
   - **Reorganized Loose Screenshots**: Moved all 9 unreferenced root screenshots (`header_vtabs_active.png`, `layout_with_footer.png`, and 7 `theme_*.png` files) into `docs/screenshots/` to keep root pristine.
