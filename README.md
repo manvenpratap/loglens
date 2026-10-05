@@ -23,6 +23,20 @@ LogLens transforms raw log files into interactive execution timelines, call tree
 
 ---
 
+## 🏛️ System Architecture & Diagrams
+
+LogLens architecture and workflows are formally modeled and compiled via [Archify](https://github.com/tt-a1i/archify):
+
+* 📐 **System Architecture**: [Interactive HTML View](./docs/diagrams/architecture.html) | [Spec](./docs/diagrams/architecture.json)
+* 🔄 **Analysis Workflow**: [Interactive HTML View](./docs/diagrams/workflow.html) | [Spec](./docs/diagrams/workflow.json)
+* ⚡ **Execution Sequence**: [Interactive HTML View](./docs/diagrams/sequence.html) | [Spec](./docs/diagrams/sequence.json)
+* 🌊 **Data Flow Pipeline**: [Interactive HTML View](./docs/diagrams/dataflow.html) | [Spec](./docs/diagrams/dataflow.json)
+* ⏱️ **Session Lifecycle**: [Interactive HTML View](./docs/diagrams/lifecycle.html) | [Spec](./docs/diagrams/lifecycle.json)
+
+For detailed architectural walk-throughs and Mermaid specifications, see [**`PROJECT_CONTEXT.md`**](./.agents/PROJECT_CONTEXT.md).
+
+---
+
 ## 🚀 Quick Start
 
 1. **Open** `loglens.html` in any modern browser (Chrome, Edge, Firefox, Safari).

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "LogLens - Parse & Render Execution Sequence",
+    "output": "sequence.html",
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "User", "sublabel": "Browser Session" },
+    { "id": "ui", "type": "frontend", "label": "Main UI Thread", "sublabel": "DOM / Event Loop" },
+    { "id": "decompressor", "type": "backend", "label": "Inflator", "sublabel": "Gzip inflator" },
+    { "id": "worker", "type": "backend", "label": "Worker Pool", "sublabel": "Web Worker thread" },
+    { "id": "state", "type": "database", "label": "Session State", "sublabel": "IndexedDB / Memory" },
+    { "id": "canvas", "type": "frontend", "label": "Canvas Engine", "sublabel": "D3 / WebGL 3D" }
+  ],
+  "segments": [
+    { "from": 150, "to": 260, "label": "Ingestion" },
+    { "from": 270, "to": 390, "label": "Parallel Parse" },
+    { "from": 400, "to": 510, "label": "Visualization" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "user", "to": "ui", "y": 160, "label": "Drop log / .gz", "variant": "default" },
+    { "id": "m2", "from": "ui", "to": "decompressor", "y": 190, "label": "ArrayBuffer stream", "variant": "emphasis" },
+    { "id": "m3", "from": "decompressor", "to": "ui", "y": 225, "label": "Text chunks", "variant": "return" },
+    { "id": "m4", "from": "ui", "to": "worker", "y": 280, "label": "postMessage(chunks)", "variant": "emphasis" },
+    { "id": "m5", "from": "worker", "to": "state", "y": 320, "label": "Commit structured spans", "variant": "emphasis" },
+    { "id": "m6", "from": "state", "to": "ui", "y": 360, "label": "Parse completed (100%)", "variant": "return" },
+    { "id": "m7", "from": "ui", "to": "canvas", "y": 420, "label": "Draw Timeline & Tree", "variant": "emphasis" },
+    { "id": "m8", "from": "canvas", "to": "user", "y": 465, "label": "Interactive 60 FPS View", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "ui", "from": 160, "to": 470, "type": "frontend" },
+    { "participant": "decompressor", "from": 190, "to": 230, "type": "backend" },
+    { "participant": "worker", "from": 280, "to": 330, "type": "backend" },
+    { "participant": "canvas", "from": 420, "to": 470, "type": "frontend" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Non-blocking Main Thread", "items": ["Heavy regex parsing happens off-thread", "UI stays responsive even on 500MB log files"] }
+  ]
+}

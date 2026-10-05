@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "LogLens - Offline Architecture",
+    "output": "architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "browser_user", "type": "external", "label": "Dev / SRE", "sublabel": "Browser / Tauri Shell", "pos": [40, 260], "size": [120, 60] },
+    { "id": "file_reader", "type": "frontend", "label": "Ingestion Engine", "sublabel": "Drag & Drop / .gz", "pos": [260, 260], "size": [130, 60] },
+    { "id": "worker_pool", "type": "backend", "label": "Web Worker Pool", "sublabel": "Regex Parser Threads", "pos": [510, 260], "size": [140, 60], "tag": "Zero Latency" },
+    { "id": "rule_engine", "type": "security", "label": "Rule Matcher", "sublabel": "Regex & Token Wizard", "pos": [510, 110], "size": [140, 60] },
+    { "id": "mem_store", "type": "database", "label": "Session Cache", "sublabel": "IndexedDB / RAM State", "pos": [780, 260], "size": [140, 60] },
+    { "id": "views", "type": "frontend", "label": "Visualization Suite", "sublabel": "Gantt, Tree, 3D, Stats", "pos": [1020, 180], "size": [130, 60] },
+    { "id": "exporter", "type": "backend", "label": "Export Subsystem", "sublabel": "HTML, SVG, CSV, JIRA", "pos": [1020, 340], "size": [130, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Browser Offline Sandbox (100% Local)", "wraps": ["file_reader", "worker_pool", "rule_engine", "mem_store", "views", "exporter"] },
+    { "kind": "security-group", "label": "Web Worker Thread Boundary", "wraps": ["worker_pool", "rule_engine"] }
+  ],
+  "connections": [
+    { "id": "user-to-reader", "from": "browser_user", "to": "file_reader", "label": "drops log", "variant": "emphasis" },
+    { "id": "reader-to-worker", "from": "file_reader", "to": "worker_pool", "label": "stream chunks" },
+    { "id": "rules-to-worker", "from": "rule_engine", "to": "worker_pool", "label": "compiled patterns", "fromSide": "bottom", "toSide": "top" },
+    { "id": "worker-to-store", "from": "worker_pool", "to": "mem_store", "label": "parsed entries", "variant": "emphasis" },
+    { "id": "store-to-views", "from": "mem_store", "to": "views", "label": "telemetry", "fromSide": "right", "toSide": "left" },
+    { "id": "store-to-exporter", "from": "mem_store", "to": "exporter", "label": "snapshot", "variant": "dashed", "fromSide": "bottom", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Zero Cloud Leakage", "items": ["100% client-side offline execution", "Zero remote network telemetry", "Logs never leave local RAM / IndexedDB"] },
+    { "dot": "cyan", "title": "High Performance", "items": ["Multi-threaded parsing via dedicated Web Workers", "In-browser Gzip streaming decompression", "60 FPS Canvas & D3 execution timelines"] },
+    { "dot": "amber", "title": "Extensibility", "items": ["Configurable Log4j/Logback patterns", "Dynamic regex wizard with token palette", "Native session save/load (.lls)"] }
+  ]
+}

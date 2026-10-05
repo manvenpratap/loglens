@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "LogLens - Session & Processing Lifecycle",
+    "output": "lifecycle.html",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "main", "label": "Session Stages" },
+    { "id": "parse", "label": "Streaming & Worker Loop" },
+    { "id": "terminal", "label": "Terminal Exits" }
+  ],
+  "states": [
+    { "id": "idle", "type": "start", "label": "Idle Ready", "sublabel": "awaiting file drop", "lane": "main", "col": 0, "step": "01", "tag": "ready" },
+    { "id": "loading", "type": "active", "label": "Reading Stream", "sublabel": "reading file bytes", "lane": "main", "col": 1, "step": "02", "tag": "reading" },
+    { "id": "parsing", "type": "active", "label": "Worker Parsing", "sublabel": "multi-worker regex match", "lane": "parse", "col": 2, "step": "03", "tag": "parsing" },
+    { "id": "indexed", "type": "waiting", "label": "Tree Indexed", "sublabel": "aggregating spans", "lane": "main", "col": 3, "step": "04", "tag": "indexing" },
+    { "id": "interactive", "type": "success", "label": "Active Analysis", "sublabel": "exploring Gantt / 3D", "lane": "main", "col": 4, "step": "05", "tag": "active" },
+    { "id": "error", "type": "failure", "label": "Format / Parse Error", "sublabel": "corrupt log or rule", "lane": "terminal", "col": 2, "tag": "terminal" },
+    { "id": "exported", "type": "success", "label": "Session Exported", "sublabel": "saved .lls / report", "lane": "terminal", "col": 4, "tag": "terminal" }
+  ],
+  "transitions": [
+    { "from": "idle", "to": "loading", "label": "file drop" },
+    { "from": "loading", "to": "parsing", "label": "stream buffer" },
+    { "from": "parsing", "to": "indexed", "label": "all chunks parsed" },
+    { "from": "parsing", "to": "error", "label": "malformed gzip/pattern", "variant": "security" },
+    { "from": "indexed", "to": "interactive", "label": "render views" },
+    { "from": "interactive", "to": "exported", "label": "export session", "variant": "emphasis" },
+    { "from": "interactive", "to": "idle", "label": "reset session" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Session Durability", "items": ["Sessions can be saved as encrypted or raw .lls files", "Reloading instantly restores full tree and analysis bookmarks"] }
+  ]
+}

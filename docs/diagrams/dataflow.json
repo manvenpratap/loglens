@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "LogLens - Data Flow Pipeline",
+    "output": "dataflow.html",
+    "viewBox": [1080, 520],
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "stages": [
+    { "label": "Raw Ingestion" },
+    { "label": "Decompression" },
+    { "label": "Parsing & Extraction" },
+    { "label": "In-Memory Store" },
+    { "label": "Visualization & Export" }
+  ],
+  "nodes": [
+    { "id": "raw_file", "type": "external", "label": "Raw Log Files", "sublabel": ".log, .out, .gz", "stage": 0, "row": 1, "tag": "source" },
+    { "id": "decompress", "type": "backend", "label": "Gzip Inflate", "sublabel": "streaming bytes", "stage": 1, "row": 1, "tag": "unzip" },
+    { "id": "regex_engine", "type": "backend", "label": "Regex Parser", "sublabel": "timestamp, level, traceId", "stage": 2, "row": 1, "tag": "worker" },
+    { "id": "rules_json", "type": "security", "label": "Config Rules", "sublabel": "patterns & tokens", "stage": 2, "row": 0, "tag": "config" },
+    { "id": "session_db", "type": "database", "label": "Session Index", "sublabel": "indexed tree & spans", "stage": 3, "row": 1, "tag": "local" },
+    { "id": "views", "type": "frontend", "label": "Interactive Views", "sublabel": "Gantt, D3 Tree, 3D", "stage": 4, "row": 0, "tag": "render" },
+    { "id": "exports", "type": "backend", "label": "Export Bundle", "sublabel": "CSV, SVG, HTML, JIRA", "stage": 4, "row": 2, "tag": "export" }
+  ],
+  "flows": [
+    { "id": "f1", "from": "raw_file", "to": "decompress", "label": "stream", "classification": "raw stream", "variant": "emphasis" },
+    { "id": "f2", "from": "decompress", "to": "regex_engine", "label": "chunks", "classification": "text chunks", "variant": "emphasis" },
+    { "id": "f3", "from": "rules_json", "to": "regex_engine", "label": "rules", "classification": "schema", "variant": "security", "labelAt": [530, 201] },
+    { "id": "f4", "from": "regex_engine", "to": "session_db", "label": "spans", "classification": "structured events", "variant": "emphasis" },
+    { "id": "f5", "from": "session_db", "to": "views", "label": "reactive", "classification": "sub-millisecond", "variant": "default" },
+    { "id": "f6", "from": "session_db", "to": "exports", "label": "snapshot", "classification": "report data", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Zero Cloud Dataflow", "items": ["All stages execute strictly in browser memory", "Zero telemetry egress packets", "Session state serializable to local .lls file"] }
+  ]
+}

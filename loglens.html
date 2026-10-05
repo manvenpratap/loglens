@@ -725,6 +725,34 @@ html,body{
   box-shadow:none;
 }
 
+/* Top notification/rescue dock */
+.res-top-dock{
+  width:100%;display:flex;flex-direction:column;gap:8px;
+  position:relative;z-index:2;
+}
+.rescue-card{
+  background:var(--bg-1);
+  border:1px solid var(--amber);
+  border-left:4px solid var(--amber);
+  border-radius:var(--rounded-md);
+  padding:12px 16px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:14px;box-shadow:none;
+}
+.rescue-card-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.rescue-card-title{
+  font-size:12px;font-weight:700;color:var(--amber);
+  display:flex;align-items:center;gap:6px;
+}
+.rescue-card-desc{font-size:11px;color:var(--t2);line-height:1.4;}
+.rescue-sig-preview{
+  font-family:var(--mono);font-size:10px;color:var(--amber);
+  background:var(--bg-2);border:1px solid var(--bdr);
+  border-radius:var(--rounded-sm);padding:4px 8px;margin-top:4px;
+  word-break:break-all;display:inline-block;max-width:100%;
+}
+.rescue-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
 /* Results area */
 .res{
   flex:1;overflow-y:auto;overflow-x:hidden;
@@ -6789,6 +6817,7 @@ label[for="watch-auto-reload"] {
             <button class="btn wf" id="btn-exp" disabled title="Export active configuration to a JSON file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export</button>
             <button class="btn wf" id="btn-new" title="Create a new clean configuration database"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> New</button>
           </div>
+          <button class="btn wf mt1" id="btn-reset-defaults" title="Reset configuration to factory defaults and clear retained storage"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></span> Reset Defaults</button>
         </div>
 
         <!-- Card 3: Global Settings -->
@@ -7462,6 +7491,7 @@ label[for="watch-auto-reload"] {
   </div>
 
   <div class="res" id="res">
+    <div id="res-top-dock" class="res-top-dock" style="display:none;"></div>
     <div class="emp-card" id="emp">
       <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
         <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
@@ -9407,9 +9437,10 @@ const HS={
  * @description Manages configuration files, including importing, saving to IndexedDB or local files, rendering settings panel, and mapping configuration rules.
  */
 const CFG={
-  load(c){
+  load(c, markRetained = false){
     S.cfg=c;this.rl();this.sgs();
     UI.ub();$('btn-ar').disabled=false;$('btn-exp').disabled=false;
+    if(markRetained && !S.cfgHandle) this.stRetained();
   },
   rl(){
     const el=$('rules-list'),c=S.cfg;
@@ -9489,6 +9520,7 @@ const CFG={
   },
   async pers(){
     if(!S.cfg)return;const json=JSON.stringify(S.cfg,null,2);
+    try{ localStorage.setItem('ll-active-cfg', json); }catch(_e){}
     if(S.cfgHandle){
       try{
         const p=await S.cfgHandle.requestPermission({mode:'readwrite'});
@@ -9496,7 +9528,13 @@ const CFG={
         const w=await S.cfgHandle.createWritable();await w.write(json);await w.close();
         this.stLive(S.cfgHandle.name);
       }catch(e){console.warn('[LL]',e);toast('Live sync failed — use Export.','warn');}
+    } else {
+      this.stRetained();
     }
+  },
+  stRetained(){
+    $('cfg-dot').className='cfg-dot live';$('cfg-txt').textContent='Auto-retained in browser';
+    $('hdr-cfg').textContent='Config ✓';$('hdr-cfg').className='badge b-green';
   },
   exp(){
     if(!S.cfg)return;
@@ -10323,7 +10361,7 @@ const UI={
     const r=$('res');
     r.style.overflowY = 'auto';
     r.style.padding = '14px';
-    [...r.children].filter(el=>el.id!=='stats-bar').forEach(el=>el.remove());
+    [...r.children].filter(el=>el.id!=='stats-bar' && el.id!=='res-top-dock').forEach(el=>el.remove());
     let tree=S.trees[S.activeThr]||[];HS.ann(tree,null);
     const q = (S.searchQuery || '').trim().toLowerCase();
     if(q || S.activeTraceId){
@@ -10542,8 +10580,8 @@ const UI={
         hc.appendChild(el);
       }
     });
-    // Clear #res (preserve stats-bar)
-    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+    // Clear #res (preserve stats-bar and res-top-dock)
+    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
     r.style.overflowY = 'auto';
     r.style.padding = '0';
     // Append the requested panel from the hidden container to #res and force visible
@@ -11318,12 +11356,7 @@ const DD={
       if(jsons.length){FS.imp(jsons[0]);if(jsons.length>1)toast('Only first JSON imported.','warn');}
       if(logs.length){
         MF.add(logs);
-        if(S.cfg && S.cfg.elementRules && S.cfg.elementRules.length > 0){
-          setTimeout(()=>$('btn-parse').click(),150);
-        } else {
-          toast('No configuration rules active. Please create or load rules first.', 'warn');
-          document.querySelector('.vt[data-v="cfg"]')?.click();
-        }
+        SNIFFER.handleFile(logs[0], true);
       }
     });
   }
@@ -13131,6 +13164,295 @@ const UNPARSED = {
 };
 
 /* ================================================================
+   §JS-33c AUTO-PATTERN SNIFFER & ADAPTIVE RESCUE
+   ================================================================ */
+/**
+ * @namespace SNIFFER
+ * @description Zero-configuration pre-flight log sniffer and adaptive rescue engine.
+ * Automatically samples dropped/selected log files, detects log formats and generates rules,
+ * auto-retains detected/custom rules in localStorage, and mounts an inline rescue banner
+ * when unparsed log lines exceed 15%.
+ */
+const SNIFFER={
+  async sampleLines(file, maxLines = 100) {
+    let f = file;
+    if (GZ.isGzip(f)) {
+      try { f = await GZ.decompress(f); } catch(_e){}
+    }
+    const slice = f.slice(0, Math.min(65536, f.size));
+    const text = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result || '');
+      r.onerror = rej;
+      r.readAsText(slice);
+    });
+    return text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0).slice(0, maxLines);
+  },
+
+  testRulesMatch(rules, lines) {
+    if (!rules || !rules.length || !lines || !lines.length) return 0;
+    const compiled = [];
+    for (const r of rules) {
+      if (r.enabled !== false && r.regexPattern) {
+        try { compiled.push(new RegExp(r.regexPattern)); } catch(_e){}
+      }
+    }
+    if (!compiled.length) return 0;
+    let matches = 0;
+    for (const l of lines) {
+      if (compiled.some(rx => rx.test(l))) matches++;
+    }
+    return matches / lines.length;
+  },
+
+  detectPreset(lines) {
+    if (!lines || !lines.length) return null;
+    const candidates = [
+      { key: 'spring', ...WIZ_FMTS.spring, name: 'Spring Boot' },
+      { key: 'java_std', ...WIZ_FMTS.java_std, name: 'Java Standard / Logback' },
+      { key: 'log4j2_t', ...WIZ_FMTS.log4j2_t, name: 'Log4j2 (Time First)' },
+      { key: 'json', ...WIZ_FMTS.json, name: 'JSON Structured' },
+      { key: 'csv', ...WIZ_FMTS.csv, name: 'Delimited / CSV' }
+    ];
+    let best = null, bestRate = 0;
+    for (const c of candidates) {
+      try {
+        const rx = new RegExp(c.base);
+        let mCount = 0;
+        for (const l of lines) {
+          if (rx.test(l)) mCount++;
+        }
+        const rate = mCount / lines.length;
+        if (rate > bestRate && rate >= 0.25) {
+          bestRate = rate;
+          best = { ...c, rate };
+        }
+      } catch(_e){}
+    }
+    return best;
+  },
+
+  synthesizeRules(lines, filename = 'Auto Log') {
+    const preset = this.detectPreset(lines);
+    if (preset && preset.key === 'spring') {
+      const cfg = JSON.parse(JSON.stringify(DEF_CFG));
+      cfg.globalSettings = cfg.globalSettings || {};
+      cfg.globalSettings.appName = filename.replace(/\.[^.]+$/, '');
+      return { config: cfg, presetName: preset.name };
+    }
+
+    let base = '^';
+    let cm = {};
+    let tsPattern = '(\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)';
+    const sample = lines[0] || '';
+
+    if (preset) {
+      base = preset.base;
+      cm = preset.cm || {};
+      tsPattern = preset.ts || tsPattern;
+    } else {
+      if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/.test(sample)) {
+        base = '^(\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)\\s+';
+        cm['1'] = 'timestamp';
+        if (/(ERROR|WARN|INFO|DEBUG|TRACE)/i.test(sample)) {
+          base += '(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\\s+';
+          cm['2'] = 'level';
+          if (/\[([^\]]+)\]/.test(sample)) {
+            base += '\\[([^\\]]+)\\]\\s+';
+            cm['3'] = 'thread';
+          }
+        }
+      } else if (/^\d{2}:\d{2}:\d{2}/.test(sample)) {
+        tsPattern = '(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)';
+        base = '^(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)\\s+';
+        cm['1'] = 'timestamp';
+      }
+    }
+
+    const appName = filename.replace(/\.[^.]+$/, '');
+    const payIdx = String(Object.keys(cm).length + 1);
+    const rules = [
+      {
+        id: 'r_auto_start',
+        name: 'Transaction Start',
+        regexPattern: base + '(?:TX-BEGIN|Started|Starting|Enter|BEGIN)\\s+(.*)',
+        captureMapping: { ...cm, [payIdx]: 'payload' },
+        stackBehavior: 'push',
+        visualStyle: { accentColor: '#58a6ff', icon: '▶' },
+        enabled: true
+      },
+      {
+        id: 'r_auto_end',
+        name: 'Transaction End',
+        regexPattern: base + '(?:TX-END|Completed|Finished|Exit|END)\\s+(.*)',
+        captureMapping: { ...cm, [payIdx]: 'payload' },
+        stackBehavior: 'pop',
+        visualStyle: { accentColor: '#3fb950', icon: '◀' },
+        enabled: true
+      },
+      {
+        id: 'r_auto_error',
+        name: 'Error & Exception',
+        regexPattern: base + '.*?(?:ERROR|FATAL|Exception|Failed|Error)(.*)',
+        captureMapping: { ...cm, [payIdx]: 'payload' },
+        stackBehavior: 'inline',
+        visualStyle: { accentColor: '#f85149', icon: '✕' },
+        enabled: true
+      },
+      {
+        id: 'r_auto_info',
+        name: 'Log Event',
+        regexPattern: base + '(.*)',
+        captureMapping: { ...cm, [payIdx]: 'payload' },
+        stackBehavior: 'inline',
+        visualStyle: { accentColor: '#d29922', icon: '●' },
+        enabled: true
+      }
+    ];
+
+    const cfg = {
+      globalSettings: {
+        appName,
+        globalTimestampPattern: tsPattern,
+        description: 'Auto-synthesized from log file patterns'
+      },
+      elementRules: rules
+    };
+
+    return { config: cfg, presetName: preset ? preset.name : 'Auto-pattern' };
+  },
+
+  async handleFile(file, autoParse = true) {
+    if (!file) return;
+    try {
+      const lines = await this.sampleLines(file, 50);
+      if (lines.length > 0) {
+        const curRules = S.cfg?.elementRules || [];
+        const matchRate = this.testRulesMatch(curRules, lines);
+        if (curRules.length === 0 || matchRate < 0.35) {
+          const { config, presetName } = this.synthesizeRules(lines, file.name);
+          CFG.load(config, true);
+          await CFG.pers();
+          toast(`Auto-configured ${presetName}: rules retained.`, 'success');
+        }
+      }
+    } catch(e) {
+      console.warn('[SNIFFER] Format sniffing error:', e);
+    }
+    if (autoParse) {
+      setTimeout(() => {
+        const bp = $('btn-parse');
+        if (bp && !bp.disabled) bp.click();
+      }, 100);
+    }
+  },
+
+  checkUnparsedRescue(stats) {
+    let dock = $('res-top-dock');
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = 'res-top-dock';
+      dock.className = 'res-top-dock';
+      const r = $('res');
+      if (r) r.insertBefore(dock, r.firstChild);
+    }
+    if (!stats || !stats.linesProcessed || stats.linesProcessed === 0) {
+      dock.style.display = 'none';
+      dock.innerHTML = '';
+      return;
+    }
+    const unparsedCount = stats.linesProcessed - (stats.matchedLines || 0);
+    const unparsedRatio = unparsedCount / stats.linesProcessed;
+
+    if (unparsedRatio > 0.15 && stats.unparsedSample && stats.unparsedSample.length > 0) {
+      const clusters = UNPARSED.cluster(stats.unparsedSample);
+      UNPARSED.currentClusters = clusters;
+      if (clusters.length > 0) {
+        const topCluster = clusters[0];
+        const pct = Math.round(unparsedRatio * 100);
+        dock.innerHTML = `
+          <div class="rescue-card" id="rescue-banner">
+            <div class="rescue-card-content">
+              <div class="rescue-card-title">
+                <span class="badge b-amber" style="font-size:10px;padding:2px 6px;">${pct}% unparsed</span>
+                <span>Adaptive Rescue: Unmatched Log Pattern Detected</span>
+              </div>
+              <div class="rescue-card-desc">
+                ${unparsedCount.toLocaleString()} lines did not match any active rule. Top pattern (${topCluster.count} sample occurrences):
+              </div>
+              <div class="rescue-sig-preview">${esc(topCluster.sig)}</div>
+            </div>
+            <div class="rescue-actions">
+              <button class="btn btn-p btn-xs" id="btn-rescue-auto" onclick="SNIFFER.addRescueRule(0)" type="button" title="Automatically create rule for this pattern, retain it, and re-parse">
+                + Auto-Add Rule &amp; Retain
+              </button>
+              <button class="btn btn-xs" id="btn-rescue-custom" onclick="UNPARSED.createRuleFromIndex(0)" type="button" title="Customize regex pattern in Rule Creator modal">
+                Custom Regex
+              </button>
+              <button class="btn btn-xs" id="btn-rescue-dismiss" onclick="SNIFFER.dismissRescue()" type="button" title="Dismiss this banner">
+                ✕
+              </button>
+            </div>
+          </div>
+        `;
+        dock.style.display = 'flex';
+        return;
+      }
+    }
+    dock.style.display = 'none';
+    dock.innerHTML = '';
+  },
+
+  dismissRescue() {
+    const dock = $('res-top-dock');
+    if (dock) {
+      dock.style.display = 'none';
+      dock.innerHTML = '';
+    }
+  },
+
+  async addRescueRule(clusterIdx = 0) {
+    const clusters = UNPARSED.currentClusters || [];
+    const cluster = clusters[clusterIdx];
+    if (!cluster) return;
+
+    let rx = cluster.sig;
+    if (rx.endsWith('…')) rx = rx.slice(0, -1) + '.*';
+    const rawSigForRegex = rx.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
+    let pattern = '^' + rawSigForRegex;
+    if (pattern.endsWith('.*')) {
+      pattern = pattern.slice(0, -2) + '(.*)';
+    } else {
+      pattern = pattern + '(.*)';
+    }
+
+    if (!S.cfg) S.cfg = JSON.parse(JSON.stringify(DEF_CFG));
+    if (!Array.isArray(S.cfg.elementRules)) S.cfg.elementRules = [];
+
+    const newRule = {
+      id: UTILS.gid(),
+      name: `Unparsed (${cluster.count} hits)`,
+      regexPattern: pattern,
+      captureMapping: { '1': 'payload' },
+      stackBehavior: 'inline',
+      visualStyle: { accentColor: '#e3b341', icon: '⚡' },
+      enabled: true
+    };
+
+    S.cfg.elementRules.push(newRule);
+    CFG.rl();
+    await CFG.pers();
+    toast('Rule added and retained. Re-parsing…', 'success');
+    this.dismissRescue();
+
+    setTimeout(() => {
+      const bp = $('btn-parse');
+      if (bp && !bp.disabled) bp.click();
+    }, 120);
+  }
+};
+
+/* ================================================================
    §JS-34 GRAPHIFY ENGINE
    ================================================================ */
 /**
@@ -13945,6 +14267,25 @@ $('btn-new').addEventListener('click',()=>{
   S.cfgHandle=null;CFG.load(JSON.parse(JSON.stringify(DEF_CFG)));CFG.stImp();
   toast('New config from defaults.','info');
 });
+$('btn-reset-defaults')?.addEventListener('click',()=>{
+  if(confirm('Reset configuration to factory defaults? All retained rules will be cleared.')){
+    try{ localStorage.removeItem('ll-active-cfg'); }catch(_e){}
+    S.cfgHandle=null;
+    CFG.load(JSON.parse(JSON.stringify(DEF_CFG)));
+    CFG.stImp();
+    toast('Reset to factory defaults.','info');
+  }
+});
+// Restore retained configuration from localStorage if present
+try {
+  const retained = localStorage.getItem('ll-active-cfg');
+  if (retained) {
+    const c = JSON.parse(retained);
+    if (c && Array.isArray(c.elementRules) && c.elementRules.length > 0) {
+      CFG.load(c, true);
+    }
+  }
+} catch(_e){}
 $('btn-sgs').addEventListener('click',()=>CFG.saveGs());
 
 // Rules list (delegated)
@@ -14080,6 +14421,7 @@ $('fi-log').addEventListener('change',e=>{
   const nm=file.name.length>20?file.name.slice(0,20)+'…':file.name;
   $('hdr-file').textContent=nm;$('hdr-file').className='badge b-blue';
   e.target.value='';
+  SNIFFER.handleFile(file, true);
 });
 // Split-button: arrow opens portal menu
 (()=>{
@@ -14249,6 +14591,7 @@ $('btn-parse').addEventListener('click',async()=>{
     const{trees,threads,stats}=await WM.parse(parseTarget,S.cfg,tf);
     ANOMALY.analyze(trees);
     UI.render(trees,threads,stats);UI.hprog();
+    SNIFFER.checkUnparsedRescue(stats);
     PIN.clear();
     const tot=Object.values(trees).reduce((s,t)=>s+cnt(t),0);
     toast(`Parse complete: ${tot.toLocaleString()} nodes across ${threads.length} thread(s).`,'success');
@@ -18033,7 +18376,7 @@ UI.rv = function() {
     const r = $('res');
     r.style.overflowY = 'hidden';
     r.style.padding = '0';
-    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
 
     const w = document.createElement('div');
     w.className = 'res-split';
@@ -18062,7 +18405,7 @@ UI.rv = function() {
     const r = $('res');
     r.style.overflowY = 'hidden';
     r.style.padding = '0';
-    [...r.children].filter(el => el.id !== 'stats-bar').forEach(el => el.remove());
+    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
 
     const w = document.createElement('div');
     w.className = 'res-split';
@@ -23488,25 +23831,10 @@ const ONBOARD = (() => {
   };
 })();
 
-// Helper to let the user select a file from empty state and auto-parse it
+// Helper to let the user select a file from empty state and auto-sniff/parse it
 UI.chooseAndParseLog = function() {
   const input = $('fi-log');
-  if (!input) return;
-  const onFileChange = () => {
-    input.removeEventListener('change', onFileChange);
-    setTimeout(() => {
-      if (S.logFile) {
-        if (!S.cfg || !S.cfg.elementRules || S.cfg.elementRules.length === 0) {
-          toast('No configuration rules active. Please create or load rules first.', 'warn');
-          document.querySelector('.vt[data-v="cfg"]')?.click();
-        } else {
-          $('btn-parse').click();
-        }
-      }
-    }, 100);
-  };
-  input.addEventListener('change', onFileChange);
-  input.click();
+  if (input) input.click();
 };
 
 /* ── Wire onboarding events ── */
