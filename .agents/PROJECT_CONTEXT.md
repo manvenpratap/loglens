@@ -3,12 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
-- **Auto-Pattern Sniffer, Rule Auto-Retention & Adaptive Rescue (v6.9.86 — COMPLETED)**:
+- **File-Based Rule Retention & Live File Sync (v6.9.87 — COMPLETED)**:
+  - **Replaced `localStorage` with Direct File Persistence**: Eliminated origin-bound `localStorage` rule retention in favor of dedicated File System persistence. Active rules, capture mappings, and synthesized patterns are saved directly to `.json` configuration files on disk with real-time live sync.
+  - **Explicit Save to File Action**: Added `[Save to File]` in Settings Card 2 and `CFG.saveToFile()`, leveraging native File System Access API (`showSaveFilePicker`) to create and connect files on disk, or exporting directly via clean download fallback.
+  - **Live File Sync via `S.cfgHandle`**: Connected files automatically receive every rule update, addition, deletion, and auto-learned rescue rule via `createWritable()` without manual export steps.
+  - **Adaptive Rescue Save-to-File Integration**: Updated rescue banner action to `[+ Auto-Add Rule & Save to File]`, writing new learned pattern rules straight into the connected file on disk.
+  - **Regression Test Coverage**: Updated `tests/test_17_auto_detect_and_retention.py` to assert file handle writing, live sync, and file picker fallbacks. Full suite of 90 tests passing.
+
+- **Auto-Pattern Sniffer & Adaptive Rescue (v6.9.86 — COMPLETED)**:
   - **Zero-Config Pre-Flight Sniffer (`SNIFFER`)**: Automatically samples dropped or selected log files (up to 50 lines), detects format signatures (`spring`, `java_std`, `log4j2_t`, `json`, `csv`, or generic timestamps), synthesizes complete baseline parsing rules (Transaction Start/Push, Transaction End/Pop, Error/Inline, Event/Inline), and automatically begins parsing with zero configuration required.
-  - **Persistent Rule Auto-Retention**: Automatically persists active rules, capture mappings, and global settings to `localStorage` under `ll-active-cfg` whenever modified or detected. Restores retained configuration automatically across page reloads and browser sessions without user intervention.
-  - **Inline Adaptive Rescue Banner**: Detects when unparsed log lines exceed 15% during parsing, mounting a top rescue dock (`#res-top-dock` / `.rescue-card`) displaying the dominant unmatched signature with 1-click `[+ Auto-Add Rule & Retain]` (instant rule learning and immediate re-parse) or `[Custom Regex]` (pre-populates Rule Creator modal).
-  - **Settings Reset Control**: Added `[Reset Defaults]` in Settings Card 2 to safely clear retained storage and reset the workspace to factory defaults.
-  - **Full Regression Test Coverage**: Added `tests/test_17_auto_detect_and_retention.py` covering format sniffing, rule synthesis, localStorage persistence, boot restoration, reset defaults, and the adaptive rescue banner. Suite expanded to 90 tests.
+  - **Inline Adaptive Rescue Banner**: Detects when unparsed log lines exceed 15% during parsing, mounting a top rescue dock (`#res-top-dock` / `.rescue-card`) displaying the dominant unmatched signature with 1-click `[+ Auto-Add Rule & Save to File]` (instant rule learning and immediate re-parse) or `[Custom Regex]` (pre-populates Rule Creator modal).
+  - **Settings Reset Control**: Added `[Reset Defaults]` in Settings Card 2 to safely reset the workspace to factory defaults.
 
 - **Developer Console Aesthetic & Glassmorphism Elimination (v6.9.85 — COMPLETED)**:
   - **Eliminated Heavy Glassmorphism & Backdrop Filters**: Removed all `backdrop-filter: blur(...)` across the entire application — including header (`.hdr`), modal overlays (`.mm`, `.sh-ov`, `.cmd-ov`), contextual dropdown menus (`#ctx-menu`), drag-and-drop overlays (`#drop-ov`, `#drop-ov-inner`), timeline mini-maps (`#ll-minimap-wrap`), and 3D visual landscape controls/tooltips.

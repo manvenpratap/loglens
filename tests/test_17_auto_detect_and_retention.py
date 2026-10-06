@@ -1,7 +1,8 @@
 """
 test_17_auto_detect_and_retention.py — LogLens Regression Suite
 Tests: Automatic log pattern sniffing, format detection, rule synthesis,
-auto-retention in localStorage, factory reset, and adaptive rescue banner.
+saving rules to a file (File System Access API live sync & export),
+and the adaptive rescue banner.
 """
 import json
 import pytest
@@ -43,17 +44,27 @@ async def test_format_sniff_and_synthesis(blank_page):
 
 
 @pytest.mark.asyncio
-async def test_rule_auto_retention_in_local_storage(blank_page):
-    """Adding or modifying rules should automatically persist the active configuration to localStorage."""
+async def test_save_to_file_with_connected_handle(blank_page):
+    """Saving configuration should write JSON directly to connected file handle with live sync."""
     page = blank_page
 
-    persisted_json = await page.evaluate("""async () => {
-        const dummyConfig = {
-            globalSettings: { appName: "Retained App" },
+    result = await page.evaluate("""async () => {
+        let writtenData = null;
+        const mockHandle = {
+            name: 'connected-rules.json',
+            requestPermission: async () => 'granted',
+            createWritable: async () => ({
+                write: async (content) => { writtenData = content; },
+                close: async () => {}
+            })
+        };
+
+        const testCfg = {
+            globalSettings: { appName: "File Persisted App" },
             elementRules: [
                 {
-                    id: "r_custom_1",
-                    name: "Custom Retained Rule",
+                    id: "r_file_1",
+                    name: "File Saved Rule",
                     regexPattern: "^(.*)$",
                     captureMapping: { "1": "payload" },
                     stackBehavior: "inline",
@@ -61,81 +72,87 @@ async def test_rule_auto_retention_in_local_storage(blank_page):
                 }
             ]
         };
-        CFG.load(dummyConfig, true);
-        await CFG.pers();
-        return localStorage.getItem('ll-active-cfg');
+
+        CFG.load(testCfg);
+        S.cfgHandle = mockHandle;
+        await CFG.saveToFile();
+
+        return {
+            writtenData,
+            cfgDotClass: document.getElementById('cfg-dot').className,
+            cfgTxt: document.getElementById('cfg-txt').textContent,
+            hdrCfgText: document.getElementById('hdr-cfg').textContent
+        };
     }""")
 
-    assert persisted_json is not None
-    parsed = json.loads(persisted_json)
-    assert parsed['globalSettings']['appName'] == 'Retained App'
+    assert result['writtenData'] is not None
+    parsed = json.loads(result['writtenData'])
+    assert parsed['globalSettings']['appName'] == 'File Persisted App'
     assert len(parsed['elementRules']) == 1
-    assert parsed['elementRules'][0]['id'] == 'r_custom_1'
-
-    # Status indicator should show auto-retained
-    cfg_txt = page.locator('#cfg-txt')
-    await expect(cfg_txt).to_have_text('Auto-retained in browser')
+    assert parsed['elementRules'][0]['name'] == 'File Saved Rule'
+    assert 'live' in result['cfgDotClass']
+    assert result['cfgTxt'] == 'connected-rules.json'
+    assert 'Config ✓' in result['hdrCfgText']
     assert_no_critical_errors(page)
 
 
 @pytest.mark.asyncio
-async def test_retained_config_boot_restoration(blank_page):
-    """When the page reloads with a retained configuration in localStorage, it should auto-load without user intervention."""
+async def test_live_sync_persists_rule_changes_to_file(blank_page):
+    """When a file is connected, rule additions and edits via CFG.up() automatically write to the file."""
     page = blank_page
 
-    test_cfg = {
-        "globalSettings": { "appName": "Boot Restored App" },
-        "elementRules": [
-            {
-                "id": "r_boot_1",
-                "name": "Restored Rule 1",
-                "regexPattern": r"^(.*)$",
-                "captureMapping": { "1": "payload" },
-                "stackBehavior": "inline",
-                "enabled": True
-            }
-        ]
-    }
-
-    # Store in localStorage and reload page
-    await page.evaluate(f"() => localStorage.setItem('ll-active-cfg', JSON.stringify({json.dumps(test_cfg)}))")
-    await page.reload()
-    await page.wait_for_timeout(500)
-
-    # Verify that S.cfg is populated and rules list contains the restored rule
-    restored_app = await page.evaluate("() => S.cfg?.globalSettings?.appName")
-    assert restored_app == "Boot Restored App"
-
-    # Go to settings view and verify rule name is visible
-    await page.evaluate("() => UI.svm('cfg')")
-    await page.wait_for_timeout(300)
-    rule_name = page.locator('.rn', has_text='Restored Rule 1')
-    await expect(rule_name).to_be_visible()
-
-    cfg_txt = page.locator('#cfg-txt')
-    await expect(cfg_txt).to_have_text('Auto-retained in browser')
-    assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_reset_defaults_clears_retention(blank_page):
-    """Clicking Reset Defaults in Settings clears retained storage and resets to clean factory defaults."""
-    page = blank_page
-
-    # Setup retained config
-    await page.evaluate("""async () => {
-        const dummyConfig = {
-            globalSettings: { appName: "To Be Cleared" },
-            elementRules: [{ id: "r_temp", name: "Temp Rule", regexPattern: "^.*$", stackBehavior: "inline" }]
+    result = await page.evaluate("""async () => {
+        let lastWritten = null;
+        const mockHandle = {
+            name: 'auto-sync.json',
+            requestPermission: async () => 'granted',
+            createWritable: async () => ({
+                write: async (content) => { lastWritten = content; },
+                close: async () => {}
+            })
         };
-        CFG.load(dummyConfig, true);
+
+        CFG.load(JSON.parse(JSON.stringify(DEF_CFG)));
+        S.cfgHandle = mockHandle;
+
+        // Add a new rule
+        const newRule = {
+            id: 'r_live_test',
+            name: 'Live Synced Rule',
+            regexPattern: '^LIVE: (.*)$',
+            captureMapping: { '1': 'payload' },
+            stackBehavior: 'inline',
+            enabled: true
+        };
+        CFG.up(newRule);
         await CFG.pers();
+
+        return {
+            lastWritten,
+            ruleExistsInState: S.cfg.elementRules.some(r => r.id === 'r_live_test')
+        };
+    }""")
+
+    assert result['ruleExistsInState'] is True
+    assert result['lastWritten'] is not None
+    parsed = json.loads(result['lastWritten'])
+    assert any(r['id'] == 'r_live_test' for r in parsed['elementRules'])
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_reset_defaults(blank_page):
+    """Clicking Reset Defaults resets configuration to defaults and disconnects active file handle."""
+    page = blank_page
+
+    await page.evaluate("""() => {
+        S.cfgHandle = { name: 'old-file.json' };
+        CFG.load({ globalSettings: {}, elementRules: [{ id: 'temp', name: 'Temp' }] });
     }""")
 
     # Accept the confirm dialog automatically
     page.on("dialog", lambda dialog: dialog.accept())
 
-    # Switch to settings and click Reset Defaults
     await page.evaluate("() => UI.svm('cfg')")
     await page.wait_for_timeout(300)
 
@@ -144,30 +161,37 @@ async def test_reset_defaults_clears_retention(blank_page):
     await btn_reset.click()
     await page.wait_for_timeout(400)
 
-    # Verify localStorage is cleared
-    storage_val = await page.evaluate("() => localStorage.getItem('ll-active-cfg')")
-    assert storage_val is None
-
-    # Verify rules are reset to defaults
-    rules_count = await page.evaluate("() => S.cfg?.elementRules?.length")
-    assert rules_count is not None and rules_count > 1
+    res = await page.evaluate("() => ({ handle: S.cfgHandle, rulesCount: S.cfg?.elementRules?.length })")
+    assert res['handle'] is None
+    assert res['rulesCount'] > 1
     assert_no_critical_errors(page)
 
 
 @pytest.mark.asyncio
-async def test_adaptive_rescue_banner_and_auto_add(page_with_data):
-    """Adaptive rescue banner should display when unparsed lines exceed threshold and allow 1-click rule learning."""
+async def test_adaptive_rescue_banner_and_save_to_file(page_with_data):
+    """Adaptive rescue banner should display when unparsed lines exceed threshold and save rule to file."""
     page = page_with_data
 
-    # Ensure active config exists
-    await page.evaluate("() => { if (!S.cfg) CFG.load(JSON.parse(JSON.stringify(DEF_CFG))); }")
+    # Ensure active config and mock file handle exist
+    await page.evaluate("""() => {
+        if (!S.cfg) CFG.load(JSON.parse(JSON.stringify(DEF_CFG)));
+        let written = null;
+        S.cfgHandle = {
+            name: 'production-rules.json',
+            requestPermission: async () => 'granted',
+            createWritable: async () => ({
+                write: async (content) => { written = content; S._lastWrittenContent = content; },
+                close: async () => {}
+            })
+        };
+    }""")
 
-    # Simulate parse output with high unparsed lines and unparsed clusters
+    # Simulate parse output with high unparsed lines
     await page.evaluate("""() => {
         const dummyStats = {
             fileSize: 5000,
             linesProcessed: 100,
-            matchedLines: 40, // 60% unparsed > 15% threshold
+            matchedLines: 40, // 60% unparsed
             unparsedSample: [
                 '2026-07-01 12:00:00 [worker-1] WARN - Queue backlog reached 500 items',
                 '2026-07-01 12:00:01 [worker-1] WARN - Queue backlog reached 510 items',
@@ -187,20 +211,18 @@ async def test_adaptive_rescue_banner_and_auto_add(page_with_data):
 
     auto_add_btn = page.locator('#btn-rescue-auto')
     await expect(auto_add_btn).to_be_visible()
+    await expect(auto_add_btn).to_contain_text('Save to File')
 
-    # Click + Auto-Add Rule & Retain
+    # Click + Auto-Add Rule & Save to File
     initial_rule_count = await page.evaluate("() => S.cfg?.elementRules?.length || 0")
     await auto_add_btn.click()
     await page.wait_for_timeout(300)
 
-    # Verify rule was added and banner dismissed
+    # Verify rule was added, banner dismissed, and written to connected file
     new_rule_count = await page.evaluate("() => S.cfg?.elementRules?.length || 0")
     assert new_rule_count == initial_rule_count + 1
-
-    # Banner should be hidden
     await expect(dock).to_be_hidden()
 
-    # Rule must be retained in localStorage
-    saved = await page.evaluate("() => localStorage.getItem('ll-active-cfg')")
-    assert saved is not None
+    written_content = await page.evaluate("() => S._lastWrittenContent")
+    assert written_content is not None
     assert_no_critical_errors(page)
