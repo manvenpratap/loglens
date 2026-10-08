@@ -3,6 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Custom Log Pattern Journey & Defect Elimination (v6.9.88 — COMPLETED)**:
+  - **Zero-Friction Custom Pattern Rule Setup**: Streamlined the user journey for parsing custom lines of logs across 3 distinct workflows:
+    1. *Empty-State Discovery*: Added prominent `[+ Custom Rule Builder]` button directly on `#emp` empty-state cards (both initial static load and dynamic `UI.svm` navigation), allowing immediate 1-click rule authoring without needing to search Settings.
+    2. *Interactive Regex Builder (`RG` & `RXB`)*: Cleaned recognizer patterns (`Thread name`, `Request ID`, `key=value`, `Hashtag`, `Hour`, `Minute`, `Day`, `Month`, `Square brackets`, `Parentheses`, `Curly braces`) to use non-capturing groups `(?:...)` and unescaped brackets, fixing nested capture group numbering and restoring exact 1:1 token-to-capture-mapping alignment (`#cm-ts`, `#cm-th`, `#cm-lv`).
+    3. *Live Visual Feedback & Badging*: Synchronized `RG.buildRegex()` with `RXB.update()` to instantly update live match highlighting (`#rx-pre`) and Visual Group Mapping Guide pills (`#cap-diagram-pills`). Added `badge b-amber` (`Format: Custom Pattern`) badge recognition for non-standard log lines.
+    4. *Rule Test Suite (`RTS`)*: Enabled `#btn-rule-test` dynamically when rules exist, allowing users to test multi-line custom snippets with safe per-rule evaluation before running on large files.
+    5. *Preserved Utility Panels in DOM*: Fixed critical root cause where `UI.svm()` transitioning to empty state destroyed `#p-cfg` and `#rules-list` from `innerHTML = ''`, causing subsequent rule creation and `CFG.rl()` calls to crash with `Cannot set properties of null`.
+  - **Comprehensive Regression Suite (95 tests passing)**: Created `tests/test_18_custom_log_pattern_journey.py` covering empty-state discovery, token selection, group mapping, Rule Test Suite execution, custom file parsing, and adaptive rescue workflow. Full suite of 95 tests passing with 0 regressions.
+
 - **File-Based Rule Retention & Live File Sync (v6.9.87 — COMPLETED)**:
   - **Replaced `localStorage` with Direct File Persistence**: Eliminated origin-bound `localStorage` rule retention in favor of dedicated File System persistence. Active rules, capture mappings, and synthesized patterns are saved directly to `.json` configuration files on disk with real-time live sync.
   - **Explicit Save to File Action**: Added `[Save to File]` in Settings Card 2 and `CFG.saveToFile()`, leveraging native File System Access API (`showSaveFilePicker`) to create and connect files on disk, or exporting directly via clean download fallback.

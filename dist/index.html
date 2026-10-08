@@ -7510,6 +7510,10 @@ label[for="watch-auto-reload"] {
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Load Demo Log
         </button>
+        <button class="btn" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Custom Rule Builder
+        </button>
       </div>
       <div class="emp-features">
         <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Zero install</div>
@@ -8367,7 +8371,8 @@ let _i=0;const uid=()=>'n'+(++_i);
 function pl(line,tf,stacks,trees,all){
   for(const r of RULES){
     const m=r._rx.exec(line);if(!m)continue;
-    const c=caps(m,r.captureMapping);const thr=(c.thread||'default').trim();
+    const c=caps(m,r.captureMapping);let thr=(c.thread||'default').trim();
+    if(thr.startsWith('[')&&thr.endsWith(']'))thr=thr.slice(1,-1).trim();
     all.add(thr);if(tf&&thr!==tf)return true;
     const ts=c.timestamp?pts(c.timestamp):gts(line);
     if(!stacks[thr])stacks[thr]=[];if(!trees[thr])trees[thr]=[];
@@ -9113,11 +9118,12 @@ const RXB={
       custom: 'Custom Regex'
     };
     if (badge) {
-      badge.textContent = `Format: ${FMT_LABELS[fid] || fid}`;
-      if (fid === 'auto') {
-        badge.className = 'badge b-gray';
+      if (fid === 'auto' && line.trim()) {
+        badge.textContent = 'Format: Custom Pattern';
+        badge.className = 'badge b-amber';
       } else {
-        badge.className = 'badge b-green';
+        badge.textContent = `Format: ${FMT_LABELS[fid] || fid}`;
+        badge.className = (fid === 'auto') ? 'badge b-gray' : 'badge b-green';
       }
     }
 
@@ -9442,13 +9448,16 @@ const CFG={
   load(c){
     S.cfg=c;this.rl();this.sgs();
     UI.ub();$('btn-ar').disabled=false;$('btn-exp').disabled=false;
+    if($('btn-rule-test')) $('btn-rule-test').disabled = (!c.elementRules || c.elementRules.length === 0);
     if($('btn-save-file')) $('btn-save-file').disabled=false;
     if(S.cfgHandle) this.stLive(S.cfgHandle.name);
   },
   rl(){
     const el=$('rules-list'),c=S.cfg;
+    if($('btn-rule-test')) $('btn-rule-test').disabled = (!c || !c.elementRules || !c.elementRules.length);
     if(!c||!c.elementRules||!c.elementRules.length){
-      el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">▤</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';return;
+      if(el) el.innerHTML='<div class="emp" style="padding:16px 6px"><div class="emp-ico">▤</div><div class="emp-sub">No rules. Click "+ Add".</div></div>';
+      return;
     }
     // Update rule count badge
     const countBadge=$('rules-count-badge');
@@ -9457,7 +9466,7 @@ const CFG={
     const srchBar=$('rules-search-bar');
     if(srchBar) srchBar.style.display=c.elementRules.length>3?'flex':'none';
 
-    el.innerHTML=c.elementRules.map((r,i)=>{
+    if(el) el.innerHTML=c.elementRules.map((r,i)=>{
       const col=scol(r.visualStyle?.accentColor||'#888');
       const ico=esc(r.visualStyle?.icon||'●');
       const beh=r.stackBehavior||'inline';
@@ -10663,6 +10672,13 @@ const UI={
     if(S.trees&&S.activeThr!==null){
       this.rv();
     } else {
+      const hc = $('hidden-panels-container') || document.body;
+      ['p-cfg','p-hlp'].forEach(pid => {
+        const el = $(pid);
+        if (el && el.parentElement && el.parentElement !== hc) {
+          hc.appendChild(el);
+        }
+      });
       const r = $('res');
       if (r) {
         r.style.overflowY = '';
@@ -10682,6 +10698,10 @@ const UI={
                 <button class="btn" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                   Load Demo Log
+                </button>
+                <button class="btn" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Custom Rule Builder
                 </button>
               </div>
               <div class="emp-features">
@@ -11555,8 +11575,10 @@ const RTS={
     let totalHits=0;
     rules.forEach(r=>{
       let matched=[];
-      const rx=new RegExp(r.regexPattern);
-      lines.forEach(l=>{if(rx.test(l))matched.push(l);});
+      try {
+        const rx=new RegExp(r.regexPattern);
+        lines.forEach(l=>{if(rx.test(l))matched.push(l);});
+      } catch(e) { matched=[]; }
       const ok=matched.length>0;
       if(ok)totalHits++;
       const ico=r.visualStyle?.icon||'•';
@@ -11591,6 +11613,7 @@ const RO={
   _drag:null,
   wire(){
     const el=$('rules-list');
+    if(!el) return;
     el.querySelectorAll('.rc[draggable]').forEach(card=>{
       card.addEventListener('dragstart',e=>{
         this._drag=+card.dataset.ri;
@@ -12581,7 +12604,7 @@ const RG = {
         '#10b981'),
       R('Thread name',
         /\[([^\]\s][^\]]*)\]/g,
-        '\\[([^\\]]+)\\]',
+        '\\[[^\\]]+\\]',
         '#06b6d4'),
       R('Method Signature',
         /\b[a-zA-Z_][a-zA-Z0-9_]*\([^)]{0,80}\)/g,
@@ -12601,11 +12624,11 @@ const RG = {
         '#22d3ee'),
       R('Request ID / Correlation',
         /\breq[-_]?id[=:]\s*([a-zA-Z0-9_-]{4,})/gi,
-        'req[-_]?id[=:]\\s*([a-zA-Z0-9_-]{4,})',
+        '(?:req[-_]?id[=:]\\s*[a-zA-Z0-9_-]{4,})',
         '#c084fc'),
       R('key=value',
         /\b(\w[\w.-]*)=(\S+)/g,
-        '(\\w[\\w.-]*)=(\\S+)',
+        '\\w[\\w.-]*=\\S+',
         '#f97316'),
       R('String (quotation mark)',
         /"[^"]*"/g,
@@ -12631,7 +12654,7 @@ const RG = {
         '#ec4899'),
       R('Hashtag',
         /\B#([a-z0-9]{2,})(?![~!@#$%^&*()+_`\-|/'[\]{}]|[?.,]*\w)/gi,
-        '\\B#([a-z0-9]{2,})',
+        '\\B#[a-z0-9]{2,}',
         '#14b8a6'),
       R('URL encoded character',
         /%[0-9A-Fa-f][0-9A-Fa-f]/g,
@@ -12653,33 +12676,33 @@ const RG = {
         '#34d399'),
       R('Hour',
         /(0?[0-9]|1[0-9]|2[0-3])(?=:)/g,
-        '(0?[0-9]|1[0-9]|2[0-3])',
+        '(?:0?[0-9]|1[0-9]|2[0-3])',
         '#6ee7b7'),
       R('Minute/ Second',
         /(0?[0-9]|[1-5][0-9])(?=:|$|\s)/g,
-        '(0?[0-9]|[1-5][0-9])',
+        '(?:0?[0-9]|[1-5][0-9])',
         '#6ee7b7'),
       R('Day',
         /\b(0?[1-9]|[12][0-9]|3[01])\b/g,
-        '(0?[1-9]|[12][0-9]|3[01])',
+        '(?:0?[1-9]|[12][0-9]|3[01])',
         '#93c5fd'),
       R('Month',
         /\b(0?[1-9]|1[0-2])\b/g,
-        '(0?[1-9]|1[0-2])',
+        '(?:0?[1-9]|1[0-2])',
         '#93c5fd'),
 
       // ── Tier 3: Bracket / String matchers ───────────────────────
       R('Square brackets',
         /\[[^\]]*\]/g,
-        '\\[([^\\]]*)\\]',
+        '\\[[^\\]]*\\]',
         '#38bdf8'),
       R('Parentheses',
         /\([^)]*\)/g,
-        '\\(([^)]*)\\)',
+        '\\([^)]*\\)',
         '#7dd3fc'),
       R('Curly braces',
         /\{[^}]*\}/g,
-        '\\{([^}]*)\\}',
+        '\\{[^}]*\\}',
         '#5eead4'),
 
       // ── Tier 4: Numeric ─────────────────────────────────────────
@@ -13110,6 +13133,7 @@ const RG = {
     $('e-rx').value = regex;
     $('btn-rex-explain').click();
     this.renderPreview();
+    RXB.update();
   }
 };
 
@@ -13138,11 +13162,15 @@ const UNPARSED = {
       $('e-tl').value = sampleLine;
       $('e-tl').dispatchEvent(new Event('input', { bubbles: true }));
     }
+    if (!$('e-name').value.trim()) {
+      $('e-name').value = 'Custom Pattern';
+    }
     $('e-use-custom-rx').checked = true;
     UI.syncCustomRxUI();
     $('adv-body').classList.remove('hidden');
     $('adv-hdr').classList.add('open');
     $('e-rx').value = pattern;
+    RXB.update();
     $('btn-rex-explain').click();
   },
 

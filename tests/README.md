@@ -27,7 +27,8 @@ tests/
 ├── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
 ├── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
 ├── test_16_interactive_regex_builder.py # Interactive Regex Builder flow
-└── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
+├── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
+└── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
 ```
 
 ---
@@ -123,7 +124,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Regex Pattern Undo/Redo | test_15_regex_undo_redo | 1 |
 | Interactive Regex Builder | test_16_interactive_regex_builder | 1 |
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
-| **Total** | | **90** |
+| Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
+| **Total** | | **95** |
 
 ---
 
