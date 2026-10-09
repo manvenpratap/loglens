@@ -1312,7 +1312,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   border-radius:var(--rounded-sm);
 }
 .tts{font-size:9px;color:var(--t4);font-family:var(--mono)}
-.tpy{font-size:10px;color:var(--t3);margin-top:3px;word-break:break-all;line-height:1.55}
+.tpy{font-size:10px;color:var(--t3);margin-top:3px;word-break:break-all;line-height:1.55;white-space:pre-wrap}
 .tch{border-left:1px solid var(--bdr-d);margin-left:21px}
 
 /* Hotspot badges */
@@ -6841,6 +6841,13 @@ label[for="watch-auto-reload"] {
             <div class="fl">Notes</div>
             <textarea class="inp" id="gs-desc" rows="2" placeholder="Optional notes…"></textarea>
           </div>
+          <div class="f">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="gs-multiline" checked />
+              <span style="font-size:11.5px; font-weight:600; color:var(--t1);">Multiline Block Payloads</span>
+            </label>
+            <div class="fh">Capture continuation lines (e.g. printed classes, JSON, stack traces) into a single payload.</div>
+          </div>
           <button class="btn" id="btn-sgs" style="margin-top:6px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
         </div>
 
@@ -8315,7 +8322,8 @@ const DEF_CFG=Object.freeze({
   globalSettings:Object.freeze({
     appName:'LogLens',
     globalTimestampPattern:String.raw`(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})`,
-    description:'Default configuration.'
+    description:'Default configuration.',
+    multilinePayloads:true
   }),
   elementRules:Object.freeze([
     Object.freeze({id:'r_txs',name:'Transaction Begin',
@@ -8358,11 +8366,21 @@ const DEF_CFG=Object.freeze({
    ================================================================ */
 const W_SRC=String.raw`
 'use strict';
-let RULES=[],TS_RX=null;
+let RULES=[],TS_RX=null,ML_EN=true;
+const DEF_TS_RX=/^\s*(?:\[[^\]]*\]\s*)?(?:(?:FATAL|ERROR|WARN(?:ING)?|INFO|DEBUG|TRACE)\s+)?(?:\[\s*)?(?:\d{4}[-/.]\d{2}[-/.]\d{2}|\d{2}[-/.]\d{2}[-/.]\d{4}|[A-Za-z]{3}\s+\d{1,2}(?:,?\s+\d{4})?|\d{1,2}\s+[A-Za-z]{3}\s+\d{4}|\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/i;
+function isLogHeader(l,tr){
+  if(DEF_TS_RX.test(l))return true;
+  if(TS_RX){
+    const m=TS_RX.exec(tr);
+    if(m&&m.index<30&&!/:\s*$/.test(tr.slice(0,m.index)))return true;
+  }
+  return false;
+}
 function compile(c){
-  RULES=(c.elementRules||[]).map(r=>({...r,_rx:new RegExp(r.regexPattern)}));
+  RULES=(c.elementRules||[]).filter(r=>!r.disabled).map(r=>({...r,_rx:new RegExp(r.regexPattern)}));
   const tp=c.globalSettings&&c.globalSettings.globalTimestampPattern;
   TS_RX=tp?new RegExp(tp):null;
+  ML_EN=!(c.globalSettings&&c.globalSettings.multilinePayloads===false);
 }
 function pts(s){if(!s)return null;const c=s.trim().replace(',','.');const m=Date.parse(c);if(!isNaN(m))return m;const n=parseFloat(c);return isNaN(n)?null:n;}
 function gts(l){if(!TS_RX)return null;const m=TS_RX.exec(l);return m?pts(m[1]||m[0]):null;}
@@ -8390,13 +8408,13 @@ function pl(line,tf,stacks,trees,all){
       rawLine:line.length>260?line.slice(0,260)+'…':line};
     switch(r.stackBehavior){
       case'push':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);stk.push(nd);break;
-      case'pop':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}break;
+      case'pop':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}return true;
       case'inline':if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);break;
       case'swap':if(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}if(stk.length>0)stk[stk.length-1].events.push(nd);else tr.push(nd);stk.push(nd);break;
       case'popAll':while(stk.length>0){const o=stk.pop();o.endTimestamp=ts;o.duration=(ts!=null&&o.timestamp!=null)?(ts-o.timestamp):null;}tr.push(nd);break;
-    }return true;
+    }return nd;
   }
-  return false;
+  return null;
 }
 function run(files,cfg,tf,scan){
   compile(cfg);
@@ -8413,7 +8431,7 @@ function run(files,cfg,tf,scan){
       C = mem >= 8 ? 2048 * 1024 : 1024 * 1024;
     }
     const SC = 200 * 1024;
-    let buf='',off=0,n=0;
+    let buf='',off=0,n=0,lastNode=null;
     while(off<file.size){
       if(scan&&off>=SC)break;
       const sl=file.slice(off,Math.min(off+C,file.size));const t=rd.readAsText(sl);
@@ -8421,12 +8439,25 @@ function run(files,cfg,tf,scan){
       for(const l of pts2){
         const tr=l.trim();
         if(tr){
-          if(pl(tr,tf,stacks,trees,all)) {
+          const m=pl(tr,tf,stacks,trees,all);
+          if(m){
             matchedLines++;
-          } else {
-            if(unparsedSample.length < 1000) unparsedSample.push(tr);
+            lastNode=(m&&typeof m==='object')?m:null;
+          }else if(ML_EN&&lastNode&&!isLogHeader(l,tr)){
+            const clean=l.replace(/\r$/,'');
+            if(lastNode.payload.length<65536){
+              lastNode.payload=(lastNode.payload?lastNode.payload+'\n':'')+clean;
+            }else if(!lastNode.payload.endsWith('…')){
+              lastNode.payload+='\n[… payload truncated]';
+            }
+            matchedLines++;
+          }else{
+            lastNode=null;
+            if(unparsedSample.length<1000)unparsedSample.push(tr);
           }
           n++;
+        }else if(ML_EN&&lastNode&&lastNode.payload&&!lastNode.payload.endsWith('\n\n')){
+          lastNode.payload+='\n';
         }
       }
       off+=C;
@@ -8438,10 +8469,17 @@ function run(files,cfg,tf,scan){
     }
     if(buf&&buf.trim()){
       const tr=buf.trim();
-      if(pl(tr,tf,stacks,trees,all)) {
+      const m=pl(tr,tf,stacks,trees,all);
+      if(m){
         matchedLines++;
-      } else {
-        if(unparsedSample.length < 1000) unparsedSample.push(tr);
+      }else if(ML_EN&&lastNode&&!isLogHeader(buf,tr)){
+        const clean=buf.replace(/\r$/,'');
+        if(lastNode.payload.length<65536){
+          lastNode.payload=(lastNode.payload?lastNode.payload+'\n':'')+clean;
+        }
+        matchedLines++;
+      }else{
+        if(unparsedSample.length<1000)unparsedSample.push(tr);
       }
       n++;
     }
@@ -9508,11 +9546,14 @@ const CFG={
   sgs(){
     const gs=S.cfg?.globalSettings||{};
     $('gs-name').value=gs.appName||'';$('gs-ts').value=gs.globalTimestampPattern||'';$('gs-desc').value=gs.description||'';
+    const chkMl=$('gs-multiline');if(chkMl)chkMl.checked=gs.multilinePayloads!==false;
   },
   saveGs(){
     if(!S.cfg)return;
+    const chkMl=$('gs-multiline');
     S.cfg.globalSettings={...S.cfg.globalSettings,appName:$('gs-name').value.trim(),
-      globalTimestampPattern:$('gs-ts').value.trim(),description:$('gs-desc').value.trim()};
+      globalTimestampPattern:$('gs-ts').value.trim(),description:$('gs-desc').value.trim(),
+      multilinePayloads:chkMl?chkMl.checked:true};
     this.pers();toast('Settings saved.','success');
   },
   up(rule){
@@ -14898,6 +14939,7 @@ const STREAM_PARSER = {
     this.stacks = {};
     this.all = new Set();
     this._i = 0;
+    this.lastNode = null;
   },
 
   pts(s) {
@@ -14999,7 +15041,18 @@ const STREAM_PARSER = {
         S.threads.push(thr);
         S.threads.sort();
       }
+      this.lastNode = (r.stackBehavior === 'pop') ? null : nd;
       return;
+    }
+    const mlEn = !(S.cfg?.globalSettings?.multilinePayloads === false);
+    const defTs = /^\s*(?:\[[^\]]*\]\s*)?(?:(?:FATAL|ERROR|WARN(?:ING)?|INFO|DEBUG|TRACE)\s+)?(?:\[\s*)?(?:\d{4}[-/.]\d{2}[-/.]\d{2}|\d{2}[-/.]\d{2}[-/.]\d{4}|[A-Za-z]{3}\s+\d{1,2}(?:,?\s+\d{4})?|\d{1,2}\s+[A-Za-z]{3}\s+\d{4}|\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/i;
+    const isHdr = defTs.test(line) || (this.tsRx && this.tsRx.test(line.trim()));
+    if (mlEn && this.lastNode && !isHdr) {
+      if (this.lastNode.payload.length < 65536) {
+        this.lastNode.payload = (this.lastNode.payload ? this.lastNode.payload + '\n' : '') + line.replace(/\r$/, '');
+      }
+    } else {
+      this.lastNode = null;
     }
   }
 };

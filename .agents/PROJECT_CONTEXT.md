@@ -3,6 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Multiline Block & Class Payload Parsing (v6.9.89 — COMPLETED)**:
+  - **Single Payload Identification for Multiline Blocks**: Enabled automatic block accumulation in Web Worker parser (`W_SRC`) and streaming parser (`STREAM_PARSER`). When log files contain multiline blocks (e.g., printed Java/Python classes, object dumps, multiline formatted JSON/XML payloads, exception stack traces with `Caused by` chains), non-header continuation lines are identified and accumulated into the parent event's `payload` property as a single formatted unit.
+  - **Intelligent Header Discrimination Algorithm (`isLogHeader`)**: Built timestamp and log-prefix detection (`DEF_TS_RX`) that accurately separates true log event boundaries from continuation lines containing internal dates (e.g. `createdAt: 2026-10-09`), preventing false block truncation.
+  - **Accurate Line Accounting & Adaptive Rescue Shield**: Continuation lines belonging to an active block are counted towards `matchedLines` and excluded from `unparsedSample`, eliminating false-positive Adaptive Rescue warnings on logs containing large class dumps.
+  - **Memory-Safe Streaming**: Preserves line indentation and line breaks with an automatic 64KB safety cap per payload block to prevent worker OOM on malformed logs.
+  - **UI & Formatting Preservation**: Added `white-space: pre-wrap;` to `.tpy` (Tree view), `.ins-payload-pre` (Event Inspector), and `.od-payload` (Overlay detail view) ensuring indentation and newlines are rendered verbatim without collapsing.
+  - **Configurable Global Setting**: Added `multilinePayloads: true` to `globalSettings` with a toggle in Card 3 (Global Settings) UI (`#gs-multiline`) allowing zero-overhead opt-out.
+  - **Full Regression Test Suite (101 tests passing)**: Created `tests/test_19_multiline_block_payload.py` with 6 automated E2E tests validating printed class payload capture, exception stack trace aggregation, multiline JSON blocks, opt-out setting toggles, DOM whitespace styling, and clean interleaved multi-thread boundaries. Full suite of 101 tests passing with 0 regressions.
+
 - **Custom Log Pattern Journey & Defect Elimination (v6.9.88 — COMPLETED)**:
   - **Zero-Friction Custom Pattern Rule Setup**: Streamlined the user journey for parsing custom lines of logs across 3 distinct workflows:
     1. *Empty-State Discovery*: Added prominent `[+ Custom Rule Builder]` button directly on `#emp` empty-state cards (both initial static load and dynamic `UI.svm` navigation), allowing immediate 1-click rule authoring without needing to search Settings.

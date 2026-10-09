@@ -22,7 +22,7 @@ echo "   ↳ Synchronized loglens.html -> dist/index.html ($(wc -c < dist/index.
 
 # Step 2: Stage core files and modifications
 echo "📋 2. Staging files for commit..."
-git add loglens.html dist/index.html .agents/PROJECT_CONTEXT.md .agents/AGENTS.md .gitignore package.json ship.sh
+git add loglens.html dist/index.html .agents/PROJECT_CONTEXT.md .agents/AGENTS.md .gitignore package.json ship.sh tests/
 git add -u
 
 # Step 3: Commit

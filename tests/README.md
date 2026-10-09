@@ -28,7 +28,8 @@ tests/
 ├── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
 ├── test_16_interactive_regex_builder.py # Interactive Regex Builder flow
 ├── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
-└── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
+├── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
+└── test_19_multiline_block_payload.py # Multiline block & class payload parsing
 ```
 
 ---
@@ -125,7 +126,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Interactive Regex Builder | test_16_interactive_regex_builder | 1 |
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
-| **Total** | | **95** |
+| Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
+| **Total** | | **101** |
 
 ---
 
