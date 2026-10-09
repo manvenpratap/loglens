@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Event Inspector Context-Aware Auto-Close (v6.9.90 — COMPLETED)**:
+  - **Auto-Close on Irrelevant Views**: Eliminated persistent drawer obstruction when switching away from log exploration. In `INSPECTOR.syncVisibility(vm, thread)` and `UI.svm(vm)`, the drawer automatically closes when navigating to non-event views (`Settings / cfg`, `Help / hlp`, `Stats / stats`, `Graph / graph`, `3D / 3d`, `Query / query`, `Diff / diff`) or when in empty state (`!S.trees || S.activeThr === null`).
+  - **Thread-Aware Auto-Dismissal**: In `UI.sw(tid)`, if the active inspected event belongs to a different thread (`_activeNode.thread !== tid`), the inspector closes automatically so stale events from inactive threads do not persist into the newly selected thread view.
+  - **Blank Space / Canvas Deselect**: Clicking empty space in the Tree container (`#tree-vscroll`) or Timeline rows (`.g-rows`) automatically deselects the active row and hides the inspector drawer, clearing `.kb-focus` and `.g-selected` highlights.
+  - **New Parse & Reset Dismissal**: When new log data is parsed or loaded via `UI.render(...)`, or when resetting configuration, previously open event inspectors are closed immediately.
+  - **Extended Regression Suite (104 tests passing)**: Added 3 new automated Playwright tests to `tests/test_05_event_inspector.py` asserting auto-close across view switches (Settings, Help, Stats), thread transitions, and empty background clicks. Full suite of 104 tests passing with 0 regressions.
+
 - **Multiline Block & Class Payload Parsing (v6.9.89 — COMPLETED)**:
   - **Single Payload Identification for Multiline Blocks**: Enabled automatic block accumulation in Web Worker parser (`W_SRC`) and streaming parser (`STREAM_PARSER`). When log files contain multiline blocks (e.g., printed Java/Python classes, object dumps, multiline formatted JSON/XML payloads, exception stack traces with `Caused by` chains), non-header continuation lines are identified and accumulated into the parent event's `payload` property as a single formatted unit.
   - **Intelligent Header Discrimination Algorithm (`isLogHeader`)**: Built timestamp and log-prefix detection (`DEF_TS_RX`) that accurately separates true log event boundaries from continuation lines containing internal dates (e.g. `createdAt: 2026-10-09`), preventing false block truncation.

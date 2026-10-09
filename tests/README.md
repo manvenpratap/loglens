@@ -112,7 +112,7 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | View navigation & panel routing | test_02_view_navigation | 6 |
 | Parser (stack behaviours) | test_03_parser | 4 |
 | Command Palette | test_04_command_palette | 7 |
-| Event Inspector | test_05_event_inspector | 5 |
+| Event Inspector | test_05_event_inspector | 8 |
 | Settings & Preferences | test_06_settings_preferences | 4 |
 | Trace Explorer | test_07_trace_explorer | 8 |
 | Timeline Navigator | test_08_timeline_nav | 8 |
@@ -127,7 +127,7 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
-| **Total** | | **101** |
+| **Total** | | **104** |
 
 ---
 

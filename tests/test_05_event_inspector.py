@@ -76,3 +76,92 @@ async def test_event_inspector_closes_on_escape(page_with_data):
     await page.wait_for_timeout(300)
     assert not await page.locator('#event-inspector').is_visible(), \
         'Inspector should close on Escape'
+
+
+@pytest.mark.asyncio
+async def test_event_inspector_auto_closes_on_navigation_to_settings_or_help(page_with_data):
+    """Event Inspector must auto close when navigating to non-event views like Settings, Help, or Stats."""
+    page = page_with_data
+    inspector = page.locator('#event-inspector')
+
+    # Open inspector by clicking a tree row
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(400)
+    await page.locator('.tree-row').first.click()
+    await page.wait_for_timeout(300)
+    await expect(inspector).to_be_visible()
+
+    # Navigate to Settings view (as in user report)
+    await page.evaluate("() => UI.svm('cfg')")
+    await page.wait_for_timeout(300)
+    await expect(inspector).not_to_be_visible()
+
+    # Re-open in tree view and navigate to Help view
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(400)
+    await page.locator('.tree-row').first.click()
+    await page.wait_for_timeout(300)
+    await expect(inspector).to_be_visible()
+
+    await page.evaluate("() => UI.svm('hlp')")
+    await page.wait_for_timeout(300)
+    await expect(inspector).not_to_be_visible()
+
+    # Re-open and navigate to Stats view
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(400)
+    await page.locator('.tree-row').first.click()
+    await page.wait_for_timeout(300)
+    await expect(inspector).to_be_visible()
+
+    await page.evaluate("() => UI.svm('stats')")
+    await page.wait_for_timeout(300)
+    await expect(inspector).not_to_be_visible()
+
+
+@pytest.mark.asyncio
+async def test_event_inspector_auto_closes_on_thread_switch(page_with_data):
+    """Event Inspector must auto close when switching to a different thread."""
+    page = page_with_data
+    inspector = page.locator('#event-inspector')
+
+    # Inspect an event on the main thread
+    await page.evaluate("() => { UI.svm('tree'); UI.sw('main'); }")
+    await page.wait_for_timeout(400)
+    await page.locator('.tree-row').first.click()
+    await page.wait_for_timeout(300)
+    await expect(inspector).to_be_visible()
+
+    # Switch thread to worker
+    await page.evaluate("() => UI.sw('worker')")
+    await page.wait_for_timeout(300)
+    await expect(inspector).not_to_be_visible()
+
+
+@pytest.mark.asyncio
+async def test_event_inspector_auto_closes_on_empty_canvas_click(page_with_data):
+    """Clicking empty space in the tree view must deselect and auto close the Event Inspector."""
+    import re
+    page = page_with_data
+    inspector = page.locator('#event-inspector')
+
+    # Open inspector on tree row
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(400)
+    first_row = page.locator('.tree-row').first
+    await first_row.click()
+    await page.wait_for_timeout(300)
+    await expect(inspector).to_be_visible()
+    await expect(first_row).to_have_class(re.compile(r'kb-focus'))
+
+    # Click empty whitespace in the tree container
+    await page.evaluate("""() => {
+        const vscroll = document.getElementById('tree-vscroll');
+        if (vscroll) {
+            vscroll.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        }
+    }""")
+    await page.wait_for_timeout(300)
+    await expect(inspector).not_to_be_visible()
+    assert await page.locator('.tree-row.kb-focus').count() == 0
+

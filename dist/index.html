@@ -10047,6 +10047,11 @@ const TR={
     this._content = el.querySelector('#tree-content');
     
     this._container.addEventListener('scroll', () => this.drawVisible());
+    this._container.addEventListener('click', (e) => {
+      if (!e.target.closest('.tree-row, button, input, .tchev, [data-a]')) {
+        if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) INSPECTOR.close();
+      }
+    });
     el.querySelector('#btn-tree-exp').addEventListener('click', () => this.expandAll(true));
     el.querySelector('#btn-tree-col').addEventListener('click', () => this.expandAll(false));
     
@@ -10241,6 +10246,9 @@ const UI={
     }
     if (threads) {
       threads.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    }
+    if (typeof INSPECTOR !== 'undefined') {
+      INSPECTOR.close();
     }
     // Auto-switch away from config/help views to split view when rendering parsed results
     if (['cfg', 'hlp'].includes(S.viewMode)) {
@@ -10642,6 +10650,9 @@ const UI={
 
   sw(tid){
     S.activeThr=tid;
+    if (typeof INSPECTOR !== 'undefined') {
+      INSPECTOR.syncVisibility(S.viewMode, tid);
+    }
     document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('active',c.dataset.t===tid));
     // Sync custom dropdown button label
     const lbl=$('vt-active-label');if(lbl)lbl.textContent=tid;
@@ -10656,6 +10667,7 @@ const UI={
   },
   // Helper: show a full-screen utility panel (cfg or hlp) regardless of parse state
   _showPanel(id){
+    if (typeof INSPECTOR !== 'undefined') INSPECTOR.close();
     const r = $('res');
     if (!r) return;
     const hc = $('hidden-panels-container') || document.body;
@@ -10691,6 +10703,9 @@ const UI={
   svm(vm){
     this.cleanupCurrentView();
     S.viewMode=vm;
+    if (typeof INSPECTOR !== 'undefined') {
+      INSPECTOR.syncVisibility(vm);
+    }
     if (vm === 'gantt' || vm === 'split') {
       if (typeof GANTT_RESIZE !== 'undefined' && GANTT_RESIZE.connectObserver) {
         GANTT_RESIZE.connectObserver();
@@ -18147,10 +18162,31 @@ const INSPECTOR = (() => {
     `;
   }
 
+  function isOpen() {
+    const panel = $('event-inspector');
+    return !!(panel && !panel.classList.contains('hidden'));
+  }
+
+  function syncVisibility(vm, thread) {
+    if (!isOpen()) return;
+    const targetVm = vm || S.viewMode;
+    const isEventView = ['split', 'gantt', 'tree'].includes(targetVm);
+    if (!isEventView || !S.trees || S.activeThr === null) {
+      close();
+      return;
+    }
+    const curThread = thread !== undefined ? thread : S.activeThr;
+    if (_activeNode && _activeNode.thread && curThread && _activeNode.thread !== curThread) {
+      close();
+    }
+  }
+
   function close() {
     _activeNode = null;
     const panel = $('event-inspector');
     if (panel) panel.classList.add('hidden');
+    document.querySelectorAll('.tree-row.kb-focus').forEach(r => r.classList.remove('kb-focus'));
+    document.querySelectorAll('.g-row.g-selected').forEach(r => r.classList.remove('g-selected'));
   }
 
   function getActiveNode() {
@@ -18183,7 +18219,7 @@ const INSPECTOR = (() => {
     if (closeBtn) closeBtn.addEventListener('click', close);
   }
 
-  return { init, open, close, getActiveNode, copyPayload, copyJSON };
+  return { init, open, close, isOpen, syncVisibility, getActiveNode, copyPayload, copyJSON };
 })();
 
 // Initialize Inspector
@@ -19613,6 +19649,11 @@ GR.render = function(tree, el) {
           if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(rowData.n);
           // OVERDRIVE detail modal bypassed to keep Event Inspector persistent and non-blocking
           // if (typeof OVERDRIVE !== 'undefined' && OVERDRIVE.OD) OVERDRIVE.OD.open(rowData.n);
+        }
+      } else if (!target && !e.target.closest('button, input, select, .g-axis, .g-ruler, .tl-zoom-bar, .tl-mini, [data-a]')) {
+        if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) {
+          rowsCont.querySelectorAll('.g-row.g-selected').forEach(r => r.classList.remove('g-selected'));
+          INSPECTOR.close();
         }
       }
     });
@@ -23194,6 +23235,11 @@ TR.handleClick = function(e) {
       row.classList.add('kb-focus');
     }
     return; // swallow — chevron expand handled below
+  }
+  if (!row && !e.target.closest('.tchev, .pt, button, input, [data-a]')) {
+    if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) {
+      INSPECTOR.close();
+    }
   }
   _origTrHandleClick(e);
 };
