@@ -26474,7 +26474,7 @@ UI.svm(S.viewMode);
     const r = $('res');
     if (!r) return;
     
-    const eligible = ['split', 'gantt', 'tree', 'stats'];
+    const eligible = ['stats'];
     const hasData = S.trees && Object.keys(S.trees).length > 0 && S.activeThr && S.trees[S.activeThr];
     const isEligible = eligible.includes(S.viewMode) && hasData;
     

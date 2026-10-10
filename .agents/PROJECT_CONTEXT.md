@@ -3,6 +3,12 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Summary Stat Cards Real-Estate Optimization (v6.9.96 — COMPLETED)**:
+  - **Restricted Summary Cards to Stats View**: Restricted `#res-summary-cards` ("Slowest Operation", "Rules Coverage", "Active Threads") exclusively to the dedicated Stats dashboard (`S.viewMode === 'stats'`).
+  - **Reclaimed 130px+ Vertical Real Estate**: In Split View (`split`), Gantt/Timeline (`gantt`), and Tree (`tree`), the 3 bulky summary stat cards are automatically removed, restoring full viewport height to the execution tree, waterfall lanes, and zoom timeline without vertical crowding.
+  - **Uncompromised Quick Metrics**: Kept `#stats-bar` parse metric strip (File Size, Lines, Coverage, Threads, Nodes, Outliers, Parse Time) intact across analytical views for baseline performance metrics.
+  - **Full Regression Test Suite Passed**: All 111 tests passing across both dark and light/ivory themes with zero regressions.
+
 - **Apple Human Interface Guidelines (HIG) Polish across All Views, Modals & Spotlight (v6.9.95 — COMPLETED)**:
   - **Apple Sheet Elevation & Double-Layer Shadows**: Upgraded `.modal` and `.cmd-box` with double-layer macOS sheet depth (`box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 24px 64px -12px rgba(0,0,0,.55), 0 12px 28px -6px rgba(0,0,0,.35)`) and smooth Apple spring entrance animation (`cubic-bezier(0.16, 1, 0.3, 1)`). Added calibrated light-mode perimeter shadows (`0 0 0 1px rgba(0,0,0,.08)`) with soft diffusion.
   - **Frosted Translucent Backdrops**: Applied macOS frosted backdrop blur (`backdrop-filter: blur(14px) saturate(160%)`) to all modal overlays (`.mm`, `.sh-ov`, `.cmd-ov`), floating HUD toolbars (`.graph-hud-toolbar > div`, `#graph-hover-card`, `#ld3-overlay`), and popovers (`.quick-edit-pop`).
@@ -1002,5 +1008,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-07-03*  
-*Updated By: Antigravity (Unified Elements Rule Creator & Detailed Helper Tooltips v6.9.67)*
+*Last Updated: 2026-10-10*  
+*Updated By: Antigravity (Summary Stat Cards Scope Optimization v6.9.96)*
