@@ -3,6 +3,24 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **2-Tier Navigation Architecture & macOS Toolbar Utilities (v6.9.104 — COMPLETED)**:
+  - **Core Forensic Views Tier**: Segmented group (`.vt-core-group`) housing the 4 primary troubleshooting views: `[ Split ]`, `[ Timeline ]`, `[ Tree ]`, and `[ Traces ]`.
+  - **Visual Hotkey Badges (`⌥1..⌥4`)**: Added Apple-style monospace shortcut pills (`.vt-hotkey`) inside core pills:
+    - `⌥1`: Split View (`split`)
+    - `⌥2`: Timeline View (`gantt`)
+    - `⌥3`: Execution Tree (`tree`)
+    - `⌥4`: Trace Explorer (`trace`)
+  - **Analysis Dropdown (`[ Analysis ▾ ]`)**: Re-organized secondary and advanced analysis views into a floating popover menu (`#analysis-dropdown`, `#btn-analysis`, `#analysis-menu`) housing:
+    - **Stats**: Statistical dashboard, KPI distributions, outlier analysis
+    - **Graph**: D3 relationship and topology visualization
+    - **Query**: LogLens Query Language (LQL) interactive search terminal
+    - **3D View**: Three.js 3D execution landscape
+    - **Diff**: Side-by-side run comparison & delta report
+    - Seamless synchronization: button shows `.has-active` and dynamically updates to `Analysis: <View> ▾` when active.
+  - **macOS Toolbar Utility Icons**: Relocated Settings (`⚙`) and Help (`?`) from wide header text tabs to compact 28px square icon buttons (`#btn-hdr-cfg`, `#btn-hdr-hlp`, `.hdr-util-btn`) on the right side of the header bar (`.hdr-slot-actions`), saving ~150px+ of top header real estate and providing immediate access even in empty/pre-load state.
+  - **Gliding Pill Sync & Keyboard Handlers**: Updated `updateVtabsPill()` to align the active pill seamlessly with `#btn-analysis` on analysis views and gracefully hide on Settings/Help panels. Updated Alt+1..4 keydown shortcuts with backwards compatibility for legacy bindings.
+  - **Full Regression Test Suite Passed**: Authored `tests/test_22_two_tier_navigation.py` (4 tests). Full regression suite passing with **123 passed / 123 total** tests (0 failures).
+
 - **Unparsed Analyzer 100% Coverage & Intelligent State Resolution (v6.9.103 — COMPLETED)**:
   - **Eliminated False Error Message**: Resolved bug where Unparsed Analyzer displayed `"No unparsed lines to analyze. Parse a log file first."` whenever a log file achieved 100% rule coverage (or loaded the Demo Log with 0 unparsed lines).
   - **Clear Three-State Experience**:

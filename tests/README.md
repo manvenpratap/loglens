@@ -131,7 +131,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
 | Demo Showcase All Features | test_20_demo_showcase | 7 |
 | Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
-| **Total** | | **119** |
+| 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
+| **Total** | | **123** |
 
 ---
 

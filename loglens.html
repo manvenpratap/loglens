@@ -676,7 +676,7 @@ html,body{
   height: 100% !important;
   margin: 0 auto !important;
   padding: 0 8px !important;
-  overflow-x: auto !important;
+  overflow: visible !important;
   scrollbar-width: none !important;
   gap: 2px !important;
   max-width: none !important;
@@ -5613,6 +5613,207 @@ label[for="watch-auto-reload"] {
   display: none !important;
 }
 
+/* ── 2-Tier Navigation Structure ── */
+.vt-core-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  gap: 2px !important;
+}
+
+/* Visual Hotkey Indicators (⌥1..⌥4) */
+.vt-hotkey {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: var(--mono) !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  padding: 2px 4px !important;
+  border-radius: var(--rounded-sm) !important;
+  background: var(--bg-3) !important;
+  color: var(--t4) !important;
+  margin-left: 6px !important;
+  border: 1px solid var(--bdr) !important;
+  transition: all 0.16s ease !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+.vt:hover .vt-hotkey {
+  color: var(--t2) !important;
+  border-color: var(--bdr-m, var(--bdr)) !important;
+}
+.vt.active .vt-hotkey {
+  background: var(--amber-g) !important;
+  color: var(--amber) !important;
+  border-color: color-mix(in srgb, var(--amber) 30%, transparent) !important;
+}
+
+/* Analysis Dropdown */
+.analysis-dropdown {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  margin-left: 4px !important;
+}
+.analysis-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 28px !important;
+  padding: 0 10px !important;
+  border-radius: var(--rounded-md) !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  color: var(--t2) !important;
+  font-family: var(--display) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+}
+.analysis-btn:hover {
+  background: var(--bg-3) !important;
+  color: var(--t1) !important;
+  border-color: var(--bdr-m, var(--bdr)) !important;
+}
+.analysis-btn.has-active {
+  background: var(--amber-d) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber) !important;
+}
+.analysis-chevron {
+  font-size: 8px !important;
+  color: var(--t4) !important;
+  transition: transform 0.2s var(--ease-snap) !important;
+  margin-left: 2px !important;
+}
+.analysis-btn.has-active .analysis-chevron {
+  color: var(--amber) !important;
+}
+.analysis-dropdown.open .analysis-chevron {
+  transform: rotate(180deg) !important;
+}
+.analysis-menu {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  min-width: 220px !important;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-md) !important;
+  box-shadow: 0 12px 32px -6px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25) !important;
+  padding: 4px !important;
+  display: none !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  z-index: 1000 !important;
+  backdrop-filter: blur(14px) saturate(160%) !important;
+  animation: fade-down-in 0.15s var(--ease-snap) !important;
+}
+[data-theme=ivory] .analysis-menu,
+[data-theme=light] .analysis-menu {
+  box-shadow: 0 12px 32px -6px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+.analysis-dropdown.open .analysis-menu {
+  display: flex !important;
+}
+.analysis-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 10px !important;
+  border-radius: var(--rounded-sm) !important;
+  color: var(--t2) !important;
+  cursor: pointer !important;
+  transition: background 0.14s ease, color 0.14s ease !important;
+  height: auto !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+.analysis-item:hover {
+  background: var(--bg-2) !important;
+  color: var(--t1) !important;
+}
+.analysis-item.active {
+  background: var(--amber-d) !important;
+  color: var(--amber) !important;
+}
+.analysis-item .ico {
+  font-size: 13px !important;
+  width: 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--t3) !important;
+  flex-shrink: 0 !important;
+}
+.analysis-item.active .ico {
+  color: var(--amber) !important;
+}
+.analysis-item-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  min-width: 0 !important;
+}
+.analysis-item-title {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+.analysis-item-sub {
+  font-size: 9.5px !important;
+  color: var(--t4) !important;
+  line-height: 1.2 !important;
+}
+.analysis-item.active .analysis-item-sub {
+  color: color-mix(in srgb, var(--amber) 75%, var(--t3)) !important;
+}
+
+/* macOS Toolbar Utility Icons (Right Header Slot) */
+.hdr-util-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding-left: 6px !important;
+  border-left: 1px solid var(--bdr) !important;
+  margin-left: 4px !important;
+}
+.hdr-util-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: var(--rounded-md) !important;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  color: var(--t3) !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+.hdr-util-btn:hover {
+  background: var(--bg-2) !important;
+  color: var(--t1) !important;
+  border-color: var(--bdr-m, var(--bdr)) !important;
+}
+.hdr-util-btn:active {
+  transform: scale(0.94) !important;
+}
+.hdr-util-btn.active {
+  background: var(--amber-d) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber) !important;
+}
+
 /* ── H. EMPTY STATE ─────────────────────────────────────────────── */
 
 /* Drop zone — higher contrast dashed border */
@@ -6930,17 +7131,76 @@ label[for="watch-auto-reload"] {
 
 
   <div class="vtabs" id="vtabs">
-    <div class="vt active" data-v="split" title="Split Panel View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span> Split</div>
-    <div class="vt" data-v="gantt" title="Interactive Gantt Timeline View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Timeline</div>
-    <div class="vt" data-v="tree" title="Execution Tree View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Tree</div>
-    <div class="vt" data-v="trace" title="Trace Explorer View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span> Traces</div>
-    <div class="vt" data-v="diff" id="vt-diff" style="display:none;" title="Side-by-Side Log File Comparison"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Diff</div>
-    <div class="vt" data-v="query" id="vt-query" title="LogLens Query Language (LQL) Terminal"><span class="ico" aria-hidden="true">>_</span> Query</div>
-    <div class="vt" data-v="stats" title="Statistical Dashboard"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stats</div>
-    <div class="vt" data-v="graph" title="D3.js Relationship Graph View"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span> Graph</div>
-    <div class="vt" data-v="3d" title="Three.js 3D Execution Landscape"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span> 3D View</div>
-    <div class="vt" data-v="cfg" title="Configuration & Settings"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> Settings</div>
-    <div class="vt" data-v="hlp" title="Help and Documentation"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Help</div>
+    <!-- Tier 1: Core Forensic Views -->
+    <div class="vt-core-group" role="tablist" aria-label="Core Forensic Views">
+      <div class="vt active" data-v="split" role="tab" tabindex="0" title="Split Panel View">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span>
+        <span>Split</span>
+        <span class="vt-hotkey" aria-hidden="true">⌥1</span>
+      </div>
+      <div class="vt" data-v="gantt" role="tab" tabindex="0" title="Interactive Gantt Timeline View">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <span>Timeline</span>
+        <span class="vt-hotkey" aria-hidden="true">⌥2</span>
+      </div>
+      <div class="vt" data-v="tree" role="tab" tabindex="0" title="Execution Tree View">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span>Tree</span>
+        <span class="vt-hotkey" aria-hidden="true">⌥3</span>
+      </div>
+      <div class="vt" data-v="trace" role="tab" tabindex="0" title="Trace Explorer View">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
+        <span>Traces</span>
+        <span class="vt-hotkey" aria-hidden="true">⌥4</span>
+      </div>
+    </div>
+
+    <!-- Tier 2: Analysis Dropdown -->
+    <div class="analysis-dropdown" id="analysis-dropdown">
+      <button class="analysis-btn" id="btn-analysis" type="button" aria-haspopup="true" aria-expanded="false" title="Advanced Analysis Views">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+        <span class="analysis-btn-text">Analysis</span>
+        <span class="analysis-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="analysis-menu" id="analysis-menu" role="menu" aria-label="Analysis Views">
+        <div class="vt analysis-item" data-v="stats" role="menuitem" tabindex="0" title="Statistical Dashboard">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+          <div class="analysis-item-content">
+            <span class="analysis-item-title">Stats</span>
+            <span class="analysis-item-sub">Distributions, outliers &amp; KPIs</span>
+          </div>
+        </div>
+        <div class="vt analysis-item" data-v="graph" role="menuitem" tabindex="0" title="D3.js Relationship Graph View">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>
+          <div class="analysis-item-content">
+            <span class="analysis-item-title">Graph</span>
+            <span class="analysis-item-sub">D3 dependency topology</span>
+          </div>
+        </div>
+        <div class="vt analysis-item" data-v="query" id="vt-query" role="menuitem" tabindex="0" title="LogLens Query Language (LQL) Terminal">
+          <span class="ico" aria-hidden="true">&gt;_</span>
+          <div class="analysis-item-content">
+            <span class="analysis-item-title">Query</span>
+            <span class="analysis-item-sub">LQL interactive search terminal</span>
+          </div>
+        </div>
+        <div class="vt analysis-item" data-v="3d" role="menuitem" tabindex="0" title="Three.js 3D Execution Landscape">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polygon points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+          <div class="analysis-item-content">
+            <span class="analysis-item-title">3D View</span>
+            <span class="analysis-item-sub">Three.js execution landscape</span>
+          </div>
+        </div>
+        <div class="vt analysis-item" data-v="diff" id="vt-diff" role="menuitem" tabindex="0" style="display:none;" title="Side-by-Side Log File Comparison">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16h4M18 14v4M6 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <div class="analysis-item-content">
+            <span class="analysis-item-title">Diff</span>
+            <span class="analysis-item-sub">Side-by-side run comparison</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="width:120px;font-size:10px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
   </div>
 
@@ -6961,7 +7221,7 @@ label[for="watch-auto-reload"] {
       <span class="badge b-amber hidden" id="hdr-outliers" role="button" tabindex="0" title="Statistical outliers — click for details"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="txt">0 Outliers</span></span>
     </div>
 
-    <!-- Slot D: actions (export + theme) -->
+    <!-- Slot D: actions (export + theme + macOS utilities) -->
     <div class="hdr-slot-actions">
       <div class="exp-wrap">
         <button class="btn btn-g btn-sm" id="btn-exp-menu" title="Export options" aria-label="Export options" aria-haspopup="true" disabled>
@@ -6989,6 +7249,23 @@ label[for="watch-auto-reload"] {
           <span style="font-size:9px;color:var(--t4);margin-left:1px;" aria-hidden="true">▾</span>
         </button>
         <div id="theme-picker-menu" role="listbox" aria-label="Choose theme"></div>
+      </div>
+
+      <!-- macOS Toolbar Utility Icons: Settings & Help -->
+      <div class="hdr-util-group" role="toolbar" aria-label="Utilities">
+        <button class="vt hdr-util-btn" data-v="cfg" id="btn-hdr-cfg" title="Configuration &amp; Settings (Alt+8)" aria-label="Configuration &amp; Settings">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <button class="vt hdr-util-btn" data-v="hlp" id="btn-hdr-hlp" title="Help &amp; Documentation (Alt+0)" aria-label="Help &amp; Documentation">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -7704,11 +7981,12 @@ label[for="watch-auto-reload"] {
 
         <div class="hlp-sh" style="margin-top:8px">Views</div>
         <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">1</span></div><div class="kb-desc">Gantt view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">2</span></div><div class="kb-desc">Tree view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">3</span></div><div class="kb-desc">Split view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">4</span></div><div class="kb-desc">Stats view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">5</span></div><div class="kb-desc">Graph view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥1</span></div><div class="kb-desc">Split view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥2</span></div><div class="kb-desc">Timeline view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥3</span></div><div class="kb-desc">Tree view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥4</span></div><div class="kb-desc">Traces view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">5</span></div><div class="kb-desc">Stats view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">6</span></div><div class="kb-desc">Graph view</div></div>
         </div>
 
         <div class="hlp-sh" style="margin-top:8px">Thread navigation</div>
@@ -11050,6 +11328,15 @@ const UI={
       }
     }
     document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('active',t.dataset.v===vm));
+    const isAnalysisView = ['stats', 'graph', 'query', '3d', 'diff'].includes(vm);
+    const btnAnalysis = $('btn-analysis');
+    if (btnAnalysis) {
+      btnAnalysis.classList.toggle('has-active', isAnalysisView);
+      const activeAnalysisItem = document.querySelector(`.analysis-item[data-v="${vm}"] .analysis-item-title`);
+      const labelText = isAnalysisView && activeAnalysisItem ? `Analysis: ${activeAnalysisItem.textContent}` : 'Analysis';
+      const lbl = btnAnalysis.querySelector('.analysis-btn-text');
+      if (lbl) lbl.textContent = labelText;
+    }
     const isSearchApplicable = ['split', 'gantt', 'tree', 'diff', 'query', 'graph', 'trace'].includes(vm);
     const searchWrap = $('hdr-search-container');
     if (searchWrap) {
@@ -16281,9 +16568,39 @@ $('btn-abort').addEventListener('click',()=>{
 
 // View tabs + thread chips (delegated on vtabs)
 $('vtabs').addEventListener('click',e=>{
-  const vt=e.target.closest('.vt');if(vt&&vt.dataset.v)UI.svm(vt.dataset.v);
+  const vt=e.target.closest('.vt');
+  if(vt&&vt.dataset.v){
+    UI.svm(vt.dataset.v);
+    const ad=$('analysis-dropdown');
+    if(ad) ad.classList.remove('open');
+  }
   const tc=e.target.closest('.tc');if(tc)UI.sw(tc.dataset.t);
 });
+
+// Analysis dropdown toggle
+const btnAnalysis = $('btn-analysis');
+const ddAnalysis = $('analysis-dropdown');
+if (btnAnalysis && ddAnalysis) {
+  btnAnalysis.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = ddAnalysis.classList.toggle('open');
+    btnAnalysis.setAttribute('aria-expanded', isOpen);
+  });
+}
+document.addEventListener('click', e => {
+  if (ddAnalysis && !e.target.closest('#analysis-dropdown')) {
+    ddAnalysis.classList.remove('open');
+    if (btnAnalysis) btnAnalysis.setAttribute('aria-expanded', 'false');
+  }
+});
+
+// macOS Toolbar Utility Buttons (Settings & Help)
+document.querySelectorAll('.hdr-util-btn[data-v]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.v) UI.svm(btn.dataset.v);
+  });
+});
+
 $('trace-filter').addEventListener('input',e=>{
   S.activeTraceId=e.target.value.trim();
   UI.rv();
@@ -16438,17 +16755,18 @@ document.addEventListener('keydown',e=>{
   const inInput=tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
   if(e.key==='Escape'){
     UI.closeM();UI.closeAnn();$('sh-ov').classList.add('hidden');CTX.hide();
-    $('exp-menu').classList.remove('open');return;
+    $('exp-menu').classList.remove('open');
+    const ad=$('analysis-dropdown');if(ad)ad.classList.remove('open');
+    return;
   }
   if(e.altKey){
     if(e.key==='t'||e.key==='T'){e.preventDefault();Theme.toggle();}
-    if(e.key==='1'){e.preventDefault();UI.svm('gantt');}
-    if(e.key==='2'){e.preventDefault();UI.svm('tree');}
-    if(e.key==='3'){e.preventDefault();UI.svm('split');}
-    if(e.key==='4'){e.preventDefault();UI.svm('stats');}
-    if(e.key==='5'){e.preventDefault();UI.svm('graph');}
-    if(e.key==='6'){e.preventDefault();UI.svm('3d');}
-    if(e.key==='7'){e.preventDefault();UI.svm('trace');}
+    if(e.key==='1'){e.preventDefault();UI.svm('split');}
+    if(e.key==='2'){e.preventDefault();UI.svm('gantt');}
+    if(e.key==='3'){e.preventDefault();UI.svm('tree');}
+    if(e.key==='4'||e.key==='7'){e.preventDefault();UI.svm('trace');}
+    if(e.key==='5'){e.preventDefault();UI.svm('stats');}
+    if(e.key==='6'){e.preventDefault();UI.svm('graph');}
     if(e.key==='8'||e.key==='9'){e.preventDefault();UI.svm('cfg');}
     if(e.key==='0'){e.preventDefault();UI.svm('hlp');}
     if((e.key==='['||e.key===']')&&S.threads.length>1){
@@ -18647,13 +18965,14 @@ const CMD = (() => {
 
   const STATIC_CMDS = [
     // Views
-    { id:'v-split',  cat:'View', name:'Split View',    hint:'Alt+3', icon:'▣', action:()=>UI.svm('split') },
-    { id:'v-gantt',  cat:'View', name:'Timeline (Gantt)', hint:'Alt+1', icon:'▤', action:()=>UI.svm('gantt') },
-    { id:'v-tree',   cat:'View', name:'Execution Tree',  hint:'Alt+2', icon:'┠', action:()=>UI.svm('tree') },
-    { id:'v-stats',  cat:'View', name:'Stats Dashboard',  hint:'Alt+4', icon:'◧', action:()=>UI.svm('stats') },
-    { id:'v-graph',  cat:'View', name:'Dependency Graph', hint:'Alt+5', icon:'⚬', action:()=>UI.svm('graph') },
-    { id:'v-3d',     cat:'View', name:'3D Landscape',     hint:'Alt+6', icon:'◇', action:()=>UI.svm('3d') },
-    { id:'v-cfg',    cat:'View', name:'Settings & Configuration', hint:'Alt+7', icon:'⚙', action:()=>UI.svm('cfg') },
+    { id:'v-split',  cat:'View', name:'Split View',    hint:'⌥1', icon:'▣', action:()=>UI.svm('split') },
+    { id:'v-gantt',  cat:'View', name:'Timeline (Gantt)', hint:'⌥2', icon:'▤', action:()=>UI.svm('gantt') },
+    { id:'v-tree',   cat:'View', name:'Execution Tree',  hint:'⌥3', icon:'┠', action:()=>UI.svm('tree') },
+    { id:'v-trace',  cat:'View', name:'Trace Explorer',  hint:'⌥4', icon:'◧', action:()=>UI.svm('trace') },
+    { id:'v-stats',  cat:'View', name:'Stats Dashboard',  hint:'Alt+5', icon:'◧', action:()=>UI.svm('stats') },
+    { id:'v-graph',  cat:'View', name:'Dependency Graph', hint:'Alt+6', icon:'⚬', action:()=>UI.svm('graph') },
+    { id:'v-3d',     cat:'View', name:'3D Landscape',     hint:'Alt+7', icon:'◇', action:()=>UI.svm('3d') },
+    { id:'v-cfg',    cat:'View', name:'Settings & Configuration', hint:'Alt+8', icon:'⚙', action:()=>UI.svm('cfg') },
     { id:'v-hlp',    cat:'View', name:'Help Screen',      hint:'Alt+0', icon:'❓', action:()=>UI.svm('hlp') },
     // Exports
     { id:'e-csv',  cat:'Export', name:'Export CSV',           icon:'▤', action:()=>EXP.csv() },
@@ -23168,13 +23487,14 @@ FOCUS_MODE.init();
             <div class="emp-step-num" aria-hidden="true">3</div>
             <div class="emp-step-body">
               <strong>Explore &amp; analyse</strong>
-              <span>Use <b>Gantt</b> (Alt+1), <b>Tree</b> (Alt+2), <b>Stats</b> (Alt+4), <b>Traces</b> (Alt+7) views. Press <b>F</b> for Focus Mode, <b>Ctrl+K</b> for Command Palette.</span>
+              <span>Use <b>Split</b> (⌥1), <b>Timeline</b> (⌥2), <b>Tree</b> (⌥3), <b>Traces</b> (⌥4) views. Press <b>F</b> for Focus Mode, <b>⌘K</b> for Command Palette.</span>
             </div>
           </div>
         </div>
         <div class="emp-guide-shortcuts">
-          <span class="emp-shortcut"><kbd>Alt+1</kbd> Gantt</span>
-          <span class="emp-shortcut"><kbd>Ctrl+K</kbd> Command Palette</span>
+          <span class="emp-shortcut"><kbd>⌥1</kbd> Split</span>
+          <span class="emp-shortcut"><kbd>⌥2</kbd> Timeline</span>
+          <span class="emp-shortcut"><kbd>⌘K</kbd> Command Palette</span>
           <span class="emp-shortcut"><kbd>F</kbd> Focus Mode</span>
           <span class="emp-shortcut"><kbd>/</kbd> Search Tree</span>
         </div>
@@ -26453,17 +26773,30 @@ UI.svm(S.viewMode);
 
   // 13. Gliding view modes tab indicator
   window.updateVtabsPill = function() {
-    const activeTab = document.querySelector(`.vt[data-v="${S.viewMode}"]`);
     const container = $('vtabs');
-    if (!activeTab || !container) return;
-    
+    if (!container) return;
+
     let pill = $('vtabs-pill');
     if (!pill) {
       pill = document.createElement('div');
       pill.id = 'vtabs-pill';
-      pill.style.cssText = 'position:absolute; background:var(--amber-d) !important; border:1px solid var(--amber) !important; border-radius:var(--rounded-md); transition:left 0.22s var(--ease-spring), width 0.22s var(--ease-spring); z-index:0; pointer-events:none; top:4px; bottom:4px;';
+      pill.style.cssText = 'position:absolute; background:var(--amber-d) !important; border:1px solid var(--amber) !important; border-radius:var(--rounded-md); transition:left 0.22s var(--ease-spring), width 0.22s var(--ease-spring), opacity 0.18s ease; z-index:0; pointer-events:none; top:4px; bottom:4px;';
       container.appendChild(pill);
     }
+
+    if (S.viewMode === 'cfg' || S.viewMode === 'hlp') {
+      pill.style.opacity = '0';
+      return;
+    }
+
+    const isAnalysisView = ['stats', 'graph', 'query', '3d', 'diff'].includes(S.viewMode);
+    const activeTab = isAnalysisView ? $('btn-analysis') : document.querySelector(`.vt-core-group .vt[data-v="${S.viewMode}"]`);
+    if (!activeTab) {
+      pill.style.opacity = '0';
+      return;
+    }
+
+    pill.style.opacity = '1';
     const rect = activeTab.getBoundingClientRect();
     const parentRect = container.getBoundingClientRect();
     pill.style.left = (rect.left - parentRect.left + container.scrollLeft) + 'px';
