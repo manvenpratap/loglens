@@ -205,3 +205,54 @@ async def test_demo_views_navigation_and_graphify(blank_page):
         await page.wait_for_timeout(200)
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_graphify_offline_fallback(blank_page):
+    """When D3 CDN is blocked/offline, Graphify gracefully renders native SVG dependency graph and histogram without errors."""
+    page = blank_page
+
+    # Block external CDN requests to simulate offline air-gapped environment
+    await page.route("**/cdn.jsdelivr.net/**", lambda route: route.abort())
+
+    # Load demo
+    demo_btn = page.locator('#ob-btn-demo')
+    await expect(demo_btn).to_be_visible(timeout=5000)
+    await demo_btn.click()
+    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
+
+    # Navigate to Graph tab
+    await page.evaluate("() => UI.svm('graph')")
+    await page.wait_for_timeout(500)
+
+    # Verify native SVG graph rendered
+    svg = page.locator('#d3-graph-canvas-container svg')
+    await expect(svg).to_be_visible(timeout=5000)
+
+    node_count = await page.locator('#d3-graph-canvas-container .graph-node').count()
+    assert node_count > 0, f"Expected native SVG graph nodes rendered, got {node_count}"
+
+    # Verify histogram modal offline fallback
+    await page.evaluate("""() => {
+        GRAPHIFY.showHistogramModal({
+            ruleName: 'HTTP Request',
+            count: 7,
+            p95: 850,
+            durations: [50, 120, 150, 200, 310, 420, 850],
+            color: '#f0883e'
+        });
+    }""")
+    await page.wait_for_timeout(300)
+    hist_modal = page.locator('#hist-large-modal')
+    await expect(hist_modal).to_be_visible()
+    hist_svg = page.locator('#large-hist-chart svg')
+    await expect(hist_svg).to_be_visible()
+    hist_rects = await hist_svg.locator('rect').count()
+    assert hist_rects > 0, "Expected histogram bucket rects rendered in offline mode"
+
+    # Close modal
+    await hist_modal.locator('.m-hdr button').click()
+
+    # Assert no critical runtime or console errors occurred
+    assert_no_critical_errors(page)
+

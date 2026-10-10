@@ -3,6 +3,14 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Zero-Dependency Native Graphify Offline Fallback Engine (v6.9.92 — COMPLETED)**:
+  - **Graceful Offline Degradation**: Eliminated fatal `TypeError: Failed to fetch dynamically imported module` errors, unhandled exceptions, and dead states (`⚠ Graphify unavailable offline.`) when LogLens runs offline or in air-gapped / CDN-restricted enterprise environments without internet access to `cdn.jsdelivr.net`.
+  - **Native SVG Dependency Graph (`drawNativeGraph`)**: Built a zero-dependency SVG transaction dependency graph with deterministic physics relaxation (80 iterations), directional arrows, cross-thread dashed links (`var(--red)`), dynamic self-time circle radius scaling with metadata tooltips, labels, interactive pan (`isPanning`), SVG matrix-inverse coordinate drag-and-drop (`pt.matrixTransform(mainG.getScreenCTM().inverse())`), and wheel zoom (0.2x to 5x).
+  - **Native Latency Histogram (`drawNativeHist`)**: Built a zero-dependency SVG latency histogram computing 20 linear duration bins with coordinate axes, bar rects, and tooltips, supporting 1-click SVG export without requiring D3.
+  - **Native Temporal Density Heatmap (`drawNativeHeatmap`)**: Built a zero-dependency SVG heatmap grid over 10 temporal buckets with dynamic opacity ramps and time-offset labels.
+  - **Silent Network Fallback**: Cleanly catches D3 network import failures without emitting console errors, automatically and seamlessly rendering native visualizations across Graph, Latency Histogram modals, and Heatmaps.
+  - **Full Regression Test Suite (111 tests passing)**: Added `test_graphify_offline_fallback` in `tests/test_20_demo_showcase.py` simulating air-gapped environments by aborting CDN requests, asserting native SVG graph node rendering, histogram modal rendering, and 0 console/runtime errors. Full suite of 111 tests passing with 0 regressions.
+
 - **Comprehensive Demo Showcase across All Features (v6.9.91 — COMPLETED)**:
   - **Full-Spectrum Demo Log & Configuration Overhaul**: Enhanced the built-in demo (`ONBOARD.loadDemo()`, "Load Demo Log", "Try Demo", and `dlSample()`) to comprehensively showcase every primary capability of LogLens with realistic multi-service distributed transactions.
   - **Distributed Tracing & Trace Explorer Integration**: Configured `DEMO_CFG` to capture group 4 as `correlationId` across all element rules (`(?:\s+\[(?:traceId=)?([^\]]+)\])?`), generating multi-thread distributed transactions (`trace-ord-8921` spanning `worker-1`, `worker-2`, and `worker-3`, `trace-pay-3310`, `trace-inv-4091`). Trace Explorer displays active trace rows, span counts, inter-thread links, and duration metrics.

@@ -128,8 +128,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
-| Demo Showcase All Features | test_20_demo_showcase | 6 |
-| **Total** | | **110** |
+| Demo Showcase All Features | test_20_demo_showcase | 7 |
+| **Total** | | **111** |
 
 ---
 
