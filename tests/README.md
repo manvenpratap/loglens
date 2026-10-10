@@ -121,7 +121,7 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Focus Mode | test_10_focus_mode | 9 |
 | Accessibility Polish | test_11_accessibility | 8 |
 | Log4j Config XML Import | test_12_log4j_import | 1 |
-| Unified Rule Creator & Tooltips | test_13_rule_creator | 8 |
+| Unified Rule Creator & Tooltips | test_13_rule_creator | 9 |
 | Unparsed Analyzer | test_14_unparsed_analyzer | 1 |
 | Regex Pattern Undo/Redo | test_15_regex_undo_redo | 1 |
 | Interactive Regex Builder | test_16_interactive_regex_builder | 1 |
@@ -129,7 +129,7 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
 | Demo Showcase All Features | test_20_demo_showcase | 7 |
-| **Total** | | **111** |
+| **Total** | | **112** |
 
 ---
 

@@ -7852,11 +7852,11 @@ label[for="watch-auto-reload"] {
       <div class="f">
         <label class="fl" for="e-beh">Stack Behavior <span class="ca">*</span><button class="htip-btn" data-htip="behavior" aria-label="Help: Stack Behavior" type="button" style="margin-left:6px;">?</button></label>
         <select class="inp" id="e-beh">
-          <option value="push">push: opens block</option>
-          <option value="pop">pop: closes block</option>
-          <option value="inline">inline: point event</option>
-          <option value="swap">swap: closes current, opens new</option>
-          <option value="popAll">popAll: closes all open blocks</option>
+          <option value="push">Block Start — push</option>
+          <option value="pop">Block End — pop</option>
+          <option value="inline">Point Event — inline</option>
+          <option value="swap">Transition — swap</option>
+          <option value="popAll">Close All Blocks — popAll</option>
         </select>
       </div>
     </div>
@@ -25419,11 +25419,11 @@ const HTIP = (() => {
     behavior: {
       title: 'Stack Behavior',
       body: `Controls how this rule interacts with the event tree:<br><br>
-        <strong>push</strong>: Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
-        <strong>pop</strong>: Closes the last open <code>push</code> block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
-        <strong>inline</strong>: A standalone point event with no duration. Use for log statements, warnings, and errors.<br><br>
-        <strong>swap</strong>: Closes the active block (like <code>pop</code>) and opens a new block (like <code>push</code>) at the same nesting level.<br><br>
-        <strong>popAll</strong>: Closes all currently open blocks on this thread, calculating durations, and starts fresh at the root-level.`
+        <strong>Block Start — push</strong>: Opens a timed block. The event goes on the stack; its duration starts here.<br><br>
+        <strong>Block End — pop</strong>: Closes the last open block on the same thread, calculating its duration. The rule's <code>elementName</code> must match the push rule's.<br><br>
+        <strong>Point Event — inline</strong>: A standalone point event with no duration. Use for log statements, warnings, and errors.<br><br>
+        <strong>Transition — swap</strong>: Closes the active block (like <code>pop</code>) and opens a new block (like <code>push</code>) at the same nesting level.<br><br>
+        <strong>Close All Blocks — popAll</strong>: Closes all currently open blocks on this thread, calculating durations, and starts fresh at the root-level.`
     },
     capture: {
       title: 'Capture Group Mapping',

@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Human-Friendly Stack Behavior Terminology in Rule Creator (v6.9.101 — COMPLETED)**:
+  - **Clarified Stack Behavior Labels**: Replaced jargon-heavy options in the Rule Creator modal (`#e-beh`) with self-descriptive labels combining the structural event concept and the stack operation:
+    - `Block Start — push` (formerly `push: opens block`)
+    - `Block End — pop` (formerly `pop: closes block`)
+    - `Point Event — inline` (formerly `inline: point event`)
+    - `Transition — swap` (formerly `swap: closes current, opens new`)
+    - `Close All Blocks — popAll` (formerly `popAll: closes all open blocks`)
+  - **Aligned Tooltip Documentation**: Updated `HTIP.behavior` helper popup description with the new unified action terminology, explaining duration boundaries, nesting mechanics, and stack interactions in plain developer language.
+  - **Zero Regressions & Expanded Regression Suite**: Added `test_rule_creator_stack_behavior_human_friendly_labels` to `tests/test_13_rule_creator.py`. Full suite passing with **112 passed / 112 total**.
+
+
 - **Streamlined Empty-State UX & Decision Paralysis Elimination (v6.9.100 — COMPLETED)**:
   - **Single Hero Drag-and-Drop Container**: Consolidated the previous fragmented structure into a prominent, dedicated `#emp-drop-zone` with a 44px circular upload indicator, clear typography ("Drop log file here"), and supported format guidance (`.log`, `.txt`, `.gz` — 100% private, parsed locally in your browser).
   - **Calibrated Three-Tier Action Hierarchy**:

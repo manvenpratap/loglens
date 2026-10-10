@@ -434,3 +434,61 @@ async def test_rule_creator_icon_dropdown_and_auto_suggestion(page_with_data):
     await expect(sel_ico).to_have_value('✕')
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_stack_behavior_human_friendly_labels(page_with_data):
+    """Verify that Stack Behavior dropdown uses human-friendly labels with action context."""
+    page = page_with_data
+    await _load_settings(page)
+
+    await page.click('#btn-ar')
+    await page.wait_for_timeout(400)
+
+    # Locate #e-beh select dropdown
+    sel_beh = page.locator('#e-beh')
+    await expect(sel_beh).to_be_visible()
+
+    # Query all options and their text contents
+    options = await page.evaluate("""() => {
+        const sel = document.getElementById('e-beh');
+        return Array.from(sel.options).map(o => ({ value: o.value, text: o.text.trim() }));
+    }""")
+
+    expected = [
+        {"value": "push", "text": "Block Start — push"},
+        {"value": "pop", "text": "Block End — pop"},
+        {"value": "inline", "text": "Point Event — inline"},
+        {"value": "swap", "text": "Transition — swap"},
+        {"value": "popAll", "text": "Close All Blocks — popAll"},
+    ]
+
+    assert options == expected, f"Expected {expected}, got {options}"
+
+    # Verify selecting options by value updates selection
+    await sel_beh.select_option("pop")
+    assert await sel_beh.input_value() == "pop"
+
+    await sel_beh.select_option("inline")
+    assert await sel_beh.input_value() == "inline"
+
+    await sel_beh.select_option("push")
+    assert await sel_beh.input_value() == "push"
+
+    # Verify Stack Behavior tooltip includes the human-friendly labels
+    btn_help = page.locator('button[data-htip="behavior"]')
+    await btn_help.click()
+    await page.wait_for_timeout(300)
+
+    pop = page.locator('#htip-pop')
+    await expect(pop).to_be_visible()
+    pop_body = await page.locator('#htip-pop-body').inner_text()
+    assert "Block Start — push" in pop_body
+    assert "Block End — pop" in pop_body
+    assert "Point Event — inline" in pop_body
+
+    await page.click('#htip-pop-close')
+    await page.wait_for_timeout(200)
+
+    assert_no_critical_errors(page)
+
