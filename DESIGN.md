@@ -1,59 +1,55 @@
 ---
 name: LogLens
-description: Metadata-Driven Log Analyzer
+description: Metadata-Driven Offline Log Analyzer & Telemetry Console
 colors:
   primary: "#f0883e"
   secondary: "#58a6ff"
   tertiary: "#3fb950"
   danger: "#f85149"
+  warning: "#d29922"
+  purple: "#bc8cff"
+  cyan: "#39c5cf"
   bg-dark: "#060a0f"
   bg-dark-low: "#0d1117"
   bg-dark-panel: "#161b22"
-  bg-light: "#edecea"
-  bg-light-low: "#f8f7f5"
-  bg-light-panel: "#fff"
+  bg-light: "#f2efea"
+  bg-light-low: "#faf8f5"
+  bg-light-panel: "#ffffff"
   text-dark: "#f0f6fc"
-  text-dark-secondary: "#c9d1d9"
-  text-light: "#1c1b1a"
-  text-light-secondary: "#403f3d"
-  # Light theme variables
-  light-primary: "#c2620a"
-  light-primary-grad: "#a35000"
-  light-bg-0: "#f2efea"
-  light-bg-1: "#faf8f5"
-  light-bg-2: "#f0ede8"
-  light-bg-3: "#e8e4dd"
-  light-bg-4: "#dad6cf"
-  light-bdr: "#cac5bc"
-  light-bdr-d: "#e0dbd3"
-  light-bdr-h: "#a9a49b"
-  light-t1: "#18181b"
-  light-t2: "#27272a"
-  light-t3: "#52525b"
-  light-t4: "#a1a1aa"
-  light-blue: "#2563eb"
-  light-green: "#16a34a"
-  light-red: "#dc2626"
-  light-yellow: "#b45309"
-  light-purple: "#7c3aed"
-  light-cyan: "#0891b2"
+  text-dark-secondary: "#8b949e"
+  text-light: "#18181b"
+  text-light-secondary: "#52525b"
 typography:
   display:
-    fontFamily: "Inter, Geist, system-ui, -apple-system, sans-serif"
-    fontSize: "32px"
-    fontWeight: 800
-    letterSpacing: "-0.6px"
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "18px"
+    fontWeight: 700
+    letterSpacing: "-0.02em"
+  headline:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "15px"
+    fontWeight: 600
+    letterSpacing: "-0.01em"
+  title:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 600
+    letterSpacing: "0em"
   body:
-    fontFamily: "Inter, Geist, system-ui, -apple-system, sans-serif"
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
     fontSize: "12px"
-    lineHeight: 1.6
-  mono:
-    fontFamily: "JetBrains Mono, Geist Mono, monospace"
+    lineHeight: 1.5
+  label:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
     fontSize: "10.5px"
+    fontWeight: 600
+  mono:
+    fontFamily: "'SF Mono', Menlo, Monaco, 'JetBrains Mono', 'Geist Mono', Consolas, monospace"
+    fontSize: "11px"
 rounded:
   sm: "6px"
   md: "8px"
-  lg: "10px"
+  lg: "14px"
   full: "99px"
 spacing:
   xs: "4px"
@@ -64,112 +60,150 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
-    textColor: "{colors.bg-dark}"
+    textColor: "#060a0f"
     rounded: "{rounded.sm}"
     padding: "6px 14px"
   button-primary-hover:
     backgroundColor: "#f5a36c"
+  button-ghost:
+    backgroundColor: "transparent"
+    textColor: "{colors.text-dark}"
+    rounded: "{rounded.sm}"
+    padding: "6px 12px"
   input-text:
     backgroundColor: "{colors.bg-dark-low}"
     textColor: "{colors.text-dark}"
     rounded: "{rounded.sm}"
     padding: "6px 10px"
+  card-grouped:
+    backgroundColor: "{colors.bg-dark-panel}"
+    rounded: "{rounded.lg}"
+    padding: "16px"
+  sheet-modal:
+    backgroundColor: "{colors.bg-dark-panel}"
+    rounded: "{rounded.lg}"
+    padding: "20px"
 ---
 
 # Design System: LogLens
 
 ## 1. Overview
 
-**Creative North Star: "The Developer's Console"**
+**Creative North Star: "The macOS Developer Console"**
 
-LogLens is built to look like a terminal-adjacent, low-chrome dark dashboard focused entirely on high information density, clear grids, and immediate utility. Visual styling should be highly professional, avoiding decorative elements and emphasizing a private, local-first environment for developers and SREs.
+LogLens is an offline-first, browser-native log forensics and distributed tracing console. It fuses high-density telemetry visualization (Gantt timelines, execution trees, flamegraphs, dependency topologies) with native Apple Human Interface Guidelines (HIG) craft: San Francisco typography, frosted translucent backdrops, double-layer sheet depth, and grouped card layouts.
+
+The design strictly serves developer velocity: zero telemetry or tracking, zero cloud friction, and zero decorative bloat. Visual chrome remains unobtrusive so the user's log stream, latency bottlenecks, and anomaly signals remain the heroes of every view.
 
 **Key Characteristics:**
-- **Zero Decorative Noise**: Every border, outline, and background shift must serve a structural or interactive purpose.
-- **High Information Density**: Sizing and spacing are compact, designed to display thousands of log messages and complex Gantt timelines without wasting vertical viewport space.
-- **Theme-Agnostic Structure**: Dark mode is the primary console layout, but the visual hierarchy maps 1:1 onto a clean, high-contrast light mode.
+- **High Information Density**: Compact 38px toolbars, horizontal timeline swimlanes, and structured data tables maximize vertical and horizontal canvas efficiency.
+- **Apple HIG Refinement**: Native San Francisco font stack (`-apple-system`, `SF Pro`, `SF Mono`), 26px circular close buttons, macOS sheet elevations, and segmented pill controls.
+- **Strictly Local & Calibrated Theming**: 6 distinct calibrated themes (Obsidian, Ivory, Aurora, Midnight, Forest, Crimson) built with OKLCH perceptually uniform color ramps.
+- **Earned Familiarity**: Standard developer shortcuts (Alt+1 through Alt+0, Cmd/Ctrl+K Spotlight, j/k navigation) and zero invented navigation paradigms.
 
 ---
 
 ## 2. Colors
 
-The color palette is divided into strict layout neutrals and functional semantic overlays.
+The color system combines perceptually calibrated OKLCH layout neutrals with diagnostic semantic overlays.
 
 ### Primary
-- **Console Amber** (#f0883e): Used exclusively for primary buttons, focus highlights, warning tags, and critical timeline markers.
+- **Console Amber** (`oklch(67% 0.16 55)` / `#f0883e` in Obsidian; `oklch(60% 0.18 55)` / `#c2620a` in Ivory): Used exclusively for primary call-to-actions, active thread indicators, timeline cursor highlights, and parsing progress meters.
 
 ### Secondary
-- **Diagnostics Blue** (#58a6ff): Highlights information nodes, active view selections, and search match tags.
+- **Diagnostics Blue** (`oklch(70% 0.12 250)` / `#58a6ff` in Obsidian; `oklch(55% 0.16 250)` / `#2563eb` in Ivory): Active view tabs, selection indicators, search match badges, and HTTP/API element tags.
 
 ### Tertiary
-- **Success Green** (#3fb950): Represents matching filters, valid rules, and normal performance ranges.
+- **Health Green** (`oklch(68% 0.14 140)` / `#3fb950` in Obsidian; `oklch(55% 0.16 140)` / `#16a34a` in Ivory): Rule coverage progress tracks, valid syntax badges, and FS API connection status.
 
-### Neutral
-- **Deep Void / Off-White** (#060a0f / #edecea): Deep viewport background.
-- **Surface / Paper** (#0d1117 / #f8f7f5): Secondary panels and sidebar base.
-- **Container Panel** (#161b22 / #fff): Interactive inputs, logs table background, and modals.
-- **Border Outline** (#30363d / #d0cfcd): Card margins and input boundaries.
+### Status & Accents
+- **Breach Red** (`oklch(62% 0.18 25)` / `#f85149`): SLA violation flags, error log events, and delete confirmations.
+- **Outlier Amber/Yellow** (`oklch(78% 0.15 85)` / `#d29922`): IQR duration anomaly badges and warning entries.
+- **Trace Purple** (`oklch(65% 0.18 310)` / `#bc8cff`): Distributed trace correlation IDs and span groupings.
+- **Stream Cyan** (`oklch(72% 0.11 210)` / `#39c5cf`): Live file-streaming rate and cache status tags.
 
-**The 10% Accent Rule.** Accent colors (Amber, Blue, Green, Red) must never cover more than 10% of any given viewport surface area. Their primary purpose is diagnostic feedback.
+### Neutrals & Theme Surfaces
+- **Obsidian (Default Dark)**: Base `oklch(14% 0.015 250)`, cards `oklch(17% 0.015 250)`, borders `oklch(26% 0.015 250)`.
+- **Ivory (Calibrated Light)**: Base `oklch(94.5% 0.012 55)`, cards `oklch(99% 0.003 55)`, borders `oklch(75% 0.022 55)`.
+- **Aurora, Midnight, Forest, Crimson**: Full identity ramps sharing identical semantic token interfaces (`--bg-0` to `--bg-4`, `--t1` to `--t4`, `--bdr`, `--bdr-h`).
+
+### Named Rules
+**The 10% Accent Rule.** Saturated semantic accents (Amber, Blue, Green, Red) must never exceed 10% of any viewport surface area. They carry diagnostic state, not decorative wallpaper.
+
+**The Contrast Floor Rule.** Body text, timestamps, and log payload strings must maintain ≥4.5:1 contrast against their card background across all 6 themes.
 
 ---
 
 ## 3. Typography
 
-**Display Font:** Inter, system-ui, sans-serif  
-**Body Font:** Inter, system-ui, sans-serif  
-**Label/Mono Font:** JetBrains Mono, monospace  
+**Display Font:** `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, sans-serif`  
+**Body Font:** `-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, sans-serif`  
+**Mono Font:** `"SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, monospace`  
+
+**Character:** Native Apple San Francisco typography delivering instant system-level rendering with zero runtime web font downloads or layout shifts.
 
 ### Hierarchy
-- **Display** (800 weight, 32px, letter-spacing: -0.6px): Used only for main app name badge and primary onboarding header.
-- **Headline** (600 weight, 18px): Tab view labels and primary drawer headers.
-- **Title** (600 weight, 13px): Panel headings and modal subtitles.
-- **Body** (400 weight, 12px, line-height: 1.6): Sidebar quick guide descriptions and inputs helper tips.
-- **Label** (400 weight, 10.5px): Log timestamp rows, duration badges, and LQL table metrics.
+- **Display** (700 weight, 18px, letter-spacing: -0.02em): Main modal titles and command palette headers.
+- **Headline** (600 weight, 15px, letter-spacing: -0.01em): Dashboard card headers and primary section titles.
+- **Title** (600 weight, 13px, letter-spacing: 0em): Summary card titles, table headers, and toolbar section labels.
+- **Body** (400 weight, 12px, line-height: 1.5): Settings descriptions, inspector metadata text, and guide tooltips.
+- **Label** (600 weight, 10.5px, uppercase, letter-spacing: 0.04em): Metric card badges, SLA status pills, and keyboard shortcut hints (`.cmd-kbd`).
+- **Mono** (400/700 weight, 11px, line-height: 1.4): Raw log lines, timestamps, regex patterns, execution durations (`325.0ms`), and thread IDs.
 
-**The Monospace Code Rule.** Any string output that originates from a log stream, regex pattern, or LQL query statement must be strictly wrapped in a monospaced font block (`JetBrains Mono` or default fallback) to preserve horizontal indentation and parsing alignment.
+### Named Rules
+**The Monospace Data Rule.** Any value originating from a log file, duration calculation, capture token, or LQL query expression must render in `--mono` to preserve tabular column alignment.
 
 ---
 
 ## 4. Elevation
 
-LogLens utilizes tonal layering to convey hierarchy, utilizing flat layouts with background offsets and keeping shadow effects to a strict minimum.
+LogLens uses a hybrid elevation model: flat tonal layering for in-canvas timeline components, combined with Apple sheet elevation and frosted glass backdrops for overlays.
 
-**The Flat-First Rule.** Surfaces are completely flat at rest. Drop shadows (`0 4px 24px rgba(0,0,0,0.15)`) are only permitted on floating elements, such as dropdown menus, help popovers, and modal dialog overlays.
+### Shadow Vocabulary
+- **Surface Rest** (`box-shadow: none; border: 1px solid var(--bdr)`): Base timeline tracks, tree rows, and editor cards.
+- **Grouped Card Depth** (`box-shadow: var(--shd-xs)`): Inset `.dashboard-card` and top `.stats` metric strips (`0 1px 4px rgba(0,0,0,.35)` dark / `.09` light).
+- **macOS Floating HUD** (`box-shadow: var(--shd)` with `backdrop-filter: blur(14px) saturate(160%)`): Timeline floating controllers, hover tooltip inspection cards, and quick-edit popovers.
+- **Apple Sheet Modal** (`box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 24px 64px -12px rgba(0,0,0,.55), 0 12px 28px -6px rgba(0,0,0,.35)` dark / `0 0 0 1px rgba(0,0,0,.08), 0 24px 64px -12px rgba(0,0,0,.22), 0 12px 28px -6px rgba(0,0,0,.12)` light): Applied to `#cmd-palette` Spotlight search and full-screen dialog modals with spring entrance easing (`cubic-bezier(0.16, 1, 0.3, 1)`).
+
+### Named Rules
+**The Frosted Backdrop Rule.** All modal backdrops and floating toolbars must pair translucent backgrounds (`rgba(..., 0.8)`) with `backdrop-filter: blur(14px) saturate(160%)` to maintain background context without visual clutter.
 
 ---
 
 ## 5. Components
 
 ### Buttons
-- **Shape:** Rounded-sm (6px)
-- **Primary:** Background `#f0883e`, text color `#060a0f`, padding `6px 14px`.
-- **Hover / Focus:** Hover shifts background to `#f5a36c`. Focus displays outline ring with `2px` offset.
-- **Ghost:** Transparent background, outline border `1px solid var(--bdr)`.
+- **Shape:** Rounded-sm (`6px`, `var(--rounded-sm)`).
+- **Primary:** Background `var(--amber)`, color `var(--bg-0)`, padding `6px 14px`, font-weight 600. Hover shifts brightness, active scales to `0.98`.
+- **Ghost / Tool:** Transparent background, border `1px solid var(--bdr)`, padding `4px 10px`.
+- **Apple Circular Close:** `26px × 26px`, `border-radius: 50%`, centered `✕`, subtle border, hover `transform: scale(1.06)`, active press `scale(0.94)`.
 
-### Chips
-- **Style:** Compact rounded-full (99px) border, font-size `10px`.
-- **State:** Unselected has background `var(--bg-1)`; selected has border-color `var(--blue)` or `var(--amber)` depending on context.
+### Segmented Controls & Tabs
+- **Shape:** Pill wrapper with `border-radius: var(--rounded-md)` (8px), padding `2px`.
+- **Active Pill:** Sliding background `var(--bg-2)` with subtle border and crisp text contrast.
+- **Toggles:** Apple toggle switches (`.toggle-sw`) with 14px white drop-shadowed thumbs and spring ease transition.
 
-### Cards / Containers
-- **Corner Style:** Rounded-md (8px) for major dashboard panels, Rounded-lg (10px) for floating popups.
-- **Background:** `var(--bg-1)` or `var(--bg-2)`.
-- **Border:** `1px solid var(--bdr)`.
+### Cards & Top Bars
+- **Grouped Cards:** `.dashboard-card` with `14px` border radius (`var(--rounded-lg)`), hairline borders, and double depth.
+- **Top Stats Bar:** Single-row flex container with `flex-shrink: 0`, height `62px`, border `1px solid var(--bdr)`, rounded `var(--rounded-lg)`. Inner `.sc` cells with `border-right: 1px solid var(--bdr)` extending cleanly from top to bottom border.
 
-### Inputs / Fields
-- **Style:** Background `var(--bg-0)`, border `1px solid var(--bdr)`, corner radius `6px`.
-- **Focus:** Outline glow with border-color `var(--bdr-h)` or `var(--primary)`.
+### Spotlight Command Palette
+- **Width:** `620px`, max-width `90vw`.
+- **Input:** 16px search input with zero outline and seamless integration into results list.
+- **Item Rows:** `8px` rounded hover/selection highlights with keyboard shortcut pills (`.cmd-kbd`).
 
 ---
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** respect the 10% accent rule: keep visual prominence focused on log data rows, not colored header panels.
-- **Do** use strict variable mappings (`var(--bg-0)` to `var(--bg-4)`) to ensure instant theme toggling works reliably.
-- **Do** outline form items with visible keyboard focus rings.
+- **Do** preserve full vertical real estate for timeline and execution tree views by limiting summary cards exclusively to the dedicated Stats dashboard.
+- **Do** wrap all interactive dialogs and HUD cards with macOS frosted blurs and double-layer shadows.
+- **Do** use `flex-shrink: 0` on structural metric bars (`#stats-bar`, `#res-summary-cards`) to prevent layout squashing inside scrollable containers.
+- **Do** maintain strict keyboard navigation parity (Alt+keys, Cmd+K, Escape to close drawers/modals).
 
 ### Don't:
-- **Don't** use glowing neon gradients, purple shadows, or frosted glass panels that evoke a generic consumer-facing SaaS layout.
-- **Don't** insert margin spacing exceeding 16px around log panels, as space must be optimized for developer timeline density.
-- **Don't** hide critical help hints inside submenus; use inline context tooltips (`?`) beside controls.
+- **Don't** add bulky decorative hero cards above the timeline canvas or execution tree.
+- **Don't** use generic fluid clamp scales that distort dashboard information density.
+- **Don't** import external CSS frameworks, icon libraries, or runtime web fonts; rely strictly on vanilla CSS and native San Francisco stacks.
+- **Don't** use side-stripe borders or gradient text for emphasis.
