@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Unparsed Analyzer 100% Coverage & Intelligent State Resolution (v6.9.103 — COMPLETED)**:
+  - **Eliminated False Error Message**: Resolved bug where Unparsed Analyzer displayed `"No unparsed lines to analyze. Parse a log file first."` whenever a log file achieved 100% rule coverage (or loaded the Demo Log with 0 unparsed lines).
+  - **Clear Three-State Experience**:
+    - *No File Parsed*: Renders actionable warning (`No log file parsed yet`) with direct `[Select Log File]` and `[Load Demo Log]` triggers instead of dead-end text.
+    - *100% Rule Coverage*: Displays green success card (`✓ All log lines successfully parsed! 100% rule coverage. Zero unparsed lines detected in N processed line(s)`).
+    - *Unparsed Patterns Present*: Accurately clusters unparsed lines, presents Top Unparsed Patterns with occurrence counts, sample signatures, and `+ Create Rule` buttons.
+  - **Self-Healing Sample Extractor (`getOrFetchUnparsedSample`)**: If a log file is loaded and lines were unparsed but `stats.unparsedSample` was empty/lost (e.g. from session restores or multiline absorption), automatically samples unparsed lines from `S.logFile` against active rules.
+  - **Fixed UI Target Container**: Re-targeted suggested regex patterns and accordion cluster boxes directly into `#unparsed-results` inside the Settings Unparsed Analyzer card, eliminating rogue DOM injections into Community Packs (`#p-packs-body`).
+  - **Expanded Regression Test Suite**: Added 2 new tests to `tests/test_14_unparsed_analyzer.py` verifying 100% coverage handling and empty-state guidance. Full suite passing with **119 passed / 119 total** (0 failures).
+
+
 - **Custom Log Setup Journey & 100% Parsing Workflow (v6.9.102 — COMPLETED)**:
   - **Frictionless Entry with Only a Custom Log**: Streamlined the onboarding experience for users arriving with exclusively an arbitrary log file (no `.json` config, no server setup).
     - Upgraded `#ob-btn-drop` in welcome modal `#ob-ov` to label `Open Log File`, directly opening the native file chooser and cleanly dismissing the welcome modal.

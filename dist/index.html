@@ -13628,8 +13628,10 @@ const UNPARSED = {
   },
   
   cluster(lines) {
+    if (!Array.isArray(lines) || lines.length === 0) return [];
     const clusters = {};
     for (const l of lines) {
+      if (!l || typeof l !== 'string') continue;
       const sig = this.getSignature(l);
       if (!clusters[sig]) {
         clusters[sig] = { count: 0, sampleLine: l };
@@ -13642,16 +13644,78 @@ const UNPARSED = {
       .slice(0, 5);
   },
 
+  async getOrFetchUnparsedSample() {
+    let stats = S.stats;
+    if (stats?.unparsedSample && stats.unparsedSample.length > 0) {
+      return stats.unparsedSample;
+    }
+    // If S.logFile is present and lines were unparsed or sample is missing, sample directly from S.logFile
+    if (S.logFile && stats && stats.linesProcessed > 0 && (stats.matchedLines == null || stats.matchedLines < stats.linesProcessed)) {
+      try {
+        const text = await S.logFile.slice(0, Math.min(S.logFile.size, 512 * 1024)).text();
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const compiled = (S.cfg?.elementRules || []).filter(r => !r.disabled && r.regexPattern).map(r => {
+          try { return new RegExp(r.regexPattern); } catch(_) { return null; }
+        }).filter(Boolean);
+        const unparsed = [];
+        for (const l of lines) {
+          if (!compiled.some(rx => rx.test(l))) {
+            unparsed.push(l);
+            if (unparsed.length >= 200) break;
+          }
+        }
+        if (unparsed.length > 0) {
+          if (!S.stats) S.stats = stats || {};
+          S.stats.unparsedSample = unparsed;
+          return unparsed;
+        }
+      } catch (_) {}
+    }
+    return stats?.unparsedSample || [];
+  },
+
   render() {
     const stats = S.stats;
-    const clusters = this.cluster(stats.unparsedSample);
+    const lines = stats?.unparsedSample || [];
+    const clusters = this.cluster(lines);
     this.currentClusters = clusters;
+    const el = $('unparsed-results');
+    if (!el) return;
+
     if (clusters.length === 0) {
-      $('unparsed-results').innerHTML = '<div style="color:var(--green);">✓ All log lines successfully parsed! 100% rule coverage.</div>';
+      const hasData = (stats && (stats.linesProcessed > 0 || stats.fileSize > 0)) || (S.trees && Object.keys(S.trees).length > 0);
+      if (!hasData) {
+        el.innerHTML = `
+          <div style="color:var(--yellow); display:flex; flex-direction:column; gap:4px;">
+            <div style="font-weight:600; display:flex; align-items:center; gap:5px;">
+              <span>⚠</span> No log file parsed yet.
+            </div>
+            <div style="color:var(--t3); font-size:10.5px;">
+              Load a log file or try the Demo Log before analyzing unparsed patterns.
+            </div>
+            <div style="margin-top:4px; display:flex; gap:6px;">
+              <button class="btn btn-xs btn-p" onclick="UI.chooseAndParseLog()" type="button">Select Log File</button>
+              <button class="btn btn-xs btn-g" onclick="ONBOARD.loadDemo()" type="button">Load Demo Log</button>
+            </div>
+          </div>
+        `;
+      } else {
+        const totalLines = (stats?.linesProcessed || 0).toLocaleString();
+        el.innerHTML = `
+          <div style="background:var(--bg-1); border:1px solid var(--green); border-radius:var(--rounded-sm); padding:8px 10px;">
+            <div style="color:var(--green); font-weight:600; display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+              <span style="font-size:13px;">✓</span> All log lines successfully parsed! 100% rule coverage.
+            </div>
+            <div style="font-size:10.5px; color:var(--t3);">
+              Zero unparsed lines detected in ${totalLines} processed line(s). Every log event matches an active rule.
+            </div>
+          </div>
+        `;
+      }
       return;
     }
     
-    let html = '<div style="font-weight:bold;margin-bottom:4px;">Top Unparsed Patterns:</div>';
+    let html = '<div style="font-weight:bold;margin-bottom:4px;color:var(--t1);">Top Unparsed Patterns:</div>';
     clusters.forEach((c, idx) => {
       const escSig = esc(c.sig);
       html += `
@@ -13665,7 +13729,7 @@ const UNPARSED = {
         </div>
       `;
     });
-    $('unparsed-results').innerHTML = html;
+    el.innerHTML = html;
   }
 };
 
@@ -15955,18 +16019,17 @@ $('pack-registry').addEventListener('change',()=>{if($('pack-registry').value)$(
 $('pack-url').addEventListener('input',()=>{if($('pack-url').value.trim())$('pack-registry').value='';});
 
 // Unparsed Analyzer
-$('btn-analyze-unparsed')?.addEventListener('click', () => {
-  const stats = S.stats;
-  if (!stats || !stats.unparsedSample || stats.unparsedSample.length === 0) {
-    $('unparsed-results').innerHTML = '<div style="color:var(--yellow);">No unparsed lines to analyze. Parse a log file first.</div>';
-    return;
+$('btn-analyze-unparsed')?.addEventListener('click', async () => {
+  const resEl = $('unparsed-results');
+  if (resEl) {
+    resEl.innerHTML = '<div style="color:var(--t3); font-size:11px; display:flex; align-items:center; gap:6px;"><span class="btn-spinner" style="display:inline-block; width:10px; height:10px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:progress-shimmer-sweep 0.8s infinite linear;"></span> Analyzing unparsed log lines…</div>';
   }
-  
-  $('unparsed-results').innerHTML = 'Analyzing unparsed log lines...';
-  
+  if (typeof UNPARSED.getOrFetchUnparsedSample === 'function') {
+    await UNPARSED.getOrFetchUnparsedSample();
+  }
   setTimeout(() => {
     UNPARSED.render();
-  }, 100);
+  }, 40);
 });
 
 // Annotation Modal
@@ -22210,8 +22273,10 @@ const _origUnparsedRender = UNPARSED.render.bind(UNPARSED);
 UNPARSED.render = function() {
   _origUnparsedRender();
   
-  const container = $('unparsed-container') || document.querySelector('#p-packs-body'); // Fallback or wrapper
-  if (!container) return;
+  const parent = $('unparsed-results');
+  if (!parent) return;
+  const existingBox = parent.querySelector('#unparsed-suggest-box');
+  if (existingBox) existingBox.remove();
   
   const lines = S.stats?.unparsedSample || [];
   if (!lines.length) return;
@@ -22279,10 +22344,10 @@ UNPARSED.render = function() {
     `;
   });
   
-  // Inject visual suggester box before the unparsed raw lines block
-  const parent = $('p-packs-body'); // Community packs body panel as host or help section
+  // Inject visual suggester box into unparsed-results
   const box = document.createElement('div');
-  box.style.cssText = 'border-top:1px solid var(--bdr); margin-top:14px; padding-top:10px;';
+  box.id = 'unparsed-suggest-box';
+  box.style.cssText = 'border-top:1px solid var(--bdr); margin-top:12px; padding-top:8px;';
   box.innerHTML = `
     <div style="font-size:11px; font-weight:bold; color:var(--amber); margin-bottom:6px; display:flex; align-items:center; gap:5px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> LogLens Suggested Pattern</div>
     <div style="background:rgba(255,149,0,0.06); border:1px solid var(--amber); border-radius:6px; padding:8px; font-family:var(--mono); font-size:11px; word-break:break-all;">
@@ -22297,11 +22362,11 @@ UNPARSED.render = function() {
   parent.appendChild(box);
   
   // Wire suggests
-  container.querySelector('#btn-unparsed-suggest-try')?.addEventListener('click', () => {
+  box.querySelector('#btn-unparsed-suggest-try')?.addEventListener('click', () => {
     UNPARSED.createRuleFromPattern(suggestedRx);
   });
   
-  container.querySelectorAll('.btn-cluster-add').forEach(btn => {
+  box.querySelectorAll('.btn-cluster-add').forEach(btn => {
     btn.addEventListener('click', () => {
       UNPARSED.createRuleFromPattern(btn.dataset.rx);
     });

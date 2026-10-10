@@ -71,3 +71,55 @@ async def test_unparsed_analyzer_create_rule_button(page_with_data):
 
     # Ensure no critical console errors occurred during the flow
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_unparsed_analyzer_100_percent_coverage(page_with_data):
+    """When a log has 100% rule coverage (0 unparsed lines), Analyzer displays success rather than false error."""
+    page = page_with_data
+    # Set up 100% matched state with empty unparsedSample
+    await page.evaluate("""() => {
+        S.stats = {
+            fileSize: 5000,
+            linesProcessed: 35,
+            matchedLines: 35,
+            unparsedSample: []
+        };
+        UI.svm('cfg');
+    }""")
+    await page.wait_for_timeout(300)
+
+    btn_analyze = page.locator('#btn-analyze-unparsed')
+    await expect(btn_analyze).to_be_visible()
+    await btn_analyze.click()
+    await page.wait_for_timeout(300)
+
+    results = page.locator('#unparsed-results')
+    # Must celebrate 100% coverage and NOT display the error "No unparsed lines to analyze. Parse a log file first."
+    await expect(results).to_contain_text("100% rule coverage")
+    await expect(results).to_contain_text("Zero unparsed lines detected")
+    results_text = await results.inner_text()
+    assert "No unparsed lines to analyze. Parse a log file first." not in results_text
+
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_unparsed_analyzer_when_no_log_parsed(blank_page):
+    """When no log file has been parsed yet, Analyzer shows actionable guidance instead of a dead error."""
+    page = blank_page
+    await page.evaluate("() => { if (typeof ONBOARD !== 'undefined') ONBOARD.dismiss(); UI.svm('cfg'); }")
+    await page.wait_for_timeout(300)
+
+    btn_analyze = page.locator('#btn-analyze-unparsed')
+    await expect(btn_analyze).to_be_visible()
+    await btn_analyze.click()
+    await page.wait_for_timeout(300)
+
+    results = page.locator('#unparsed-results')
+    await expect(results).to_contain_text("No log file parsed yet")
+    await expect(results.locator('button >> text=Select Log File')).to_be_visible()
+    await expect(results.locator('button >> text=Load Demo Log')).to_be_visible()
+
+    assert_no_critical_errors(page)
+
