@@ -4336,9 +4336,9 @@ body.focus-mode #res {
 /* Form group gap — was 5px */
 .f { gap: 6px !important; }
 
-/* Settings collapsible sections — override for 4px grid alignment */
-.settings-section-hdr { padding: 12px 24px !important; }
-.settings-section-body > .dashboard-grid { padding: 4px 24px 16px 24px !important; }
+/* Settings collapsible sections — compact, high-density alignment */
+.settings-section-hdr { padding: 10px 16px !important; }
+.settings-section-body > .dashboard-grid { padding: 4px 16px 14px 16px !important; }
 
 /* Pref row gap — was 10px */
 .pref-row { gap: 12px !important; }
@@ -5296,10 +5296,10 @@ input[type="checkbox"]:active {
 }
 .settings-section-wrap:last-of-type { border-bottom: none; }
 .settings-section-hdr {
-  padding: 14px 24px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   user-select: none;
   transition: background 0.14s ease;
@@ -5307,46 +5307,36 @@ input[type="checkbox"]:active {
 }
 .settings-section-hdr:hover { background: var(--bg-2); }
 .settings-section-hdr:active { background: var(--bg-3); }
-.ss-ord {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--amber);
-  background: var(--amber-g);
-  padding: 2px 6px;
-  border-radius: var(--rounded-sm);
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
-  line-height: 1.4;
-}
 .settings-section-title {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--t1);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 .settings-section-title .ico {
   font-size: 13px;
-  color: var(--t3);
+  color: var(--amber);
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 }
 .settings-section-desc {
   font-size: 10px;
   color: var(--t4);
-  margin-left: 44px;
+  margin-left: 31px;
   margin-top: -4px;
   padding-bottom: 4px;
   line-height: 1.4;
 }
 .ss-chev-main {
   margin-left: auto;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--t4);
   transition: transform 0.22s var(--ease-snap);
   flex-shrink: 0;
@@ -5362,12 +5352,27 @@ input[type="checkbox"]:active {
   opacity: 0;
 }
 .settings-section-wrap.open > .settings-section-body {
-  max-height: 3000px;
+  max-height: 4000px;
   opacity: 1;
 }
 .settings-section-body > .dashboard-grid {
-  padding: 4px 24px 20px 24px;
-  gap: 12px;
+  padding: 4px 16px 14px 16px;
+  gap: 10px;
+}
+#p-cfg .dashboard-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+#p-cfg .dashboard-card {
+  padding: 12px 14px !important;
+  gap: 10px !important;
+}
+#p-cfg .dashboard-card-title {
+  font-size: 12px !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 2px !important;
 }
 /* ── Settings Toolbar (Export/Import dock) ─────────────────── */
 .settings-toolbar {
@@ -7296,480 +7301,437 @@ label[for="watch-auto-reload"] {
 
     <!-- CONFIG -->
     <div class="sp active" id="p-cfg" style="padding:0;gap:0;overflow-y:auto;">
-      <!-- Primary Action Dock (pinned at the very top of Settings) -->
-      <div style="padding: 24px 24px 0 24px;">
-        <div class="dashboard-card" style="margin-bottom:0;">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
-            Active Log & Parse Actions
-          </div>
-          <!-- Action Dock -->
-          <div class="cfg-action-dock" id="cfg-action-dock">
-            <div class="dock-row">
-              <span class="dock-label">Log File</span>
-              <div class="btn-split-wrap" id="btn-sel-wrap">
-                <button class="btn-split-main" id="btn-sel" title="Select a log file">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                  Select
-                </button>
-                <button class="btn-split-arrow" id="btn-sel-arrow" aria-label="More file options" title="More options">
-                  <svg viewBox="0 0 10 6" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>
-                </button>
-              </div>
-              <ul class="btn-split-menu" id="btn-sel-menu">
-                <li id="btn-add-file"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg> Add file to session</li>
-              </ul>
-              <span id="lfname" class="cm mono trunc" style="font-size:11px;"></span>
-            </div>
-            <div class="dock-row">
-              <button class="btn btn-p" id="btn-parse" disabled title="Parse selected log file under current configuration rules (Shortcut: Ctrl+Enter)">▶ Parse</button>
-              <button class="btn btn-d btn-sm" id="btn-abort" disabled title="Abort current parsing job">■ Abort</button>
-              <span class="cm" style="font-size:11px;color:var(--t4);margin-left:4px;user-select:none;">(Ctrl+Enter)</span>
-              <div id="cg-stream-ctrl" style="display:none;align-items:center;gap:6px;margin-left:auto;">
-                <button class="btn btn-g btn-sm" id="btn-stream-pause" title="Pause or resume live streaming log data">⏸ Pause</button>
-                <span id="stream-buf-count" class="badge b-gray" style="font-family:var(--mono);">Buffer: 0 / 2000</span>
-              </div>
-            </div>
-            <div id="file-chips"></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- SECTION 1: System & Aesthetics -->
-      <div class="settings-section-wrap open" data-section="system">
-        <div class="settings-section-hdr" data-collapse="section-system">
-          <span class="ss-ord">01</span>
-          <div class="settings-section-title">
-            <span class="ico" aria-hidden="true">❖</span> System & Aesthetics
-          </div>
-          <span class="ss-chev-main" aria-hidden="true">›</span>
-        </div>
-        <div class="settings-section-desc">Configuration database, global settings, and application preferences.</div>
-        <div class="settings-section-body" id="section-system">
-          <div class="dashboard-grid">
-        <!-- Card 2: Configuration Database -->
-        <!-- Card 2: Configuration File -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-            Configuration File
-          </div>
-          <div class="cfg-st"><div class="cfg-dot" id="cfg-dot"></div>
-            <div class="cfg-st-txt" id="cfg-txt">Not connected</div></div>
-          <div class="flex gap1 mt1">
-            <button class="btn btn-p wf" id="btn-conn" title="Connect to an existing configuration file on disk with live sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span> Connect File</button>
-            <button class="btn wf" id="btn-save-file" title="Save active rules to a JSON file on disk with live sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save to File</button>
-          </div>
-          <div class="flex gap1">
-            <button class="btn wf" id="btn-imp" title="Import configuration JSON file (rules and styles)"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import</button>
-            <button class="btn wf" id="btn-exp" disabled title="Export active configuration to a JSON file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export</button>
-            <button class="btn wf" id="btn-new" title="Create a new clean configuration database"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> New</button>
-          </div>
-          <button class="btn wf mt1" id="btn-reset-defaults" title="Reset configuration to factory defaults"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></span> Reset Defaults</button>
-        </div>
-
-        <!-- Card 3: Global Settings -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-            Global Settings
-          </div>
-          <div class="f">
-            <div class="fl">Config Name</div>
-            <input class="inp" id="gs-name" placeholder="My Log Analyzer"/>
-          </div>
-          <div class="f">
-            <div class="fl">Global Timestamp Regex <span class="cm">(group 1 = timestamp string)</span><button class="htip-btn" data-htip="timestamp" aria-label="Help: Global Timestamp Regex" type="button">?</button></div>
-            <textarea class="inp inp-m" id="gs-ts" rows="3" placeholder="(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})"></textarea>
-            <div class="fh">Fallback when a rule has no timestamp capture group.</div>
-          </div>
-          <div class="f">
-            <div class="fl">Notes</div>
-            <textarea class="inp" id="gs-desc" rows="2" placeholder="Optional notes…"></textarea>
-          </div>
-          <div class="f">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-              <input type="checkbox" id="gs-multiline" checked />
-              <span style="font-size:11.5px; font-weight:600; color:var(--t1);">Multiline Block Payloads</span>
-            </label>
-            <div class="fh">Capture continuation lines (e.g. printed classes, JSON, stack traces) into a single payload.</div>
-          </div>
-          <button class="btn" id="btn-sgs" style="margin-top:6px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
-        </div>
-
-        <!-- Card 9: App Preferences -->
-        <div class="dashboard-card" id="p-gs">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/></svg></span>
-            App Preferences
-          </div>
-        </div>
-        </div>
-      </div><!-- close .dashboard-grid + .settings-section-body -->
-      </div><!-- close .settings-section-wrap section 1 -->
-
-      <!-- SECTION 2: Log Sources & Stream Ingest -->
-      <div class="settings-section-wrap open" data-section="sources">
-        <div class="settings-section-hdr" data-collapse="section-sources">
-          <span class="ss-ord">02</span>
-          <div class="settings-section-title">
-            <span class="ico" aria-hidden="true">☘</span> Log Sources & Stream Ingest
-          </div>
-          <span class="ss-chev-main" aria-hidden="true">›</span>
-        </div>
-        <div class="settings-section-desc">Cloud APIs, WebSocket streams, directory watchers, and Git sync.</div>
-        <div class="settings-section-body" id="section-sources">
-          <div class="dashboard-grid">
-        <!-- Card 4: Cloud Datasources -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-ds" style="cursor:pointer;" onclick="$('p-ds-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></span>
-            Cloud Datasources
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-ds-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">Datasource Type</div>
-              <select class="inp" id="ds-type" style="font-size:11px;padding:4px 6px;">
-                <option value="loki">Grafana Loki</option>
-                <option value="elastic">Elasticsearch</option>
-                <option value="aws">AWS CloudWatch Logs Insights</option>
-              </select>
-            </div>
-            <div class="f">
-              <div class="fl" style="font-size:10px;">Base Endpoint URL</div>
-              <input class="inp" id="ds-url" placeholder="http://localhost:3100" style="font-size:11px;padding:4px 6px;" value="http://localhost:3100"/>
-            </div>
-            <div class="f" id="ds-auth-wrap">
-              <div class="fl" style="font-size:10px;">Auth Header <span class="cm">(optional)</span></div>
-              <input class="inp" id="ds-auth" placeholder="Bearer ..." style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="f hidden" id="ds-aws-region-wrap">
-              <div class="fl" style="font-size:10px;">AWS Region</div>
-              <input class="inp" id="ds-aws-region" placeholder="us-east-1" style="font-size:11px;padding:4px 6px;" value="us-east-1"/>
-            </div>
-            <div class="f hidden" id="ds-aws-key-wrap">
-              <div class="fl" style="font-size:10px;">AWS Access Key ID</div>
-              <input class="inp" id="ds-aws-key" placeholder="AKIA..." style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="f hidden" id="ds-aws-secret-wrap">
-              <div class="fl" style="font-size:10px;">AWS Secret Access Key</div>
-              <input class="inp" type="password" id="ds-aws-secret" placeholder="Secret Key" style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="f hidden" id="ds-aws-group-wrap">
-              <div class="fl" style="font-size:10px;">AWS Log Group Name</div>
-              <input class="inp" id="ds-aws-group" placeholder="/aws/lambda/my-function" style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="f">
-              <div class="fl" id="ds-query-lbl" style="font-size:10px;">Query <span class="cm">(Loki LogQL / ES Lucene)</span></div>
-              <input class="inp" id="ds-query" placeholder='{app="my-app"}' style="font-size:11px;padding:4px 6px;" value='{app="my-app"}'/>
-            </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-bl btn-sm wf" id="btn-ds-fetch"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Fetch Logs</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card: Real-Time Log Stream -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
-            Real-Time Log Stream
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">WebSocket URL</div>
-              <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
-            </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
-              <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
-            </div>
-            <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
-          </div>
-        </div>
-
-        <!-- Card: Directory Watcher -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-watch" style="cursor:pointer;" tabindex="0" onclick="$('p-watch-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
-            Directory Watcher
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-watch-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <button class="btn btn-sm wf" id="btn-watch-dir"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Watch Folder</button>
-              <div id="watch-dir-name" style="font-size:10px; color:var(--t3); margin-top:4px; word-break:break-all;">No folder watched</div>
-            </div>
-            <div class="f" style="display:flex; align-items:center; gap:6px; margin-top:4px;">
-              <input type="checkbox" id="watch-auto-reload" style="cursor:pointer;"/>
-              <label for="watch-auto-reload" style="font-size:10px; color:var(--t2); cursor:pointer; user-select:none;">Auto-reload log on modification</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card: Git Configuration Sync -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-git" style="cursor:pointer;" tabindex="0" onclick="$('p-git-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>
-            Git Configuration Sync
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-git-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">Git Raw URL</div>
-              <input class="inp" id="git-url" placeholder="https://raw.githubusercontent.com/.../rules.json" style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="f">
-              <div class="fl" style="font-size:10px;">Auth Token <span class="cm">(optional)</span></div>
-              <input class="inp" type="password" id="git-token" placeholder="ghp_..." style="font-size:11px;padding:4px 6px;"/>
-            </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-bl btn-sm wf" id="btn-git-sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span> Sync Config</button>
-            </div>
-          </div>
-        </div>
-        </div>
-      </div><!-- close .dashboard-grid + .settings-section-body -->
-      </div><!-- close .settings-section-wrap section 2 -->
-
-      <!-- SECTION 3: Rule Generators -->
+      <!-- SECTION 1: Rules & Parsing -->
       <div class="settings-section-wrap open" data-section="rules">
         <div class="settings-section-hdr" data-collapse="section-rules">
-          <span class="ss-ord">03</span>
           <div class="settings-section-title">
-            <span class="ico" aria-hidden="true">▤</span> Rule Generators
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+            Rules &amp; Parsing
           </div>
           <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Log4j XML imports and community rule packs.</div>
+        <div class="settings-section-desc">Element parse rules, timestamp format, unparsed pattern analysis, and community presets.</div>
         <div class="settings-section-body" id="section-rules">
           <div class="dashboard-grid">
-        <!-- Card: Log4j / Logback XML Import -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-            Log4j / Logback XML Import
-          </div>
-          <div class="fh" style="font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px;">
-            Import a <strong>log4j.xml</strong>, <strong>log4j2.xml</strong>, or
-            <strong>logback.xml</strong> file. LogLens parses every
-            <code style="color:var(--amber)">PatternLayout</code> /
-            <code style="color:var(--amber)">ConversionPattern</code> and generates
-            ready-to-use base regex patterns (no regex knowledge needed).
-          </div>
-          <button class="btn btn-bl wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config File</button>
-          <div id="lj-res" class="fcol gap2" style="margin-top: 12px;"></div>
-        </div>
 
-        <!-- Card: Community Packs -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
-            Community Packs
-          </div>
-          <div class="f">
-            <div class="fl" style="font-size:10px;">Registry Packs</div>
-            <select class="inp" id="pack-registry" style="font-size:11px;padding:4px 6px;">
-              <option value="">-- Select a pack --</option>
-              <option value="nginx">Nginx Access Log Patterns</option>
-              <option value="log4j">Log4j Standard Patterns</option>
-              <option value="springboot">Spring Boot Default Logs</option>
-              <option value="aws">AWS CloudTrail Events</option>
-            </select>
-          </div>
-          <div class="f">
-            <div class="fl" style="font-size:10px;">Or URL</div>
-            <input class="inp" id="pack-url" placeholder="https://example.com/rules.json" style="font-size:11px;padding:4px 6px;"/>
-          </div>
-          <button class="btn btn-sm btn-p" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
-        </div>
-        </div>
-      </div><!-- close .dashboard-grid + .settings-section-body -->
-      </div><!-- close .settings-section-wrap section 3 -->
+            <!-- Card: Element Rules (Full Width) -->
+            <div class="dashboard-card" style="grid-column: 1 / -1;">
+              <div class="rules-section-hdr" id="hdr-rules" tabindex="0" onclick="if(!event.target.closest('.rules-hdr-actions')) $('rules-list').classList.toggle('hidden')" style="margin:0;">
+                <div class="rules-hdr-top">
+                  <div class="rules-hdr-left">
+                    <span class="rules-hdr-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+                    <span class="rules-hdr-title">Element Rules</span>
+                    <span class="rules-count-badge" id="rules-count-badge">0</span>
+                  </div>
+                  <div class="rules-hdr-actions">
+                    <button class="rules-hdr-btn" id="btn-rule-imp" title="Import rule from JSON file" aria-label="Import rule">
+                      <svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                    <button class="rules-hdr-btn" id="btn-rule-test" disabled title="Test all rules against sample log lines" aria-label="Test rules">
+                      <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </button>
+                    <button class="rules-hdr-btn rules-hdr-btn-primary" id="btn-ar" title="Add a new regex parse rule">
+                      <svg viewBox="0 0 24 24" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Add Rule
+                    </button>
+                  </div>
+                </div>
+                <div class="rules-search-bar" id="rules-search-bar" style="display:none;">
+                  <span class="rules-search-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                  <input class="rules-search-inp" id="rules-search-inp" type="text" placeholder="Filter rules…" autocomplete="off" />
+                  <button class="rules-search-clear" id="rules-search-clear" title="Clear filter">✕</button>
+                </div>
+              </div>
 
-      <!-- SECTION 4: Sessions & Diagnostics -->
-      <div class="settings-section-wrap open" data-section="sessions">
-        <div class="settings-section-hdr" data-collapse="section-sessions">
-          <span class="ss-ord">04</span>
+              <div id="rules-list" class="fcol gap1">
+                <div class="emp" style="padding:16px 6px">
+                  <div class="emp-ico"><span class="ico ico-xl" aria-hidden="true" style="color:var(--t4)"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span></div>
+                  <div class="emp-ttl" style="font-size:12px;font-weight:600;color:var(--t2);margin-top:6px;">No rules configured</div>
+                  <div class="emp-sub">Connect a config database to manage rules.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card: Global Settings -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06-.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                Global Parser Settings
+              </div>
+              <div class="f">
+                <div class="fl">Config Name</div>
+                <input class="inp" id="gs-name" placeholder="My Log Analyzer"/>
+              </div>
+              <div class="f">
+                <div class="fl">Global Timestamp Regex <span class="cm">(group 1 = timestamp string)</span><button class="htip-btn" data-htip="timestamp" aria-label="Help: Global Timestamp Regex" type="button">?</button></div>
+                <textarea class="inp inp-m" id="gs-ts" rows="3" placeholder="(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})"></textarea>
+                <div class="fh">Fallback when a rule has no timestamp capture group.</div>
+              </div>
+              <div class="f">
+                <div class="fl">Notes</div>
+                <textarea class="inp" id="gs-desc" rows="2" placeholder="Optional notes…"></textarea>
+              </div>
+              <div class="f">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                  <input type="checkbox" id="gs-multiline" checked />
+                  <span style="font-size:11.5px; font-weight:600; color:var(--t1);">Multiline Block Payloads</span>
+                </label>
+                <div class="fh">Capture continuation lines (e.g. printed classes, JSON, stack traces) into a single payload.</div>
+              </div>
+              <button class="btn" id="btn-sgs" style="margin-top:4px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Settings</button>
+            </div>
+
+            <!-- Card: Unparsed Analyzer -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+                Unparsed Analyzer
+              </div>
+              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
+                Find lines that failed to match any defined parse rules, helping you refine your configuration.
+              </div>
+              <button class="btn btn-sm" id="btn-analyze-unparsed" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Analyze Unparsed</button>
+              <div id="unparsed-results" style="margin-top:8px; font-size:11px; color:var(--t3); display:flex; flex-direction:column; gap:6px;">
+                No analysis run yet. Parse a log first.
+              </div>
+            </div>
+
+            <!-- Card: Rule Presets & Importers -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+                Rule Presets &amp; Importers
+              </div>
+              <!-- Sub-section: Log4j XML -->
+              <div class="f">
+                <div class="fl">Log4j / Logback XML Import</div>
+                <div class="fh" style="font-size:10px;color:var(--t3);line-height:1.45;margin-bottom:4px;">
+                  Extract patterns from <code style="color:var(--amber);">log4j.xml</code> or <code style="color:var(--amber);">logback.xml</code> into base regex rules.
+                </div>
+                <button class="btn btn-bl btn-sm wf" id="btn-lj-imp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Import XML Config</button>
+                <div id="lj-res" class="fcol gap2" style="margin-top: 6px;"></div>
+              </div>
+              <!-- Sub-section: Community Packs -->
+              <div class="f" style="border-top:1px solid var(--bdr);padding-top:8px;margin-top:4px;">
+                <div class="fl">Community Rule Packs</div>
+                <select class="inp" id="pack-registry" style="font-size:11px;padding:4px 6px;">
+                  <option value="">-- Select a pack --</option>
+                  <option value="nginx">Nginx Access Log Patterns</option>
+                  <option value="log4j">Log4j Standard Patterns</option>
+                  <option value="springboot">Spring Boot Default Logs</option>
+                  <option value="aws">AWS CloudTrail Events</option>
+                </select>
+                <input class="inp mt1" id="pack-url" placeholder="Or custom pack URL…" style="font-size:11px;padding:4px 6px;"/>
+                <button class="btn btn-sm btn-p mt1 wf" id="btn-load-pack" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Load Pack</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- close section-rules -->
+
+      <!-- SECTION 2: Sources & Ingest -->
+      <div class="settings-section-wrap open" data-section="sources">
+        <div class="settings-section-hdr" data-collapse="section-sources">
           <div class="settings-section-title">
-            <span class="ico" aria-hidden="true">☼</span> Sessions & Diagnostics
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+            Log Sources &amp; Stream Ingest
           </div>
           <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Saved sessions, unparsed analysis, JIRA, and plugins.</div>
-        <div class="settings-section-body" id="section-sessions">
+        <div class="settings-section-desc">Active log file, real-time WebSocket streams, directory watchers, and cloud datasources.</div>
+        <div class="settings-section-body" id="section-sources">
           <div class="dashboard-grid">
-        <!-- Card 10: Session Management -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
-            Session Management
-          </div>
-          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-            Load previously saved session files (`.lls`) containing complete logs, threads, rules, and parsed telemetry stats.
-          </div>
-          <button class="btn wf" id="btn-load-lls" title="Load saved session (.lls) file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Load Session (.lls)</button>
-          <input type="file" id="fi-lls" accept=".lls" class="hidden"/>
-        </div>
 
-        <!-- Card: Unparsed Analyzer -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
-            Unparsed Analyzer
-          </div>
-          <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-            Find lines that failed to match any defined parse rules, helping you refine your configuration.
-          </div>
-          <button class="btn btn-sm" id="btn-analyze-unparsed" style="font-size:11px;padding:4px 8px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Analyze Unparsed</button>
-          <div id="unparsed-results" style="margin-top:8px; font-size:11px; color:var(--t3); display:flex; flex-direction:column; gap:6px;">
-            No analysis run yet. Parse a log first.
-          </div>
-        </div>
+            <!-- Card: Active Log File & Parse Actions (Full Width) -->
+            <div class="dashboard-card" style="grid-column: 1 / -1;">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                Active Log &amp; Parse Actions
+              </div>
+              <div class="cfg-action-dock" id="cfg-action-dock">
+                <div class="dock-row">
+                  <span class="dock-label">Log File</span>
+                  <div class="btn-split-wrap" id="btn-sel-wrap">
+                    <button class="btn-split-main" id="btn-sel" title="Select a log file">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                      Select
+                    </button>
+                    <button class="btn-split-arrow" id="btn-sel-arrow" aria-label="More file options" title="More options">
+                      <svg viewBox="0 0 10 6" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>
+                    </button>
+                  </div>
+                  <ul class="btn-split-menu" id="btn-sel-menu">
+                    <li id="btn-add-file"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg> Add file to session</li>
+                  </ul>
+                  <span id="lfname" class="cm mono trunc" style="font-size:11px;"></span>
+                </div>
+                <div class="dock-row">
+                  <button class="btn btn-p" id="btn-parse" disabled title="Parse selected log file under current configuration rules (Shortcut: Ctrl+Enter)">▶ Parse</button>
+                  <button class="btn btn-d btn-sm" id="btn-abort" disabled title="Abort current parsing job">■ Abort</button>
+                  <span class="cm" style="font-size:11px;color:var(--t4);margin-left:4px;user-select:none;">(Ctrl+Enter)</span>
+                  <div id="cg-stream-ctrl" style="display:none;align-items:center;gap:6px;margin-left:auto;">
+                    <button class="btn btn-g btn-sm" id="btn-stream-pause" title="Pause or resume live streaming log data">⏸ Pause</button>
+                    <span id="stream-buf-count" class="badge b-gray" style="font-family:var(--mono);">Buffer: 0 / 2000</span>
+                  </div>
+                </div>
+                <div id="file-chips"></div>
+              </div>
+            </div>
 
-        <!-- Card 5: JIRA Settings -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-jira" style="cursor:pointer;" onclick="$('p-jira-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
-            JIRA Settings
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-jira-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">JIRA Base URL</div>
-              <input class="inp" id="jira-url" placeholder="https://company.atlassian.net" style="font-size:11px;padding:4px 6px;"/>
-              <div class="fh" style="font-size:9px;">Used for redirect ticket creation links.</div>
+            <!-- Card: Real-Time Log Stream -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title" id="hdr-stream" style="cursor:pointer;" tabindex="0" onclick="$('p-stream-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></span>
+                Real-Time Log Stream
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+              </div>
+              <div id="p-stream-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">WebSocket URL</div>
+                  <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size:11px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
+                </div>
+                <div class="flex gap1 mt1">
+                  <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
+                  <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
+                </div>
+                <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
+              </div>
             </div>
-            <div class="f">
-              <div class="fl" style="font-size:10px;">JIRA Webhook URL</div>
-              <input class="inp" id="jira-webhook" placeholder="https://company.atlassian.net/rest/api/2/issue..." style="font-size:11px;padding:4px 6px;"/>
-              <div class="fh" style="font-size:9px;">Webhook URL to POST JSON ticket data.</div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Card 8: Custom Plugins -->
-        <div class="dashboard-card">
-          <div class="dashboard-card-title" id="hdr-plugins" style="cursor:pointer;" tabindex="0" onclick="$('p-plugins-body').classList.toggle('hidden')">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
-            Custom Plugins
-            <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
-          </div>
-          <div id="p-plugins-body" class="fcol gap1" style="margin-top:0;">
-            <div class="f">
-              <div class="fl" style="font-size:10px;">Add Plugin JS Code</div>
-              <textarea class="inp" id="plugin-code" rows="5" placeholder="return {&#10;  onParseComplete(stats) {&#10;    if (stats.errors > 0) return '⚠️ Plugin: Detected ' + stats.errors + ' errors!';&#10;  }&#10;};" style="font-size:11px;font-family:var(--mono);line-height:1.3;"></textarea>
+            <!-- Card: Directory Watcher -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title" id="hdr-watch" style="cursor:pointer;" tabindex="0" onclick="$('p-watch-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                Directory Watcher
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+              </div>
+              <div id="p-watch-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <button class="btn btn-sm wf" id="btn-watch-dir"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Watch Folder</button>
+                  <div id="watch-dir-name" style="font-size:10px; color:var(--t3); margin-top:4px; word-break:break-all;">No folder watched</div>
+                </div>
+                <div class="f" style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+                  <input type="checkbox" id="watch-auto-reload" style="cursor:pointer;"/>
+                  <label for="watch-auto-reload" style="font-size:10px; color:var(--t2); cursor:pointer; user-select:none;">Auto-reload log on modification</label>
+                </div>
+              </div>
             </div>
-            <div class="flex gap1 mt1">
-              <button class="btn btn-bl btn-sm wf" id="btn-plugin-add"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> Load Plugin</button>
-            </div>
-            <div id="plugin-list" class="fcol gap1 mt1" style="font-size:11px;color:var(--t2);"></div>
-          </div>
-        </div>
-        </div>
-      </div><!-- close .dashboard-grid + .settings-section-body -->
-      </div><!-- close .settings-section-wrap section 4 -->
 
-      <!-- SECTION 5: Data Portability -->
-      <div class="settings-section-wrap open" data-section="portability">
-        <div class="settings-section-hdr" data-collapse="section-portability">
-          <span class="ss-ord">05</span>
+            <!-- Card: Cloud Datasources -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title" id="hdr-ds" style="cursor:pointer;" onclick="$('p-ds-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></span>
+                Cloud Datasources
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+              </div>
+              <div id="p-ds-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">Datasource Type</div>
+                  <select class="inp" id="ds-type" style="font-size:11px;padding:4px 6px;">
+                    <option value="loki">Grafana Loki</option>
+                    <option value="elastic">Elasticsearch</option>
+                    <option value="aws">AWS CloudWatch Logs Insights</option>
+                  </select>
+                </div>
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">Base Endpoint URL</div>
+                  <input class="inp" id="ds-url" placeholder="http://localhost:3100" style="font-size:11px;padding:4px 6px;" value="http://localhost:3100"/>
+                </div>
+                <div class="f" id="ds-auth-wrap">
+                  <div class="fl" style="font-size:10px;">Auth Header <span class="cm">(optional)</span></div>
+                  <input class="inp" id="ds-auth" placeholder="Bearer ..." style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="f hidden" id="ds-aws-region-wrap">
+                  <div class="fl" style="font-size:10px;">AWS Region</div>
+                  <input class="inp" id="ds-aws-region" placeholder="us-east-1" style="font-size:11px;padding:4px 6px;" value="us-east-1"/>
+                </div>
+                <div class="f hidden" id="ds-aws-key-wrap">
+                  <div class="fl" style="font-size:10px;">AWS Access Key ID</div>
+                  <input class="inp" id="ds-aws-key" placeholder="AKIA..." style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="f hidden" id="ds-aws-secret-wrap">
+                  <div class="fl" style="font-size:10px;">AWS Secret Access Key</div>
+                  <input class="inp" type="password" id="ds-aws-secret" placeholder="Secret Key" style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="f hidden" id="ds-aws-group-wrap">
+                  <div class="fl" style="font-size:10px;">AWS Log Group Name</div>
+                  <input class="inp" id="ds-aws-group" placeholder="/aws/lambda/my-function" style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="f">
+                  <div class="fl" id="ds-query-lbl" style="font-size:10px;">Query <span class="cm">(Loki LogQL / ES Lucene)</span></div>
+                  <input class="inp" id="ds-query" placeholder='{app="my-app"}' style="font-size:11px;padding:4px 6px;" value='{app="my-app"}'/>
+                </div>
+                <div class="flex gap1 mt1">
+                  <button class="btn btn-bl btn-sm wf" id="btn-ds-fetch"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Fetch Logs</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- close section-sources -->
+
+      <!-- SECTION 3: Storage, Sync & Portability -->
+      <div class="settings-section-wrap open" data-section="storage">
+        <div class="settings-section-hdr" data-collapse="section-storage">
           <div class="settings-section-title">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Data Portability
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+            Storage, Sync &amp; Portability
           </div>
           <span class="ss-chev-main" aria-hidden="true">›</span>
         </div>
-        <div class="settings-section-desc">Export, import, and share your entire workspace configuration.</div>
-        <div class="settings-section-body" id="section-portability">
+        <div class="settings-section-desc">Configuration file persistence, Git sync, workspace portability, and saved sessions.</div>
+        <div class="settings-section-body" id="section-storage">
           <div class="dashboard-grid">
-            <!-- Card: Export All Settings -->
+
+            <!-- Card: Configuration File -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                Configuration File
+              </div>
+              <div class="cfg-st"><div class="cfg-dot" id="cfg-dot"></div>
+                <div class="cfg-st-txt" id="cfg-txt">Not connected</div></div>
+              <div class="flex gap1 mt1">
+                <button class="btn btn-p wf" id="btn-conn" title="Connect to an existing configuration file on disk with live sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span> Connect File</button>
+                <button class="btn wf" id="btn-save-file" title="Save active rules to a JSON file on disk with live sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save to File</button>
+              </div>
+              <div class="flex gap1">
+                <button class="btn wf" id="btn-imp" title="Import configuration JSON file (rules and styles)"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import</button>
+                <button class="btn wf" id="btn-exp" disabled title="Export active configuration to a JSON file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export</button>
+                <button class="btn wf" id="btn-new" title="Create a new clean configuration database"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> New</button>
+              </div>
+              <button class="btn wf mt1" id="btn-reset-defaults" title="Reset configuration to factory defaults"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></span> Reset Defaults</button>
+            </div>
+
+            <!-- Card: Git Configuration Sync -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title" id="hdr-git" style="cursor:pointer;" tabindex="0" onclick="$('p-git-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>
+                Git Configuration Sync
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+              </div>
+              <div id="p-git-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">Git Raw URL</div>
+                  <input class="inp" id="git-url" placeholder="https://raw.githubusercontent.com/.../rules.json" style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">Auth Token <span class="cm">(optional)</span></div>
+                  <input class="inp" type="password" id="git-token" placeholder="ghp_..." style="font-size:11px;padding:4px 6px;"/>
+                </div>
+                <div class="flex gap1 mt1">
+                  <button class="btn btn-bl btn-sm wf" id="btn-git-sync"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span> Sync Config</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card: Workspace Portability & Sessions -->
             <div class="dashboard-card">
               <div class="dashboard-card-title">
                 <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
-                Export All Settings
+                Portability &amp; Snapshots
               </div>
-              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-                Download your complete workspace configuration including global settings, element rules, app preferences, datasource connections, and theme as a single JSON file.
+              <div class="f">
+                <div class="fl">Workspace Configuration</div>
+                <div class="fh" style="font-size:10px;color:var(--t3);line-height:1.45;margin-bottom:4px;">
+                  Export or restore full workspace settings, or export element rules as standalone JSON.
+                </div>
+                <div class="flex gap1">
+                  <button class="btn btn-p wf" id="btn-settings-export-all" title="Export all settings to a single JSON file">
+                    <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export All
+                  </button>
+                  <button class="btn wf" id="btn-settings-import-all" title="Import settings from a JSON file">
+                    <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import All
+                  </button>
+                  <input type="file" id="fi-settings-import" accept=".json,.loglens-settings.json" class="hidden"/>
+                </div>
+                <button class="btn btn-bl wf mt1" id="btn-settings-export-rules" title="Export element rules as JSON">
+                  <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> Export Rules JSON
+                </button>
               </div>
-              <button class="btn btn-p wf" id="btn-settings-export-all" title="Export all settings to a single JSON file">
-                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export All Settings
-              </button>
+              <!-- Sub-section: Saved Sessions (.lls) -->
+              <div class="f" style="border-top:1px solid var(--bdr);padding-top:8px;margin-top:4px;">
+                <div class="fl">Session Snapshots (.lls)</div>
+                <div class="fh" style="font-size:10px;color:var(--t3);line-height:1.45;margin-bottom:4px;">
+                  Load complete saved session files containing logs, threads, rules, and parsed stats.
+                </div>
+                <button class="btn wf" id="btn-load-lls" title="Load saved session (.lls) file"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Load Session (.lls)</button>
+                <input type="file" id="fi-lls" accept=".lls" class="hidden"/>
+              </div>
             </div>
 
-            <!-- Card: Import Settings -->
-            <div class="dashboard-card">
+          </div>
+        </div>
+      </div><!-- close section-storage -->
+
+      <!-- SECTION 4: Preferences & Integrations -->
+      <div class="settings-section-wrap open" data-section="prefs">
+        <div class="settings-section-hdr" data-collapse="section-prefs">
+          <div class="settings-section-title">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+            Preferences &amp; Integrations
+          </div>
+          <span class="ss-chev-main" aria-hidden="true">›</span>
+        </div>
+        <div class="settings-section-desc">Application performance, display appearance, JIRA ticketing, and custom plugins.</div>
+        <div class="settings-section-body" id="section-prefs">
+          <div class="dashboard-grid">
+
+            <!-- Card: App Preferences -->
+            <div class="dashboard-card" id="p-gs">
               <div class="dashboard-card-title">
-                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                Import Settings
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/></svg></span>
+                App Preferences
               </div>
-              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-                Load a previously exported <code style="color:var(--amber)">.loglens-settings.json</code> file to restore your complete workspace configuration.
-              </div>
-              <button class="btn wf" id="btn-settings-import-all" title="Import settings from a JSON file">
-                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import Settings
-              </button>
-              <input type="file" id="fi-settings-import" accept=".json,.loglens-settings.json" class="hidden"/>
             </div>
 
-            <!-- Card: Export Element Rules -->
+            <!-- Card: JIRA Settings -->
             <div class="dashboard-card">
-              <div class="dashboard-card-title">
-                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
-                Export Element Rules
+              <div class="dashboard-card-title" id="hdr-jira" style="cursor:pointer;" onclick="$('p-jira-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+                JIRA Settings
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
               </div>
-              <div class="fh" style="font-size:10.5px;color:var(--t3);line-height:1.6;margin-bottom:6px;">
-                Export only your element rules as a standalone JSON file. Useful for sharing rule definitions without other settings.
+              <div id="p-jira-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">JIRA Base URL</div>
+                  <input class="inp" id="jira-url" placeholder="https://company.atlassian.net" style="font-size:11px;padding:4px 6px;"/>
+                  <div class="fh" style="font-size:9px;">Used for redirect ticket creation links.</div>
+                </div>
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">JIRA Webhook URL</div>
+                  <input class="inp" id="jira-webhook" placeholder="https://company.atlassian.net/rest/api/2/issue..." style="font-size:11px;padding:4px 6px;"/>
+                  <div class="fh" style="font-size:9px;">Webhook URL to POST JSON ticket data.</div>
+                </div>
               </div>
-              <button class="btn btn-bl wf" id="btn-settings-export-rules" title="Export element rules as JSON">
-                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span> Export Rules JSON
-              </button>
             </div>
+
+            <!-- Card: Custom Plugins -->
+            <div class="dashboard-card">
+              <div class="dashboard-card-title" id="hdr-plugins" style="cursor:pointer;" tabindex="0" onclick="$('p-plugins-body').classList.toggle('hidden')">
+                <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
+                Custom Plugins
+                <span class="mla" style="font-size:10px;color:var(--t3);margin-left:auto;font-weight:normal;">Toggle</span>
+              </div>
+              <div id="p-plugins-body" class="fcol gap1" style="margin-top:0;">
+                <div class="f">
+                  <div class="fl" style="font-size:10px;">Add Plugin JS Code</div>
+                  <textarea class="inp" id="plugin-code" rows="4" placeholder="return {&#10;  onParseComplete(stats) {&#10;    if (stats.errors > 0) return '⚠️ Plugin: Detected ' + stats.errors + ' errors!';&#10;  }&#10;};" style="font-size:11px;font-family:var(--mono);line-height:1.3;"></textarea>
+                </div>
+                <div class="flex gap1 mt1">
+                  <button class="btn btn-bl btn-sm wf" id="btn-plugin-add"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> Load Plugin</button>
+                </div>
+                <div id="plugin-list" class="fcol gap1 mt1" style="font-size:11px;color:var(--t2);"></div>
+              </div>
+            </div>
+
           </div>
         </div>
-      </div><!-- close .settings-section-wrap section 5 -->
+      </div><!-- close section-prefs -->
 
-
-
-      <!-- Element Rules (Full Width below cards) -->
-      <div style="padding: 24px;">
-        <!-- Element Rules Section Header (enhanced) -->
-        <div class="rules-section-hdr" id="hdr-rules" tabindex="0" onclick="if(!event.target.closest('.rules-hdr-actions')) $('rules-list').classList.toggle('hidden')" style="margin-bottom:12px;">
-          <div class="rules-hdr-top">
-            <div class="rules-hdr-left">
-              <span class="rules-hdr-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
-              <span class="rules-hdr-title">Element Rules</span>
-              <span class="rules-count-badge" id="rules-count-badge">0</span>
-            </div>
-            <div class="rules-hdr-actions">
-              <button class="rules-hdr-btn" id="btn-rule-imp" title="Import rule from JSON file" aria-label="Import rule">
-                <svg viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              </button>
-              <button class="rules-hdr-btn" id="btn-rule-test" disabled title="Test all rules against sample log lines" aria-label="Test rules">
-                <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              </button>
-              <button class="rules-hdr-btn rules-hdr-btn-primary" id="btn-ar" title="Add a new regex parse rule">
-                <svg viewBox="0 0 24 24" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Rule
-              </button>
-            </div>
-          </div>
-          <div class="rules-search-bar" id="rules-search-bar" style="display:none;">
-            <span class="rules-search-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <input class="rules-search-inp" id="rules-search-inp" type="text" placeholder="Filter rules…" autocomplete="off" />
-            <button class="rules-search-clear" id="rules-search-clear" title="Clear filter">✕</button>
-          </div>
-        </div>
-
-        <div id="rules-list" class="fcol gap1">
-          <div class="emp" style="padding:20px 6px">
-            <div class="emp-ico"><span class="ico ico-xl" aria-hidden="true" style="color:var(--t4)"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span></div>
-            <div class="emp-ttl" style="font-size:12px;font-weight:600;color:var(--t2);margin-top:6px;">No rules configured</div>
-            <div class="emp-sub">Connect a config database to manage rules.</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- HELP -->
