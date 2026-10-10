@@ -3,6 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Impeccable Design System Consistency & Zero-Antipattern Polish (v6.9.99 — COMPLETED)**:
+  - **Zero Radius Token Drift (`design-system-radius: 0`)**: Normalized all off-ramp radii (2px, 3px, 4px, 5px, 16px, 20px, and `calc(var(--rounded-md) - 2px)`) across all CSS rules, dynamic elements, and JavaScript string templates (`rg-hover-hl`, unparsed mark backdrops, `stream-prog-card`, `vtabs-pill`, `.rules-count-badge`, `.rule-toggle-track`) to semantic design tokens (`--rounded-sm: 6px`, `--rounded-md: 8px`, `--rounded-full: 99px`).
+  - **Eliminated AI-Slop Visual Antipatterns**:
+    - **`side-tab: 0`**: Replaced 2px side-border tab accents (`border-left: 2px`) on sidebar tabs (`.sb .stab`) and command items (`.cmd-item`) with native macOS-style background highlights (`var(--amber-d)`) and rounded pill indicators.
+    - **`pulsing-dot: 0`**: Removed infinite looping pulse keyframes on `.hdr-live .dot` and `#hdr-live-badge span.dot`, converting live status dots to calm, solid telemetry indicators.
+    - **`dark-glow: 0`**: Eliminated colored neon blur box-shadows across timeline bars (`.g-bar.g-outlier`, `.g-bar.g-sla-breach`, `.g-bar.g-critical`), config dots (`.cfg-dot.live`, `.cfg-dot.imp`), token hovers (`.tok:hover`), scrubber guides, and minimap thumbs (`#ll-minimap-thumb`), restoring clean developer console elevation.
+  - **Badges & Color Normalization**: Replaced 6 hardcoded RGBA badge borders with a single semantic `border: 1px solid color-mix(in srgb, currentColor 28%, transparent)` on `.badge`, and normalized `--red` lightness in `:root` to 63.5% for WCAG AA compliance (≥4.5:1).
+  - **Full Regression Test Suite Passed**: All 111 tests passing across dark and light/ivory themes with zero regressions.
+
 - **Split View Baseline Alignment, Zero-Overflow Toolbar & Apple Chevrons (v6.9.98 — COMPLETED)**:
   - **Symmetric Full-Height Card Geometry**: Converted `.gw` (Waterfall container) and `.tw` (Execution Tree container) into `display: flex; flex-direction: column; height: 100%; min-height: 0; box-sizing: border-box;` and `.gw .g-rows` to `flex: 1; min-height: 0; max-height: none;`. Eliminated the 259px vertical empty-space mismatch where `.gw` stopped prematurely at 342px while `.tw` filled 601px.
   - **Exact 38px Baseline Toolbar Alignment**: Aligned `.pt.g-toolbar` (Waterfall) and `.tw .pt` (Execution Tree) to exactly 38px height (`min-height: 38px !important; height: 38px !important; box-sizing: border-box !important; padding: 6px 12px !important; background: var(--bg-2); border-bottom: 1px solid var(--bdr); font-size: 12px; font-weight: 600; font-family: var(--ui)`), eliminating the previous 18px toolbar height disparity.
