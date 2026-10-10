@@ -30,7 +30,8 @@ tests/
 ├── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
 ├── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
 ├── test_19_multiline_block_payload.py # Multiline block & class payload parsing
-└── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
+├── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
+└── test_21_custom_log_setup_journey.py # Custom log setup journey & 100% parsing workflow
 ```
 
 ---
@@ -129,7 +130,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
 | Demo Showcase All Features | test_20_demo_showcase | 7 |
-| **Total** | | **112** |
+| Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
+| **Total** | | **117** |
 
 ---
 

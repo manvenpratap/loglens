@@ -3,6 +3,22 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Custom Log Setup Journey & 100% Parsing Workflow (v6.9.102 — COMPLETED)**:
+  - **Frictionless Entry with Only a Custom Log**: Streamlined the onboarding experience for users arriving with exclusively an arbitrary log file (no `.json` config, no server setup).
+    - Upgraded `#ob-btn-drop` in welcome modal `#ob-ov` to label `Open Log File`, directly opening the native file chooser and cleanly dismissing the welcome modal.
+    - Automated onboarding dismissal upon drag-and-drop or file selection anywhere on screen.
+  - **Enhanced Sniffer & Pattern Synthesis**:
+    - Upgraded `SNIFFER.synthesizeRules` to recognize bracketed timestamps (`[2026-10-08 14:23:45.123]`), slash dates (`2026/10/08`), epoch timestamps, and variable thread/level ordering.
+    - Integrated automatic synthesis of a catch-all event rule so arbitrary log structures parse immediately with high/100% initial coverage.
+  - **Adaptive Rescue & 100% Parsing Resolution (`#rescue-banner`)**:
+    - Added `✦ Resolve All to 100%` (`#btn-rescue-resolve-all`) in the adaptive rescue banner. One click analyzes all unmatched line clusters, synthesizes non-conflicting rules, and triggers re-parsing.
+    - Non-blocking persistence: avoids disruptive file save dialogues by storing rules into `localStorage` (`ll_cfg_last`) when running without an active File System handle.
+    - Displays green confirmation banner (`#rescue-success-banner`: `100% Parsed · ✓ 100% Rule Coverage Achieved!`) upon matching all processed lines.
+  - **Custom Log Guidance on Zero Matched Events**:
+    - When 0 events match active rules on custom logs, Waterfall (`GR.render`) and Execution Tree (`TR.render`) render an interactive setup card (`[✦ Auto-Configure Rules & Parse]`, `[Custom Rule Builder]`) rather than a blank dead end.
+  - **Full Regression Test Suite Passed**: Authored `tests/test_21_custom_log_setup_journey.py` (5 tests). All **117 passed / 117 total** tests passing with zero errors.
+
+
 - **Human-Friendly Stack Behavior Terminology in Rule Creator (v6.9.101 — COMPLETED)**:
   - **Clarified Stack Behavior Labels**: Replaced jargon-heavy options in the Rule Creator modal (`#e-beh`) with self-descriptive labels combining the structural event concept and the stack operation:
     - `Block Start — push` (formerly `push: opens block`)

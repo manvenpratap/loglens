@@ -8230,7 +8230,7 @@ label[for="watch-auto-reload"] {
       </button>
       <button class="ob-btn-cfg" id="ob-btn-drop">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Drop a Log File
+        Open Log File
       </button>
     </div>
 
@@ -10142,6 +10142,31 @@ const GR={
   },
   render(tree,el){
     if(!tree||!tree.length){
+      if(S.stats && S.stats.linesProcessed > 0 && (S.stats.matchedLines === 0 || !tree.length)){
+        el.innerHTML=`<div class="emp" style="padding:28px 20px;text-align:center;max-width:540px;margin:20px auto;">
+          <div class="emp-ico" style="margin-bottom:8px;">
+            <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--amber)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;">Custom Log Format Detected</div>
+          <div class="emp-sub" style="font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:14px;">
+            No events matched active rules for this file (${(S.stats?.linesProcessed||0).toLocaleString()} lines processed). Let's configure rules to achieve 100% parsing.
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-p" id="btn-zero-match-resolve" onclick="SNIFFER.autoResolveAll()" type="button" style="font-size:11.5px;padding:6px 14px;">
+              ✦ Auto-Configure Rules &amp; Parse
+            </button>
+            <button class="btn btn-g" id="btn-zero-match-custom" onclick="UI.openM(null)" type="button" style="font-size:11.5px;padding:6px 14px;">
+              Custom Rule Builder
+            </button>
+          </div>
+        </div>`;
+        return;
+      }
       el.innerHTML='<div class="emp" style="padding:26px"><div class="emp-ico"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div><div class="emp-sub">Inbox zero, but for logs. No events matched the rules.</div></div>';return;
     }
     HS.ann(tree,null);
@@ -10305,6 +10330,32 @@ const TR={
     el.style.display = 'flex';
     el.style.flexDirection = 'column';
     el.style.height = '100%';
+    
+    if(!tree || !tree.length){
+      if(S.stats && S.stats.linesProcessed > 0 && (S.stats.matchedLines === 0 || !tree.length)){
+        el.innerHTML = `
+          <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
+            <div class="pt" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui);">
+              <span>┠ Execution Tree</span>
+              <span class="badge b-amber mla" style="font-size:10px;">0 matched</span>
+            </div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:24px;">
+              <div class="emp" style="padding:20px;text-align:center;max-width:440px;">
+                <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">Unmatched Custom Log Lines</div>
+                <div class="emp-sub" style="font-size:11.5px;color:var(--t3);line-height:1.5;margin-bottom:12px;">
+                  ${(S.stats.linesProcessed||0).toLocaleString()} lines were processed but did not match active rules.
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">
+                  <button class="btn btn-p btn-xs" onclick="SNIFFER.autoResolveAll()" type="button">✦ Auto-Configure Rules &amp; Parse</button>
+                  <button class="btn btn-g btn-xs" onclick="UI.openM(null)" type="button">Custom Rule Builder</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    }
     
     this.flatten(tree, 0, null, []);
     this.updateVisible();
@@ -11012,7 +11063,7 @@ const UI={
     // Utility panels bypass all data-rendering paths
     if (vm === 'cfg') { this._showPanel('p-cfg'); return; }
     if (vm === 'hlp') { this._showPanel('p-hlp'); return; }
-    if(S.trees&&S.activeThr!==null){
+    if(S.trees && (S.activeThr !== null || (S.stats && S.stats.linesProcessed > 0))){
       this.rv();
     } else {
       const hc = $('hidden-panels-container') || document.body;
@@ -11801,6 +11852,7 @@ const DD={
       const jsons=files.filter(f=>/\.json$/i.test(f.name));
       if(jsons.length){FS.imp(jsons[0]);if(jsons.length>1)toast('Only first JSON imported.','warn');}
       if(logs.length){
+        ONBOARD.dismiss();
         MF.add(logs);
         SNIFFER.handleFile(logs[0], true);
       }
@@ -13705,21 +13757,107 @@ const SNIFFER={
       cm = preset.cm || {};
       tsPattern = preset.ts || tsPattern;
     } else {
-      if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/.test(sample)) {
-        base = '^(\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)\\s+';
+      // Find the most informative non-empty sample line
+      const sample = lines.find(l => l && l.trim().length > 10 && !/^(?:#|\/{2}|===|---|___|\s*$)/.test(l.trim())) || lines[0] || '';
+      let tsMatched = false;
+      let rem = sample;
+
+      // 1. Bracketed ISO / DateTime: [2026-10-08 14:23:45.123] or [2026-10-08T14:23:45Z]
+      const mBrakIso = sample.match(/^\[(\d{4}[-/.]\d{2}[-/.]\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?(?:Z|[+-]\d{2}:?\d{2})?)\]\s*/);
+      if (mBrakIso) {
+        base = '^\\[(\\d{4}[-/.]\\d{2}[-/.]\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?(?:Z|[+-]\\d{2}:?\\d{2})?)\\]\\s*';
         cm['1'] = 'timestamp';
-        if (/(ERROR|WARN|INFO|DEBUG|TRACE)/i.test(sample)) {
-          base += '(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\\s+';
-          cm['2'] = 'level';
-          if (/\[([^\]]+)\]/.test(sample)) {
+        tsPattern = '(\\d{4}[-/.]\\d{2}[-/.]\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)';
+        rem = sample.slice(mBrakIso[0].length);
+        tsMatched = true;
+      }
+
+      // 2. Standard ISO / date-time: 2026-10-08 14:23:45.123 or 2026-10-08T14:23:45
+      if (!tsMatched) {
+        const mStdIso = sample.match(/^(\d{4}[-/.]\d{2}[-/.]\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?(?:Z|[+-]\d{2}:?\d{2})?)\s+/);
+        if (mStdIso) {
+          base = '^(\\d{4}[-/.]\\d{2}[-/.]\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?(?:Z|[+-]\\d{2}:?\\d{2})?)\\s+';
+          cm['1'] = 'timestamp';
+          tsPattern = '(\\d{4}[-/.]\\d{2}[-/.]\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)';
+          rem = sample.slice(mStdIso[0].length);
+          tsMatched = true;
+        }
+      }
+
+      // 3. Slash date-time: 2026/10/08 14:23:45
+      if (!tsMatched) {
+        const mSlash = sample.match(/^(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}(?:[.,]\\d{3,6})?)\s+/);
+        if (mSlash) {
+          base = '^(\\d{4}\\/\\d{2}\\/\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)\\s+';
+          cm['1'] = 'timestamp';
+          tsPattern = '(\\d{4}\\/\\d{2}\\/\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)';
+          rem = sample.slice(mSlash[0].length);
+          tsMatched = true;
+        }
+      }
+
+      // 4. Time-only: 14:23:45.123 or [14:23:45.123]
+      if (!tsMatched) {
+        const mTime = sample.match(/^(?:\[)?(\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?)(?:\])?\s+/);
+        if (mTime) {
+          base = '^(?:\\[)?(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)(?:\\])?\\s+';
+          cm['1'] = 'timestamp';
+          tsPattern = '(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3,6})?)';
+          rem = sample.slice(mTime[0].length);
+          tsMatched = true;
+        }
+      }
+
+      // 5. Syslog: Oct 08 14:23:45
+      if (!tsMatched) {
+        const mSys = sample.match(/^([A-Za-z]{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+/);
+        if (mSys) {
+          base = '^([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})\\s+';
+          cm['1'] = 'timestamp';
+          tsPattern = '([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})';
+          rem = sample.slice(mSys[0].length);
+          tsMatched = true;
+        }
+      }
+
+      // 6. Inspect remaining tokens in rem for thread, component, level, and separators
+      if (tsMatched) {
+        const lvlMatch = rem.match(/\b(FATAL|CRITICAL|ERROR|WARN|WARNING|INFO|DEBUG|TRACE|NOTICE)\b/i);
+        const brkMatch = rem.match(/\[([^\]]+)\]/);
+        const lvlIdx = lvlMatch ? rem.indexOf(lvlMatch[0]) : -1;
+        const brkIdx = brkMatch ? rem.indexOf(brkMatch[0]) : -1;
+
+        if (brkIdx !== -1 && (lvlIdx === -1 || brkIdx < lvlIdx)) {
+          base += '\\[([^\\]]+)\\]\\s+';
+          cm[String(Object.keys(cm).length + 1)] = 'thread';
+          const remAfterBrk = rem.slice(brkIdx + brkMatch[0].length).trim();
+          if (/^\[([^\]]+)\]/.test(remAfterBrk)) {
             base += '\\[([^\\]]+)\\]\\s+';
-            cm['3'] = 'thread';
+            cm[String(Object.keys(cm).length + 1)] = 'className';
+          }
+          if (/\b(FATAL|CRITICAL|ERROR|WARN|WARNING|INFO|DEBUG|TRACE|NOTICE)\b/i.test(remAfterBrk)) {
+            base += '(FATAL|CRITICAL|ERROR|WARN|WARNING|INFO|DEBUG|TRACE|NOTICE)\\s+';
+            cm[String(Object.keys(cm).length + 1)] = 'level';
+          }
+        } else if (lvlIdx !== -1) {
+          base += '(FATAL|CRITICAL|ERROR|WARN|WARNING|INFO|DEBUG|TRACE|NOTICE)\\s+';
+          cm[String(Object.keys(cm).length + 1)] = 'level';
+          const remAfterLvl = rem.slice(lvlIdx + lvlMatch[0].length).trim();
+          if (/\[([^\]]+)\]/.test(remAfterLvl)) {
+            base += '\\[([^\\]]+)\\]\\s+';
+            cm[String(Object.keys(cm).length + 1)] = 'thread';
           }
         }
-      } else if (/^\d{2}:\d{2}:\d{2}/.test(sample)) {
-        tsPattern = '(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)';
-        base = '^(\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d{3})?)\\s+';
-        cm['1'] = 'timestamp';
+
+        if (/\s+-\s+/.test(sample)) {
+          base += '-\\s+';
+        } else if (/\s+:\s+/.test(sample)) {
+          base += ':\\s+';
+        } else if (/\s+---\s+/.test(sample)) {
+          base += '---\\s+';
+        } else if (/\s+\|\s+/.test(sample)) {
+          base += '\\|\\s+';
+        }
       }
     }
 
@@ -13729,7 +13867,7 @@ const SNIFFER={
       {
         id: 'r_auto_start',
         name: 'Transaction Start',
-        regexPattern: base + '(?:TX-BEGIN|Started|Starting|Enter|BEGIN)\\s+(.*)',
+        regexPattern: base + '(?:TX-BEGIN|Started|Starting|Enter|BEGIN|-->|Request|REQ-START|start|Init|login|open)\\b\\s*(.*)',
         captureMapping: { ...cm, [payIdx]: 'payload' },
         stackBehavior: 'push',
         visualStyle: { accentColor: '#58a6ff', icon: '▶' },
@@ -13738,7 +13876,7 @@ const SNIFFER={
       {
         id: 'r_auto_end',
         name: 'Transaction End',
-        regexPattern: base + '(?:TX-END|Completed|Finished|Exit|END)\\s+(.*)',
+        regexPattern: base + '(?:TX-END|Completed|Finished|Exit|END|<--|Response|REQ-END|finish|Done|close)\\b\\s*(.*)',
         captureMapping: { ...cm, [payIdx]: 'payload' },
         stackBehavior: 'pop',
         visualStyle: { accentColor: '#3fb950', icon: '◀' },
@@ -13747,7 +13885,7 @@ const SNIFFER={
       {
         id: 'r_auto_error',
         name: 'Error & Exception',
-        regexPattern: base + '.*?(?:ERROR|FATAL|Exception|Failed|Error)(.*)',
+        regexPattern: base + '.*?(?:ERROR|FATAL|Exception|Failed|Error|CRITICAL|FAIL)\\b\\s*(.*)',
         captureMapping: { ...cm, [payIdx]: 'payload' },
         stackBehavior: 'inline',
         visualStyle: { accentColor: '#f85149', icon: '✕' },
@@ -13822,7 +13960,7 @@ const SNIFFER={
     const unparsedCount = stats.linesProcessed - (stats.matchedLines || 0);
     const unparsedRatio = unparsedCount / stats.linesProcessed;
 
-    if (unparsedRatio > 0.15 && stats.unparsedSample && stats.unparsedSample.length > 0) {
+    if ((unparsedRatio > 0.05 || (stats.linesProcessed > 0 && stats.matchedLines === 0)) && stats.unparsedSample && stats.unparsedSample.length > 0) {
       const clusters = UNPARSED.cluster(stats.unparsedSample);
       UNPARSED.currentClusters = clusters;
       if (clusters.length > 0) {
@@ -13836,13 +13974,16 @@ const SNIFFER={
                 <span>Adaptive Rescue: Unmatched Log Pattern Detected</span>
               </div>
               <div class="rescue-card-desc">
-                ${unparsedCount.toLocaleString()} lines did not match any active rule. Top pattern (${topCluster.count} sample occurrences):
+                ${unparsedCount.toLocaleString()} line${unparsedCount!==1?'s':''} did not match active rules (${100 - pct}% parsed). Top unmatched pattern (${topCluster.count} sample occurrences):
               </div>
               <div class="rescue-sig-preview">${esc(topCluster.sig)}</div>
             </div>
             <div class="rescue-actions">
               <button class="btn btn-p btn-xs" id="btn-rescue-auto" onclick="SNIFFER.addRescueRule(0)" type="button" title="Automatically create rule for this pattern, save to file, and re-parse">
                 + Auto-Add Rule &amp; Save to File
+              </button>
+              <button class="btn btn-xs" id="btn-rescue-resolve-all" onclick="SNIFFER.autoResolveAll()" type="button" title="Auto-generate rules for all unparsed patterns to achieve 100% parsing" style="background:var(--amber);color:#000;font-weight:700;">
+                ✦ Resolve All to 100%
               </button>
               <button class="btn btn-xs" id="btn-rescue-custom" onclick="UNPARSED.createRuleFromIndex(0)" type="button" title="Customize regex pattern in Rule Creator modal">
                 Custom Regex
@@ -13856,6 +13997,26 @@ const SNIFFER={
         dock.style.display = 'flex';
         return;
       }
+    } else if (stats.linesProcessed > 0 && stats.matchedLines === stats.linesProcessed && S._hadRescue) {
+      dock.innerHTML = `
+        <div class="rescue-card rescue-card-success" id="rescue-success-banner" style="border-left-color:var(--green);border-color:var(--green);">
+          <div class="rescue-card-content">
+            <div class="rescue-card-title" style="color:var(--green);">
+              <span class="badge b-green" style="font-size:10px;padding:2px 6px;">100% Parsed</span>
+              <span>✓ 100% Rule Coverage Achieved!</span>
+            </div>
+            <div class="rescue-card-desc">
+              All ${stats.linesProcessed.toLocaleString()} lines matched active rules. Your custom log format is fully parsed.
+            </div>
+          </div>
+          <div class="rescue-actions">
+            <button class="btn btn-xs btn-g" onclick="SNIFFER.dismissRescue()" type="button">Dismiss</button>
+          </div>
+        </div>
+      `;
+      dock.style.display = 'flex';
+      setTimeout(() => { if (dock) SNIFFER.dismissRescue(); }, 6000);
+      return;
     }
     dock.style.display = 'none';
     dock.innerHTML = '';
@@ -13898,6 +14059,7 @@ const SNIFFER={
     };
 
     S.cfg.elementRules.push(newRule);
+    S._hadRescue = true;
     CFG.rl();
     this.dismissRescue();
 
@@ -13905,8 +14067,65 @@ const SNIFFER={
       await CFG.pers();
       toast(`Rule added and saved to ${S.cfgHandle.name}. Re-parsing…`, 'success');
     } else {
+      try {
+        localStorage.setItem('ll_cfg_last', JSON.stringify(S.cfg));
+      } catch(_) {}
       toast('Rule added. Re-parsing…', 'info');
-      await CFG.saveToFile();
+    }
+
+    setTimeout(() => {
+      const bp = $('btn-parse');
+      if (bp && !bp.disabled) bp.click();
+    }, 120);
+  },
+
+  async autoResolveAll() {
+    const clusters = UNPARSED.currentClusters || [];
+    if (!clusters.length) return;
+
+    if (!S.cfg) S.cfg = JSON.parse(JSON.stringify(DEF_CFG));
+    if (!Array.isArray(S.cfg.elementRules)) S.cfg.elementRules = [];
+
+    let addedCount = 0;
+    clusters.forEach((cluster, idx) => {
+      let rx = cluster.sig;
+      if (rx.endsWith('…')) rx = rx.slice(0, -1) + '.*';
+      const rawSig = rx.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/\\\*/g, '.*');
+      let pattern = '^' + rawSig;
+      if (pattern.endsWith('.*')) {
+        pattern = pattern.slice(0, -2) + '(.*)';
+      } else {
+        pattern = pattern + '(.*)';
+      }
+
+      if (S.cfg.elementRules.some(r => r.regexPattern === pattern)) return;
+
+      const colors = ['#e3b341', '#58a6ff', '#bc8cff', '#3fb950', '#f0883e'];
+      const icons = ['⚡', '●', '◈', '✦', '▲'];
+      S.cfg.elementRules.push({
+        id: UTILS.gid(),
+        name: `Resolved Pattern ${idx + 1} (${cluster.count} hits)`,
+        regexPattern: pattern,
+        captureMapping: { '1': 'payload' },
+        stackBehavior: 'inline',
+        visualStyle: { accentColor: colors[idx % colors.length], icon: icons[idx % icons.length] },
+        enabled: true
+      });
+      addedCount++;
+    });
+
+    S._hadRescue = true;
+    CFG.rl();
+    this.dismissRescue();
+
+    if (S.cfgHandle) {
+      await CFG.pers();
+      toast(`${addedCount} rule(s) added to reach 100% parsing. Saved to ${S.cfgHandle.name}. Re-parsing…`, 'success');
+    } else {
+      try {
+        localStorage.setItem('ll_cfg_last', JSON.stringify(S.cfg));
+      } catch(_) {}
+      toast(`${addedCount} rule(s) auto-generated to reach 100% parsing. Re-parsing…`, 'success');
     }
 
     setTimeout(() => {
@@ -15791,6 +16010,7 @@ $('sh-bd').addEventListener('click',e=>{
 $('btn-sel').addEventListener('click',()=>$('fi-log').click());
 $('fi-log').addEventListener('change',e=>{
   const file=e.target.files[0];if(!file)return;
+  ONBOARD.dismiss();
   MF.files=[];MF.add([file]);
   $('lfname').textContent=`${file.name} (${fmtB(file.size)})`;
   const nm=file.name.length>20?file.name.slice(0,20)+'…':file.name;
@@ -25327,10 +25547,12 @@ UI.chooseAndParseLog = function() {
     }, 150);
   });
 
-  // "Drop a Log File" — dismiss and show drop hint
+  // "Open Log File" — dismiss and trigger file chooser
   if (btnDrop) btnDrop.addEventListener('click', () => {
     ONBOARD.dismiss();
-    toast('Drop a .log or .txt file anywhere on the screen, or use the sidebar to load a config first.', 'info');
+    setTimeout(() => {
+      UI.chooseAndParseLog();
+    }, 80);
   });
 
   // "Skip" — dismiss permanently
