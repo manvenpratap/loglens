@@ -3,6 +3,11 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Stats View Top Header Bar Squashing & Text Truncation Fix (v6.9.97 — COMPLETED)**:
+  - **Eliminated Flex-Shrink Squashing on `#stats-bar`**: Fixed root cause where `#stats-bar` defaulted to `flex-shrink: 1` inside flex container `#res`. When the Stats view child height exceeded viewport height (e.g., 1860px), flexbox squashed `#stats-bar` down to 26px and `overflow: hidden` clipped all metric values and labels, rendering a half-visible empty bar with only vertical dividers. Added `flex-shrink: 0 !important;` to `.stats` and `.res-summary-cards`.
+  - **Pristine Grouped Card Cell Padding**: Removed outer padding (`padding: 0 !important;`) on `.stats` and styled `.sc` cells with `padding: 10px 14px !important; gap: 4px !important;`, allowing vertical dividers to extend seamlessly from top to bottom border in true Apple grouped style.
+  - **Full Regression Test Suite Passed**: All 111 regression tests passing across both dark and light/ivory themes with zero regressions.
+
 - **Summary Stat Cards Real-Estate Optimization (v6.9.96 — COMPLETED)**:
   - **Restricted Summary Cards to Stats View**: Restricted `#res-summary-cards` ("Slowest Operation", "Rules Coverage", "Active Threads") exclusively to the dedicated Stats dashboard (`S.viewMode === 'stats'`).
   - **Reclaimed 130px+ Vertical Real Estate**: In Split View (`split`), Gantt/Timeline (`gantt`), and Tree (`tree`), the 3 bulky summary stat cards are automatically removed, restoring full viewport height to the execution tree, waterfall lanes, and zoom timeline without vertical crowding.
@@ -1009,4 +1014,4 @@ Graphify is attached to this project and should be used for:
 ---
 
 *Last Updated: 2026-10-10*  
-*Updated By: Antigravity (Summary Stat Cards Scope Optimization v6.9.96)*
+*Updated By: Antigravity (Stats View Header Bar Fix v6.9.97)*
