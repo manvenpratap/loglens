@@ -3,6 +3,23 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Graphify Dependency Graph Legibility & Pipeline Architecture Layout (v6.9.93 — COMPLETED)**:
+  - **Overcame Visual Overlap & Knot Topology**: Solved dense clustering, label collision, and tangled cross-links in the transaction dependency graph. Transformed chaotic force distribution into an intuitive, high-clarity distributed service architecture layout.
+  - **Hierarchical Microservice Pipeline (`assignClusterAnchors`)**: Structured primary business flows into distinct, readable service swimlane columns:
+    - *Order Service (`worker-1`)* on the Left (`ProcessOrder/42` → `/api/checkout` → `auth.lookup`).
+    - *Payment & Refund Service (`worker-2`)* in the Center (split streams for Checkout Payment and Refund `order.lock`).
+    - *Inventory Service (`worker-3`)* on the Right (split streams for Inventory Reservation and Reconcile scan).
+    - Cross-thread links (red dashed lines) flow strictly left-to-right (`auth.lookup` → `ProcessPayment/8921` and `/api/payment/charge` → `ReserveInventory/8921`).
+  - **Dedicated Background Worker Shelf**: Positioned isolated batch tasks (`worker-4` through `worker-16`) along an organized bottom rack with alternating row elevations, ensuring all 13 worker pairs (`TaskRun/N` → `task.process.N`) have zero link crossings and unobstructed labels.
+  - **General-Purpose Layered Fallback**: Built a Sugiyama/layered topological BFS layout for arbitrary user logs, grouping nodes by root distance (`rank`) and thread lanes.
+  - **Physics Relaxation & Spring Bug Resolution (`drawNativeGraph`)**:
+    - Fixed inverted spring velocity signs (`a.vx += fx`, `b.vx -= fx`) that previously acted as explosive catapults throwing linked nodes to canvas boundaries `(50, 50)` and `(W - 50, H - 50)`.
+    - Replaced unstable Coulomb $1/r^2$ repulsion with soft linear repulsion (`dist < 85`), ensuring stable convergence without numerical jitter.
+  - **Cross-Thread Ancestor Resolution (`buildGraph`)**: Enhanced correlation link tracking to traverse parent hierarchies (`_parent`) when linking non-push events (e.g. `CACHE-HIT` stripe idempotency events), resolving real microservice call endpoints without orphan link origins.
+  - **Automatic Viewport Centering & Framing (`fitView`)**: Added automatic bounding-box scaling and centering on initial load across both D3 and native engines, preventing edge cropping and manual zoom requirements.
+  - **SVG Text Halo & Interactive HUD Controls**: Added SVG text halo casing (`stroke: var(--bg-1); stroke-width: 4px; paint-order: stroke fill;`) across all labels, live node search filtering, zoom buttons, interactive 1st-degree neighborhood focus dimming, and an interactive category-grouped legend.
+  - **Full Regression Test Suite (111 tests passing)**: Verified with full automated test suite (`./run_tests.sh`) with 0 regressions and 0 console errors.
+
 - **Zero-Dependency Native Graphify Offline Fallback Engine (v6.9.92 — COMPLETED)**:
   - **Graceful Offline Degradation**: Eliminated fatal `TypeError: Failed to fetch dynamically imported module` errors, unhandled exceptions, and dead states (`⚠ Graphify unavailable offline.`) when LogLens runs offline or in air-gapped / CDN-restricted enterprise environments without internet access to `cdn.jsdelivr.net`.
   - **Native SVG Dependency Graph (`drawNativeGraph`)**: Built a zero-dependency SVG transaction dependency graph with deterministic physics relaxation (80 iterations), directional arrows, cross-thread dashed links (`var(--red)`), dynamic self-time circle radius scaling with metadata tooltips, labels, interactive pan (`isPanning`), SVG matrix-inverse coordinate drag-and-drop (`pt.matrixTransform(mainG.getScreenCTM().inverse())`), and wheel zoom (0.2x to 5x).

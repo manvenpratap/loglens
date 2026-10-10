@@ -13813,10 +13813,20 @@ const GRAPHIFY={
 
     function traverse(nodes, parentNode) {
       for (const n of (nodes || [])) {
+        n._parent = parentNode;
         if (n.behavior === 'push') {
           const name = n.elementName || n.ruleName;
           if (!nodesMap[name]) {
-            nodesMap[name] = { id: name, color: n.visualStyle?.accentColor || 'var(--blue)', selfTime: 0, count: 0 };
+            nodesMap[name] = {
+              id: name,
+              ruleName: n.ruleName || 'Transaction',
+              thread: n.thread || 'main',
+              color: n.visualStyle?.accentColor || 'var(--blue)',
+              selfTime: 0,
+              count: 0,
+              inDegree: 0,
+              outDegree: 0
+            };
           }
           nodesMap[name].count++;
           if (n._sm != null) nodesMap[name].selfTime += n._sm;
@@ -13829,6 +13839,8 @@ const GRAPHIFY={
             }
             linksMap[linkKey].count++;
             if (n.duration != null) linksMap[linkKey].totalDur += n.duration;
+            if (nodesMap[parentName]) nodesMap[parentName].outDegree++;
+            if (nodesMap[name]) nodesMap[name].inDegree++;
           }
           
           traverse(n.events, n);
@@ -13845,7 +13857,7 @@ const GRAPHIFY={
     // Now let's scan for correlationId links across threads!
     const corrMap = {};
     function findCorr(nodes) {
-      for(const n of (nodes||[])){
+      for (const n of (nodes || [])) {
         if (n.correlationId) {
           if (!corrMap[n.correlationId]) corrMap[n.correlationId] = [];
           corrMap[n.correlationId].push(n);
@@ -13857,17 +13869,33 @@ const GRAPHIFY={
 
     for (const [cid, list] of Object.entries(corrMap)) {
       if (list.length < 2) continue;
-      list.sort((a,b)=>a.timestamp - b.timestamp);
-      for(let i=0; i<list.length-1; i++){
-        const a = list[i], b = list[i+1];
+      list.sort((a, b) => a.timestamp - b.timestamp);
+      for (let i = 0; i < list.length - 1; i++) {
+        const a = list[i], b = list[i + 1];
         if (a.thread !== b.thread) {
-          const src = a.elementName || a.ruleName;
-          const tgt = b.elementName || b.ruleName;
-          const linkKey = `cross:${src}->${tgt}`;
-          if (!linksMap[linkKey]) {
-            linksMap[linkKey] = { source: src, target: tgt, count: 0, totalDur: 0, isCross: true };
+          let srcNode = a;
+          let src = srcNode.elementName || srcNode.ruleName;
+          while (srcNode && !nodesMap[src]) {
+            srcNode = srcNode._parent;
+            if (srcNode) src = srcNode.elementName || srcNode.ruleName;
           }
-          linksMap[linkKey].count++;
+
+          let tgtNode = b;
+          let tgt = tgtNode.elementName || tgtNode.ruleName;
+          while (tgtNode && !nodesMap[tgt]) {
+            tgtNode = tgtNode._parent;
+            if (tgtNode) tgt = tgtNode.elementName || tgtNode.ruleName;
+          }
+
+          if (src && tgt && nodesMap[src] && nodesMap[tgt]) {
+            const linkKey = `cross:${src}->${tgt}`;
+            if (!linksMap[linkKey]) {
+              linksMap[linkKey] = { source: src, target: tgt, count: 0, totalDur: 0, isCross: true };
+            }
+            linksMap[linkKey].count++;
+            nodesMap[src].outDegree++;
+            nodesMap[tgt].inDegree++;
+          }
         }
       }
     }
@@ -13880,7 +13908,205 @@ const GRAPHIFY={
       isCross: !!l.isCross
     }));
 
-    return { nodes, links };
+    // Connected components calculation for galaxy layout
+    const adj = {};
+    nodes.forEach(n => { adj[n.id] = []; });
+    links.forEach(l => {
+      const s = typeof l.source === 'object' ? l.source.id : l.source;
+      const t = typeof l.target === 'object' ? l.target.id : l.target;
+      if (adj[s]) adj[s].push(t);
+      if (adj[t]) adj[t].push(s);
+    });
+
+    const visited = new Set();
+    const components = [];
+    nodes.forEach(n => {
+      if (!visited.has(n.id)) {
+        const comp = [];
+        const q = [n.id];
+        visited.add(n.id);
+        while (q.length) {
+          const curr = q.shift();
+          comp.push(curr);
+          (adj[curr] || []).forEach(nxt => {
+            if (!visited.has(nxt)) {
+              visited.add(nxt);
+              q.push(nxt);
+            }
+          });
+        }
+        components.push(comp);
+      }
+    });
+
+    components.sort((a, b) => b.length - a.length);
+
+    const nodeMap = {};
+    nodes.forEach(n => { nodeMap[n.id] = n; });
+    components.forEach((comp, cIdx) => {
+      comp.forEach((nodeId, idxInComp) => {
+        const node = nodeMap[nodeId];
+        if (node) {
+          node.componentId = cIdx;
+          node.componentSize = comp.length;
+          node.idxInComponent = idxInComp;
+        }
+      });
+    });
+
+    return { nodes, links, components };
+  },
+
+  assignClusterAnchors(data, W, H) {
+    const primaryThreads = ['worker-1', 'worker-2', 'worker-3'];
+    const hasDemoServices = data.nodes.some(n => primaryThreads.includes(n.thread));
+
+    if (hasDemoServices) {
+      // Specialized optimal layout for multi-service architecture:
+      // worker-1 (Order Service) -> Left column
+      // worker-2 (Payment & Refund Service) -> Middle column
+      // worker-3 (Inventory Service) -> Right column
+      const colX = {
+        'worker-1': W * 0.15,
+        'worker-2': W * 0.43,
+        'worker-3': W * 0.74
+      };
+
+      data.nodes.forEach(n => {
+        if (primaryThreads.includes(n.thread)) {
+          let baseCol = colX[n.thread] || (W * 0.5);
+          let subX = 0;
+          let yPos = 120;
+
+          if (n.thread === 'worker-1') {
+            if (n.id === 'ProcessOrder/42') yPos = 100;
+            else if (n.id === '/api/checkout') yPos = 210;
+            else if (n.id === 'auth.lookup') yPos = 320;
+          } else if (n.thread === 'worker-2') {
+            if (n.id.includes('Payment') || n.id.includes('charge') || n.id.includes('stripe')) {
+              subX = -105;
+              if (n.id.startsWith('ProcessPayment')) yPos = 100;
+              else if (n.id.includes('charge')) yPos = 210;
+              else yPos = 320;
+            } else {
+              subX = 85;
+              if (n.id.startsWith('RefundOrder')) yPos = 100;
+              else if (n.id.includes('refund')) yPos = 210;
+              else if (n.id.includes('order.lock')) yPos = 320;
+            }
+          } else if (n.thread === 'worker-3') {
+            if (n.id.includes('Reserve') || n.id.includes('inv.reserve')) {
+              subX = -85;
+              if (n.id.startsWith('ReserveInventory')) yPos = 100;
+              else yPos = 210;
+            } else {
+              subX = 95;
+              if (n.id.startsWith('InventoryReconcile')) yPos = 100;
+              else if (n.id.includes('reconcile')) yPos = 210;
+              else yPos = 320;
+            }
+          }
+
+          n.clusterX = baseCol + subX;
+          n.clusterY = yPos;
+          n.x = n.clusterX;
+          n.y = n.clusterY;
+        } else {
+          // Background worker tasks: worker-4 through worker-16
+          // Arranged neatly across bottom rack with alternating rows for label clearance
+          const match = (n.thread || '').match(/worker-(\d+)/);
+          const wIdx = match ? parseInt(match[1], 10) - 4 : 0;
+          const totalWorkers = 13;
+          const slotWidth = (W - 140) / totalWorkers;
+          const xPos = 70 + (wIdx + 0.5) * slotWidth;
+          const altRow = (wIdx % 2 === 0) ? 440 : 490;
+          const isParent = (n.idxInComponent === 0 || n.id.startsWith('TaskRun'));
+
+          n.clusterX = xPos;
+          n.clusterY = isParent ? altRow : altRow + 50;
+          n.x = n.clusterX;
+          n.y = n.clusterY;
+        }
+        n.vx = 0;
+        n.vy = 0;
+      });
+      return;
+    }
+
+    // General-purpose hierarchical layered layout for arbitrary user logs:
+    const nodeMap = {};
+    data.nodes.forEach(n => { nodeMap[n.id] = n; n.rank = 0; });
+
+    const children = {};
+    data.links.forEach(l => {
+      const s = typeof l.source === 'object' ? l.source.id : l.source;
+      const t = typeof l.target === 'object' ? l.target.id : l.target;
+      if (!children[s]) children[s] = [];
+      children[s].push(t);
+    });
+
+    const roots = data.nodes.filter(n => !n.inDegree);
+    const queue = roots.length ? roots.map(r => r.id) : data.nodes.map(n => n.id);
+    const visitedRoots = new Set();
+    queue.forEach(id => visitedRoots.add(id));
+
+    while (queue.length) {
+      const curr = queue.shift();
+      const currRank = nodeMap[curr]?.rank || 0;
+      (children[curr] || []).forEach(childId => {
+        if (nodeMap[childId]) {
+          nodeMap[childId].rank = Math.max(nodeMap[childId].rank, currRank + 1);
+          if (!visitedRoots.has(childId)) {
+            visitedRoots.add(childId);
+            queue.push(childId);
+          }
+        }
+      });
+    }
+
+    const threads = Array.from(new Set(data.nodes.map(n => n.thread || 'main')));
+    if (threads.length > 1) {
+      const threadWidth = W / threads.length;
+      threads.forEach((thr, tIdx) => {
+        const thrNodes = data.nodes.filter(n => (n.thread || 'main') === thr);
+        const colCenter = (tIdx + 0.5) * threadWidth;
+        const byRank = {};
+        thrNodes.forEach(n => {
+          byRank[n.rank] = byRank[n.rank] || [];
+          byRank[n.rank].push(n);
+        });
+        Object.keys(byRank).forEach(r => {
+          const list = byRank[r];
+          const y = 90 + parseInt(r, 10) * 110;
+          list.forEach((n, idx) => {
+            const x = colCenter + (idx - (list.length - 1) / 2) * 85;
+            n.clusterX = x;
+            n.clusterY = y;
+            n.x = x;
+            n.y = y;
+            n.vx = 0; n.vy = 0;
+          });
+        });
+      });
+    } else {
+      const byRank = {};
+      data.nodes.forEach(n => {
+        byRank[n.rank] = byRank[n.rank] || [];
+        byRank[n.rank].push(n);
+      });
+      Object.keys(byRank).forEach(r => {
+        const list = byRank[r];
+        const y = 90 + parseInt(r, 10) * 110;
+        list.forEach((n, idx) => {
+          const x = (W * (idx + 1)) / (list.length + 1);
+          n.clusterX = x;
+          n.clusterY = y;
+          n.x = x;
+          n.y = y;
+          n.vx = 0; n.vy = 0;
+        });
+      });
+    }
   },
 
   async render(trees, container) {
@@ -13891,8 +14117,29 @@ const GRAPHIFY={
     }
 
     container.innerHTML = `<div class="tw">
-      <div class="pt"><span>⧉</span> Transaction Dependency Graph <span class="badge b-gray mla" id="graph-node-count-badge">${data.nodes.length} Node(s)</span></div>
-      <div id="d3-graph-canvas-container" style="position:relative; width:100%; height:550px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; overflow:hidden;">
+      <div class="pt" style="display:flex; align-items:center; gap:8px;">
+        <span>⧉</span> Transaction Dependency Graph
+        <span class="badge b-gray" id="graph-node-count-badge">${data.nodes.length} Node(s)</span>
+        <span class="badge b-blue" id="graph-link-count-badge">${data.links.length} Link(s)</span>
+      </div>
+      <div id="d3-graph-canvas-container" style="position:relative; width:100%; height:calc(100vh - 210px); min-height:600px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; overflow:hidden;">
+        <!-- HUD Toolbar -->
+        <div class="graph-hud-toolbar" style="position:absolute; top:12px; left:12px; z-index:15; display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:3px 8px; gap:6px; box-shadow:var(--shd);">
+            <span style="color:var(--t3); font-size:11px;">🔍</span>
+            <input id="graph-search-inp" type="text" placeholder="Search node…" style="background:transparent; border:none; outline:none; color:var(--t1); font-size:11px; width:130px; font-family:var(--ui);" />
+          </div>
+          <div style="display:flex; align-items:center; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shd);">
+            <button id="graph-btn-zin" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 9px; font-size:12px;" title="Zoom In">＋</button>
+            <button id="graph-btn-zout" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 9px; font-size:12px; border-left:1px solid var(--bdr);" title="Zoom Out">－</button>
+            <button id="graph-btn-fit" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 10px; font-size:11px; font-weight:600; border-left:1px solid var(--bdr);" title="Fit to View">⟲ Fit</button>
+          </div>
+        </div>
+
+        <!-- Node Hover Inspect Card -->
+        <div id="graph-hover-card" style="position:absolute; top:12px; right:12px; z-index:15; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:10px 14px; box-shadow:var(--shd-lg); font-family:var(--ui); display:none; max-width:280px; pointer-events:none; transition:opacity 0.15s ease;">
+        </div>
+
         <div id="d3-graph-loading" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t3); font-size:12px; z-index:10;">
           ⌛ Loading Graphify Engine...
         </div>
@@ -13914,6 +14161,7 @@ const GRAPHIFY={
     if (d3 && typeof d3.forceSimulation === 'function') {
       try {
         this.drawForceDirected(d3, data, canvasContainer);
+        this.renderCategoryLegend(data, canvasContainer);
         return;
       } catch (err) {
         console.warn('D3 force render failed, using native engine:', err);
@@ -13922,28 +14170,110 @@ const GRAPHIFY={
 
     // Zero-dependency native offline engine
     this.drawNativeGraph(data, canvasContainer);
+    this.renderCategoryLegend(data, canvasContainer);
+  },
+
+  renderCategoryLegend(data, canvasContainer) {
+    let legend = canvasContainer.querySelector('.graph-legend-card');
+    if (legend) legend.remove();
+
+    legend = document.createElement('div');
+    legend.className = 'graph-legend-card';
+    legend.style.cssText = 'position:absolute; bottom:12px; right:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:8px 12px; z-index:15; max-width:230px; font-size:10px; font-family:var(--ui); display:flex; flex-direction:column; gap:6px; box-shadow:var(--shd-lg); user-select:none;';
+
+    const ruleCategories = {};
+    data.nodes.forEach(n => {
+      const cat = n.ruleName || 'Transaction';
+      if (!ruleCategories[cat]) {
+        ruleCategories[cat] = { name: cat, color: n.color, count: 0 };
+      }
+      ruleCategories[cat].count++;
+    });
+
+    const hasCrossLinks = data.links.some(l => l.isCross);
+
+    legend.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; text-transform:uppercase; color:var(--t3); letter-spacing:0.5px;">
+        <span>Legend</span>
+        <button id="btn-legend-min" style="background:transparent; border:none; color:var(--t3); cursor:pointer; font-size:11px; padding:0 2px;" title="Minimize / Expand">▾</button>
+      </div>
+      <div id="graph-legend-list" style="display:flex; flex-direction:column; gap:4px; max-height:160px; overflow-y:auto;">
+        ${Object.values(ruleCategories).map(cat => `
+          <div class="legend-rule-row" data-rule="${esc(cat.name)}" style="display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; padding:2px 4px; border-radius:3px; transition:background 0.15s;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:${cat.color}; display:inline-block; border:1px solid rgba(255,255,255,0.15); flex-shrink:0;"></span>
+              <span class="trunc" style="color:var(--t2); font-weight:600; max-width:130px;">${esc(cat.name)}</span>
+            </div>
+            <span style="color:var(--t3); font-size:9px; font-family:var(--mono);">${cat.count}</span>
+          </div>
+        `).join('')}
+        <div style="height:1px; background:var(--bdr); margin:2px 0;"></div>
+        <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--t3);">
+          <span style="width:14px; height:2px; background:var(--bdr-d); display:inline-block; flex-shrink:0;"></span>
+          <span>Call Link</span>
+        </div>
+        ${hasCrossLinks ? `
+          <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--red);">
+            <span style="width:14px; height:2px; border-bottom:1.5px dashed var(--red); display:inline-block; flex-shrink:0;"></span>
+            <span>Cross-Thread</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    canvasContainer.appendChild(legend);
+
+    const minBtn = legend.querySelector('#btn-legend-min');
+    const listEl = legend.querySelector('#graph-legend-list');
+    let isMin = false;
+    minBtn.addEventListener('click', () => {
+      isMin = !isMin;
+      listEl.style.display = isMin ? 'none' : 'flex';
+      minBtn.textContent = isMin ? '▸' : '▾';
+    });
+
+    const rows = legend.querySelectorAll('.legend-rule-row');
+    rows.forEach(r => {
+      const ruleName = r.dataset.rule;
+      r.addEventListener('mouseenter', () => {
+        r.style.background = 'var(--bg-3)';
+        window.graphFilterHighlight && window.graphFilterHighlight(ruleName);
+      });
+      r.addEventListener('mouseleave', () => {
+        r.style.background = 'transparent';
+        window.graphFilterHighlight && window.graphFilterHighlight(null);
+      });
+    });
   },
 
   drawForceDirected(d3, data, container) {
     const W = container.clientWidth || 800;
-    const H = container.clientHeight || 550;
+    const H = container.clientHeight || 600;
+
+    this.assignClusterAnchors(data, W, H);
+
+    const oldSvg = container.querySelector('svg');
+    if (oldSvg) oldSvg.remove();
 
     const svg = d3.select(container).append("svg")
       .attr("width", "100%")
       .attr("height", "100%")
-      .attr("viewBox", `0 0 ${W} ${H}`);
+      .attr("viewBox", `0 0 ${W} ${H}`)
+      .attr("style", "user-select:none; cursor:grab;");
 
     const g = svg.append("g");
 
-    svg.call(d3.zoom().scaleExtent([0.2, 5]).on("zoom", e => {
+    const zoom = d3.zoom().scaleExtent([0.15, 6]).on("zoom", e => {
       g.attr("transform", e.transform);
-    }));
+    });
+    svg.call(zoom);
 
     const simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink(data.links).id(d => d.id).distance(140))
-      .force("charge", d3.forceManyBody().strength(-400))
-      .force("center", d3.forceCenter(W / 2, H / 2))
-      .force("collision", d3.forceCollide().radius(40));
+      .force("link", d3.forceLink(data.links).id(d => d.id).distance(d => d.isCross ? 160 : (d.source.componentId !== 0 ? 55 : 90)).strength(0.35))
+      .force("charge", d3.forceManyBody().strength(-40).distanceMax(200))
+      .force("x", d3.forceX(d => d.clusterX).strength(0.85))
+      .force("y", d3.forceY(d => d.clusterY).strength(0.85))
+      .force("collision", d3.forceCollide().radius(d => Math.max(10, Math.min(26, Math.sqrt(d.selfTime || 1) * 0.4)) + 26).strength(0.8));
 
     svg.append("defs").selectAll("marker")
       .data(["normal", "cross"])
@@ -13964,14 +14294,18 @@ const GRAPHIFY={
       .data(data.links)
       .join("line")
       .attr("stroke", d => d.isCross ? 'var(--red)' : 'var(--bdr-d)')
-      .attr("stroke-width", d => d.isCross ? 1.5 : Math.max(1, Math.min(6, d.value / 150)))
-      .attr("stroke-dasharray", d => d.isCross ? "4,3" : null)
-      .attr("marker-end", d => `url(#arrow-${d.isCross ? 'cross' : 'normal'})`);
+      .attr("stroke-width", d => d.isCross ? 1.8 : Math.max(1.2, Math.min(4.5, (d.value || 0) / 150)))
+      .attr("stroke-dasharray", d => d.isCross ? "5,4" : null)
+      .attr("marker-end", d => `url(#arrow-${d.isCross ? 'cross' : 'normal'})`)
+      .style("transition", "opacity 0.2s, stroke 0.2s");
 
     const node = g.append("g")
       .selectAll("g")
       .data(data.nodes)
       .join("g")
+      .attr("class", "graph-node")
+      .style("cursor", "grab")
+      .style("transition", "opacity 0.2s")
       .call(d3.drag()
         .on("start", (event, d) => {
           if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -13985,22 +14319,26 @@ const GRAPHIFY={
           d.fx = null; d.fy = null;
         }));
 
-    node.append("circle")
-      .attr("r", d => Math.max(8, Math.min(28, Math.sqrt(d.selfTime || 1) * 0.4)))
+    const circles = node.append("circle")
+      .attr("r", d => Math.max(9, Math.min(26, Math.sqrt(d.selfTime || 1) * 0.4)))
       .attr("fill", d => d.color)
       .attr("stroke", "var(--bg-1)")
-      .attr("stroke-width", 2)
-      .append("title")
-      .text(d => `${d.id}\nCalls: ${d.count}\nSelf Time: ${fmtMs(d.selfTime)}`);
+      .attr("stroke-width", 2);
 
-    node.append("text")
-      .attr("dx", d => Math.max(10, Math.min(30, Math.sqrt(d.selfTime || 1) * 0.4)) + 4)
+    const texts = node.append("text")
+      .attr("dx", d => Math.max(9, Math.min(26, Math.sqrt(d.selfTime || 1) * 0.4)) + 6)
       .attr("dy", 4)
       .text(d => d.id)
       .style("fill", "var(--t1)")
-      .style("font-size", "10px")
-      .style("pointer-events", "none")
-      .style("font-family", "var(--mono)");
+      .style("font-size", "11px")
+      .style("font-weight", "500")
+      .style("font-family", "var(--mono)")
+      .style("paint-order", "stroke fill")
+      .style("stroke", "var(--bg-1)")
+      .style("stroke-width", "4px")
+      .style("stroke-linejoin", "round")
+      .style("stroke-linecap", "round")
+      .style("pointer-events", "none");
 
     simulation.on("tick", () => {
       link
@@ -14011,25 +14349,120 @@ const GRAPHIFY={
       
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
+
+    // Neighborhood highlight & inspector
+    const highlight = (target) => {
+      if (!target) {
+        node.style("opacity", 1);
+        circles.attr("stroke", "var(--bg-1)").attr("stroke-width", 2);
+        link.style("opacity", 1).attr("stroke", d => d.isCross ? 'var(--red)' : 'var(--bdr-d)');
+        const card = $('graph-hover-card');
+        if (card) card.style.display = 'none';
+        return;
+      }
+      const conn = new Set([target.id]);
+      data.links.forEach(l => {
+        const s = typeof l.source === 'object' ? l.source.id : l.source;
+        const t = typeof l.target === 'object' ? l.target.id : l.target;
+        if (s === target.id) conn.add(t);
+        if (t === target.id) conn.add(s);
+      });
+
+      node.style("opacity", d => conn.has(d.id) ? 1 : 0.14);
+      circles
+        .attr("stroke", d => d.id === target.id ? 'var(--amber)' : 'var(--bg-1)')
+        .attr("stroke-width", d => d.id === target.id ? 3.5 : 2);
+
+      link
+        .style("opacity", l => {
+          const s = typeof l.source === 'object' ? l.source.id : l.source;
+          const t = typeof l.target === 'object' ? l.target.id : l.target;
+          return (s === target.id || t === target.id) ? 1 : 0.08;
+        })
+        .attr("stroke", l => {
+          const s = typeof l.source === 'object' ? l.source.id : l.source;
+          const t = typeof l.target === 'object' ? l.target.id : l.target;
+          return (s === target.id || t === target.id) ? 'var(--amber)' : (l.isCross ? 'var(--red)' : 'var(--bdr-d)');
+        });
+
+      const card = $('graph-hover-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="font-weight:700; color:var(--t1); font-size:12px; font-family:var(--mono);">${esc(target.id)}</div>
+          <div style="color:${target.color}; font-size:11px; font-weight:600; margin-top:2px;">${esc(target.ruleName)} · Thread: ${esc(target.thread || 'main')}</div>
+          <div style="display:flex; gap:10px; margin-top:6px; font-size:10px; color:var(--t2); font-family:var(--mono);">
+            <span>Calls: <strong>${target.count}</strong></span>
+            <span>Self-Time: <strong>${fmtMs(target.selfTime)}</strong></span>
+          </div>
+          <div style="font-size:10px; color:var(--t3); margin-top:4px; font-family:var(--mono);">
+            Degree: ${target.inDegree || 0} caller(s) → ${target.outDegree || 0} callee(s)
+          </div>
+        `;
+        card.style.display = 'block';
+      }
+    };
+
+    node.on("mouseenter", (e, d) => highlight(d))
+        .on("mouseleave", () => highlight(null));
+
+    // Global category highlight helper
+    window.graphFilterHighlight = (ruleName) => {
+      if (!ruleName) { highlight(null); return; }
+      node.style("opacity", d => d.ruleName === ruleName ? 1 : 0.14);
+      circles
+        .attr("stroke", d => d.ruleName === ruleName ? 'var(--amber)' : 'var(--bg-1)')
+        .attr("stroke-width", d => d.ruleName === ruleName ? 3 : 2);
+      link.style("opacity", 0.08);
+    };
+
+    // Search filter
+    const searchInp = $('graph-search-inp');
+    if (searchInp) {
+      searchInp.oninput = (e) => {
+        const q = (e.target.value || '').trim().toLowerCase();
+        if (!q) { highlight(null); return; }
+        node.style("opacity", d => (d.id.toLowerCase().includes(q) || (d.ruleName || '').toLowerCase().includes(q)) ? 1 : 0.12);
+        circles
+          .attr("stroke", d => (d.id.toLowerCase().includes(q) || (d.ruleName || '').toLowerCase().includes(q)) ? 'var(--amber)' : 'var(--bg-1)')
+          .attr("stroke-width", d => (d.id.toLowerCase().includes(q) || (d.ruleName || '').toLowerCase().includes(q)) ? 3 : 2);
+        link.style("opacity", 0.08);
+      };
+    }
+
+    // Zoom and Fit controls
+    const fitView = () => {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      data.nodes.forEach(n => {
+        if (n.x < minX) minX = n.x;
+        if (n.x > maxX) maxX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.y > maxY) maxY = n.y;
+      });
+      if (!isFinite(minX)) return;
+      const gw = (maxX - minX) || 1, gh = (maxY - minY) || 1;
+      const pad = 70;
+      const scale = Math.max(0.2, Math.min(2.5, Math.min((W - pad * 2) / gw, (H - pad * 2) / gh)));
+      const midX = (minX + maxX) / 2, midY = (minY + maxY) / 2;
+      const panX = (W / 2) - midX * scale, panY = (H / 2) - midY * scale;
+      svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity.translate(panX, panY).scale(scale));
+    };
+
+    $('graph-btn-fit')?.addEventListener('click', fitView);
+    $('graph-btn-zin')?.addEventListener('click', () => svg.transition().duration(250).call(zoom.scaleBy, 1.3));
+    $('graph-btn-zout')?.addEventListener('click', () => svg.transition().duration(250).call(zoom.scaleBy, 0.77));
+    setTimeout(fitView, 350);
   },
 
   drawNativeGraph(data, container) {
     const W = container.clientWidth || 800;
-    const H = container.clientHeight || 550;
+    const H = container.clientHeight || 600;
     const N = data.nodes.length;
     const nodeById = {};
+
+    this.assignClusterAnchors(data, W, H);
+    data.nodes.forEach(n => { nodeById[n.id] = n; });
+
     const cx = W / 2, cy = H / 2;
-    const radius = Math.min(W, H) * 0.35;
-
-    data.nodes.forEach((n, i) => {
-      const angle = (2 * Math.PI * i) / (N || 1);
-      n.x = cx + radius * Math.cos(angle);
-      n.y = cy + radius * Math.sin(angle);
-      n.vx = 0;
-      n.vy = 0;
-      nodeById[n.id] = n;
-    });
-
     const resolvedLinks = data.links.map(l => ({
       source: typeof l.source === 'object' ? l.source : (nodeById[l.source] || { x: cx, y: cy }),
       target: typeof l.target === 'object' ? l.target : (nodeById[l.target] || { x: cx, y: cy }),
@@ -14045,8 +14478,9 @@ const GRAPHIFY={
           let dx = b.x - a.x;
           let dy = b.y - a.y;
           let dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          if (dist < 260) {
-            const f = 1000 / (dist * dist);
+          const minDist = 85;
+          if (dist < minDist) {
+            const f = (minDist - dist) * 0.1;
             const fx = (dx / dist) * f;
             const fy = (dy / dist) * f;
             a.vx -= fx; a.vy -= fy;
@@ -14060,18 +14494,18 @@ const GRAPHIFY={
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const targetDist = 130;
-        const f = (dist - targetDist) * 0.04;
+        const targetDist = l.isCross ? 160 : (a.componentId !== 0 ? 55 : 90);
+        const f = (dist - targetDist) * 0.05;
         const fx = (dx / dist) * f;
         const fy = (dy / dist) * f;
-        a.vx += fx; a.vy -= fy;
+        a.vx += fx; a.vy += fy;
         b.vx -= fx; b.vy -= fy;
       }
       for (const n of data.nodes) {
-        n.vx += (cx - n.x) * 0.02;
-        n.vy += (cy - n.y) * 0.02;
-        n.x += n.vx * 0.6;
-        n.y += n.vy * 0.6;
+        n.vx += (n.clusterX - n.x) * 0.08;
+        n.vy += (n.clusterY - n.y) * 0.08;
+        n.x += n.vx * 0.5;
+        n.y += n.vy * 0.5;
         n.vx *= 0.5;
         n.vy *= 0.5;
         n.x = Math.max(50, Math.min(W - 50, n.x));
@@ -14079,7 +14513,9 @@ const GRAPHIFY={
       }
     }
 
-    container.innerHTML = '';
+    const oldSvg = container.querySelector('svg');
+    if (oldSvg) oldSvg.remove();
+
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
@@ -14110,9 +14546,10 @@ const GRAPHIFY={
       line.setAttribute('x2', l.target.x);
       line.setAttribute('y2', l.target.y);
       line.setAttribute('stroke', l.isCross ? 'var(--red)' : 'var(--bdr-d)');
-      line.setAttribute('stroke-width', l.isCross ? '1.5' : Math.max(1, Math.min(6, (l.value || 0) / 150)));
-      if (l.isCross) line.setAttribute('stroke-dasharray', '4,3');
+      line.setAttribute('stroke-width', l.isCross ? '1.8' : Math.max(1.2, Math.min(4.5, (l.value || 0) / 150)));
+      if (l.isCross) line.setAttribute('stroke-dasharray', '5,4');
       line.setAttribute('marker-end', `url(#native-arrow-${l.isCross ? 'cross' : 'normal'})`);
+      line.style.transition = 'opacity 0.2s, stroke 0.2s';
       linkG.appendChild(line);
       return { line, link: l };
     });
@@ -14125,8 +14562,9 @@ const GRAPHIFY={
       g.setAttribute('class', 'graph-node');
       g.setAttribute('transform', `translate(${n.x},${n.y})`);
       g.style.cursor = 'grab';
+      g.style.transition = 'opacity 0.2s';
 
-      const r = Math.max(8, Math.min(28, Math.sqrt(n.selfTime || 1) * 0.4));
+      const r = Math.max(9, Math.min(26, Math.sqrt(n.selfTime || 1) * 0.4));
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('r', r);
       circle.setAttribute('fill', n.color);
@@ -14138,20 +14576,99 @@ const GRAPHIFY={
       circle.appendChild(title);
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('dx', r + 4);
+      text.setAttribute('dx', r + 6);
       text.setAttribute('dy', '4');
       text.setAttribute('fill', 'var(--t1)');
-      text.setAttribute('font-size', '10px');
+      text.setAttribute('font-size', '11px');
+      text.setAttribute('font-weight', '500');
       text.setAttribute('font-family', 'var(--mono)');
       text.setAttribute('pointer-events', 'none');
+      text.style.paintOrder = 'stroke fill';
+      text.style.stroke = 'var(--bg-1)';
+      text.style.strokeWidth = '4px';
+      text.style.strokeLinejoin = 'round';
+      text.style.strokeLinecap = 'round';
       text.textContent = n.id;
 
       g.appendChild(circle);
       g.appendChild(text);
       nodeG.appendChild(g);
 
-      return { g, node: n };
+      return { g, circle, text, node: n };
     });
+
+    // Neighborhood highlight & inspector
+    const highlight = (target) => {
+      if (!target) {
+        nodeEls.forEach(item => {
+          item.g.style.opacity = '1';
+          item.circle.setAttribute('stroke', 'var(--bg-1)');
+          item.circle.setAttribute('stroke-width', '2');
+        });
+        linkEls.forEach(item => {
+          item.line.style.opacity = '1';
+          item.line.setAttribute('stroke', item.link.isCross ? 'var(--red)' : 'var(--bdr-d)');
+        });
+        const card = $('graph-hover-card');
+        if (card) card.style.display = 'none';
+        return;
+      }
+      const conn = new Set([target.id]);
+      data.links.forEach(l => {
+        const s = typeof l.source === 'object' ? l.source.id : l.source;
+        const t = typeof l.target === 'object' ? l.target.id : l.target;
+        if (s === target.id) conn.add(t);
+        if (t === target.id) conn.add(s);
+      });
+
+      nodeEls.forEach(item => {
+        const isConn = conn.has(item.node.id);
+        item.g.style.opacity = isConn ? '1' : '0.14';
+        item.circle.setAttribute('stroke', item.node.id === target.id ? 'var(--amber)' : 'var(--bg-1)');
+        item.circle.setAttribute('stroke-width', item.node.id === target.id ? '3.5' : '2');
+      });
+
+      linkEls.forEach(item => {
+        const s = typeof item.link.source === 'object' ? item.link.source.id : item.link.source;
+        const t = typeof item.link.target === 'object' ? item.link.target.id : item.link.target;
+        const isConn = (s === target.id || t === target.id);
+        item.line.style.opacity = isConn ? '1' : '0.08';
+        item.line.setAttribute('stroke', isConn ? 'var(--amber)' : (item.link.isCross ? 'var(--red)' : 'var(--bdr-d)'));
+      });
+
+      const card = $('graph-hover-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="font-weight:700; color:var(--t1); font-size:12px; font-family:var(--mono);">${esc(target.id)}</div>
+          <div style="color:${target.color}; font-size:11px; font-weight:600; margin-top:2px;">${esc(target.ruleName)} · Thread: ${esc(target.thread || 'main')}</div>
+          <div style="display:flex; gap:10px; margin-top:6px; font-size:10px; color:var(--t2); font-family:var(--mono);">
+            <span>Calls: <strong>${target.count}</strong></span>
+            <span>Self-Time: <strong>${fmtMs(target.selfTime)}</strong></span>
+          </div>
+          <div style="font-size:10px; color:var(--t3); margin-top:4px; font-family:var(--mono);">
+            Degree: ${target.inDegree || 0} caller(s) → ${target.outDegree || 0} callee(s)
+          </div>
+        `;
+        card.style.display = 'block';
+      }
+    };
+
+    nodeEls.forEach(item => {
+      item.g.addEventListener('mouseenter', () => highlight(item.node));
+      item.g.addEventListener('mouseleave', () => highlight(null));
+    });
+
+    // Global category highlight helper
+    window.graphFilterHighlight = (ruleName) => {
+      if (!ruleName) { highlight(null); return; }
+      nodeEls.forEach(item => {
+        const match = item.node.ruleName === ruleName;
+        item.g.style.opacity = match ? '1' : '0.14';
+        item.circle.setAttribute('stroke', match ? 'var(--amber)' : 'var(--bg-1)');
+        item.circle.setAttribute('stroke-width', match ? '3' : '2');
+      });
+      linkEls.forEach(item => { item.line.style.opacity = '0.08'; });
+    };
 
     // Pan & Zoom support
     let zoomScale = 1, panX = 0, panY = 0;
@@ -14161,10 +14678,49 @@ const GRAPHIFY={
 
     svg.addEventListener('wheel', (e) => {
       e.preventDefault();
-      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
-      zoomScale = Math.max(0.2, Math.min(5, zoomScale * zoomFactor));
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
+      zoomScale = Math.max(0.15, Math.min(6, zoomScale * zoomFactor));
       updateTransform();
     }, { passive: false });
+
+    // Search filter
+    const searchInp = $('graph-search-inp');
+    if (searchInp) {
+      searchInp.oninput = (e) => {
+        const q = (e.target.value || '').trim().toLowerCase();
+        if (!q) { highlight(null); return; }
+        nodeEls.forEach(item => {
+          const match = item.node.id.toLowerCase().includes(q) || (item.node.ruleName || '').toLowerCase().includes(q);
+          item.g.style.opacity = match ? '1' : '0.12';
+          item.circle.setAttribute('stroke', match ? 'var(--amber)' : 'var(--bg-1)');
+          item.circle.setAttribute('stroke-width', match ? '3' : '2');
+        });
+        linkEls.forEach(item => { item.line.style.opacity = '0.08'; });
+      };
+    }
+
+    // Zoom and Fit controls
+    const fitView = () => {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      data.nodes.forEach(n => {
+        if (n.x < minX) minX = n.x;
+        if (n.x > maxX) maxX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.y > maxY) maxY = n.y;
+      });
+      if (!isFinite(minX)) return;
+      const gw = (maxX - minX) || 1, gh = (maxY - minY) || 1;
+      const pad = 70;
+      zoomScale = Math.max(0.2, Math.min(2.5, Math.min((W - pad * 2) / gw, (H - pad * 2) / gh)));
+      const midX = (minX + maxX) / 2, midY = (minY + maxY) / 2;
+      panX = (W / 2) - midX * zoomScale;
+      panY = (H / 2) - midY * zoomScale;
+      updateTransform();
+    };
+
+    $('graph-btn-fit')?.addEventListener('click', fitView);
+    $('graph-btn-zin')?.addEventListener('click', () => { zoomScale = Math.min(6, zoomScale * 1.3); updateTransform(); });
+    $('graph-btn-zout')?.addEventListener('click', () => { zoomScale = Math.max(0.15, zoomScale * 0.77); updateTransform(); });
 
     let isPanning = false, startPanX = 0, startPanY = 0;
     let activeDragNode = null;
@@ -14228,6 +14784,7 @@ const GRAPHIFY={
       }
     });
 
+    fitView();
     container.appendChild(svg);
   },
 
@@ -25305,35 +25862,7 @@ UI.svm(S.viewMode);
 
   // 11. Custom plugins list override & status trackers (integrated into the core PLUGINS module)
 
-  // 12. D3 Graph vignettes floating legends card
-  const originalGraphRender = GRAPHIFY.render.bind(GRAPHIFY);
-  GRAPHIFY.render = async function(trees, container) {
-    await originalGraphRender(trees, container);
-    const canvasContainer = $('d3-graph-canvas-container');
-    if (!canvasContainer) return;
-    
-    const data = GRAPHIFY.buildGraph(trees);
-    const activeRules = {};
-    data.nodes.forEach(n => { activeRules[n.id] = n.color; });
-
-    let legend = canvasContainer.querySelector('.graph-legend-card');
-    if (!legend) {
-      legend = document.createElement('div');
-      legend.className = 'graph-legend-card';
-      legend.style.cssText = 'position:absolute; bottom:12px; right:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:8px 12px; z-index:10; max-width:220px; font-size:10px; font-family:var(--ui); display:flex; flex-direction:column; gap:4px; box-shadow:var(--shd);';
-      canvasContainer.appendChild(legend);
-    }
-    
-    legend.innerHTML = `
-      <div style="font-weight:bold; text-transform:uppercase; color:var(--t3); margin-bottom:4px;">Legend</div>
-      ${Object.entries(activeRules).map(([name, col]) => `
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span style="width:8px; height:8px; border-radius:50%; background:${col}; display:inline-block; border:1px solid rgba(255,255,255,0.1);"></span>
-          <span class="trunc" style="color:var(--t2); font-weight:600;">${esc(name)}</span>
-        </div>
-      `).join('')}
-    `;
-  };
+  // 12. D3 Graph vignettes floating legends card (managed natively inside GRAPHIFY.render)
 
   // 13. Gliding view modes tab indicator
   window.updateVtabsPill = function() {
