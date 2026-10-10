@@ -25,7 +25,7 @@
   --t1: oklch(95% 0.005 55);
   --t2: oklch(85% 0.01 55);
   --t3: oklch(70% 0.015 55);
-  --t4: oklch(50% 0.015 55);
+  --t4: oklch(62% 0.012 55);
   /* Accent palette — semantic and restricted */
   --amber: oklch(67% 0.16 55);
   --amber-g: oklch(67% 0.16 55 / 0.13);
@@ -779,7 +779,7 @@ html,body{
   position: absolute;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 16px;
+  width: 18px;
   height: 28px;
   background: var(--bg-1);
   border: 1px solid var(--bdr);
@@ -788,11 +788,10 @@ html,body{
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 8px;
   color: var(--t3);
   z-index: 10;
   box-shadow: var(--shd-xs);
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   pointer-events: auto;
   user-select: none;
 }
@@ -800,6 +799,10 @@ html,body{
   background: var(--bg-2);
   color: var(--amber);
   border-color: var(--amber);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.sp-hdl-btn:active {
+  transform: translate(-50%, -50%) scale(0.92);
 }
 
 /* ============================================================
@@ -860,7 +863,8 @@ html,body{
 }
 /* Danger */
 .btn-d{background:var(--red-g);border-color:var(--red);color:var(--red)}
-.btn-d:hover{background:var(--red);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.btn-d:hover{background:oklch(50% 0.20 25);border-color:oklch(50% 0.20 25);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+[data-theme=light] .btn-d:hover,[data-theme=ivory] .btn-d:hover{background:oklch(46% 0.20 25);border-color:oklch(46% 0.20 25);color:#fff}
 /* Ghost */
 .btn-g{
   background:transparent;border-color:transparent;
@@ -885,7 +889,8 @@ html,body{
 }
 /* Blue outline */
 .btn-bl{background:var(--blue-g);border-color:rgba(79,158,255,.4);color:var(--blue)}
-.btn-bl:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.btn-bl:hover{background:var(--blue);color:var(--bg-0);border-color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+[data-theme=light] .btn-bl:hover,[data-theme=ivory] .btn-bl:hover{background:oklch(46% 0.18 250);border-color:oklch(46% 0.18 250);color:#fff}
 .btn-sm{padding:4px 9px;font-size:11px}
 .btn-xs{padding:2px 7px;font-size:10px}
 
@@ -1152,6 +1157,16 @@ select.inp{cursor:pointer}
   border-radius:var(--rounded-lg);
   overflow:hidden;
   box-shadow:var(--shd-xs);
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
+}
+.gw .g-rows{
+  flex:1;
+  min-height:0;
+  max-height:none;
 }
 .pt{
   display:flex;align-items:center;gap:8px;padding:9px 13px;
@@ -1268,6 +1283,11 @@ select.inp{cursor:pointer}
   border-radius:var(--rounded-lg);
   overflow:hidden;
   box-shadow:var(--shd-xs);
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
 }
 .tr{font-family:var(--mono);font-size:12px;background:var(--bg-0)}
 details.tn{border-bottom:1px solid var(--bdr-d)}
@@ -4367,8 +4387,7 @@ body.focus-mode #res {
 
 /* Toast rack */
 #toast-r { bottom: 20px !important; right: 20px !important; gap: 8px !important; pointer-events: none !important; }
-.toast { padding: 12px 16px !important; pointer-events: auto !important; cursor: pointer !important; }
-.pt.g-toolbar { padding: 6px 12px !important; min-height: 38px !important; }
+.pt.g-toolbar, .tw .pt { padding: 6px 12px !important; min-height: 38px !important; height: 38px !important; box-sizing: border-box !important; white-space: nowrap !important; overflow: hidden !important; }
 
 /* File chips */
 .fchip { padding: 4px 12px !important; gap: 6px !important; }
@@ -4443,8 +4462,8 @@ textarea.inp { line-height: 1.55 !important; }
 /* ── 4. COLOR AND CONTRAST ────────────────────────────────────── */
 
 /* Light theme: darken --t4 caption to meet WCAG 4.5:1 */
-[data-theme=light] { --t4: oklch(50% 0.01 55) !important; }
-[data-theme=ivory] { --t4: oklch(55% 0.012 55) !important; }
+[data-theme=light] { --t4: oklch(44% 0.01 55) !important; }
+[data-theme=ivory] { --t4: oklch(44% 0.012 55) !important; }
 
 /* Light/Ivory theme header: solid developer console bar */
 [data-theme=light] .hdr,
@@ -10157,24 +10176,23 @@ const GR={
       </div>`;
     }).join('');
     el.innerHTML=`<div class="gw">
-      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; box-sizing:border-box;">
-        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px;"><span>▤</span> Waterfall Timeline</span>
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle">Swimlane View</button>
-        <span class="badge b-gray" style="font-size:10px;">Total: ${esc(fmtMs(rd))}</span>
-        <span class="badge b-gray" style="font-size:10px;">${rows.length} spans</span>
+      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:6px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; height:38px; box-sizing:border-box; white-space:nowrap; overflow:hidden;">
+        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>▤</span> Waterfall</span>
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="flex-shrink:0;">Swimlane</button>
+        <span class="badge b-gray" style="font-size:10px; flex-shrink:0;">${esc(fmtMs(rd))} · ${rows.length} spans</span>
         
-        <div style="flex:1;"></div>
+        <div style="flex:1; min-width:6px;"></div>
         
-        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none;">
+        <label style="display:flex; align-items:center; gap:3px; cursor:pointer; font-size:11px; user-select:none; flex-shrink:0;" title="Toggle Critical Path">
           <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
-          ✦ Critical Path
+          ✦ Critical
         </label>
-        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 4px;"></div>
-        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--t2);"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
-        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:90px; accent-color:var(--amber);">
-        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px; font-size:11px;">×${(S.ganttZoom || 1).toFixed(1)}</span>
-        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit</button>
-        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <span class="ico" title="Time Zoom" aria-hidden="true" style="color:var(--t2); flex-shrink:0;"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:56px; accent-color:var(--amber); flex-shrink:0;" title="Zoom Timeline">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:24px; font-size:10.5px; flex-shrink:0;">×${(S.ganttZoom || 1).toFixed(1)}</span>
+        <button class="btn btn-xs btn-g" id="btn-zoom-fit" style="flex-shrink:0;">Fit</button>
+        <button class="btn btn-xs btn-g" id="btn-zoom-reset" style="flex-shrink:0;">Reset</button>
       </div>
       <div class="g-hdr"><div class="g-ch">Element</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div class="g-rows">${rh}</div>
@@ -10275,11 +10293,11 @@ const TR={
     
     el.innerHTML = `
       <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
-        <div class="pt" style="flex-shrink:0; padding:10px 14px; display:flex; align-items:center;">
-          <span>┠</span> Execution Tree
-          <span class="badge b-gray mla" id="tree-badge-count">${tree.length} root node${tree.length!==1?'s':''}</span>
-          <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px;">Expand All</button>
-          <button class="btn btn-g btn-xs" id="btn-tree-col">Collapse All</button>
+        <div class="pt" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui); white-space:nowrap; overflow:hidden;">
+          <span style="display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>┠</span> Execution Tree</span>
+          <span class="badge b-gray mla" id="tree-badge-count" style="font-size:10px; flex-shrink:0;">${tree.length} root node${tree.length!==1?'s':''}</span>
+          <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px; flex-shrink:0;">Expand All</button>
+          <button class="btn btn-g btn-xs" id="btn-tree-col" style="flex-shrink:0;">Collapse All</button>
         </div>
         <div id="tree-scroll-wrap" style="flex:1; position:relative; min-height:0; display:flex; flex-direction:column;">
           <div class="vscroll-container" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
@@ -10797,10 +10815,13 @@ const UI={
   _res(h,l,rp){
     let dr=false;
     
+    const SVG_CHEV_L = '<svg viewBox="0 0 6 10" width="6" height="10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1L1 5l4 4"/></svg>';
+    const SVG_CHEV_R = '<svg viewBox="0 0 6 10" width="6" height="10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4-4 4"/></svg>';
+
     // Inject collapse buttons on the divider
     h.innerHTML = `
-      <div class="sp-hdl-btn left-btn" title="Toggle Left Pane" style="top:calc(50% - 20px);">◀</div>
-      <div class="sp-hdl-btn right-btn" title="Toggle Right Pane" style="top:calc(50% + 20px);">▶</div>
+      <div class="sp-hdl-btn left-btn" title="Toggle Left Pane" style="top:calc(50% - 20px);">${SVG_CHEV_L}</div>
+      <div class="sp-hdl-btn right-btn" title="Toggle Right Pane" style="top:calc(50% + 20px);">${SVG_CHEV_R}</div>
     `;
     
     const btnL = h.querySelector('.left-btn');
@@ -10808,18 +10829,18 @@ const UI={
     
     const updateButtonIcons = () => {
       if (S.collapsedPane === 'left') {
-        btnL.textContent = '▶';
+        btnL.innerHTML = SVG_CHEV_R;
         btnL.title = "Expand Left Pane";
         btnR.style.display = 'none';
       } else if (S.collapsedPane === 'right') {
-        btnR.textContent = '◀';
+        btnR.innerHTML = SVG_CHEV_L;
         btnR.title = "Expand Right Pane";
         btnL.style.display = 'none';
       } else {
-        btnL.textContent = '◀';
+        btnL.innerHTML = SVG_CHEV_L;
         btnL.title = "Collapse Left Pane";
         btnL.style.display = 'flex';
-        btnR.textContent = '▶';
+        btnR.innerHTML = SVG_CHEV_R;
         btnR.title = "Collapse Right Pane";
         btnR.style.display = 'flex';
       }
@@ -22284,30 +22305,30 @@ SWIMLANE.init = function(el) {
   
   el.innerHTML = `
     <div class="gw" style="display:flex; flex-direction:column; height:100%;">
-      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; box-sizing:border-box;">
-        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px;"><span>⧇</span> Swimlane View</span>
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle">Show Waterfall</button>
-        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px;"></div>
-        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none;">
-          <input type="checkbox" id="chk-swim-groupby" ${SWIM.groupByRule ? 'checked' : ''}> Group by Rule Type
+      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:6px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; height:38px; box-sizing:border-box; white-space:nowrap; overflow:hidden;">
+        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>⧇</span> Swimlane</span>
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="flex-shrink:0;">Waterfall</button>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none; flex-shrink:0;">
+          <input type="checkbox" id="chk-swim-groupby" ${SWIM.groupByRule ? 'checked' : ''}> Group by Rule
         </label>
-        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px;"></div>
-        <span style="font-size:11px; color:var(--t2);">Lane Height:</span>
-        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:70px; accent-color:var(--amber);">
-        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold;">${SWIM.laneH}px</span>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <span style="font-size:11px; color:var(--t2); flex-shrink:0;">Height:</span>
+        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:58px; accent-color:var(--amber); flex-shrink:0;">
+        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold; flex-shrink:0;">${SWIM.laneH}px</span>
 
-        <div style="flex:1;"></div>
+        <div style="flex:1; min-width:8px;"></div>
 
-        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none;">
+        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none; flex-shrink:0;">
           <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
-          ✦ Critical Path
+          ✦ Critical
         </label>
-        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 4px;"></div>
-        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--t2);"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
-        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:90px; accent-color:var(--amber);">
-        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px; font-size:11px;">×${(S.ganttZoom || 1).toFixed(1)}</span>
-        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit</button>
-        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <span style="display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--t2); flex-shrink:0;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Zoom:</span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:68px; accent-color:var(--amber); flex-shrink:0;">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:26px; font-size:11px; flex-shrink:0;">×${(S.ganttZoom || 1).toFixed(1)}</span>
+        <button class="btn btn-xs btn-g" id="btn-zoom-fit" style="flex-shrink:0;">Fit</button>
+        <button class="btn btn-xs btn-g" id="btn-zoom-reset" style="flex-shrink:0;">Reset</button>
       </div>
       <div class="g-hdr" style="grid-template-columns:180px 1fr;"><div class="g-ch">Thread / Rule</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div style="flex:1; overflow-y:auto; overflow-x:hidden;" id="swim-lanes-rows">

@@ -6,6 +6,8 @@ package-lock.json
 
 # Design critiques
 .impeccable/critique/
+.codex/
+.agents/skills/impeccable/scripts/bin/
 
 # OS files
 .DS_Store
