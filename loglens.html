@@ -10998,47 +10998,91 @@ const UI={
    ================================================================ */
 function getSampleLogLines(now = Date.now()) {
   const rows = [];
-  const row = (o, l, thr, m, n, e = '') => {
+  const row = (o, l, thr, m, n, e = '', corr = '') => {
     const ts = new Date(now + o).toISOString().replace('T', ' ').slice(0, 23);
-    rows.push(`${ts} ${l.padEnd(5)} [${thr}] com.example.Service - ${m} ${n}${e ? ' ' + e : ''}`);
+    const corrStr = corr ? ` [traceId=${corr}]` : '';
+    rows.push(`${ts} ${l.padEnd(5)} [${thr}]${corrStr} com.example.Service - ${m} ${n}${e ? ' ' + e : ''}`);
   };
-  row(0,'INFO','worker-1','TX-BEGIN','ProcessOrder/42');
-  row(8,'INFO','worker-1','HTTP-REQ','/api/auth','method=POST');
-  row(60,'INFO','worker-1','DB-QUERY-START','auth.lookup','sql=SELECT user FROM sessions WHERE token=?');
-  row(140,'INFO','worker-1','DB-QUERY-END','auth.lookup');
-  row(148,'INFO','worker-1','HTTP-RESP','/api/auth');
-  row(155,'INFO','worker-1','HTTP-REQ','/api/inventory','method=GET');
-  row(190,'INFO','worker-1','DB-QUERY-START','inventory.check','sql=SELECT sku,qty FROM inventory WHERE sku=?');
-  row(290,'INFO','worker-1','DB-QUERY-END','inventory.check');
-  row(296,'INFO','worker-1','HTTP-RESP','/api/inventory');
-  row(302,'INFO','worker-1','HTTP-REQ','/api/pricing','method=POST');
-  row(308,'WARN','worker-1','WARN','PricingService','Margin below threshold for SKU-9921');
-  row(360,'INFO','worker-1','DB-QUERY-START','pricing.save','sql=UPDATE prices SET margin=? WHERE sku=?');
-  row(415,'INFO','worker-1','DB-QUERY-END','pricing.save');
-  row(422,'INFO','worker-1','HTTP-RESP','/api/pricing');
-  row(428,'INFO','worker-1','TX-END','ProcessOrder/42');
-  const T2=(o,l,m,n,e='')=>row(500+o,l,'worker-2',m,n,e);
-  T2(0,'INFO','TX-BEGIN','CancelOrder/99');
-  T2(15,'INFO','HTTP-REQ','/api/cancel','method=DELETE');
-  T2(55,'INFO','DB-QUERY-START','order.fetch','sql=SELECT * FROM orders WHERE id=99');
-  T2(90,'INFO','DB-QUERY-END','order.fetch');
-  T2(95,'ERROR','ERROR','OrderService','FK constraint violated: pending_shipment id=331 exists');
-  T2(100,'INFO','HTTP-RESP','/api/cancel');
-  T2(105,'INFO','TX-END','CancelOrder/99');
-  
-  // Generate threads worker-3 through worker-16 to showcase multi-thread capabilities
-  for (let i = 3; i <= 16; i++) {
+
+  // Trace 1: trace-ord-8921 (Distributed Checkout Transaction across worker-1 -> worker-2 -> worker-3)
+  row(0, 'INFO', 'worker-1', 'TX-BEGIN', 'ProcessOrder/42', '', 'trace-ord-8921');
+  row(8, 'INFO', 'worker-1', 'HTTP-REQ', '/api/checkout', 'method=POST payload=class OrderCheckoutRequest', 'trace-ord-8921');
+  rows.push('    class OrderCheckoutRequest {');
+  rows.push('        customerId: "cust-9481"');
+  rows.push('        currency: "USD"');
+  rows.push('        items: [');
+  rows.push('            Item(sku="SKU-8921", qty=2, unitPrice=49.99),');
+  rows.push('            Item(sku="SKU-1044", qty=1, unitPrice=19.50)');
+  rows.push('        ]');
+  rows.push('        paymentMethod: "CREDIT_CARD"');
+  rows.push('    }');
+  row(30, 'INFO', 'worker-1', 'CACHE-MISS', 'auth.session.cust-9481', '', 'trace-ord-8921');
+  row(40, 'INFO', 'worker-1', 'DB-QUERY-START', 'auth.lookup', 'sql=SELECT user,role FROM sessions WHERE token=?', 'trace-ord-8921');
+  row(95, 'INFO', 'worker-1', 'DB-QUERY-END', 'auth.lookup', '', 'trace-ord-8921');
+
+  // Cross-thread call to worker-2 (Payment Service) under same trace-ord-8921
+  row(110, 'INFO', 'worker-2', 'TX-BEGIN', 'ProcessPayment/8921', '', 'trace-ord-8921');
+  row(120, 'INFO', 'worker-2', 'HTTP-REQ', '/api/payment/charge', 'method=POST payload=json', 'trace-ord-8921');
+  rows.push('    {');
+  rows.push('        "event": "charge.initiated",');
+  rows.push('        "gateway": "stripe",');
+  rows.push('        "transactionId": "txn_8921_alpha",');
+  rows.push('        "amount": 11948,');
+  rows.push('        "status": "processing"');
+  rows.push('    }');
+  row(175, 'INFO', 'worker-2', 'CACHE-HIT', 'stripe.idempotency.txn_8921', '', 'trace-ord-8921');
+  row(230, 'INFO', 'worker-2', 'HTTP-RESP', '/api/payment/charge', '', 'trace-ord-8921');
+  row(235, 'INFO', 'worker-2', 'TX-END', 'ProcessPayment/8921', '', 'trace-ord-8921');
+
+  // Cross-thread call to worker-3 (Inventory Service) under same trace-ord-8921
+  row(245, 'INFO', 'worker-3', 'TX-BEGIN', 'ReserveInventory/8921', '', 'trace-ord-8921');
+  row(255, 'INFO', 'worker-3', 'DB-QUERY-START', 'inv.reserve', 'sql=UPDATE inventory SET reserved=reserved+2 WHERE sku="SKU-8921"', 'trace-ord-8921');
+  row(295, 'INFO', 'worker-3', 'DB-QUERY-END', 'inv.reserve', '', 'trace-ord-8921');
+  row(305, 'INFO', 'worker-3', 'TX-END', 'ReserveInventory/8921', '', 'trace-ord-8921');
+
+  // Return to worker-1 to finalize order
+  row(320, 'INFO', 'worker-1', 'HTTP-RESP', '/api/checkout', '', 'trace-ord-8921');
+  row(325, 'INFO', 'worker-1', 'TX-END', 'ProcessOrder/42', '', 'trace-ord-8921');
+
+  // Trace 2: trace-pay-3310 (Refund with 850ms DB lock contention -> Outlier + SLA breach, plus SQL Exception stack trace)
+  const T2 = (o, l, m, n, e = '', corr = 'trace-pay-3310') => row(400 + o, l, 'worker-2', m, n, e, corr);
+  T2(0, 'INFO', 'TX-BEGIN', 'RefundOrder/99');
+  T2(15, 'INFO', 'HTTP-REQ', '/api/refund', 'method=POST id=99');
+  T2(40, 'INFO', 'DB-QUERY-START', 'order.lock', 'sql=SELECT * FROM orders WHERE id=99 FOR UPDATE');
+  T2(890, 'ERROR', 'ERROR', 'OrderService', 'Deadlock encountered while acquiring row lock on orders table id=99');
+  rows.push('    java.sql.SQLException: Deadlock detected in InnoDB lock table');
+  rows.push('        at com.example.db.ConnectionPool.acquire(ConnectionPool.java:184)');
+  rows.push('        at com.example.service.OrderService.lockOrder(OrderService.java:92)');
+  rows.push('    Caused by: com.mysql.cj.exceptions.DeadlockException: Lock wait timeout exceeded');
+  rows.push('        at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translate(SQLExceptionsMapping.java:122)');
+  T2(890, 'INFO', 'DB-QUERY-END', 'order.lock'); // 850ms duration -> SLA breach & outlier
+  T2(900, 'INFO', 'HTTP-RESP', '/api/refund');
+  T2(905, 'INFO', 'TX-END', 'RefundOrder/99');
+
+  // Trace 3: trace-inv-4091 (Inventory Reconciliation with 1400ms HTTP Request -> Outlier + SLA breach)
+  const T3 = (o, l, m, n, e = '', corr = 'trace-inv-4091') => row(450 + o, l, 'worker-3', m, n, e, corr);
+  T3(0, 'INFO', 'TX-BEGIN', 'InventoryReconcile');
+  T3(20, 'INFO', 'HTTP-REQ', '/api/inventory/reconcile', 'method=POST scope=full');
+  T3(80, 'WARN', 'WARN', 'InventoryService', 'Reconciliation batch size exceeded recommended threshold (items=14500)');
+  T3(150, 'INFO', 'DB-QUERY-START', 'inv.batch_scan', 'sql=SELECT id,sku,count FROM inventory_counts WHERE verified=0');
+  T3(210, 'INFO', 'DB-QUERY-END', 'inv.batch_scan');
+  T3(1420, 'INFO', 'HTTP-RESP', '/api/inventory/reconcile'); // 1400ms duration -> SLA breach & outlier
+  T3(1425, 'INFO', 'TX-END', 'InventoryReconcile');
+
+  // Generate threads worker-4 through worker-16 to showcase multi-thread capabilities & 3D landscape terrain
+  for (let i = 4; i <= 16; i++) {
     const thr = `worker-${i}`;
-    const offset = i * 150;
-    row(offset + 0, 'INFO', thr, 'TX-BEGIN', `TaskRun/${i}`);
-    row(offset + 25, 'INFO', thr, 'DB-QUERY-START', `task.process.${i}`, `sql=SELECT * FROM tasks WHERE id=${i}`);
-    row(offset + 75, 'INFO', thr, 'DB-QUERY-END', `task.process.${i}`);
+    const offset = 600 + i * 120;
+    const batchTrace = `trace-batch-40${i.toString().padStart(2, '0')}`;
+    row(offset + 0, 'INFO', thr, 'TX-BEGIN', `TaskRun/${i}`, '', batchTrace);
+    row(offset + 25, 'INFO', thr, 'DB-QUERY-START', `task.process.${i}`, `sql=SELECT * FROM tasks WHERE id=${i}`, batchTrace);
+    row(offset + 75, 'INFO', thr, 'DB-QUERY-END', `task.process.${i}`, '', batchTrace);
     if (i % 5 === 0) {
-      row(offset + 85, 'WARN', thr, 'WARN', 'TaskExecutor', `Slow execution detected for task ${i}`);
+      row(offset + 85, 'WARN', thr, 'WARN', 'TaskExecutor', `Slow execution detected for task ${i}`, batchTrace);
     } else if (i % 7 === 0) {
-      row(offset + 90, 'ERROR', thr, 'ERROR', 'TaskExecutor', `Failed to execute task ${i}`);
+      row(offset + 90, 'ERROR', thr, 'ERROR', 'TaskExecutor', `Failed to execute task ${i}`, batchTrace);
     }
-    row(offset + 110, 'INFO', thr, 'TX-END', `TaskRun/${i}`);
+    row(offset + 110, 'INFO', thr, 'TX-END', `TaskRun/${i}`, '', batchTrace);
   }
   return rows.join('\n');
 }
@@ -18431,7 +18475,7 @@ const TRACE_EXPLORER = (function() {
     if (_container) render(_container);
   }
 
-  return { render, selectTrace, clearFilter };
+  return { render, selectTrace, clearFilter, scanTraces };
 })();
 
 // Update BCB after parse completes
@@ -23796,61 +23840,64 @@ const ONBOARD = (() => {
     globalSettings: {
       appName: 'LogLens Demo',
       globalTimestampPattern: String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`,
-      description: 'Demo config for the LogLens sample log.'
+      description: 'Demo config for the LogLens sample log.',
+      multilinePayloads: true
     },
     elementRules: [
       {
         id: 'dr_txs', name: 'Transaction Begin',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?TX-BEGIN\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-BEGIN\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
         stackBehavior: 'push', visualStyle: { accentColor: 'var(--blue)', icon: '▶' }
       },
       {
         id: 'dr_txe', name: 'Transaction End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?TX-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: 'var(--blue)', icon: '◀' }
       },
       {
         id: 'dr_hs', name: 'HTTP Request',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName', '5': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '❖' }
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName', '6': 'payload' },
+        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '❖' },
+        slaThresholdMs: 250
       },
       {
         id: 'dr_he', name: 'HTTP Response',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?HTTP-RESP\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-RESP\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: '#4f9eff', icon: '↩' }
       },
       {
         id: 'dr_dbs', name: 'DB Query',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName', '5': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '▤' }
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName', '6': 'payload' },
+        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '▤' },
+        slaThresholdMs: 150
       },
       {
         id: 'dr_dbe', name: 'DB Query End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?DB-QUERY-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-END\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
         stackBehavior: 'pop', visualStyle: { accentColor: '#f0883e', icon: '✓' }
       },
       {
         id: 'dr_cache', name: 'Cache Op',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\].*?CACHE-(HIT|MISS)\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload', '5': 'elementName' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?CACHE-(HIT|MISS)\s+(\S+)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload', '6': 'elementName' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '🗲' }
       },
       {
         id: 'dr_w', name: 'Warning',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\]\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(WARN(?:ING)?)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#d29922', icon: '⚠' }
       },
       {
         id: 'dr_e', name: 'Error',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\]\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'payload' },
+        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|FATAL)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
+        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload' },
         stackBehavior: 'inline', visualStyle: { accentColor: '#f85149', icon: '✕' },
         slaThresholdMs: 0
       }
@@ -23957,13 +24004,52 @@ const ONBOARD = (() => {
         $('emp')?.classList.add('hidden');
         const { trees, threads, stats } = await WM.parse(file, S.cfg, '');
         ANOMALY.analyze(trees);
+
+        // Pre-seed demo annotations on notable nodes (error and slow query)
+        try {
+          if (!S.annotations) S.annotations = {};
+          let errNode = null, slowNode = null;
+          for (const tr of Object.values(trees)) {
+            const scan = (nodes) => {
+              for (const n of nodes) {
+                if (!slowNode && n.behavior === 'push' && n.duration && n.duration >= 800) slowNode = n;
+                if (!errNode && (n.ruleName === 'Error' || n.level === 'ERROR')) errNode = n;
+                if (n.events?.length) scan(n.events);
+              }
+            };
+            scan(tr);
+          }
+          if (errNode) {
+            S.annotations[errNode.id] = {
+              comments: [{
+                id: 'c_demo_err',
+                author: 'SRE OnCall',
+                ts: Date.now() - 3600000,
+                body: 'Deadlock investigated: Unindexed foreign key check under concurrent refunds. Hotfix queued.',
+                resolved: false
+              }]
+            };
+          }
+          if (slowNode) {
+            S.annotations[slowNode.id] = {
+              comments: [{
+                id: 'c_demo_slow',
+                author: 'Database Lead',
+                ts: Date.now() - 1800000,
+                body: 'SLA Breach (850ms > 150ms limit): Connection pool reached capacity during peak checkout.',
+                resolved: false
+              }]
+            };
+          }
+        } catch (_) { /* graceful */ }
+
         UI.render(trees, threads, stats);
         UI.hprog();
         PIN.clear();
         const tot = Object.values(trees).reduce((s, t) => s + cnt(t), 0);
         IDB.save(file, S.cfg, trees, threads, stats).catch(() => {});
         S.lastParsedFile = { name: file.name, size: file.size, lastModified: file.lastModified };
-        toast(`Demo loaded — ${tot.toLocaleString()} nodes parsed. Try the Gantt view!`, 'success');
+        toast(`Demo loaded — ${tot.toLocaleString()} nodes across ${threads.length} threads. Explore Traces, SLAs, Outliers, Graph, & 3D!`, 'success', 5000);
       } catch (e) {
         toast('Demo parse error: ' + e.message, 'error');
       } finally {

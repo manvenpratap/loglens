@@ -3,6 +3,20 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Comprehensive Demo Showcase across All Features (v6.9.91 — COMPLETED)**:
+  - **Full-Spectrum Demo Log & Configuration Overhaul**: Enhanced the built-in demo (`ONBOARD.loadDemo()`, "Load Demo Log", "Try Demo", and `dlSample()`) to comprehensively showcase every primary capability of LogLens with realistic multi-service distributed transactions.
+  - **Distributed Tracing & Trace Explorer Integration**: Configured `DEMO_CFG` to capture group 4 as `correlationId` across all element rules (`(?:\s+\[(?:traceId=)?([^\]]+)\])?`), generating multi-thread distributed transactions (`trace-ord-8921` spanning `worker-1`, `worker-2`, and `worker-3`, `trace-pay-3310`, `trace-inv-4091`). Trace Explorer displays active trace rows, span counts, inter-thread links, and duration metrics.
+  - **Graphify Dependency Graph Activation**: Connected cross-thread `correlationId` links automatically generate service dependency arrows in the `Graph` tab, visualizing communication topology from API Gateway to Payment and Inventory services.
+  - **Multiline Block Payloads**: Injected rich real-world payloads with preserved formatting and indentation:
+    1. Printed class payload: `class OrderCheckoutRequest { customerId: "cust-9481", items: [...], paymentMethod: "CREDIT_CARD" }` on `/api/checkout`.
+    2. Formatted JSON webhook: `{ "event": "charge.initiated", "gateway": "stripe", "amount": 11948 }` on `/api/payment/charge`.
+    3. Multiline SQL exception stack trace: `java.sql.SQLException: Deadlock detected in InnoDB lock table` with preserved `Caused by: com.mysql.cj.exceptions.DeadlockException` chain on the `OrderService` error.
+  - **SLA Thresholds & Breach Detection**: Configured `slaThresholdMs: 250` on HTTP requests and `slaThresholdMs: 150` on DB queries in `DEMO_CFG`. Automatically populates `#hdr-sla` badge (`4 SLA`), renders `SLA BREACH` badges in the tree, and highlights breaches in the Event Inspector.
+  - **Latency Outlier & Anomaly Detection**: Configured realistic duration spikes (850ms database lock contention and 1400ms inventory reconciliation), activating `ANOMALY.analyze()` IQR detection to light up `#hdr-outliers` (`2 Outliers`) and AI Insights outlier inspection cards in Stats.
+  - **Pre-Seeded Sticky Notes / Annotations**: Pre-seeded markdown annotations (`S.annotations`) with author metadata on the critical error node and slow query node, immediately displaying the `📝` note badge in Tree view and sticky note cards in Event Inspector.
+  - **Multi-Thread & 3D Landscape Terrain**: Generates 16 concurrent threads (`worker-1` through `worker-16`), producing rich swimlanes in Gantt and multi-level latency topology in the 3D Landscape view.
+  - **Full Regression Test Suite (110 tests passing)**: Created `tests/test_20_demo_showcase.py` containing 6 automated E2E tests validating multi-thread tree loading, distributed traces, multiline block payloads, SLA and outlier badges, pre-seeded annotations, and all-view navigation. Full suite of 110 tests passing with 0 regressions.
+
 - **Event Inspector Context-Aware Auto-Close (v6.9.90 — COMPLETED)**:
   - **Auto-Close on Irrelevant Views**: Eliminated persistent drawer obstruction when switching away from log exploration. In `INSPECTOR.syncVisibility(vm, thread)` and `UI.svm(vm)`, the drawer automatically closes when navigating to non-event views (`Settings / cfg`, `Help / hlp`, `Stats / stats`, `Graph / graph`, `3D / 3d`, `Query / query`, `Diff / diff`) or when in empty state (`!S.trees || S.activeThr === null`).
   - **Thread-Aware Auto-Dismissal**: In `UI.sw(tid)`, if the active inspected event belongs to a different thread (`_activeNode.thread !== tid`), the inspector closes automatically so stale events from inactive threads do not persist into the newly selected thread view.

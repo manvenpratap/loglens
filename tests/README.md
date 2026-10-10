@@ -29,7 +29,8 @@ tests/
 ├── test_16_interactive_regex_builder.py # Interactive Regex Builder flow
 ├── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
 ├── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
-└── test_19_multiline_block_payload.py # Multiline block & class payload parsing
+├── test_19_multiline_block_payload.py # Multiline block & class payload parsing
+└── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
 ```
 
 ---
@@ -127,7 +128,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
-| **Total** | | **104** |
+| Demo Showcase All Features | test_20_demo_showcase | 6 |
+| **Total** | | **110** |
 
 ---
 
