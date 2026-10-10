@@ -2257,9 +2257,88 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
    ============================================================ */
 .emp-card{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;padding:52px 28px;text-align:center;
-  height:100%;min-height:340px;
+  gap:16px;padding:40px 20px;text-align:center;
+  height:100%;min-height:340px;box-sizing:border-box;overflow-y:auto;
 }
+.emp-drop-zone{
+  max-width:520px;width:100%;box-sizing:border-box;
+  padding:36px 24px 28px;border-radius:var(--rounded-lg);
+  border:2px dashed var(--bdr-h);background:var(--bg-1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:12px;cursor:pointer;
+  transition:border-color .2s var(--ease-out),background .2s var(--ease-out),transform .18s var(--ease-out);
+}
+.emp-drop-zone:hover{
+  border-color:var(--amber);background:var(--amber-d);
+}
+.emp-drop-zone.drag-over{
+  border-color:var(--amber) !important;background:var(--amber-d) !important;
+  transform:scale(1.01);
+}
+[data-theme=light] .emp-drop-zone,[data-theme=ivory] .emp-drop-zone{
+  background:var(--bg-0) !important;border-color:var(--bdr) !important;
+}
+[data-theme=light] .emp-drop-zone:hover,[data-theme=ivory] .emp-drop-zone:hover,
+[data-theme=light] .emp-drop-zone.drag-over,[data-theme=ivory] .emp-drop-zone.drag-over{
+  border-color:var(--amber) !important;background:var(--amber-d) !important;
+}
+.emp-drop-icon{
+  width:44px;height:44px;border-radius:var(--rounded-full);
+  background:var(--amber-d);display:flex;align-items:center;justify-content:center;
+  margin-bottom:2px;flex-shrink:0;transition:transform .2s var(--ease-spring);
+}
+.emp-drop-zone:hover .emp-drop-icon{transform:scale(1.08);}
+.emp-drop-icon svg{
+  width:22px;height:22px;stroke:var(--amber);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;
+}
+.emp-drop-title{
+  font-size:15px;font-weight:700;color:var(--t1);font-family:var(--display);
+  letter-spacing:-.01em;margin:0;line-height:1.3;
+}
+.emp-drop-sub{
+  font-size:12px;color:var(--t3);max-width:380px;line-height:1.55;margin:0;
+}
+.emp-drop-sub code{
+  font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-d);
+  padding:1px 5px;border-radius:var(--rounded-sm);border:1px solid var(--amber-g);
+}
+.emp-actions{
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;
+  margin-top:6px;margin-bottom:2px;
+}
+.emp-actions .btn{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:7px 16px;border-radius:var(--rounded-sm);cursor:pointer;
+  transition:all .15s cubic-bezier(0.16,1,0.3,1);
+}
+.emp-actions .btn.btn-p{
+  background:var(--amber);border:1px solid var(--amber);color:#000;
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+.emp-actions .btn.btn-p:hover{
+  background:var(--amber-hi, oklch(72% 0.17 55));
+  border-color:var(--amber-hi, oklch(72% 0.17 55));
+  transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.22);
+}
+.emp-actions .btn.btn-g{
+  background:transparent;border:1px solid var(--bdr);color:var(--t2);
+}
+.emp-actions .btn.btn-g:hover{
+  background:var(--bg-2);border-color:var(--bdr-h);color:var(--t1);
+  transform:translateY(-1px);
+}
+.emp-rule-link-row{
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  font-size:11.5px;color:var(--t4);margin-top:4px;
+}
+.emp-text-link{
+  background:none !important;border:none !important;padding:0 !important;margin:0 !important;
+  color:var(--amber) !important;font-family:inherit !important;font-size:11.5px !important;
+  font-weight:600 !important;text-decoration:underline !important;text-underline-offset:3px !important;
+  cursor:pointer !important;display:inline-flex !important;align-items:center !important;
+  gap:2px !important;transition:opacity .15s !important;
+}
+.emp-text-link:hover{opacity:.8 !important;}
 .emp-title {
   font-size: 13px;
   font-weight: 700;
@@ -2272,49 +2351,17 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
   max-width: 310px;
   line-height: 1.7;
 }
-.emp-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-  margin-bottom: 8px;
-}
-.emp-actions .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  padding: 6px 14px;
-}
-.emp-drop-zone{
-  width:200px;height:140px;border-radius:var(--rounded-lg);
-  border:2px dashed var(--bdr-h);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;
-  transition:border-color .2s,background .2s;
-  animation:emp-dash 4s linear infinite;
-}
-.emp-drop-zone:hover{border-color:var(--amber);background:var(--amber-d)}
-@keyframes emp-dash{
-  0%{border-color:var(--bdr-h)}
-  50%{border-color:var(--amber)}
-  100%{border-color:var(--bdr-h)}
-}
-.emp-drop-icon{line-height:1}
-.emp-drop-icon svg{
-  width:42px;height:42px;stroke:var(--amber);fill:none;stroke-width:1.5;display:block;opacity:.65;
-}
-.emp-drop-label{font-size:13px;color:var(--t3);font-weight:500}
 .emp-features{
   display:flex;flex-wrap:wrap;justify-content:center;gap:6px;
-  max-width:480px;margin-top:4px;
+  max-width:520px;margin-top:4px;
 }
 .emp-feat-chip{
   display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:var(--rounded-full);
-  background:var(--bg-2);border:1px solid var(--bdr);
-  font-size:12px;color:var(--t3);white-space:nowrap;
+  padding:3px 9px;border-radius:var(--rounded-full);
+  background:var(--bg-1);border:1px solid var(--bdr);
+  font-size:11px;color:var(--t4);white-space:nowrap;
 }
-.emp-feat-chip .efc-ico{font-size:13px}
+.emp-feat-chip .efc-ico{font-size:12px}
 
 /* ============================================================
    CSS §21 · SETTINGS SECTIONS — Performance & Appearance
@@ -7724,25 +7771,28 @@ label[for="watch-auto-reload"] {
   <div class="res" id="res">
     <div id="res-top-dock" class="res-top-dock" style="display:none;"></div>
     <div class="emp-card" id="emp">
-      <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
-        <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-        <div class="emp-drop-label">Ready for telemetry. Drop log to begin.</div>
-      </div>
-      <div class="emp-title">Nothing parsed yet</div>
-      <div class="emp-desc">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
-      <div class="emp-actions">
-        <button class="btn btn-bl" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          Select Log File
-        </button>
-        <button class="btn" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Load Demo Log
-        </button>
-        <button class="btn" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Custom Rule Builder
-        </button>
+      <div class="emp-drop-zone" id="emp-drop-zone" role="region" aria-label="Drop log file here">
+        <div class="emp-drop-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="emp-drop-title">Drop log file here</div>
+        <div class="emp-drop-sub">Drag &amp; drop a <code>.log</code>, <code>.txt</code>, or <code>.gz</code> file — 100% private, parsed locally in your browser.</div>
+        <div class="emp-actions">
+          <button class="btn btn-p" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Select Log File
+          </button>
+          <button class="btn btn-g" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Load Demo Log
+          </button>
+        </div>
+        <div class="emp-rule-link-row">
+          <span>Non-standard format?</span>
+          <button class="emp-text-link" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
+            Custom Rule Builder ›
+          </button>
+        </div>
       </div>
       <div class="emp-features">
         <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Zero install</div>
@@ -10977,25 +11027,28 @@ const UI={
         r.style.overflowY = '';
         r.innerHTML = `
             <div class="emp-card" id="emp">
-              <div class="emp-drop-zone" id="emp-drop-zone" aria-label="Drop log file here">
-                <div class="emp-drop-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                <div class="emp-drop-label">Ready for telemetry. Drop log to begin.</div>
-              </div>
-              <div class="emp-title">Nothing parsed yet</div>
-              <div class="emp-desc">Connect a config, select a log file, and click ▶ Parse, or drag &amp; drop a .log/.gz file anywhere.</div>
-              <div class="emp-actions">
-                <button class="btn btn-bl" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                  Select Log File
-                </button>
-                <button class="btn" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                  Load Demo Log
-                </button>
-                <button class="btn" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Custom Rule Builder
-                </button>
+              <div class="emp-drop-zone" id="emp-drop-zone" role="region" aria-label="Drop log file here">
+                <div class="emp-drop-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="emp-drop-title">Drop log file here</div>
+                <div class="emp-drop-sub">Drag &amp; drop a <code>.log</code>, <code>.txt</code>, or <code>.gz</code> file — 100% private, parsed locally in your browser.</div>
+                <div class="emp-actions">
+                  <button class="btn btn-p" onclick="UI.chooseAndParseLog()" type="button" title="Select a local log file from your disk">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    Select Log File
+                  </button>
+                  <button class="btn btn-g" onclick="ONBOARD.loadDemo()" type="button" title="Parse and render the built-in Spring Boot demo log">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Load Demo Log
+                  </button>
+                </div>
+                <div class="emp-rule-link-row">
+                  <span>Non-standard format?</span>
+                  <button class="emp-text-link" id="btn-emp-create-rule" onclick="UI.openM(null)" type="button" title="Configure custom parse rules for your log format">
+                    Custom Rule Builder ›
+                  </button>
+                </div>
               </div>
               <div class="emp-features">
                 <div class="emp-feat-chip"><span class="ico-sm" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Zero install</div>
@@ -22784,7 +22837,7 @@ FOCUS_MODE.init();
       if (!emp || emp.dataset.enhanced) return;
       emp.dataset.enhanced = '1';
 
-      // Inject drop event wiring on the zone
+      // Inject drop event wiring and click-to-choose on the zone
       const dropZone = emp.querySelector('#emp-drop-zone');
       if (dropZone) {
         ['dragenter','dragover'].forEach(ev => {
@@ -22796,11 +22849,15 @@ FOCUS_MODE.init();
         ['dragleave','drop'].forEach(ev => {
           dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'));
         });
+        dropZone.addEventListener('click', e => {
+          if (e.target.closest('button') || e.target.closest('a')) return;
+          UI.chooseAndParseLog();
+        });
       }
 
-      // Inject step-by-step guide below the actions
-      const actionsEl = emp.querySelector('.emp-actions');
-      if (!actionsEl) return;
+      // Inject step-by-step guide below the hero drop zone
+      const guideTarget = dropZone || emp.querySelector('.emp-actions');
+      if (!guideTarget) return;
       const guide = document.createElement('div');
       guide.className = 'emp-guide';
       guide.setAttribute('role', 'list');
@@ -22837,14 +22894,14 @@ FOCUS_MODE.init();
           <span class="emp-shortcut"><kbd>/</kbd> Search Tree</span>
         </div>
       `;
-      actionsEl.insertAdjacentElement('afterend', guide);
+      guideTarget.insertAdjacentElement('afterend', guide);
 
       // Inject CSS inline if not already present
       if (!document.getElementById('emp-guide-style')) {
         const st = document.createElement('style');
         st.id = 'emp-guide-style';
         st.textContent = `
-          .emp-guide { margin-top: 20px; border-top: 1px solid var(--bdr); padding-top: 18px; }
+          .emp-guide { max-width: 520px; width: 100%; box-sizing: border-box; text-align: left; margin-top: 16px; border-top: 1px solid var(--bdr); padding-top: 16px; }
           .emp-guide-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--t4); margin-bottom: 12px; font-family: var(--mono); }
           .emp-guide-steps { display: flex; flex-direction: column; gap: 10px; }
           .emp-guide-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: var(--bg-2); border-radius: var(--rounded-sm); border: 1px solid var(--bdr); }

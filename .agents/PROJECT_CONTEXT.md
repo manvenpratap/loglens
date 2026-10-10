@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Streamlined Empty-State UX & Decision Paralysis Elimination (v6.9.100 — COMPLETED)**:
+  - **Single Hero Drag-and-Drop Container**: Consolidated the previous fragmented structure into a prominent, dedicated `#emp-drop-zone` with a 44px circular upload indicator, clear typography ("Drop log file here"), and supported format guidance (`.log`, `.txt`, `.gz` — 100% private, parsed locally in your browser).
+  - **Calibrated Three-Tier Action Hierarchy**:
+    - *Primary CTA*: Solid amber `[ Select Log File ]` (`.btn.btn-p`) with folder icon, providing an unmistakable default path.
+    - *Secondary Action*: Subtle ghost `[ Load Demo Log ]` (`.btn.btn-g`) for low-friction exploration.
+    - *Tertiary Action*: Inline text link `Non-standard format? Custom Rule Builder ›` (`.emp-text-link`, `#btn-emp-create-rule`), keeping advanced rule creation readily accessible without competing for button focus.
+  - **Click-to-Browse Hero Zone**: Wired `#emp-drop-zone` click handler to trigger file selection while ignoring button and link clicks, providing intuitive interaction anywhere within the dashed drop boundary.
+  - **Balanced First-Run Step-by-Step Guide**: Structured the 3-step getting started guide (`.emp-guide`) and shortcut pills beneath the hero container with matching 520px max-width alignment.
+  - **Zero Regressions**: 111 of 111 regression tests passing in dark (Obsidian) and light (Ivory) themes.
+
+
 - **Impeccable Design System Consistency & Zero-Antipattern Polish (v6.9.99 — COMPLETED)**:
   - **Zero Radius Token Drift (`design-system-radius: 0`)**: Normalized all off-ramp radii (2px, 3px, 4px, 5px, 16px, 20px, and `calc(var(--rounded-md) - 2px)`) across all CSS rules, dynamic elements, and JavaScript string templates (`rg-hover-hl`, unparsed mark backdrops, `stream-prog-card`, `vtabs-pill`, `.rules-count-badge`, `.rule-toggle-track`) to semantic design tokens (`--rounded-sm: 6px`, `--rounded-md: 8px`, `--rounded-full: 99px`).
   - **Eliminated AI-Slop Visual Antipatterns**:
