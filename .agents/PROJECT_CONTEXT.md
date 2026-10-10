@@ -3,6 +3,20 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Multi-Capture Group Combining & Unified Log Element Mapping (v6.9.106 — COMPLETED)**:
+  - **Interactive Regex Builder Group Combiner (`#rg-combine-bar`)**:
+    - Users can select multiple tokens/patterns (e.g. Date, Pipe `|`, Time) in `#rg-tracks-container` or text selection, and combine them into a single capture group with a single click (`#btn-rg-combine-all` or `#btn-rg-combine`).
+    - The combiner preserves intervening whitespace and custom delimiters (e.g. `\s*\|\s*`), formats a unified regex pattern `(date\s*\|\s*time)`, and automatically maps the capture group to the selected log element (`timestamp`, `thread`, `elementName`, etc.).
+    - Interactive chips display `Timestamp (Combined)` with a `(Split)` button to seamlessly unpack back into individual tokens if needed.
+  - **Capture Group → Field Mapping Multi-Group Support**:
+    - Upgraded `#cm-ts`, `#cm-th`, `#cm-el`, `#cm-py`, `#cm-co`, `#cm-lv`, `#cm-cl`, `#cm-me` inputs to accept comma-separated group indices (e.g. `1, 2` or `1, 3`), with labels updated to `Group #(s) → <field>`.
+    - Live diagram pills (`#cap-diagram-pills`) now render grouped identifiers, e.g. `[Groups 1+2: timestamp]`.
+    - Segment context menu (`#vgb-menu`) includes a `+ Combine` action to instantly merge clicked group indices into existing field mappings.
+  - **Parse Engine Multi-Group Concatenation & Delimiter Handling**:
+    - Enhanced `caps(m, mp)` in both Web Worker and main-thread `STREAM_PARSER` to concatenate multiple mapped groups with clean spacing.
+    - Upgraded `pts(s)` timestamp parser in both Web Worker and `STREAM_PARSER` to clean and parse timestamps joined by pipe delimiters (`|`), brackets, or custom separators into valid millisecond epoch values.
+  - **Full Regression Test Suite Passed**: Authored `tests/test_23_combine_capture_groups.py` (4 tests). Full regression suite passing with **127 passed / 127 total** tests (0 failures).
+
 - **High-Density 4-Pillar Settings Dashboard & Symmetrical Grid Architecture (v6.9.105 — COMPLETED)**:
   - **Ponytail Streamlined Redesign**: Eliminated fragmented, sprawling settings layout (which previously had arbitrary 01/02/03/04/05 numbering, mixed Unicode icons, excessive 24px padding, and element rules buried at the bottom). Rebuilt `#p-cfg` with net deletion (-38 lines), high information density, and zero wasted horizontal/vertical space.
   - **4 Symmetrical, Logically Grouped Pillars**:

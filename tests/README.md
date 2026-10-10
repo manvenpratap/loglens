@@ -31,7 +31,9 @@ tests/
 ├── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
 ├── test_19_multiline_block_payload.py # Multiline block & class payload parsing
 ├── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
-└── test_21_custom_log_setup_journey.py # Custom log setup journey & 100% parsing workflow
+├── test_21_custom_log_setup_journey.py # Custom log setup journey & 100% parsing workflow
+├── test_22_two_tier_navigation.py    # 2-Tier navigation & macOS toolbar utilities
+└── test_23_combine_capture_groups.py # Combine multiple capture groups into 1 log element
 ```
 
 ---
@@ -132,7 +134,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Demo Showcase All Features | test_20_demo_showcase | 7 |
 | Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
 | 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
-| **Total** | | **123** |
+| Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
+| **Total** | | **127** |
 
 ---
 

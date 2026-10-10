@@ -8138,8 +8138,34 @@ label[for="watch-auto-reload"] {
             <div id="rg-tracks-container" style="position:relative; height:0;"></div>
           </div>
         </div>
-        <!-- Active selections display -->
-        <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        <!-- Active selections display & Combine bar -->
+        <div id="rg-selections-wrapper" style="margin-top: 6px;">
+          <div id="rg-active-selections" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;"></div>
+          <div id="rg-combine-bar" style="display:none; margin-top:8px; padding:6px 10px; background:var(--bg-3); border:1px dashed var(--bdr); border-radius:var(--rounded-sm); align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:5px; font-size:10px; font-weight:600; color:var(--t2);">
+              <span class="ico" aria-hidden="true" style="color:var(--amber);"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
+              <span>Combine Groups:</span>
+            </div>
+            <span style="font-size:10px; color:var(--t3);">Map to element:</span>
+            <select id="rg-combine-target" class="inp" style="padding:2px 6px; font-size:10px; height:24px; min-width:115px; cursor:pointer;">
+              <option value="timestamp">⏱ timestamp</option>
+              <option value="elementName">🏷 elementName</option>
+              <option value="thread">🧵 thread</option>
+              <option value="payload">📦 payload</option>
+              <option value="correlationId">🔗 correlationId</option>
+              <option value="level">⚡ level</option>
+              <option value="className">🏛 className</option>
+              <option value="methodName">ƒ methodName</option>
+            </select>
+            <button id="btn-rg-combine" class="btn btn-xs btn-p" type="button" style="padding:2px 8px; font-size:10px; font-weight:600;">
+              Combine Selected
+            </button>
+            <button id="btn-rg-combine-all" class="btn btn-xs btn-g" type="button" style="padding:2px 8px; font-size:10px;">
+              Combine All
+            </button>
+            <span style="font-size:9px; color:var(--t4); margin-left:auto;">Merge multiple groups into a single capture group</span>
+          </div>
+        </div>
         <!-- Selection suggestions panel -->
         <div id="rg-selection-suggestions" style="display:none; padding:10px 12px; border:1px solid var(--amber); border-radius:var(--rounded-sm); background:var(--amber-d); box-sizing:border-box;">
           <div style="font-size:10px; font-weight:600; color:var(--amber); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
@@ -8284,39 +8310,39 @@ label[for="watch-auto-reload"] {
           </div>
           
           <div class="map-section-body" id="map-body">
-            <div class="fh">Enter the capture group index (1, 2, 3…) for each field, or click on a highlighted segment above to map it.</div>
+            <div class="fh">Enter the capture group index (1, 2, 3…) for each field. To combine multiple groups into a single element, enter comma-separated numbers (e.g. <code>1,2</code> or <code>1,3</code>), or click highlighted segments above.</div>
             <div class="g2">
               <div class="f">
-                <label class="fl" for="cm-ts">Group # → <span style="color:var(--blue)">timestamp</span></label>
-                <input class="inp inp-m" id="cm-ts" type="number" min="1" max="30" placeholder="e.g. 1"/>
+                <label class="fl" for="cm-ts">Group #(s) → <span style="color:var(--blue)">timestamp</span></label>
+                <input class="inp inp-m" id="cm-ts" placeholder="e.g. 1 or 1,2"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-th">Group # → <span style="color:var(--green)">thread</span></label>
-                <input class="inp inp-m" id="cm-th" type="number" min="1" max="30" placeholder="e.g. 2"/>
+                <label class="fl" for="cm-th">Group #(s) → <span style="color:var(--green)">thread</span></label>
+                <input class="inp inp-m" id="cm-th" placeholder="e.g. 2"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-el">Group # → <span style="color:var(--amber)">elementName</span></label>
-                <input class="inp inp-m" id="cm-el" type="number" min="1" max="30" placeholder="e.g. 3"/>
+                <label class="fl" for="cm-el">Group #(s) → <span style="color:var(--amber)">elementName</span></label>
+                <input class="inp inp-m" id="cm-el" placeholder="e.g. 3"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-py">Group # → <span style="color:var(--purple)">payload</span></label>
-                <input class="inp inp-m" id="cm-py" type="number" min="1" max="30" placeholder="e.g. 4"/>
+                <label class="fl" for="cm-py">Group #(s) → <span style="color:var(--purple)">payload</span></label>
+                <input class="inp inp-m" id="cm-py" placeholder="e.g. 4"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-co">Group # → <span style="color:var(--red)">correlationId</span></label>
-                <input class="inp inp-m" id="cm-co" type="number" min="1" max="30" placeholder="e.g. 5"/>
+                <label class="fl" for="cm-co">Group #(s) → <span style="color:var(--red)">correlationId</span></label>
+                <input class="inp inp-m" id="cm-co" placeholder="e.g. 5"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-lv">Group # → <span style="color:var(--yellow)">level</span></label>
-                <input class="inp inp-m" id="cm-lv" type="number" min="1" max="30" placeholder="e.g. 6"/>
+                <label class="fl" for="cm-lv">Group #(s) → <span style="color:var(--yellow)">level</span></label>
+                <input class="inp inp-m" id="cm-lv" placeholder="e.g. 6"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-cl">Group # → <span style="color:#d29922">className</span></label>
-                <input class="inp inp-m" id="cm-cl" type="number" min="1" max="30" placeholder="e.g. 7"/>
+                <label class="fl" for="cm-cl">Group #(s) → <span style="color:#d29922">className</span></label>
+                <input class="inp inp-m" id="cm-cl" placeholder="e.g. 7"/>
               </div>
               <div class="f">
-                <label class="fl" for="cm-me">Group # → <span style="color:#39d353">methodName</span></label>
-                <input class="inp inp-m" id="cm-me" type="number" min="1" max="30" placeholder="e.g. 8"/>
+                <label class="fl" for="cm-me">Group #(s) → <span style="color:#39d353">methodName</span></label>
+                <input class="inp inp-m" id="cm-me" placeholder="e.g. 8"/>
               </div>
             </div>
           </div>
@@ -8894,9 +8920,9 @@ function compile(c){
   TS_RX=tp?new RegExp(tp):null;
   ML_EN=!(c.globalSettings&&c.globalSettings.multilinePayloads===false);
 }
-function pts(s){if(!s)return null;const c=s.trim().replace(',','.');const m=Date.parse(c);if(!isNaN(m))return m;const n=parseFloat(c);return isNaN(n)?null:n;}
+function pts(s){if(!s)return null;let c=s.trim().replace(',','.');let m=Date.parse(c);if(!isNaN(m))return m;if(c.includes('|')||c.includes('[')||c.includes(']')){const cl=c.replace(/[\[\]]/g,'').replace(/\s*\|\s*/g,' ').trim();m=Date.parse(cl);if(!isNaN(m))return m;}const n=parseFloat(c);return isNaN(n)?null:n;}
 function gts(l){if(!TS_RX)return null;const m=TS_RX.exec(l);return m?pts(m[1]||m[0]):null;}
-function caps(m,mp){const o={};for(const[i,f]of Object.entries(mp||{})){const n=parseInt(i,10);if(!isNaN(n)&&m[n]!==undefined)o[f]=m[n];}return o;}
+function caps(m,mp){const o={};for(const[i,f]of Object.entries(mp||{})){const idxs=i.includes(',')?i.split(',').map(x=>parseInt(x.trim(),10)):[parseInt(i,10)];for(const n of idxs){if(!isNaN(n)&&m[n]!==undefined&&m[n]!==''){o[f]=(o[f]!==undefined&&o[f]!=='')?o[f]+' '+m[n]:m[n];}}}return o;}
 let _i=0;const uid=()=>'n'+(++_i);
 function pl(line,tf,stacks,trees,all){
   for(const r of RULES){
@@ -9606,7 +9632,7 @@ const RXB={
       const tmpl=TMPLS[e.target.value];if(!tmpl)return;
       $('e-rx').value=tmpl.rx;
       ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
-      const fg=f=>Object.entries(tmpl.cm).find(([,v])=>v===f)?.[0]||'';
+      const fg=f=>Object.entries(tmpl.cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
       $('cm-ts').value=fg('timestamp');
       $('cm-th').value=fg('thread');
       $('cm-el').value=fg('elementName');
@@ -9648,7 +9674,14 @@ const RXB={
   _cm(){
     const cm={};
     [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
-      .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
+      .forEach(([id,fn])=>{
+        const raw=$(id).value.trim();
+        if(!raw) return;
+        const parts=raw.split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+        parts.forEach(p=>{
+          if(!isNaN(+p)&&+p>0)cm[p]=fn;
+        });
+      });
     return cm;
   },
 
@@ -9692,11 +9725,16 @@ const RXB={
       const mapped = [];
       fields.forEach(f => {
         const val = $(f.id).value.trim();
-        if (val && !isNaN(val)) {
-          mapped.push({ grp: parseInt(val, 10), name: f.name });
+        if (val) {
+          const parts = val.split(/[,+\s]+/).map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n) && n > 0);
+          if (parts.length === 1) {
+            mapped.push({ grpStr: `Group ${parts[0]}`, grpSort: parts[0], name: f.name });
+          } else if (parts.length > 1) {
+            mapped.push({ grpStr: `Groups ${parts.sort((a,b)=>a-b).join('+')}`, grpSort: parts[0], name: f.name });
+          }
         }
       });
-      mapped.sort((a, b) => a.grp - b.grp);
+      mapped.sort((a, b) => a.grpSort - b.grpSort);
       
       const FIELD_COLORS = {
         timestamp: { bg: 'rgba(88,166,255,0.12)', fg: 'var(--blue)', border: 'var(--blue-g)' },
@@ -9714,7 +9752,7 @@ const RXB={
       } else {
         pillsContainer.innerHTML = mapped.map(m => {
           const colors = FIELD_COLORS[m.name];
-          return `<span style="background:${colors.bg}; color:${colors.fg}; border:1px solid ${colors.border}; padding:2px 4px; border-radius:var(--radius-sm);">[Group ${m.grp}: ${m.name}]</span>`;
+          return `<span style="background:${colors.bg}; color:${colors.fg}; border:1px solid ${colors.border}; padding:2px 4px; border-radius:var(--radius-sm);">[${m.grpStr}: ${m.name}]</span>`;
         }).join(' ');
       }
     }
@@ -9729,7 +9767,7 @@ const RXB={
     if (!menu) {
       menu = document.createElement('div');
       menu.id = 'vgb-menu';
-      menu.style.cssText = 'position:fixed;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);z-index:9999;min-width:185px;display:none;flex-direction:column;overflow:hidden;animation:modal-rise .16s var(--ease-snap);';
+      menu.style.cssText = 'position:fixed;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);z-index:9999;min-width:210px;display:none;flex-direction:column;overflow:hidden;animation:modal-rise .16s var(--ease-snap);';
       document.body.appendChild(menu);
     }
     
@@ -9745,8 +9783,11 @@ const RXB={
     ];
     
     const currentMappings = {};
+    const fieldExisting = {};
     fields.forEach(f => {
-      if ($(f.id).value.trim() === String(gi)) {
+      const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+      fieldExisting[f.id] = parts;
+      if (parts.includes(String(gi))) {
         currentMappings[f.id] = true;
       }
     });
@@ -9755,11 +9796,16 @@ const RXB={
     
     fields.forEach(f => {
       const isMapped = currentMappings[f.id];
+      const existing = fieldExisting[f.id];
       const checkIcon = isMapped ? '✓' : '';
       const mappedStyle = isMapped ? 'font-weight:bold;color:var(--amber);background:var(--bg-3);' : '';
-      html += `<div class="vgb-mi" data-fid="${f.id}" style="padding:8px 14px;font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .12s,color .12s;white-space:nowrap;${mappedStyle}">
-        <span>${f.label}</span>
-        <span style="font-size:11px;font-family:var(--mono);">${checkIcon}</span>
+      const hasOther = !isMapped && existing.length > 0;
+      html += `<div class="vgb-mi" data-fid="${f.id}" data-action="set" style="padding:7px 12px;font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .12s,color .12s;white-space:nowrap;${mappedStyle}">
+        <span>${f.label} ${existing.length > 0 ? `<span style="font-size:10px;color:var(--t4);font-family:var(--mono);">[g${existing.join(',')}]</span>` : ''}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${hasOther ? `<span class="vgb-combine-btn" title="Combine Group ${gi} with ${existing.join(',')}" style="font-size:10px;padding:1px 5px;background:var(--amber-d);color:var(--amber);border:1px solid var(--amber);border-radius:var(--rounded-sm);cursor:pointer;">+ Combine</span>` : ''}
+          <span style="font-size:11px;font-family:var(--mono);">${checkIcon}</span>
+        </div>
       </div>`;
     });
     
@@ -9779,8 +9825,9 @@ const RXB={
       });
       mi.addEventListener('click', (e) => {
         e.stopPropagation();
+        const combineBtn = e.target.closest('.vgb-combine-btn');
         const fid = mi.dataset.fid;
-        const action = mi.dataset.action;
+        const action = combineBtn ? 'combine' : (mi.dataset.action || 'set');
         
         if (!$('e-use-custom-rx').checked) {
           $('e-use-custom-rx').checked = true;
@@ -9788,17 +9835,33 @@ const RXB={
           toast('Switched to Custom Regex to allow manual mapping.', 'info');
         }
 
-        fields.forEach(f => {
-          if ($(f.id).value.trim() === String(gi)) {
-            $(f.id).value = '';
-          }
-        });
-        
-        if (fid) {
-          $(fid).value = gi;
-          toast(`Mapped Group ${gi} to ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
-        } else if (action === 'clear') {
+        if (action === 'clear') {
+          fields.forEach(f => {
+            const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+            $(f.id).value = parts.filter(p => p !== String(gi)).join(', ');
+          });
           toast(`Cleared mapping for Group ${gi}`, 'info');
+        } else if (action === 'combine' && fid) {
+          const parts = $(fid).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+          if (!parts.includes(String(gi))) parts.push(String(gi));
+          parts.sort((a,b)=>a-b);
+          $(fid).value = parts.join(', ');
+          toast(`Combined Group ${gi} into ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+        } else if (fid) {
+          fields.forEach(f => {
+            if (f.id !== fid) {
+              const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+              $(f.id).value = parts.filter(p => p !== String(gi)).join(', ');
+            }
+          });
+          if (currentMappings[fid]) {
+            const parts = $(fid).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+            $(fid).value = parts.filter(p => p !== String(gi)).join(', ');
+            toast(`Unmapped Group ${gi}`, 'info');
+          } else {
+            $(fid).value = String(gi);
+            toast(`Mapped Group ${gi} to ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+          }
         }
         
         this.hideMappingMenu();
@@ -9954,7 +10017,7 @@ const WIZ={
     if(!$('e-use-custom-rx').checked){
       $('e-rx').value=rx;
       ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>$(id).value='');
-      const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
+      const fg=f=>Object.entries(cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
       $('cm-ts').value=fg('timestamp');
       $('cm-th').value=fg('thread');
       $('cm-el').value=fg('elementName');
@@ -11403,7 +11466,7 @@ const UI={
     }
     $('e-rx').value=rule?.regexPattern||'';
     const cm=rule?.captureMapping||{};
-    const fg=f=>Object.entries(cm).find(([,v])=>v===f)?.[0]||'';
+    const fg=f=>Object.entries(cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
     $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');$('cm-el').value=fg('elementName');$('cm-py').value=fg('payload');
     $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');
     $('cm-cl').value=fg('className');$('cm-me').value=fg('methodName');$('e-sla').value=rule?.slaThresholdMs||'';
@@ -11512,7 +11575,14 @@ const UI={
       try{new RegExp(rx);}catch(e){toast('Invalid regex: '+e.message,'error');return;}
       cm={};
       [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
-        .forEach(([id,fn])=>{const v=$(id).value.trim();if(v&&!isNaN(+v))cm[v]=fn;});
+        .forEach(([id,fn])=>{
+          const raw=$(id).value.trim();
+          if(!raw) return;
+          const parts=raw.split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+          parts.forEach(p=>{
+            if(!isNaN(+p)&&+p>0)cm[p]=fn;
+          });
+        });
     }
     const hex=$('e-hex').value.trim();
     const col=/^#[0-9a-fA-F]{6}$/.test(hex)?hex:$('e-col').value;
@@ -13142,6 +13212,8 @@ const RG = {
     ['mouseup', 'keyup', 'select'].forEach(evt => {
       input.addEventListener(evt, () => this.onTextSelection());
     });
+    $('btn-rg-combine')?.addEventListener('click', () => this.combineSelected());
+    $('btn-rg-combine-all')?.addEventListener('click', () => this.combineAll());
   },
 
   onLineInput() {
@@ -13679,20 +13751,154 @@ const RG = {
     const container = $('rg-active-selections');
     if (!container) return;
     container.innerHTML = '';
+
+    const combineBar = $('rg-combine-bar');
+    if (combineBar) {
+      combineBar.style.display = (this.selections.length >= 2) ? 'flex' : 'none';
+    }
+
     this.selections.forEach((s, idx) => {
       const chip = document.createElement('span');
       chip.className = 'badge';
-      chip.style.cssText = `font-size:10px; display:inline-flex; align-items:center; gap:4px; padding:3px 6px; background:${s.color}; color:#fff; border-radius:var(--rounded-sm); cursor:default;`;
-      const lbl = document.createElement('span'); lbl.textContent = s.label + ':';
+      chip.style.cssText = `font-size:10px; display:inline-flex; align-items:center; gap:5px; padding:3px 8px; background:${s.color}; color:#fff; border-radius:var(--rounded-sm); cursor:default;`;
+
+      if (!s.isCombined) {
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.checked = !!s._checked;
+        chk.style.cssText = 'margin:0; cursor:pointer; accent-color:var(--amber); width:12px; height:12px;';
+        chk.title = 'Select group to combine';
+        chk.addEventListener('change', (e) => {
+          s._checked = e.target.checked;
+        });
+        chip.appendChild(chk);
+      } else {
+        const combIcon = document.createElement('span');
+        combIcon.textContent = '⧉';
+        combIcon.title = 'Combined Capture Group';
+        combIcon.style.cssText = 'font-size:11px; font-weight:bold;';
+        chip.appendChild(combIcon);
+      }
+
+      const lbl = document.createElement('span');
+      lbl.textContent = s.label + ':';
+      lbl.style.fontWeight = '600';
       const code = document.createElement('code');
       code.style.cssText = 'font-family:var(--mono); color:#fff;';
       code.textContent = s.pattern;
+      chip.appendChild(lbl);
+      chip.appendChild(code);
+
+      if (s.isCombined && s.subItems && s.subItems.length > 0) {
+        const splitBtn = document.createElement('button');
+        splitBtn.type = 'button';
+        splitBtn.textContent = 'Split';
+        splitBtn.className = 'btn btn-xs';
+        splitBtn.style.cssText = 'padding:1px 5px; font-size:9px; background:rgba(255,255,255,0.25); color:#fff; border:1px solid rgba(255,255,255,0.4); margin-left:2px; line-height:1; cursor:pointer; border-radius:var(--rounded-sm);';
+        splitBtn.title = 'Uncombine back into individual tokens';
+        splitBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.splitCombined(idx);
+        });
+        chip.appendChild(splitBtn);
+      }
+
       const rm = document.createElement('span');
-      rm.textContent = '✕'; rm.style.cssText = 'cursor:pointer; font-weight:bold; margin-left:2px;';
-      rm.addEventListener('click', () => { this.selections.splice(idx, 1); this.onSelectionChanged(); });
-      chip.appendChild(lbl); chip.appendChild(code); chip.appendChild(rm);
+      rm.textContent = '✕';
+      rm.style.cssText = 'cursor:pointer; font-weight:bold; margin-left:4px; opacity:.85;';
+      rm.title = 'Remove selection';
+      rm.addEventListener('click', () => {
+        this.selections.splice(idx, 1);
+        this.onSelectionChanged();
+      });
+      chip.appendChild(rm);
       container.appendChild(chip);
     });
+  },
+
+  formatGapPattern(gap) {
+    if (!gap) return '';
+    if (/^\s+$/.test(gap)) return '\\s+';
+    return gap.split(/(\s+)/).map(part => {
+      if (!part) return '';
+      if (/^\s+$/.test(part)) return '\\s*';
+      return part.replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&');
+    }).join('');
+  },
+
+  combineSelected() {
+    const checked = this.selections.filter(s => s._checked);
+    if (checked.length >= 2) {
+      this.combineItems(checked);
+    } else {
+      this.combineAll();
+    }
+  },
+
+  combineAll() {
+    if (this.selections.length < 2) {
+      toast('Select at least 2 groups to combine.', 'warn');
+      return;
+    }
+    this.combineItems([...this.selections]);
+  },
+
+  combineItems(itemsToCombine) {
+    const line = $('e-tl').value;
+    const targetField = $('rg-combine-target')?.value || 'timestamp';
+    
+    itemsToCombine.sort((a, b) => a.start - b.start);
+
+    let combinedPattern = '';
+    for (let i = 0; i < itemsToCombine.length; i++) {
+      const item = itemsToCombine[i];
+      if (i > 0) {
+        const prev = itemsToCombine[i - 1];
+        const gap = line.slice(prev.end, item.start);
+        combinedPattern += this.formatGapPattern(gap);
+      }
+      combinedPattern += item.pattern;
+    }
+
+    const FIELD_INFO = {
+      timestamp: { label: 'Timestamp (Combined)', color: '#3b82f6' },
+      thread: { label: 'Thread (Combined)', color: '#06b6d4' },
+      elementName: { label: 'ElementName (Combined)', color: '#f59e0b' },
+      payload: { label: 'Payload (Combined)', color: '#8b5cf6' },
+      correlationId: { label: 'CorrelationId (Combined)', color: '#c084fc' },
+      level: { label: 'Level (Combined)', color: '#ef4444' },
+      className: { label: 'ClassName (Combined)', color: '#10b981' },
+      methodName: { label: 'MethodName (Combined)', color: '#34d399' }
+    };
+    const info = FIELD_INFO[targetField] || { label: `${targetField} (Combined)`, color: '#3b82f6' };
+
+    const combinedSelection = {
+      start: itemsToCombine[0].start,
+      end: itemsToCombine[itemsToCombine.length - 1].end,
+      pattern: combinedPattern,
+      label: info.label,
+      color: info.color,
+      targetField: targetField,
+      isCombined: true,
+      subItems: itemsToCombine.flatMap(it => it.subItems || [it])
+    };
+
+    const itemSet = new Set(itemsToCombine);
+    this.selections = this.selections.filter(s => !itemSet.has(s));
+    this.selections.push(combinedSelection);
+    this.selections.sort((a, b) => a.start - b.start);
+
+    this.onSelectionChanged();
+    toast(`Combined ${itemsToCombine.length} groups into single ${targetField} element.`, 'success');
+  },
+
+  splitCombined(idx) {
+    const item = this.selections[idx];
+    if (!item || !item.isCombined || !item.subItems) return;
+    this.selections.splice(idx, 1, ...item.subItems);
+    this.selections.sort((a, b) => a.start - b.start);
+    this.onSelectionChanged();
+    toast('Uncombined group back into individual tokens.', 'info');
   },
 
   renderPreview() {
@@ -13786,6 +13992,11 @@ const RG = {
       $(id).value = '';
     });
 
+    const fieldMap = {
+      timestamp: 'cm-ts', thread: 'cm-th', elementName: 'cm-el', payload: 'cm-py',
+      correlationId: 'cm-co', level: 'cm-lv', className: 'cm-cl', methodName: 'cm-me'
+    };
+
     this.selections.forEach((s, idx) => {
       const groupNum = idx + 1;
       if (s.start > lastIdx) {
@@ -13795,21 +14006,26 @@ const RG = {
       regex += `(${s.pattern})`;
       lastIdx = s.end;
 
-      // Auto-populate capture mapping
-      const lbl = s.label.toLowerCase();
-      if (lbl.includes('timestamp') || lbl.includes('iso8601') || lbl.includes('datetime') ||
-          (lbl.includes('date') && !lbl.includes('update')) || lbl.includes('time (hh')) {
-        $('cm-ts').value = groupNum;
-      } else if (lbl.includes('thread') || lbl.includes('thread name')) {
-        $('cm-th').value = groupNum;
-      } else if (lbl.includes('log level') || lbl.includes('level')) {
-        $('cm-lv').value = groupNum;
-      } else if (lbl.includes('dotted class') || lbl.includes('method signature') || lbl.includes('class')) {
-        $('cm-el').value = groupNum;
-      } else if (lbl.includes('key=value') || lbl.includes('http status') || lbl.includes('correlation')) {
-        $('cm-co').value = groupNum;
-      } else if (lbl.includes('quoted string') || lbl.includes('payload') || lbl.includes('rest')) {
-        $('cm-py').value = groupNum;
+      if (s.targetField && fieldMap[s.targetField]) {
+        const el = $(fieldMap[s.targetField]);
+        if (el) el.value = groupNum;
+      } else {
+        // Auto-populate capture mapping
+        const lbl = s.label.toLowerCase();
+        if (lbl.includes('timestamp') || lbl.includes('iso8601') || lbl.includes('datetime') ||
+            (lbl.includes('date') && !lbl.includes('update')) || lbl.includes('time (hh')) {
+          $('cm-ts').value = groupNum;
+        } else if (lbl.includes('thread') || lbl.includes('thread name')) {
+          $('cm-th').value = groupNum;
+        } else if (lbl.includes('log level') || lbl.includes('level')) {
+          $('cm-lv').value = groupNum;
+        } else if (lbl.includes('dotted class') || lbl.includes('method signature') || lbl.includes('class')) {
+          $('cm-el').value = groupNum;
+        } else if (lbl.includes('key=value') || lbl.includes('http status') || lbl.includes('correlation')) {
+          $('cm-co').value = groupNum;
+        } else if (lbl.includes('quoted string') || lbl.includes('payload') || lbl.includes('rest')) {
+          $('cm-py').value = groupNum;
+        }
       }
     });
 
@@ -16777,9 +16993,14 @@ const STREAM_PARSER = {
 
   pts(s) {
     if (!s) return null;
-    const c = s.trim().replace(',', '.');
-    const m = Date.parse(c);
+    let c = s.trim().replace(',', '.');
+    let m = Date.parse(c);
     if (!isNaN(m)) return m;
+    if (c.includes('|') || c.includes('[') || c.includes(']')) {
+      const cl = c.replace(/[\[\]]/g, '').replace(/\s*\|\s*/g, ' ').trim();
+      m = Date.parse(cl);
+      if (!isNaN(m)) return m;
+    }
     const n = parseFloat(c);
     return isNaN(n) ? null : n;
   },
@@ -16793,8 +17014,12 @@ const STREAM_PARSER = {
   caps(m, mp) {
     const o = {};
     for (const [i, f] of Object.entries(mp || {})) {
-      const n = parseInt(i, 10);
-      if (!isNaN(n) && m[n] !== undefined) o[f] = m[n];
+      const idxs = i.includes(',') ? i.split(',').map(x => parseInt(x.trim(), 10)) : [parseInt(i, 10)];
+      for (const n of idxs) {
+        if (!isNaN(n) && m[n] !== undefined && m[n] !== '') {
+          o[f] = (o[f] !== undefined && o[f] !== '') ? o[f] + ' ' + m[n] : m[n];
+        }
+      }
     }
     return o;
   },
