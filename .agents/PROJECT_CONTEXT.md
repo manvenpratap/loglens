@@ -3,6 +3,15 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Timeline & Observability UI-UX Overhaul (v6.9.94 — COMPLETED)**:
+  - **Eliminated Corrupted Vertical Swimlane Text**: Fixed root cause in `.swim-lane-hdr` where `writing-mode: vertical-rl;` rotated labels 90° vertically, causing characters to overflow into neighbor rows and create garbled illegible text (`:RNKKRRNKKR...`). Replaced with `writing-mode: horizontal-tb !important;`, flex spacing, font-size 11px, `trunc` title wrapper, and right-aligned pill badges (`.badge b-gray`).
+  - **Consolidated Dual Toolbars into Unified Single Row**: Merged redundant 72px dual-row toolbars (`#g-zoom-ctrl-row` and `.pt`) into a single compact 38px `.pt.g-toolbar` across both Waterfall and Swimlane views. Restored 34px+ of vertical timeline real estate while retaining all controls: view mode toggle, thread/span count badges, Group by Rule checkbox, Lane Height slider, Critical Path checkbox, Time Zoom slider with direct readout, and Fit/Reset actions.
+  - **Replaced Static Stuck Scrubber with Interactive Crosshair Guide**: Replaced the static 250px vertical line and colliding `0.00ms` ruler badge (which was inappropriately bound to vertical scroll) with an on-demand hover crosshair that cleanly tracks mouse movements across tracks with precise millisecond tooltips and vanishes when idle.
+  - **Fixed 99% Stuck Progress Bar**: Ensured `UI.hprog` reliably sets `$('prog-p').textContent = '100%'` upon completion, shortened dismiss timeout to 400ms, and eliminated hanging progress states.
+  - **KPI Summary Card Visual Symmetry**: Added matching progress track (`.summary-card-progress-wrap` with `background-color: var(--amber)`) to Card 3 ("Active Threads"), aligning height and aesthetic structure with Cards 1 & 2.
+  - **Toast Queue Management & Dismissal**: Capped maximum stacked toasts in `#toast-r` to 2, enabled click-to-dismiss (`cursor: pointer;`), and added `pointer-events: none` on `#toast-r` container with `pointer-events: auto` on `.toast` to prevent dead click zones.
+  - **Full Regression Test Suite Passed**: 111 passed / 111 total across both dark and light/ivory themes with zero regressions.
+
 - **Graphify Dependency Graph Legibility & Pipeline Architecture Layout (v6.9.93 — COMPLETED)**:
   - **Overcame Visual Overlap & Knot Topology**: Solved dense clustering, label collision, and tangled cross-links in the transaction dependency graph. Transformed chaotic force distribution into an intuitive, high-clarity distributed service architecture layout.
   - **Hierarchical Microservice Pipeline (`assignClusterAnchors`)**: Structured primary business flows into distinct, readable service swimlane columns:

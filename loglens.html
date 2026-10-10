@@ -3778,30 +3778,23 @@ body.focus-mode #res {
 .has-minimap > #tree-vscroll,
 .has-minimap > .vscroll-container { margin-right: 56px; }
 
-/* --- 3. Scroll-Driven Time Scrubber --- */
+/* --- 3. Interactive Time Scrubber Guide --- */
 #ll-scrubber {
-  position: absolute; top: 0; bottom: 0; width: 2px; left: 0;
-  pointer-events: none; z-index: 10;
-  background: var(--amber); opacity: 0.75;
-  border-radius: 1px;
-  box-shadow: 0 0 6px var(--amber);
+  position: absolute; top: 0; bottom: 0; width: 1px; left: 0;
+  pointer-events: none; z-index: 10; display: none;
+  background: var(--cyan, #06b6d4); opacity: 0.85;
+  box-shadow: 0 0 5px var(--cyan, #06b6d4);
   will-change: left;
 }
 #ll-scrubber-tip {
-  position: absolute; top: 0; left: 4px;
-  font-size: 9px; font-family: var(--mono);
-  color: var(--amber); white-space: nowrap;
-  background: var(--bg-1); padding: 1px 4px;
-  border-radius: 2px; border: 1px solid var(--amber);
-  opacity: 0.9; pointer-events: none;
-}
-
-/* Scroll-driven animation when supported */
-@supports (animation-timeline: scroll()) {
-  #ll-scrubber.scroll-driven {
-    animation: scrubber-move linear both;
-    animation-timeline: scroll(var(--scrubber-scroller, nearest) y);
-  }
+  position: absolute; top: 4px; left: 6px;
+  font-size: 10px; font-family: var(--mono);
+  color: var(--t1); white-space: nowrap;
+  background: var(--bg-1); padding: 2px 6px;
+  border-radius: var(--rounded-sm, 4px);
+  border: 1px solid var(--bdr);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  pointer-events: none;
 }
 @keyframes scrubber-move {
   from { left: 0%; }
@@ -4082,20 +4075,34 @@ body.focus-mode #res {
   border-left-color: var(--amber) !important;
 }
 
-/* Swimlane mode writing-mode */
+/* Swimlane mode horizontal row header */
+.swim-lane {
+  transition: background-color 0.15s ease;
+}
+.swim-lane:hover {
+  background: var(--bg-2) !important;
+}
 .swim-lane-hdr {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  writing-mode: horizontal-tb !important;
   font-family: var(--mono);
-  font-size: 9px !important;
-  text-transform: uppercase;
-  color: var(--t3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 11px !important;
+  font-weight: 600;
+  color: var(--t1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px;
   border-right: 1px solid var(--bdr) !important;
   cursor: grab;
-  padding: 0 4px;
+  padding: 0 10px !important;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none !important;
+}
+.swim-lane-hdr:active {
+  cursor: grabbing;
 }
 
 /* Gantt bar container query */
@@ -4348,8 +4355,9 @@ body.focus-mode #res {
 .ap-card { padding: 12px 16px !important; }
 
 /* Toast rack */
-#toast-r { bottom: 20px !important; right: 20px !important; gap: 8px !important; }
-.toast { padding: 12px 16px !important; }
+#toast-r { bottom: 20px !important; right: 20px !important; gap: 8px !important; pointer-events: none !important; }
+.toast { padding: 12px 16px !important; pointer-events: auto !important; cursor: pointer !important; }
+.pt.g-toolbar { padding: 6px 12px !important; min-height: 38px !important; }
 
 /* File chips */
 .fchip { padding: 4px 12px !important; gap: 6px !important; }
@@ -6002,9 +6010,9 @@ label[for="watch-auto-reload"] {
   min-width: 0 !important;
 }
 
-/* Swim lane headers — minimum font size */
+/* Swim lane headers — legible font size */
 .swim-lane-hdr {
-  font-size: 10px !important;
+  font-size: 11px !important;
 }
 
 /* ── P. LIGHT THEME TOKEN RESTORATION ────────────────────────────── */
@@ -9922,11 +9930,24 @@ const GR={
       </div>`;
     }).join('');
     el.innerHTML=`<div class="gw">
-      <div class="pt" style="display:flex; align-items:center; gap:8px;">
-        <span>▤</span> Waterfall Timeline
-        <span class="badge b-gray mla">Total: ${esc(fmtMs(rd))}</span>
-        <span class="badge b-gray">${rows.length} spans</span>
+      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; box-sizing:border-box;">
+        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px;"><span>▤</span> Waterfall Timeline</span>
         <button class="btn btn-g btn-xs" id="btn-swim-toggle">Swimlane View</button>
+        <span class="badge b-gray" style="font-size:10px;">Total: ${esc(fmtMs(rd))}</span>
+        <span class="badge b-gray" style="font-size:10px;">${rows.length} spans</span>
+        
+        <div style="flex:1;"></div>
+        
+        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none;">
+          <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
+          ✦ Critical Path
+        </label>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 4px;"></div>
+        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--t2);"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:90px; accent-color:var(--amber);">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px; font-size:11px;">×${(S.ganttZoom || 1).toFixed(1)}</span>
+        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit</button>
+        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
       </div>
       <div class="g-hdr"><div class="g-ch">Element</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div class="g-rows">${rh}</div>
@@ -21806,48 +21827,41 @@ S.criticalPathOn = false;
 
 const GANTT_ZOOM_PAN = {
   isPanned: false,
+  _lastContainer: null,
   
   initEvents() {
-    // ── 1. Inject zoom control bar into a STABLE wrapper (not .gw which is rebuilt on every render)
-    const gw = document.querySelector('.gw');
-    if (!gw) return;
-    let zoomBar = $('g-zoom-ctrl-row');
-    if (!zoomBar) {
-      // Create a stable container sibling of .gw inside its parent
-      const stableWrap = gw.parentElement;
-      zoomBar = document.createElement('div');
-      zoomBar.id = 'g-zoom-ctrl-row';
-      zoomBar.style.cssText = 'display:flex; align-items:center; gap:8px; background:var(--bg-2); padding:6px 12px; border-bottom:1px solid var(--bdr); font-size:11px; flex-shrink:0;';
-      zoomBar.innerHTML = `
-        <span style="display:inline-flex; align-items:center; gap:4px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
-        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom}" style="width:120px; accent-color:var(--amber);">
-        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px;">×${S.ganttZoom.toFixed(1)}</span>
-        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit Window</button>
-        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
-        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 4px;"></div>
-        <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-          <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
-          ✦ Critical Path
-        </label>
-      `;
-      // Insert BEFORE .gw inside the parent
-      stableWrap.insertBefore(zoomBar, gw);
-      zoomBar.querySelector('#gantt-zoom-slider').addEventListener('input', e => {
-        this.applyZoom(parseFloat(e.target.value));
-      });
-      zoomBar.querySelector('#btn-zoom-reset').addEventListener('click', () => this.applyZoom(1));
-      zoomBar.querySelector('#btn-zoom-fit').addEventListener('click', () => this.fitWindow());
-      zoomBar.querySelector('#gantt-crit-chk').addEventListener('change', e => {
+    // ── 1. Remove legacy duplicate bar if present
+    const legacyBar = $('g-zoom-ctrl-row');
+    if (legacyBar) legacyBar.remove();
+
+    // ── 2. Wire controls in the unified .g-toolbar
+    const slider = $('gantt-zoom-slider');
+    if (slider && !slider._wired) {
+      slider._wired = true;
+      slider.addEventListener('input', e => this.applyZoom(parseFloat(e.target.value)));
+    }
+    const btnReset = $('btn-zoom-reset');
+    if (btnReset && !btnReset._wired) {
+      btnReset._wired = true;
+      btnReset.addEventListener('click', () => this.applyZoom(1));
+    }
+    const btnFit = $('btn-zoom-fit');
+    if (btnFit && !btnFit._wired) {
+      btnFit._wired = true;
+      btnFit.addEventListener('click', () => this.fitWindow());
+    }
+    const critChk = $('gantt-crit-chk');
+    if (critChk && !critChk._wired) {
+      critChk._wired = true;
+      critChk.addEventListener('change', e => {
         S.criticalPathOn = e.target.checked;
         UI.rv();
       });
     }
 
-    // ── 2. Always rebind drag / wheel to the current live .g-rows
+    // ── 3. Always rebind drag / wheel to the current live rows container
     this.rebind();
   },
-
-
 
   applyZoom(z) {
     S.ganttZoom = z;
@@ -21856,29 +21870,20 @@ const GANTT_ZOOM_PAN = {
     const lbl = $('gantt-zoom-val');
     if (lbl) lbl.textContent = `×${z.toFixed(1)}`;
     document.documentElement.style.setProperty('--g-zoom', z);
-    // Also apply to live .g-rows so tracks scale without full re-render
-    const rows = document.querySelector('.g-rows');
+    const rows = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
     if (rows) rows.style.setProperty('--g-zoom', z);
   },
   
   fitWindow() {
-    const container = document.querySelector('.g-rows');
+    const container = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
     if (!container) return;
-    // Target: all tracks should fit in the visible g-trk width
-    const trk = container.querySelector('.g-trk');
-    const containerW = container.clientWidth;
-    const labelW = 250; // matches CSS grid 250px column
-    const viewportW = containerW - labelW;
-    if (!trk || viewportW <= 0) { this.applyZoom(1); return; }
-    // At zoom=1 the track is 100% of its column; we want it to fit exactly 1x
     this.applyZoom(1);
-    // Reset scroll
     container.scrollLeft = 0;
   },
 
-  /** Re-bind drag/scroll/wheel events to the current live .g-rows element */
+  /** Re-bind drag/scroll/wheel events to the current live container */
   rebind() {
-    const container = document.querySelector('.g-rows');
+    const container = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
     if (!container || container === this._lastContainer) return;
     this._lastContainer = container;
 
@@ -22040,8 +22045,9 @@ SWIMLANE.init = function(el) {
     const bg = idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)';
     
     return `<div class="swim-lane" data-id="${esc(lane.id)}" draggable="true" style="display:grid; grid-template-columns:180px 1fr; border-bottom:1px solid var(--bdr-d); background:${bg}; align-items:center; height:${SWIM.laneH}px;">
-      <div class="swim-lane-hdr trunc" style="font-weight:bold; font-size:11px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr);">
-        ${esc(lane.name)} <span class="badge b-gray" style="font-size:9px;">${lane.events.length}</span>
+      <div class="swim-lane-hdr" style="font-weight:bold; font-size:11px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr); display:flex; align-items:center; justify-content:space-between; gap:6px;">
+        <span class="lane-title trunc" style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${esc(lane.name)}">${esc(lane.name)}</span>
+        <span class="badge b-gray" style="font-size:9px; font-weight:700; flex-shrink:0;">${lane.events.length}</span>
       </div>
       <div style="position:relative; height:100%; width:calc(100% * var(--g-zoom, 1)); min-width:100%;">
         ${barsHtml}
@@ -22051,17 +22057,30 @@ SWIMLANE.init = function(el) {
   
   el.innerHTML = `
     <div class="gw" style="display:flex; flex-direction:column; height:100%;">
-      <div class="pt" style="display:flex; align-items:center;">
-        <span>⧇</span> Swimlane Timeline View
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="margin-left:8px;">Show Standard Waterfall</button>
-        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 8px;"></div>
-        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+      <div class="pt g-toolbar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; box-sizing:border-box;">
+        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px;"><span>⧇</span> Swimlane View</span>
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle">Show Waterfall</button>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px;"></div>
+        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none;">
           <input type="checkbox" id="chk-swim-groupby" ${SWIM.groupByRule ? 'checked' : ''}> Group by Rule Type
         </label>
-        <div style="border-left:1px solid var(--bdr); height:16px; margin:0 8px;"></div>
-        <span style="font-size:11px;">Lane Height:</span>
-        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:80px; accent-color:var(--amber);">
-        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold; margin-left:4px;">${SWIM.laneH}px</span>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px;"></div>
+        <span style="font-size:11px; color:var(--t2);">Lane Height:</span>
+        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:70px; accent-color:var(--amber);">
+        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold;">${SWIM.laneH}px</span>
+
+        <div style="flex:1;"></div>
+
+        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none;">
+          <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
+          ✦ Critical Path
+        </label>
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 4px;"></div>
+        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--t2);"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Time Zoom:</span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:90px; accent-color:var(--amber);">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:28px; font-size:11px;">×${(S.ganttZoom || 1).toFixed(1)}</span>
+        <button class="btn btn-xs btn-g" id="btn-zoom-fit">Fit</button>
+        <button class="btn btn-xs btn-g" id="btn-zoom-reset">Reset</button>
       </div>
       <div class="g-hdr" style="grid-template-columns:180px 1fr;"><div class="g-ch">Thread / Rule</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div style="flex:1; overflow-y:auto; overflow-x:hidden;" id="swim-lanes-rows">
@@ -24082,11 +24101,10 @@ const OVERDRIVE = (() => {
     }
   };
 
-  /* ── 3. SCROLL-DRIVEN GANTT SCRUBBER ────────────────────────────── */
+  /* ── 3. INTERACTIVE TIME SCRUBBER GUIDE ─────────────────────────── */
   const SCRUBBER = {
     _el: null, _tip: null, _gw: null,
     _totalDuration: 0, _startTs: 0,
-    _rafId: null,
 
     attach(ganttWrapper, startTs, totalDuration) {
       this._gw = ganttWrapper;
@@ -24100,42 +24118,51 @@ const OVERDRIVE = (() => {
 
       this._el = document.createElement('div');
       this._el.id = 'll-scrubber';
+      this._el.style.display = 'none';
 
       this._tip = document.createElement('div');
       this._tip.id = 'll-scrubber-tip';
       this._tip.textContent = '0ms';
       this._el.appendChild(this._tip);
 
-      // Check scroll-driven animations support
-      if (CSS.supports('animation-timeline', 'scroll()') && false) {
-        // Pure CSS mode (disabled: Gantt doesn't fill viewport scroll, JS is better)
-        this._el.classList.add('scroll-driven');
-      }
       ganttWrapper.appendChild(this._el);
 
-      // JS fallback: track parent container scroll
-      const scrollParent = ganttWrapper.querySelector('.g-rows') || ganttWrapper.closest('.vscroll-container, [style*="overflow"]') || ganttWrapper.parentElement;
-      if (scrollParent) {
-        scrollParent.addEventListener('scroll', () => this._update(scrollParent), { passive: true });
-        this._update(scrollParent);
-      }
-    },
+      const rowsCont = ganttWrapper.querySelector('.g-rows') || ganttWrapper.querySelector('#swim-lanes-rows');
+      if (rowsCont) {
+        const onMouseMove = (e) => {
+          if (!this._el || !this._gw) return;
+          const rect = rowsCont.getBoundingClientRect();
+          const gwRect = ganttWrapper.getBoundingClientRect();
+          const mouseX = e.clientX;
+          if (mouseX < rect.left || mouseX > rect.right) {
+            this._el.style.display = 'none';
+            return;
+          }
+          const isSwimlane = !!ganttWrapper.querySelector('#swim-lanes-rows');
+          const headerW = isSwimlane ? 180 : 250;
+          const trackLeft = rect.left + headerW;
+          if (mouseX < trackLeft) {
+            this._el.style.display = 'none';
+            return;
+          }
+          const leftOffset = mouseX - gwRect.left;
+          this._el.style.display = 'block';
+          this._el.style.left = `${leftOffset}px`;
 
-    _update(scroller) {
-      if (!this._el || !this._gw) return;
-      const scrollTop = scroller.scrollTop;
-      const scrollH = scroller.scrollHeight;
-      const ratio = scrollH > scroller.clientHeight ? scrollTop / (scrollH - scroller.clientHeight) : 0;
-      this._el.style.left = `calc(250px + (100% - 250px) * ${ratio})`;
-      
-      const scrollLeft = scroller.scrollLeft;
-      const scrollW = scroller.scrollWidth;
-      const clientW = scroller.clientWidth;
-      const visibleTrackW = Math.max(1, clientW - 250);
-      const totalTrackW = Math.max(1, scrollW - 250);
-      const scrubberPosInTrack = ratio * visibleTrackW + scrollLeft;
-      const ms = Math.max(0, Math.min(this._totalDuration, (scrubberPosInTrack / totalTrackW) * this._totalDuration));
-      this._tip.textContent = fmtMs(ms);
+          const posInTrack = Math.max(0, mouseX - trackLeft + rowsCont.scrollLeft);
+          const totalTrackW = Math.max(1, rowsCont.scrollWidth - headerW);
+          const ratio = Math.max(0, Math.min(1, posInTrack / totalTrackW));
+          const ms = ratio * this._totalDuration;
+          this._tip.textContent = fmtMs(ms);
+        };
+
+        const onMouseLeave = () => {
+          if (this._el) this._el.style.display = 'none';
+        };
+
+        rowsCont.addEventListener('mousemove', onMouseMove, { passive: true });
+        rowsCont.addEventListener('mouseleave', onMouseLeave, { passive: true });
+      }
     },
 
     detach() {
@@ -25942,9 +25969,11 @@ UI.svm(S.viewMode);
   const originalUiHprog = UI.hprog.bind(UI);
   UI.hprog = function() {
     const label = $('prog-l');
-    if (label) {
+    if (label && !label.innerHTML.includes('✓')) {
       label.innerHTML += ' <span style="color:var(--green); font-weight:bold; margin-left:6px;">✓</span>';
     }
+    const pct = $('prog-p');
+    if (pct) pct.textContent = '100%';
     const fill = $('prog-f');
     if (fill) {
       fill.style.width = '100%';
@@ -25956,8 +25985,8 @@ UI.svm(S.viewMode);
         if (fill) fill.style.background = '';
         const details = $('prog-details');
         if (details) details.textContent = '';
-      }, 550);
-    }, 1200);
+      }, 350);
+    }, 450);
   };
 
   // 18. Wrap WIZ.test backdrop highlights
@@ -26103,8 +26132,17 @@ UI.svm(S.viewMode);
     progress.style.cssText = `position:absolute; bottom:0; left:0; height:2px; width:100%; background:currentColor; opacity:0.4; transition:width ${d}ms linear;`;
     el.appendChild(progress);
     
+    el.style.cursor = 'pointer';
+    el.title = 'Click to dismiss';
+    el.addEventListener('click', () => { el.remove(); });
+    
     const container = $('toast-r');
-    if (container) container.appendChild(el);
+    if (container) {
+      while (container.children.length >= 2) {
+        container.firstElementChild.remove();
+      }
+      container.appendChild(el);
+    }
     
     requestAnimationFrame(() => { progress.style.width = '0%'; });
     setTimeout(() => {
@@ -26288,7 +26326,9 @@ UI.svm(S.viewMode);
         </div>
         <div class="summary-card-body">
           <div class="summary-card-value summary-card-value-animate" data-val="${totalThreads}">${totalThreads}</div>
-          <div style="height:4px;"></div>
+          <div class="summary-card-progress-wrap">
+            <div class="summary-card-progress-bar" style="width:100%; background-color:var(--amber);"></div>
+          </div>
         </div>
         <div class="summary-card-footer">
           <span class="summary-card-desc">Total threads parsed in session</span>
