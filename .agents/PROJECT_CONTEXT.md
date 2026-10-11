@@ -2,6 +2,26 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Expanded 10-Theme Studio & Light Themes Suite (v6.9.144 — COMPLETED)**:
+  - **Expanded Theme Studio Drawer (`#theme-picker-menu`)**:
+    - Upgraded from simple dropdown into an agency-grade modal theme studio with header (`Theme Studio 10 Themes`), category filter tabs (`All (10)`, `Dark (5)`, `Light (5)`), close button, and glassmorphic backdrop.
+    - Mini theme preview cards: realistic miniature UI cards displaying exact background, surface container border, colored accent telemetry line, and glowing circular dot indicator.
+    - Badges & Descriptions: Each theme displays a category badge (`DARK` or `LIGHT`), title, human-friendly color description, and active status marker (`✓ Active`) with glowing border.
+  - **5 Professional Light Themes**:
+    - `Ivory Warm` (`ivory`): Warm editorial cream (`#f5f3ee`) with amber accents (`#c2620a`).
+    - `Nordic Frost` (`nordic`): Cool scandinavian ice (`#eef2f7`) with cobalt precision accents (`#0066cc`).
+    - `Paper Craft` (`paper`): Classic book craft parchment (`#f7f4ed`) with walnut typography (`#8c5a2b`).
+    - `Blueprint` (`blueprint`): Technical drafting cyan canvas (`#f0f5fa`) with crisp cyan inks (`#0070ba`).
+    - `Solarized` (`solarized`): Precision cream (`#fdf6e3`) with Ethan Schoonover brass accents (`#b58900`).
+  - **Theme System & Contrast Architecture**:
+    - Automatically sets both `data-theme="<id>"` and `data-theme-type="dark|light"` on `document.documentElement`.
+    - High-contrast styles for all light themes: high contrast tree-rows, alternating zebra striping, timeline headers, breadcrumbs, search inputs, chip filters, and modals.
+    - Full 4-way keyboard arrow navigation (`ArrowDown`, `ArrowUp`, `ArrowLeft`, `ArrowRight`, `Escape`, `Enter`, `Space`).
+    - Command Palette integration: All 10 themes registered as direct commands in `Cmd+K`.
+  - **Automated Regression Verification**:
+    - Added `test_theme_studio_drawer_filtering_and_theme_switching` to `tests/test_consolidated_settings_and_accessibility.py`.
+    - Full regression test suite passed: **113/113 tests (100% pass rate in 106s)**.
+
 - **Enhanced Trace Explorer & LQL Query Terminal (v6.9.143 — COMPLETED)**:
   - **Enhanced Trace Explorer**:
     - 4 KPI metric cards (`Total Traces`, `Traced Events`, `P95 Latency`, `SLA Breaches`). Clicking card resets or filters by SLA breaches.

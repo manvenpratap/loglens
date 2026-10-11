@@ -171,6 +171,194 @@
   --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
 }
 /* ============================================================
+   CSS §2a-1 · NORDIC THEME — Polar Daylight / Ice Cobalt
+   ============================================================ */
+[data-theme=nordic]{
+  --bg-0: oklch(98.5% 0.003 230);
+  --bg-1: #ffffff;
+  --bg-2: oklch(95.5% 0.006 230);
+  --bg-3: oklch(92% 0.010 230);
+  --bg-4: oklch(87% 0.014 230);
+  --bdr-d: oklch(90% 0.008 230);
+  --bdr: oklch(82% 0.015 230);
+  --bdr-h: oklch(68% 0.025 230);
+  --t1: oklch(20% 0.018 240);
+  --t2: oklch(32% 0.015 240);
+  --t3: oklch(46% 0.014 240);
+  --t4: oklch(60% 0.012 240);
+  --amber: oklch(56% 0.20 240); /* Arctic Cobalt / Ice Blue */
+  --amber-g: oklch(56% 0.20 240 / 0.15);
+  --amber-d: oklch(56% 0.20 240 / 0.08);
+  --blue: oklch(52% 0.22 250);
+  --blue-g: oklch(52% 0.22 250 / 0.15);
+  --green: oklch(58% 0.18 160);
+  --green-g: oklch(58% 0.18 160 / 0.15);
+  --red: oklch(52% 0.22 25);
+  --red-g: oklch(52% 0.22 25 / 0.15);
+  --yellow: oklch(66% 0.18 85);
+  --yellow-g: oklch(66% 0.18 85 / 0.15);
+  --purple: oklch(56% 0.22 300);
+  --purple-g: oklch(56% 0.22 300 / 0.15);
+  --cyan: oklch(62% 0.16 205);
+  --cyan-g: oklch(62% 0.16 205 / 0.15);
+  --glass: rgba(2,132,199,.04);
+  --glass-bdr: rgba(2,132,199,.10);
+  --bar-t: rgba(15,23,42,.90);
+  --shd: 0 4px 20px rgba(15,23,42,.06),0 1px 3px rgba(15,23,42,.04);
+  --shd-lg: 0 16px 48px rgba(15,23,42,.10),0 4px 12px rgba(15,23,42,.05);
+  --shd-xs: 0 1px 3px rgba(15,23,42,.05);
+  --glow-amber: 0 0 0 1px rgba(2,132,199,.25);
+  --rounded-sm: 6px;
+  --rounded-md: 10px;
+  --rounded-lg: 16px;
+  --rounded-full: 99px;
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, sans-serif;
+  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, sans-serif;
+  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", monospace;
+}
+
+/* ============================================================
+   CSS §2a-2 · PAPER THEME — Monocle Journal / Fine Press Print
+   ============================================================ */
+[data-theme=paper]{
+  --bg-0: oklch(95.5% 0.012 85);
+  --bg-1: oklch(98.8% 0.005 85);
+  --bg-2: oklch(92.5% 0.015 85);
+  --bg-3: oklch(88% 0.018 85);
+  --bg-4: oklch(83% 0.022 85);
+  --bdr-d: oklch(86% 0.014 85);
+  --bdr: oklch(76% 0.020 85);
+  --bdr-h: oklch(55% 0.025 85);
+  --t1: oklch(18% 0.010 60);
+  --t2: oklch(28% 0.012 60);
+  --t3: oklch(42% 0.012 60);
+  --t4: oklch(56% 0.010 60);
+  --amber: oklch(54% 0.22 35); /* Burnt Vermilion Ink */
+  --amber-g: oklch(54% 0.22 35 / 0.15);
+  --amber-d: oklch(54% 0.22 35 / 0.08);
+  --blue: oklch(46% 0.18 245);
+  --blue-g: oklch(46% 0.18 245 / 0.15);
+  --green: oklch(46% 0.16 145);
+  --green-g: oklch(46% 0.16 145 / 0.15);
+  --red: oklch(46% 0.22 20);
+  --red-g: oklch(46% 0.22 20 / 0.15);
+  --yellow: oklch(60% 0.18 80);
+  --yellow-g: oklch(60% 0.18 80 / 0.15);
+  --purple: oklch(46% 0.18 315);
+  --purple-g: oklch(46% 0.18 315 / 0.15);
+  --cyan: oklch(50% 0.14 210);
+  --cyan-g: oklch(50% 0.14 210 / 0.15);
+  --glass: rgba(0,0,0,.035);
+  --glass-bdr: rgba(0,0,0,.08);
+  --bar-t: rgba(20,15,10,.90);
+  --shd: 0 1px 4px rgba(30,20,10,.07),0 1px 2px rgba(30,20,10,.04);
+  --shd-lg: 0 8px 24px rgba(30,20,10,.10),0 2px 8px rgba(30,20,10,.05);
+  --shd-xs: 0 1px 2px rgba(30,20,10,.05);
+  --glow-amber: 0 0 0 1px rgba(194,65,12,.22);
+  --rounded-sm: 4px;
+  --rounded-md: 6px;
+  --rounded-lg: 10px;
+  --rounded-full: 99px;
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, system-ui, sans-serif;
+  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Georgia, serif, system-ui, sans-serif;
+  --mono: "SF Mono", Menlo, Monaco, "Courier New", monospace;
+}
+
+/* ============================================================
+   CSS §2a-3 · BLUEPRINT THEME — Technical Drafting Caliper
+   ============================================================ */
+[data-theme=blueprint]{
+  --bg-0: oklch(96.2% 0.014 225);
+  --bg-1: #ffffff;
+  --bg-2: oklch(93% 0.018 225);
+  --bg-3: oklch(89% 0.022 225);
+  --bg-4: oklch(84% 0.026 225);
+  --bdr-d: oklch(88% 0.020 225);
+  --bdr: oklch(76% 0.035 225);
+  --bdr-h: oklch(60% 0.055 225);
+  --t1: oklch(22% 0.035 235);
+  --t2: oklch(34% 0.030 235);
+  --t3: oklch(48% 0.025 235);
+  --t4: oklch(62% 0.020 235);
+  --amber: oklch(56% 0.18 215); /* Drafting Cyan / Cobalt */
+  --amber-g: oklch(56% 0.18 215 / 0.16);
+  --amber-d: oklch(56% 0.18 215 / 0.08);
+  --blue: oklch(46% 0.20 240);
+  --blue-g: oklch(46% 0.20 240 / 0.15);
+  --green: oklch(50% 0.18 160);
+  --green-g: oklch(50% 0.18 160 / 0.15);
+  --red: oklch(50% 0.22 25);
+  --red-g: oklch(50% 0.22 25 / 0.15);
+  --yellow: oklch(64% 0.18 85);
+  --yellow-g: oklch(64% 0.18 85 / 0.15);
+  --purple: oklch(52% 0.18 290);
+  --purple-g: oklch(52% 0.18 290 / 0.15);
+  --cyan: oklch(58% 0.16 200);
+  --cyan-g: oklch(58% 0.16 200 / 0.15);
+  --glass: rgba(8,145,178,.04);
+  --glass-bdr: rgba(8,145,178,.12);
+  --bar-t: rgba(15,41,66,.92);
+  --shd: 0 2px 8px rgba(8,145,178,.08),0 1px 3px rgba(8,145,178,.04);
+  --shd-lg: 0 10px 32px rgba(8,145,178,.12),0 3px 10px rgba(8,145,178,.06);
+  --shd-xs: 0 1px 2px rgba(8,145,178,.06);
+  --glow-amber: 0 0 0 1px rgba(8,145,178,.25);
+  --rounded-sm: 2px;
+  --rounded-md: 4px;
+  --rounded-lg: 6px;
+  --rounded-full: 99px;
+  --ui: "SF Pro Text", -apple-system, BlinkMacSystemFont, Inter, monospace;
+  --display: "SF Pro Display", -apple-system, BlinkMacSystemFont, Inter, monospace;
+  --mono: "SF Mono", Menlo, Monaco, "Consolas", monospace;
+}
+
+/* ============================================================
+   CSS §2a-4 · SOLARIZED THEME — Low-Glare Laboratory
+   ============================================================ */
+[data-theme=solarized]{
+  --bg-0: #fdf6e3;
+  --bg-1: #ffffff;
+  --bg-2: #eee8d5;
+  --bg-3: #e0dac6;
+  --bg-4: #d3ccb7;
+  --bdr-d: #eee8d5;
+  --bdr: #d3ccb7;
+  --bdr-h: #93a1a1;
+  --t1: #073642;
+  --t2: #586e75;
+  --t3: #657b83;
+  --t4: #839496;
+  --amber: #cb4b16; /* Solarized Orange */
+  --amber-g: rgba(203,75,22,.15);
+  --amber-d: rgba(203,75,22,.08);
+  --blue: #268bd2;
+  --blue-g: rgba(38,139,210,.15);
+  --green: #859900;
+  --green-g: rgba(133,153,0,.15);
+  --red: #dc322f;
+  --red-g: rgba(220,50,47,.15);
+  --yellow: #b58900;
+  --yellow-g: rgba(181,137,0,.15);
+  --purple: #6c71c4;
+  --purple-g: rgba(108,113,196,.15);
+  --cyan: #2aa198;
+  --cyan-g: rgba(42,161,152,.15);
+  --glass: rgba(7,54,66,.04);
+  --glass-bdr: rgba(7,54,66,.10);
+  --bar-t: rgba(7,54,66,.90);
+  --shd: 0 2px 10px rgba(7,54,66,.07),0 1px 3px rgba(7,54,66,.04);
+  --shd-lg: 0 10px 32px rgba(7,54,66,.12),0 3px 10px rgba(7,54,66,.05);
+  --shd-xs: 0 1px 3px rgba(7,54,66,.05);
+  --glow-amber: 0 0 0 1px rgba(203,75,22,.25);
+  --rounded-sm: 5px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --rounded-full: 99px;
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, sans-serif;
+  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, sans-serif;
+  --mono: "SF Mono", Menlo, Monaco, "Consolas", monospace;
+}
+
+/* ============================================================
    CSS §2b · AURORA THEME — Northern Lights Navy/Cyan
    ============================================================ */
 [data-theme=aurora]{
@@ -406,8 +594,14 @@ html,body{
   box-shadow:none;
   position:relative;
 }
+[data-theme-type=light] .hdr,
+[data-theme-type=dark] .hdr,
 [data-theme=light] .hdr,
 [data-theme=ivory] .hdr,
+[data-theme=nordic] .hdr,
+[data-theme=paper] .hdr,
+[data-theme=blueprint] .hdr,
+[data-theme=solarized] .hdr,
 [data-theme=aurora] .hdr,
 [data-theme=midnight] .hdr,
 [data-theme=forest] .hdr,
@@ -417,64 +611,150 @@ html,body{
   box-shadow:none;
 }
 /* ============================================================
-   THEME PICKER COMPONENT
+   THEME PICKER / THEME STUDIO DRAWER COMPONENT
    ============================================================ */
 #theme-picker-wrap{position:relative;display:flex;align-items:center;}
 #btn-theme{
-  display:flex;align-items:center;gap:5px;
-  padding:0 8px 0 6px !important;
-  height:28px;font-size: 12px;font-family:var(--mono);
+  display:flex;align-items:center;gap:6px;
+  padding:0 10px 0 8px !important;
+  height:28px;font-size:12px;font-family:var(--mono);
   white-space:nowrap;min-width:0;
+  border:1px solid var(--bdr);
+  border-radius:var(--rounded-sm);
+  background:var(--bg-1);
+  cursor:pointer;
+  transition:all .15s ease;
 }
 #btn-theme .th-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;
-  border:1px solid rgba(255,255,255,.25);
-  transition:background .2s;
+  width:9px;height:9px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.3);
+  transition:background .2s, box-shadow .2s;
 }
 #btn-theme .th-lbl{
-  font-size: 12px;color:var(--t3);letter-spacing:.02em;
-  transition:color .15s;max-width:56px;overflow:hidden;text-overflow:ellipsis;
+  font-size:12px;color:var(--t2);letter-spacing:.02em;font-weight:600;
+  transition:color .15s;max-width:80px;overflow:hidden;text-overflow:ellipsis;
 }
 #btn-theme:hover .th-lbl{color:var(--t1);}
+#btn-theme:hover{background:var(--bg-2);border-color:var(--bdr-h);}
+
 #theme-picker-menu{
   display:none;position:fixed;
   background:var(--bg-1);border:1px solid var(--bdr-h);
   border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);
-  padding:8px;z-index:99999;
-  width:260px;
-  display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
+  padding:14px;z-index:99999;
+  width:460px;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 70px);
+  overflow-y:auto;
+  box-sizing:border-box;
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
 }
-#theme-picker-menu.tp-open{display:grid;}
+#theme-picker-menu.tp-open{
+  display:flex;flex-direction:column;gap:12px;
+  animation:tpPopIn .18s var(--ease-out);
+}
 #theme-picker-menu:not(.tp-open){display:none;}
+@keyframes tpPopIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tp-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--bdr-d);padding-bottom:10px;
+}
+.tp-title-group{
+  display:flex;align-items:baseline;gap:8px;
+}
+.tp-title{
+  font-size:14px;font-weight:700;font-family:var(--display);color:var(--t1);
+  display:flex;align-items:center;gap:6px;letter-spacing:-.2px;
+}
+.tp-sub{
+  font-size:11px;color:var(--t4);font-family:var(--mono);
+}
+.tp-close-btn{
+  background:transparent;border:none;color:var(--t3);cursor:pointer;
+  font-size:18px;line-height:1;padding:2px 6px;border-radius:var(--rounded-sm);
+  transition:all .12s;
+}
+.tp-close-btn:hover{background:var(--bg-3);color:var(--t1);}
+
+.tp-filter-bar{
+  display:flex;gap:6px;background:var(--bg-2);padding:3px;border-radius:var(--rounded-sm);
+  border:1px solid var(--bdr-d);
+}
+.tp-tab-btn{
+  flex:1;background:transparent;border:none;padding:5px 8px;font-size:11px;font-weight:600;
+  color:var(--t3);border-radius:var(--rounded-sm);cursor:pointer;transition:all .14s;
+  text-align:center;font-family:var(--ui);
+}
+.tp-tab-btn:hover{color:var(--t1);background:var(--bg-1);}
+.tp-tab-btn.active{background:var(--bg-1);color:var(--t1);box-shadow:var(--shd-xs);border:1px solid var(--bdr);}
+
+.tp-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+@media (max-width: 480px) {
+  .tp-grid { grid-template-columns: 1fr; }
+}
+
 .th-swatch{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
+  display:flex;flex-direction:column;gap:6px;
   cursor:pointer;border-radius:var(--rounded-md);
-  padding:6px 4px 5px;
+  padding:9px;
   border:1px solid var(--bdr);
-  transition:border-color .15s,transform .12s;
+  transition:all .15s ease;
   background:var(--bg-2);
   position:relative;
+  text-align:left;
+  user-select:none;
 }
-.th-swatch:hover{border-color:var(--bdr-h);transform:translateY(-1px);}
-.th-swatch.ts-active{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-g);}
-.th-preview{
-  width:100%;height:28px;border-radius:var(--rounded-sm);overflow:hidden;
-  display:flex;gap:2px;flex-shrink:0;
+.th-swatch:hover{border-color:var(--bdr-h);background:var(--bg-3);transform:translateY(-1px);box-shadow:var(--shd-xs);}
+.th-swatch.ts-active{border-color:var(--amber);background:var(--bg-2);box-shadow:0 0 0 1.5px var(--amber), var(--shd-xs);}
+
+.th-preview-wrap{
+  width:100%;height:38px;border-radius:var(--rounded-sm);overflow:hidden;
+  border:1px solid var(--bdr-d);
+  display:flex;position:relative;
 }
-.th-preview-bg{flex:3;height:100%;}
-.th-preview-acc{flex:1;height:100%;}
+.th-preview-bg{
+  flex:2;height:100%;padding:5px 6px;display:flex;flex-direction:column;justify-content:center;gap:3px;
+}
+.th-preview-mini-card{
+  height:14px;border-radius:3px;border:1px solid var(--bdr);padding:2px 4px;
+  display:flex;align-items:center;
+}
+.th-preview-line{
+  width:60%;height:3px;border-radius:2px;opacity:.85;
+}
+.th-preview-acc{
+  width:26px;height:100%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.th-preview-dot{
+  width:8px;height:8px;border-radius:50%;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+
+.th-info-row{
+  display:flex;justify-content:space-between;align-items:center;gap:4px;
+}
 .th-swatch-name{
-  font-size: 12px;font-family:var(--mono);color:var(--t3);
-  text-transform:uppercase;letter-spacing:.06em;
-  text-align:center;line-height:1;
+  font-size:12px;font-weight:700;color:var(--t1);font-family:var(--ui);line-height:1.2;
 }
 .th-swatch.ts-active .th-swatch-name{color:var(--amber);}
-.th-check{
-  position:absolute;top:3px;right:4px;
-  font-size: 12px;color:var(--amber);opacity:0;
-  transition:opacity .15s;
+.th-badge{
+  font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em;
+  padding:1px 5px;border-radius:3px;background:var(--bg-3);color:var(--t3);border:1px solid var(--bdr-d);white-space:nowrap;
 }
-.th-swatch.ts-active .th-check{opacity:1;}
+.th-desc{
+  font-size:10px;color:var(--t4);line-height:1.35;font-family:var(--ui);
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.th-active-tag{
+  font-size:9px;font-weight:700;color:var(--amber);display:none;align-items:center;gap:3px;font-family:var(--mono);
+}
+.th-swatch.ts-active .th-active-tag{display:inline-flex;}
 
 /* Logo — premium wordmark */
 .logo{
@@ -2571,6 +2851,7 @@ body.tree-col-resizing {
   background: var(--blue);
   z-index: 2;
 }
+[data-theme-type=light] .tree-row.tree-row-selected,
 [data-theme=light] .tree-row.tree-row-selected,
 [data-theme=ivory] .tree-row.tree-row-selected {
   background: color-mix(in srgb, var(--blue) 14%, #fff) !important;
@@ -2979,22 +3260,27 @@ body.tree-col-resizing {
 }
 
 /* Light / Ivory theme specific contrast polish */
+[data-theme-type=light] .tree-row:not([data-thread]):nth-child(even),
 [data-theme=light] .tree-row:not([data-thread]):nth-child(even),
 [data-theme=ivory] .tree-row:not([data-thread]):nth-child(even),
+[data-theme-type=light] .tree-row[data-thread=""]:nth-child(even),
 [data-theme=light] .tree-row[data-thread=""]:nth-child(even),
 [data-theme=ivory] .tree-row[data-thread=""]:nth-child(even) {
   background: color-mix(in srgb, var(--bg-2) 35%, var(--bg-0)) !important;
 }
+[data-theme-type=light] .tree-row:hover,
 [data-theme=light] .tree-row:hover,
 [data-theme=ivory] .tree-row:hover {
   background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
 }
+[data-theme-type=light] .tree-payload-preview,
 [data-theme=light] .tree-payload-preview,
 [data-theme=ivory] .tree-payload-preview {
   background: rgba(0, 0, 0, 0.03) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
   color: var(--t2) !important;
 }
+[data-theme-type=light] .tree-sparkbar,
 [data-theme=light] .tree-sparkbar,
 [data-theme=ivory] .tree-sparkbar {
   background: rgba(0, 0, 0, 0.08) !important;
@@ -6126,8 +6412,13 @@ textarea.inp { line-height: 1.55 !important; }
 /* Light theme: darken --t4 caption to meet WCAG 4.5:1 */
 [data-theme=light] { --t4: oklch(44% 0.01 55) !important; }
 [data-theme=ivory] { --t4: oklch(44% 0.012 55) !important; }
+[data-theme=nordic] { --t4: oklch(45% 0.015 240) !important; }
+[data-theme=paper] { --t4: oklch(42% 0.012 60) !important; }
+[data-theme=blueprint] { --t4: oklch(46% 0.025 235) !important; }
+[data-theme=solarized] { --t4: #586e75 !important; }
 
-/* Light/Ivory theme header: solid developer console bar */
+/* Light themes header: solid developer console bar */
+[data-theme-type=light] .hdr,
 [data-theme=light] .hdr,
 [data-theme=ivory] .hdr {
   background: var(--bg-1) !important;
@@ -6137,26 +6428,35 @@ textarea.inp { line-height: 1.55 !important; }
   box-shadow: none !important;
 }
 
-
-/* ── Ivory theme: card depth & table contrast fixes ────────────── */
+/* ── Light themes: card depth & table contrast fixes ────────────── */
+[data-theme-type=light] .summary-card,
+[data-theme-type=light] .stats-panel-card,
+[data-theme-type=light] .dashboard-card,
 [data-theme=ivory] .summary-card,
 [data-theme=ivory] .stats-panel-card,
 [data-theme=ivory] .dashboard-card {
   box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 2px 8px rgba(0,0,0,.04);
 }
+[data-theme-type=light] .summary-card:hover,
+[data-theme-type=light] .dashboard-card:hover,
 [data-theme=ivory] .summary-card:hover,
 [data-theme=ivory] .dashboard-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
 }
-/* Table header row: more visible on ivory */
+/* Table header row: more visible on light themes */
+[data-theme-type=light] thead tr,
 [data-theme=ivory] thead tr {
   background: var(--bg-3) !important;
 }
 /* Table body row borders */
+[data-theme-type=light] tbody tr,
 [data-theme=ivory] tbody tr {
   border-bottom: 1px solid var(--bdr-d);
 }
 /* Input fields & textareas: crisp white inside cards for clean modern contrast */
+[data-theme-type=light] .inp,
+[data-theme-type=light] textarea.inp,
+[data-theme-type=light] select.inp,
 [data-theme=ivory] .inp,
 [data-theme=ivory] textarea.inp,
 [data-theme=ivory] select.inp {
@@ -6165,22 +6465,28 @@ textarea.inp { line-height: 1.55 !important; }
   color: var(--t1) !important;
   box-shadow: inset 0 1px 2px rgba(0,0,0,.04) !important;
 }
+[data-theme-type=light] .inp:focus,
+[data-theme-type=light] textarea.inp:focus,
+[data-theme-type=light] select.inp:focus,
 [data-theme=ivory] .inp:focus,
 [data-theme=ivory] textarea.inp:focus,
 [data-theme=ivory] select.inp:focus {
   border-color: var(--amber) !important;
   box-shadow: 0 0 0 3px var(--amber-g), inset 0 1px 2px rgba(0,0,0,.02) !important;
 }
+[data-theme-type=light] .inp::placeholder,
 [data-theme=ivory] .inp::placeholder {
   color: var(--t4) !important;
 }
 /* Secondary / default buttons inside cards: crisp white card buttons with subtle shadow */
+[data-theme-type=light] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog),
 [data-theme=ivory] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog) {
   background: #ffffff !important;
   border: 1px solid var(--bdr) !important;
   color: var(--t1) !important;
   box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
 }
+[data-theme-type=light] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog):hover,
 [data-theme=ivory] .btn:not(.btn-p):not(.btn-d):not(.btn-bl):not(.btn-g):not(.btn-tog):hover {
   background: var(--bg-2) !important;
   border-color: var(--bdr-h) !important;
@@ -6188,6 +6494,8 @@ textarea.inp { line-height: 1.55 !important; }
   box-shadow: 0 2px 5px rgba(0,0,0,.08) !important;
 }
 /* Disabled button styling: clean neutral, not muddy */
+[data-theme-type=light] .btn:disabled,
+[data-theme-type=light] .btn[disabled],
 [data-theme=ivory] .btn:disabled,
 [data-theme=ivory] .btn[disabled] {
   background: var(--bg-2) !important;
@@ -6197,59 +6505,68 @@ textarea.inp { line-height: 1.55 !important; }
   box-shadow: none !important;
   cursor: not-allowed !important;
 }
+[data-theme-type=light] .btn-p:disabled,
+[data-theme-type=light] .btn-p[disabled],
 [data-theme=ivory] .btn-p:disabled,
 [data-theme=ivory] .btn-p[disabled] {
-  background: oklch(91% 0.025 55) !important;
+  background: var(--bg-3) !important;
   border: 1px solid var(--bdr-d) !important;
   color: var(--t4) !important;
   box-shadow: none !important;
 }
-/* Parse button: softer gradient on warm cream bg so it doesn't scorch */
-/* Parse button: clean solid amber in ivory theme */
+/* Parse button: clean solid accent in light themes */
+[data-theme-type=light] .btn-p,
 [data-theme=ivory] .btn-p {
   background: var(--amber) !important;
   border-color: var(--amber) !important;
   color: #fff !important;
-  box-shadow: 0 1px 2px rgba(192,98,10,.18) !important;
+  box-shadow: 0 1px 2px var(--amber-g) !important;
 }
+[data-theme-type=light] .btn-p:hover,
 [data-theme=ivory] .btn-p:hover {
-  background: oklch(56% 0.19 55) !important;
-  border-color: oklch(56% 0.19 55) !important;
-  box-shadow: 0 1px 3px rgba(192,98,10,.25) !important;
+  filter: brightness(0.92) !important;
+  box-shadow: 0 1px 4px var(--amber-g) !important;
 }
 /* Abort button: warm red instead of cold pink */
+[data-theme-type=light] .btn-d,
 [data-theme=ivory] .btn-d {
   background: rgba(180,60,40,.08) !important;
   border-color: rgba(180,60,40,.35) !important;
-  color: oklch(48% 0.16 25) !important;
+  color: var(--red) !important;
 }
+[data-theme-type=light] .btn-d:hover,
 [data-theme=ivory] .btn-d:hover {
-  background: oklch(48% 0.16 25) !important;
+  background: var(--red) !important;
   color: #fff !important;
-  border-color: oklch(48% 0.16 25) !important;
+  border-color: var(--red) !important;
 }
 /* Dashboard card title: thinner, softer bottom border */
+[data-theme-type=light] .dashboard-card-title,
 [data-theme=ivory] .dashboard-card-title {
   border-bottom: 1px solid var(--bdr-d) !important;
   color: var(--t2) !important;
 }
 /* Split-button wrap: crisp white on cream inner well */
+[data-theme-type=light] .btn-split-wrap,
 [data-theme=ivory] .btn-split-wrap {
   background: #ffffff !important;
   border-color: var(--bdr) !important;
   box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
 }
+[data-theme-type=light] .btn-split-main,
 [data-theme=ivory] .btn-split-main {
   color: var(--t1) !important;
   font-weight: 600 !important;
   padding: 0 12px !important;
   height: 32px !important;
 }
+[data-theme-type=light] .btn-split-arrow,
 [data-theme=ivory] .btn-split-arrow {
   height: 32px !important;
   color: var(--t2) !important;
 }
-/* Action dock inner well: warm recessed surface with soft borders and no shadow */
+/* Action dock inner well: recessed surface with soft borders and no shadow */
+[data-theme-type=light] .cfg-action-dock,
 [data-theme=ivory] .cfg-action-dock {
   background: var(--bg-0) !important;
   border: 1px solid var(--bdr) !important;
@@ -6280,44 +6597,51 @@ textarea.inp { line-height: 1.55 !important; }
   border-radius: var(--rounded-sm) !important;
 }
 /* Split-menu dropdown: softer shadow */
+[data-theme-type=light] .btn-split-menu,
 [data-theme=ivory] .btn-split-menu {
   box-shadow: 0 6px 20px rgba(0,0,0,.12) !important;
 }
-/* Query tab icon: subtle badge styling in Ivory */
+/* Query tab icon: subtle badge styling in light themes */
+[data-theme-type=light] .vt[data-v="query"] .ico,
 [data-theme=ivory] .vt[data-v="query"] .ico {
   background: var(--glass) !important;
   border-color: var(--bdr) !important;
   color: var(--t2) !important;
 }
+[data-theme-type=light] .vt[data-v="query"].active .ico,
 [data-theme=ivory] .vt[data-v="query"].active .ico {
   background: var(--amber-g) !important;
   border-color: var(--amber) !important;
   color: var(--amber) !important;
 }
 /* Theme selector button in topbar */
+[data-theme-type=light] #btn-theme,
 [data-theme=ivory] #btn-theme {
   border: 1px solid var(--bdr) !important;
   border-radius: var(--rounded-sm) !important;
   background: var(--bg-1) !important;
 }
+[data-theme-type=light] #btn-theme:hover,
 [data-theme=ivory] #btn-theme:hover {
   background: var(--bg-2) !important;
 }
-/* Header bottom accent line in Ivory: subtle blend */
+/* Header bottom accent line in light themes */
+[data-theme-type=light] .hdr::after,
 [data-theme=ivory] .hdr::after {
   opacity: 0.35 !important;
 }
-/* Toast notifications in Ivory: solid white background with colored left border */
+/* Toast notifications in light themes: solid white background with colored left border */
+[data-theme-type=light] .toast,
 [data-theme=ivory] .toast {
   background: var(--bg-1) !important;
   border: 1px solid var(--bdr) !important;
   color: var(--t1) !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.06) !important;
 }
-[data-theme=ivory] .t-in { border-left: 3px solid var(--blue) !important; }
-[data-theme=ivory] .t-ok { border-left: 3px solid var(--green) !important; }
-[data-theme=ivory] .t-er { border-left: 3px solid var(--red) !important; }
-[data-theme=ivory] .t-wa { border-left: 3px solid var(--amber) !important; }
+[data-theme-type=light] .t-in, [data-theme=ivory] .t-in { border-left: 3px solid var(--blue) !important; }
+[data-theme-type=light] .t-ok, [data-theme=ivory] .t-ok { border-left: 3px solid var(--green) !important; }
+[data-theme-type=light] .t-er, [data-theme=ivory] .t-er { border-left: 3px solid var(--red) !important; }
+[data-theme-type=light] .t-wa, [data-theme=ivory] .t-wa { border-left: 3px solid var(--amber) !important; }
 /* Datasource segmented control styling */
 .ds-type-segmented {
   display: inline-flex;
@@ -11578,15 +11902,23 @@ const debounce=UTILS.debounce;
    ================================================================ */
 const Theme={
   THEMES:[
-    {id:'dark',     label:'Obsidian', dot:'#d4882a', bg:'#1a1c22', acc:'#d4882a'},
-    {id:'ivory',    label:'Ivory',    dot:'#c2620a', bg:'#f5f3ee', acc:'#c2620a'},
-    {id:'aurora',   label:'Aurora',   dot:'#00d4c8', bg:'#0d1020', acc:'#00d4c8'},
-    {id:'midnight', label:'Midnight', dot:'#b000ff', bg:'#050310', acc:'#b000ff'},
-    {id:'forest',   label:'Forest',   dot:'#3aba5a', bg:'#0d1a0e', acc:'#3aba5a'},
-    {id:'crimson',  label:'Crimson',  dot:'#d91414', bg:'#150505', acc:'#d91414'},
+    // Dark Themes
+    {id:'dark',      type:'dark',  label:'Obsidian',    badge:'Dark',  desc:'Deep charcoal slate with warm amber glow',           dot:'#d4882a', bg:'#1a1c22', acc:'#d4882a', line:'#373d4d'},
+    {id:'midnight',  type:'dark',  label:'Midnight',    badge:'Dark',  desc:'Abyssal dark space with electric violet telemetry',   dot:'#b000ff', bg:'#050310', acc:'#b000ff', line:'#281944'},
+    {id:'aurora',    type:'dark',  label:'Aurora',      badge:'Dark',  desc:'Sub-zero polar navy with luminous cyan accents',     dot:'#00d4c8', bg:'#0d1020', acc:'#00d4c8', line:'#162b44'},
+    {id:'forest',    type:'dark',  label:'Forest',      badge:'Dark',  desc:'Quiet emerald depth with fresh terminal highlights',  dot:'#3aba5a', bg:'#0d1a0e', acc:'#3aba5a', line:'#1a361c'},
+    {id:'crimson',   type:'dark',  label:'Crimson',     badge:'Dark',  desc:'Carbon obsidian with razor-sharp ruby highlights',    dot:'#d91414', bg:'#150505', acc:'#d91414', line:'#3b1111'},
+    // Light Themes
+    {id:'ivory',     type:'light', label:'Ivory Warm',  badge:'Light', desc:'Warm editorial cream with amber accents',            dot:'#c2620a', bg:'#f5f3ee', acc:'#c2620a', line:'#ded9cb'},
+    {id:'nordic',    type:'light', label:'Nordic Frost',badge:'Light', desc:'Cool scandinavian ice with cobalt precision',        dot:'#0066cc', bg:'#eef2f7', acc:'#0066cc', line:'#cfd9e5'},
+    {id:'paper',     type:'light', label:'Paper Craft', badge:'Light', desc:'Classic book craft with walnut typography',         dot:'#8c5a2b', bg:'#f7f4ed', acc:'#8c5a2b', line:'#dfd8c8'},
+    {id:'blueprint', type:'light', label:'Blueprint',   badge:'Light', desc:'Technical drafting canvas with crisp cyan inks',    dot:'#0070ba', bg:'#f0f5fa', acc:'#0070ba', line:'#d2e1f0'},
+    {id:'solarized', type:'light', label:'Solarized',   badge:'Light', desc:'Precision cream with Ethan Schoonover brass',       dot:'#b58900', bg:'#fdf6e3', acc:'#b58900', line:'#eee8d5'},
   ],
   _pickerOpen:false,
   _closeFn:null,
+  _keyHandler:null,
+  _filterType:'all',
   init(){
     let t=localStorage.getItem('ll-t')||'dark';
     // Legacy 'light' → 'ivory' mapping
@@ -11601,22 +11933,28 @@ const Theme={
     const next=ids[(idx+1)%ids.length];
     this.apply(next,true);
   },
+  setFilter(type){
+    this._filterType=type;
+    this.renderPicker();
+  },
   apply(t,anim){
     const h=document.documentElement;
     if(anim){h.classList.add('th-anim');setTimeout(()=>h.classList.remove('th-anim'),400);}
-    // Persist 'ivory' as explicit value (legacy 'light' still loads ivory via init)
-    h.dataset.theme=t;
-    localStorage.setItem('ll-t',t);
-    // Also set [data-theme=light] alias for ivory so existing [data-theme=light] CSS still works
-    if(t==='ivory'){h.setAttribute('data-theme','ivory');}
-    this._updateButton(t);
-    this._updateSwatches(t);
+    const meta=this.THEMES.find(x=>x.id===t)||this.THEMES[0];
+    h.dataset.theme=meta.id;
+    h.dataset.themeType=meta.type;
+    localStorage.setItem('ll-t',meta.id);
+    this._updateButton(meta.id);
+    this._updateSwatches(meta.id);
   },
   _updateButton(t){
     const meta=this.THEMES.find(x=>x.id===t)||this.THEMES[0];
     const dot=$('theme-dot');
     const lbl=$('theme-lbl');
-    if(dot)dot.style.background=meta.dot;
+    if(dot){
+      dot.style.background=meta.dot;
+      dot.style.boxShadow=`0 0 6px ${meta.dot}80`;
+    }
     if(lbl)lbl.textContent=meta.label;
   },
   _updateSwatches(t){
@@ -11628,18 +11966,55 @@ const Theme={
     const menu=$('theme-picker-menu');
     if(!menu)return;
     const currTheme = document.documentElement.dataset.theme;
-    menu.innerHTML=this.THEMES.map(m=>`
-      <div class="th-swatch${m.id===currTheme?' ts-active':''}"
-           data-theme-id="${m.id}" role="option" tabindex="0"
-           aria-selected="${m.id===currTheme?'true':'false'}"
-           aria-label="${m.label} theme" title="${m.label}">
-        <div class="th-preview">
-          <div class="th-preview-bg" style="background:${m.bg};"></div>
-          <div class="th-preview-acc" style="background:${m.acc};"></div>
+    const filtered = this._filterType==='all' ? this.THEMES : this.THEMES.filter(x=>x.type===this._filterType);
+    const darkCount = this.THEMES.filter(x=>x.type==='dark').length;
+    const lightCount = this.THEMES.filter(x=>x.type==='light').length;
+
+    menu.innerHTML=`
+      <div class="tp-hdr">
+        <div class="tp-title-group">
+          <div class="tp-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Theme Studio
+          </div>
+          <span class="tp-sub">${this.THEMES.length} Themes</span>
         </div>
-        <span class="th-swatch-name">${m.label}</span>
-        <span class="th-check">✓</span>
-      </div>`).join('');
+        <button class="tp-close-btn" aria-label="Close theme studio" onclick="Theme.closePicker()">×</button>
+      </div>
+
+      <div class="tp-filter-bar" role="tablist">
+        <button class="tp-tab-btn${this._filterType==='all'?' active':''}" onclick="Theme.setFilter('all')">All (${this.THEMES.length})</button>
+        <button class="tp-tab-btn${this._filterType==='dark'?' active':''}" onclick="Theme.setFilter('dark')">Dark (${darkCount})</button>
+        <button class="tp-tab-btn${this._filterType==='light'?' active':''}" onclick="Theme.setFilter('light')">Light (${lightCount})</button>
+      </div>
+
+      <div class="tp-grid" role="listbox" aria-label="Available themes">
+        ${filtered.map(m=>`
+          <div class="th-swatch${m.id===currTheme?' ts-active':''}"
+               data-theme-id="${m.id}" role="option" tabindex="0"
+               aria-selected="${m.id===currTheme?'true':'false'}"
+               aria-label="${m.label} theme (${m.badge})" title="${m.label}">
+            <div class="th-preview-wrap">
+              <div class="th-preview-bg" style="background:${m.bg};">
+                <div class="th-preview-mini-card" style="background:${m.bg};border-color:${m.line};">
+                  <div class="th-preview-line" style="background:${m.acc};"></div>
+                </div>
+              </div>
+              <div class="th-preview-acc" style="background:${m.acc};">
+                <div class="th-preview-dot"></div>
+              </div>
+            </div>
+            <div class="th-info-row">
+              <span class="th-swatch-name">${m.label}</span>
+              <span class="th-badge ${m.type==='light'?'th-badge-light':''}">${m.badge}</span>
+            </div>
+            <div class="th-desc">${m.desc}</div>
+            <div class="th-active-tag">✓ Active</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
     menu.querySelectorAll('.th-swatch').forEach(el=>{
       el.addEventListener('click',()=>{
         this.apply(el.dataset.themeId,true);
@@ -11673,13 +12048,16 @@ const Theme={
         this.closePicker();
         btn.focus();
         e.preventDefault();
-      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const swatches = Array.from(menu.querySelectorAll('.th-swatch'));
         const currIdx = swatches.indexOf(document.activeElement);
         if (currIdx !== -1) {
-          const nextIdx = e.key === 'ArrowDown'
-            ? (currIdx + 1) % swatches.length
-            : (currIdx - 1 + swatches.length) % swatches.length;
+          let nextIdx;
+          if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+            nextIdx = (currIdx + 1) % swatches.length;
+          } else {
+            nextIdx = (currIdx - 1 + swatches.length) % swatches.length;
+          }
           swatches[nextIdx].focus();
           e.preventDefault();
         }
@@ -23821,12 +24199,16 @@ const CMD = (() => {
     { id:'a-idb',    cat:'App', name:'Clear IDB Cache',     icon:'⌧',   action:()=>{ IDB.clear&&IDB.clear(); toast('IDB cache cleared.','info'); } },
     { id:'a-sample', cat:'App', name:'Download Sample Log', icon:'⬇',   action:()=>{ CMD.close(); dlSample&&dlSample(); } },
     // Themes
-    { id:'t-ivory', cat:'Theme', name:'Theme: Ivory (Light)', icon:'☼', action:()=>Theme.apply('ivory') },
     { id:'t-dark', cat:'Theme', name:'Theme: Obsidian Terminal (Dark)', icon:'☾', action:()=>Theme.apply('dark') },
-    { id:'t-aurora', cat:'Theme', name:'Theme: Aurora (Navy/Cyan)', icon:'☼', action:()=>Theme.apply('aurora') },
     { id:'t-midnight', cat:'Theme', name:'Theme: Midnight (OLED Black)', icon:'☾', action:()=>Theme.apply('midnight') },
+    { id:'t-aurora', cat:'Theme', name:'Theme: Aurora (Navy/Cyan)', icon:'☼', action:()=>Theme.apply('aurora') },
     { id:'t-forest', cat:'Theme', name:'Theme: Forest (Earthy Green)', icon:'☼', action:()=>Theme.apply('forest') },
     { id:'t-crimson', cat:'Theme', name:'Theme: Crimson (Noir Red)', icon:'☾', action:()=>Theme.apply('crimson') },
+    { id:'t-ivory', cat:'Theme', name:'Theme: Ivory Warm (Light)', icon:'☼', action:()=>Theme.apply('ivory') },
+    { id:'t-nordic', cat:'Theme', name:'Theme: Nordic Frost (Light)', icon:'☼', action:()=>Theme.apply('nordic') },
+    { id:'t-paper', cat:'Theme', name:'Theme: Paper Craft (Light)', icon:'☼', action:()=>Theme.apply('paper') },
+    { id:'t-blueprint', cat:'Theme', name:'Theme: Blueprint (Light)', icon:'☼', action:()=>Theme.apply('blueprint') },
+    { id:'t-solarized', cat:'Theme', name:'Theme: Solarized (Light)', icon:'☼', action:()=>Theme.apply('solarized') },
     // Settings Preferences
     { id:'c-focus',  cat:'Settings', name:'Toggle Focus Mode', hint:'F', icon:'⛶', action:()=>UI.toggleFocusMode&&UI.toggleFocusMode() },
     { id:'c-density-compact', cat:'Settings', name:'Set Density: Compact', icon:'▤', action:()=>{

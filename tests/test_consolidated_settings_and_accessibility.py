@@ -254,3 +254,54 @@ async def test_settings_appearance_and_sla_guardrails_configuration(page_with_da
 
     assert_no_critical_errors(page)
 
+
+@pytest.mark.asyncio
+async def test_theme_studio_drawer_filtering_and_theme_switching(page_with_data):
+    """Theme Studio opens, renders 10 themes, tabs filter by All/Dark/Light, and all themes apply cleanly."""
+    page = page_with_data
+    # 1. Open Theme Studio
+    await page.evaluate("() => Theme.openPicker()")
+    picker = page.locator('#theme-picker-menu')
+    await expect(picker).to_have_class(re.compile(r'tp-open'))
+
+    # 2. Check total swatch count under 'All' tab
+    swatches = page.locator('.th-swatch')
+    assert await swatches.count() == 10
+
+    # 3. Check filter tabs
+    tab_dark = page.locator('.tp-tab-btn:has-text("Dark")')
+    await tab_dark.click()
+    dark_swatches = page.locator('.th-swatch')
+    assert await dark_swatches.count() == 5
+
+    tab_light = page.locator('.tp-tab-btn:has-text("Light")')
+    await tab_light.click()
+    light_swatches = page.locator('.th-swatch')
+    assert await light_swatches.count() == 5
+
+    # 4. Apply a light theme (nordic)
+    await page.evaluate("() => Theme.apply('nordic')")
+    theme_val = await page.evaluate("() => document.documentElement.dataset.theme")
+    theme_type = await page.evaluate("() => document.documentElement.dataset.themeType")
+    assert theme_val == 'nordic'
+    assert theme_type == 'light'
+
+    # 5. Apply another light theme (blueprint)
+    await page.evaluate("() => Theme.apply('blueprint')")
+    theme_val = await page.evaluate("() => document.documentElement.dataset.theme")
+    assert theme_val == 'blueprint'
+
+    # 6. Apply dark theme (obsidian / dark)
+    await page.evaluate("() => Theme.apply('dark')")
+    theme_val = await page.evaluate("() => document.documentElement.dataset.theme")
+    theme_type = await page.evaluate("() => document.documentElement.dataset.themeType")
+    assert theme_val == 'dark'
+    assert theme_type == 'dark'
+
+    # Close picker
+    await page.evaluate("() => Theme.closePicker()")
+    await expect(picker).not_to_have_class(re.compile(r'tp-open'))
+
+    assert_no_critical_errors(page)
+
+
