@@ -181,7 +181,61 @@ async def test_trace_explorer_selection_inspector_and_clear(blank_page):
     assert await page.evaluate("S.activeTraceId") is None
 
     assert_no_critical_errors(page)
+
 @pytest.mark.asyncio
+async def test_dynamic_trace_dropdown_interaction(page_with_data):
+    """Dynamic Trace ID dropdown opens, filters via search input, selects a trace, and clears cleanly."""
+    page = page_with_data
+
+    # Trace dropdown should be mounted and visible since page_with_data has traces
+    trace_dd = page.locator('#trace-dropdown')
+    await expect(trace_dd).to_be_visible(timeout=3000)
+
+    btn = page.locator('#trace-dropdown-btn')
+    label = page.locator('#trace-active-label')
+    clear_btn = page.locator('#trace-clear-btn')
+
+    assert await label.text_content() == 'All Traces'
+    assert not await clear_btn.is_visible()
+
+    # Open dropdown
+    await btn.click()
+    menu = page.locator('#trace-dropdown-menu')
+    await expect(menu).to_be_visible()
+
+    # Verify search input is present
+    search_inp = page.locator('#trace-search-inp')
+    await expect(search_inp).to_be_visible()
+
+    # Type in search input to filter trace IDs
+    await search_inp.fill('TX-A1')
+    visible_items = page.locator('#trace-dropdown-list li:visible')
+    assert await visible_items.count() == 1
+    assert 'TX-A1' in await visible_items.first.text_content()
+
+    # Select the trace
+    await visible_items.first.click()
+    await expect(menu).not_to_be_visible()
+
+    # Verify active state
+    assert await page.evaluate("S.activeTraceId") == 'TX-A1'
+    assert await label.text_content() == '# TX-A1'
+    await expect(clear_btn).to_be_visible()
+
+    # Test clearing via the quick clear button
+    await clear_btn.click()
+    assert await page.evaluate("S.activeTraceId") is None
+    assert await label.text_content() == 'All Traces'
+    await expect(clear_btn).not_to_be_visible()
+
+    # Test keyboard navigation (Escape to close)
+    await btn.click()
+    await expect(menu).to_be_visible()
+    await page.keyboard.press('Escape')
+    await expect(menu).not_to_be_visible()
+
+    assert_no_critical_errors(page)
+
 async def test_timeline_nav_mounting_chips_and_presets(page_with_data):
     """Timeline navigator mounts in Gantt view with canvas, interactive ARIA chips, and zoom presets."""
     page = page_with_data

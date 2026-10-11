@@ -3,6 +3,27 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Dynamic Trace ID Filter Dropdown Architecture (v6.9.122 — COMPLETED)**:
+  - **Dynamic Dropdown Component (`#trace-dropdown`)**:
+    - Replaced the static `<input id="trace-filter">` text box with a rich, interactive, dynamic Trace ID dropdown in `.action-bar-left` next to the thread selector (`vt-chips`).
+    - Dynamically scans all parsed trees in `S.trees` across all threads to identify unique correlation IDs, their total span count, and SLA breach statuses.
+    - Conditionally mounts when traces exist in the dataset; seamlessly hides when no traces are present.
+  - **Custom Trigger & Quick Clear (`#trace-dropdown-btn`, `#trace-clear-btn`)**:
+    - Follows the exact visual design language as `vt-chips`: `# <TraceID>` active badge, chevron indicator, cyan accent border when active.
+    - Features a 1-click quick clear button (`✕`) allowing immediate filter reset back to `All Traces`.
+  - **Fixed Body Portal Dropdown Menu (`#trace-dropdown-menu`)**:
+    - Appends directly to `document.body` with fixed viewport positioning to eliminate container clipping and overflow bugs.
+    - Includes a live search filter input (`#trace-search-inp`, `Filter trace IDs...`) with instant substring filtering.
+    - Option list highlights active selection and displays trace ID, span count badge, and SLA breach badge (`SLA`).
+    - Comprehensive accessibility & keyboard support: Escape key closes menu, Enter selects single match, click-away dismissal.
+  - **Unified Centralized Filter Method (`UI.setTraceFilter`)**:
+    - Centralized all trace filtering callers (`TR.handleClick`, delegated `[data-a="trace-click"]`, `TRACE_EXPLORER.selectTrace`/`clearFilter`, Spotlight palette, and hidden `#trace-filter`) through `UI.setTraceFilter(tid)`.
+    - Automatically updates `S.activeTraceId`, syncs `#trace-filter` hidden input value for test compatibility, updates dropdown trigger labels, and triggers view refresh `UI.rv()`.
+  - **Regression Test Suite & Visual Verification**:
+    - Added `test_dynamic_trace_dropdown_interaction` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Total test suite expanded to 89 regression tests.
+    - Impeccable design detector reports 0 findings (`[]`).
+
 - **Analysis Dropdown Spacing, Typography & Icon Badging Polish (v6.9.121 — COMPLETED)**:
   - **Expanded Menu Dimensions & Generous Runway**:
     - Expanded `.analysis-menu` width from 220px to 290px (`width: 290px !important; min-width: 290px !important;`), giving descriptions ("Distributions, outliers & KPIs", "LQL interactive search terminal", "Side-by-side run comparison") ample horizontal breathing room with zero text truncation or awkward wrapping.

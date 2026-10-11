@@ -6319,15 +6319,90 @@ label[for="watch-auto-reload"] {
   background: var(--amber-d) !important;
 }
 
-/* Trace filter — remove inline style dependency */
+/* Trace filter — hidden input backward compatibility */
 #trace-filter {
-  width: 128px !important;
+  display: none !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Trace Dropdown */
+.trace-dropdown {
+  display: inline-flex;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+.trace-dropdown-dot {
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: var(--cyan) !important;
+  flex-shrink: 0 !important;
+}
+.trace-dropdown-lbl {
   font-size: 12px !important;
-  padding: 3px 8px !important;
-  margin-left: 0 !important;
+  font-weight: 700 !important;
+  color: var(--t3) !important;
+  font-family: var(--display) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.4px !important;
+  white-space: nowrap !important;
+}
+.trace-dropdown-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  min-width: 90px !important;
+  max-width: 200px !important;
+  font-size: 12px !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+  height: 22px !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
   border-radius: var(--rounded-sm) !important;
-  height: 24px !important;
-  box-sizing: border-box !important;
+  color: var(--t1) !important;
+  cursor: pointer !important;
+  outline: none !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  transition: border-color .15s ease, color .15s ease !important;
+}
+.trace-dropdown-btn:hover {
+  border-color: var(--t3) !important;
+}
+.trace-dropdown-btn:focus-visible {
+  outline: 2px solid var(--cyan) !important;
+  outline-offset: 1px !important;
+}
+.trace-clear-btn {
+  display: inline-flex;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0 !important;
+  background: var(--bg-3) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: 50% !important;
+  color: var(--t2) !important;
+  cursor: pointer !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  margin-left: -2px !important;
+  transition: all .15s ease !important;
+}
+.trace-clear-btn:hover {
+  background: var(--danger-soft) !important;
+  color: var(--red) !important;
+  border-color: var(--red) !important;
 }
 
 /* vt-chips — no height jump when chips appear */
@@ -8724,7 +8799,8 @@ label[for="watch-auto-reload"] {
 <div class="action-bar" id="action-bar">
   <div class="action-bar-left">
     <div class="vt-chips" id="vt-chips"></div>
-    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="display:none;"/>
+    <div class="trace-dropdown" id="trace-dropdown" style="display:none;"></div>
+    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="display:none;" tabindex="-1" aria-hidden="true"/>
   </div>
   <div class="action-bar-right">
     <div class="hdr-search-container" id="hdr-search-container">
@@ -11842,10 +11918,7 @@ const TR={
 
     const traceBadge = e.target.closest('[data-a="trace-click"]');
     if (traceBadge) {
-      S.activeTraceId = traceBadge.dataset.tc;
-      const tfInput = $('trace-filter');
-      if (tfInput) tfInput.value = S.activeTraceId;
-      UI.rv();
+      UI.setTraceFilter(traceBadge.dataset.tc);
       e.stopPropagation();
       return;
     }
@@ -12129,7 +12202,7 @@ const UI={
       check(tree);
       if (hasCorr) break;
     }
-    $('trace-filter').style.display = hasCorr ? 'inline-block' : 'none';
+    $('trace-filter').style.display = 'none';
 
     const r=$('res');r.innerHTML='';r.scrollTop=0;
     $('vtabs').classList.add('on');
@@ -12222,6 +12295,12 @@ const UI={
         menu.style.display = 'none';
         btn.style.borderColor = 'var(--bdr)';
       } else {
+        const tdMenu = $('trace-dropdown-menu');
+        if (tdMenu) {
+          tdMenu.style.display = 'none';
+          const tdBtn = $('trace-dropdown-btn');
+          if (tdBtn) tdBtn.style.borderColor = S.activeTraceId ? 'var(--cyan)' : 'var(--bdr)';
+        }
         const r = btn.getBoundingClientRect();
         menu.style.top = (r.bottom + 4) + 'px';
         const menuW = Math.max(180, r.width);
@@ -12248,6 +12327,8 @@ const UI={
 
     wrap.append(dot, lbl, btn);
     vtc.appendChild(wrap);
+
+    this.renderTraceDropdown(trees);
 
     this.rv();
   },
@@ -12512,6 +12593,286 @@ const UI={
       const totalNodes=Object.values(S.trees||{}).reduce((sum,t)=>sum+cnt(t),0);
       sn.textContent=(tid==='all'||!tid)?totalNodes:cnt(S.trees?.[tid]||[]);
     }
+  },
+
+  setTraceFilter(tid, skipRv = false) {
+    const val = (tid && tid !== 'all') ? String(tid).trim() : null;
+    S.activeTraceId = val;
+    const tf = $('trace-filter');
+    if (tf) tf.value = val || '';
+    this.updateTraceDropdownUI();
+    if (!skipRv) this.rv();
+  },
+
+  updateTraceDropdownUI() {
+    const lbl = $('trace-active-label');
+    const clearBtn = $('trace-clear-btn');
+    const btn = $('trace-dropdown-btn');
+    const val = S.activeTraceId;
+    if (lbl) {
+      lbl.textContent = val ? `# ${val}` : 'All Traces';
+      lbl.title = val ? `Filtered to Trace: ${val}` : 'All Traces';
+    }
+    if (clearBtn) {
+      clearBtn.style.display = val ? 'inline-flex' : 'none';
+    }
+    if (btn) {
+      if (val) {
+        btn.style.borderColor = 'var(--cyan)';
+        btn.style.color = 'var(--cyan)';
+      } else {
+        btn.style.borderColor = 'var(--bdr)';
+        btn.style.color = 'var(--t1)';
+      }
+    }
+    const menu = $('trace-dropdown-menu');
+    if (menu) {
+      menu.querySelectorAll('li[data-trace]').forEach(l => {
+        const active = (l.dataset.trace === 'all' && !val) || (l.dataset.trace === val);
+        l.style.color = active ? 'var(--cyan)' : 'var(--t1)';
+        l.style.fontWeight = active ? '700' : '';
+        l.style.background = active ? 'var(--bg-3)' : '';
+      });
+    }
+  },
+
+  renderTraceDropdown(trees) {
+    const td = $('trace-dropdown');
+    if (!td) return;
+
+    // Remove existing portal menu if already attached
+    const oldMenu = $('trace-dropdown-menu');
+    if (oldMenu && oldMenu.parentNode) oldMenu.parentNode.removeChild(oldMenu);
+
+    td.innerHTML = '';
+
+    // Collect all unique correlation IDs across all trees
+    const tracesMap = {};
+    const traverse = (node, thr) => {
+      if (node && node.correlationId) {
+        const cid = String(node.correlationId).trim();
+        if (cid) {
+          if (!tracesMap[cid]) {
+            tracesMap[cid] = {
+              id: cid,
+              count: 0,
+              slaBreaches: 0,
+              threads: new Set()
+            };
+          }
+          const t = tracesMap[cid];
+          t.count++;
+          if (thr) t.threads.add(thr);
+          if (node.slaBreached || (node.slaThresholdMs != null && node.duration != null && node.duration > node.slaThresholdMs)) {
+            t.slaBreaches++;
+          }
+        }
+      }
+      if (node && node.events && Array.isArray(node.events)) {
+        for (const child of node.events) traverse(child, thr);
+      }
+    };
+
+    const src = trees || S.trees || {};
+    for (const [thr, nodes] of Object.entries(src)) {
+      if (Array.isArray(nodes)) {
+        for (const n of nodes) traverse(n, thr);
+      }
+    }
+
+    const traces = Object.values(tracesMap).sort((a, b) => b.count - a.count || a.id.localeCompare(b.id));
+
+    if (traces.length === 0) {
+      td.style.display = 'none';
+      return;
+    }
+
+    td.style.display = 'inline-flex';
+
+    const dot = document.createElement('span');
+    dot.className = 'trace-dropdown-dot';
+    dot.setAttribute('aria-hidden', 'true');
+
+    const lbl = document.createElement('span');
+    lbl.className = 'trace-dropdown-lbl';
+    lbl.textContent = 'Trace:';
+
+    const btn = document.createElement('button');
+    btn.id = 'trace-dropdown-btn';
+    btn.type = 'button';
+    btn.className = 'trace-dropdown-btn';
+    btn.title = 'Filter by Trace ID';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+
+    const currentTrace = S.activeTraceId || '';
+    btn.innerHTML = `<span id="trace-active-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;pointer-events:none;">${esc(currentTrace ? `# ${currentTrace}` : 'All Traces')}</span><svg viewBox="0 0 10 6" width="8" height="8" style="flex-shrink:0;opacity:.6;fill:none;stroke:currentColor;stroke-width:1.5;pointer-events:none;"><path d="M1 1l4 4 4-4"/></svg>`;
+
+    const clearBtn = document.createElement('button');
+    clearBtn.id = 'trace-clear-btn';
+    clearBtn.type = 'button';
+    clearBtn.className = 'trace-clear-btn';
+    clearBtn.title = 'Clear trace filter';
+    clearBtn.setAttribute('aria-label', 'Clear active trace filter');
+    clearBtn.textContent = '✕';
+    clearBtn.style.display = currentTrace ? 'inline-flex' : 'none';
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      UI.setTraceFilter(null);
+    });
+
+    // Body portal menu
+    const menu = document.createElement('div');
+    menu.id = 'trace-dropdown-menu';
+    menu.setAttribute('role', 'listbox');
+    menu.style.cssText = 'display:none;position:fixed;min-width:240px;max-width:320px;max-height:280px;background:var(--bg-1);border:1px solid var(--bdr);border-radius:var(--rounded-md);box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:99999;font-family:var(--mono);font-size: 12px;flex-direction:column;overflow:hidden;';
+    document.body.appendChild(menu);
+
+    // Search header
+    const searchWrap = document.createElement('div');
+    searchWrap.style.cssText = 'padding:6px;border-bottom:1px solid var(--bdr);background:var(--bg-1);flex-shrink:0;';
+    const searchInp = document.createElement('input');
+    searchInp.id = 'trace-search-inp';
+    searchInp.type = 'text';
+    searchInp.placeholder = 'Filter trace IDs...';
+    searchInp.setAttribute('aria-label', 'Filter trace IDs');
+    searchInp.style.cssText = 'width:100%;font-size: 12px;padding:3px 6px;height:22px;box-sizing:border-box;font-family:var(--mono);background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);color:var(--t1);outline:none;';
+    searchWrap.appendChild(searchInp);
+    menu.appendChild(searchWrap);
+
+    // List container
+    const list = document.createElement('ul');
+    list.id = 'trace-dropdown-list';
+    list.style.cssText = 'list-style:none;padding:4px 0;margin:0;overflow-y:auto;flex:1;max-height:220px;';
+    menu.appendChild(list);
+
+    // All Traces item
+    const liAll = document.createElement('li');
+    liAll.dataset.trace = 'all';
+    liAll.setAttribute('role', 'option');
+    liAll.style.cssText = `padding:5px 12px;cursor:pointer;color:var(--t1);white-space:nowrap;display:flex;align-items:center;justify-content:space-between;transition:background .1s;${!currentTrace ? 'background:var(--bg-3);color:var(--cyan);font-weight:700;' : ''}`;
+    liAll.innerHTML = `<span style="pointer-events:none;">All Traces (${traces.length})</span>`;
+    liAll.addEventListener('mouseenter', () => { liAll.style.background = 'var(--bg-3)'; });
+    liAll.addEventListener('mouseleave', () => { liAll.style.background = !S.activeTraceId ? 'var(--bg-3)' : ''; });
+    liAll.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.style.borderColor = 'var(--bdr)';
+      UI.setTraceFilter(null);
+    });
+    list.appendChild(liAll);
+
+    // Trace items
+    traces.forEach(t => {
+      const isAct = t.id === currentTrace;
+      const li = document.createElement('li');
+      li.dataset.trace = t.id;
+      li.setAttribute('role', 'option');
+      li.style.cssText = `padding:5px 12px;cursor:pointer;color:var(--t1);white-space:nowrap;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .1s;${isAct ? 'background:var(--bg-3);color:var(--cyan);font-weight:700;' : ''}`;
+
+      const breachBadge = t.slaBreaches > 0
+        ? `<span style="font-size:11px;font-weight:700;padding:1px 4px;border-radius:var(--rounded-xs);background:var(--danger-soft);color:var(--red);border:1px solid var(--danger-bdr-light);flex-shrink:0;">SLA</span>`
+        : '';
+      const countBadge = `<span style="font-size:11px;color:var(--t3);background:var(--bg-2);padding:1px 5px;border-radius:var(--rounded-xs);border:1px solid var(--bdr);flex-shrink:0;">${t.count} span${t.count !== 1 ? 's' : ''}</span>`;
+
+      li.innerHTML = `
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;font-family:var(--mono);pointer-events:none;" title="${esc(t.id)}"># ${esc(t.id)}</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;pointer-events:none;">
+          ${breachBadge}
+          ${countBadge}
+        </div>
+      `;
+
+      li.addEventListener('mouseenter', () => { li.style.background = 'var(--bg-3)'; });
+      li.addEventListener('mouseleave', () => { li.style.background = S.activeTraceId === t.id ? 'var(--bg-3)' : ''; });
+      li.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.borderColor = 'var(--cyan)';
+        UI.setTraceFilter(t.id);
+      });
+      list.appendChild(li);
+    });
+
+    // Search filtering
+    searchInp.addEventListener('input', () => {
+      const val = searchInp.value.toLowerCase().trim();
+      list.querySelectorAll('li').forEach(li => {
+        if (li.dataset.trace === 'all') {
+          li.style.display = val ? 'none' : 'flex';
+        } else {
+          const tid = (li.dataset.trace || '').toLowerCase();
+          li.style.display = tid.includes(val) ? 'flex' : 'none';
+        }
+      });
+    });
+
+    searchInp.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.borderColor = S.activeTraceId ? 'var(--cyan)' : 'var(--bdr)';
+        btn.focus();
+      } else if (e.key === 'Enter') {
+        const visible = Array.from(list.querySelectorAll('li')).filter(li => li.style.display !== 'none');
+        if (visible.length === 1) {
+          visible[0].click();
+        }
+      }
+    });
+
+    // Toggle dropdown button
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = menu.style.display === 'flex';
+      if (open) {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.borderColor = S.activeTraceId ? 'var(--cyan)' : 'var(--bdr)';
+      } else {
+        const vtMenu = $('vt-chips-menu');
+        if (vtMenu) vtMenu.style.display = 'none';
+
+        const r = btn.getBoundingClientRect();
+        menu.style.top = (r.bottom + 4) + 'px';
+        const menuW = Math.max(240, r.width);
+        const left = Math.min(Math.max(4, r.left), window.innerWidth - menuW - 8);
+        menu.style.left = left + 'px';
+        menu.style.display = 'flex';
+        btn.setAttribute('aria-expanded', 'true');
+        btn.style.borderColor = 'var(--cyan)';
+
+        searchInp.value = '';
+        list.querySelectorAll('li').forEach(li => li.style.display = 'flex');
+        searchInp.focus();
+      }
+    });
+
+    if (UI._traceCloseHandler) document.removeEventListener('click', UI._traceCloseHandler);
+    UI._traceCloseHandler = (e) => {
+      if (!menu.contains(e.target) && e.target !== btn && e.target !== clearBtn) {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.borderColor = S.activeTraceId ? 'var(--cyan)' : 'var(--bdr)';
+      }
+    };
+    document.addEventListener('click', UI._traceCloseHandler);
+
+    if (UI._traceKeyHandler) document.removeEventListener('keydown', UI._traceKeyHandler);
+    UI._traceKeyHandler = (e) => {
+      if (e.key === 'Escape' && menu.style.display === 'flex') {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.borderColor = S.activeTraceId ? 'var(--cyan)' : 'var(--bdr)';
+        btn.focus();
+      }
+    };
+    document.addEventListener('keydown', UI._traceKeyHandler);
+
+    td.append(dot, lbl, btn, clearBtn);
+    this.updateTraceDropdownUI();
   },
   // Helper: show a full-screen utility panel (cfg or hlp) regardless of parse state
   _showPanel(id){
@@ -17994,10 +18355,12 @@ document.querySelectorAll('.hdr-util-btn[data-v]').forEach(btn => {
   });
 });
 
-$('trace-filter').addEventListener('input',e=>{
-  S.activeTraceId=e.target.value.trim();
-  UI.rv();
-});
+const tfInput = $('trace-filter');
+if (tfInput) {
+  tfInput.addEventListener('input', e => {
+    UI.setTraceFilter(e.target.value.trim());
+  });
+}
 
 // Results delegated (tree expand/collapse)
 $('res').addEventListener('click',e=>{
@@ -18010,10 +18373,7 @@ $('res').addEventListener('click',e=>{
   }
   const traceClick=e.target.closest('[data-a="trace-click"]');
   if(traceClick){
-    const tid=traceClick.dataset.tc;
-    $('trace-filter').value=tid;
-    S.activeTraceId=tid;
-    UI.rv();
+    UI.setTraceFilter(traceClick.dataset.tc);
     return;
   }
   const btn=e.target.closest('[data-a]');if(!btn)return;
@@ -20510,9 +20870,7 @@ const CMD = (() => {
         id:'tr-'+tid, cat:'Trace', name:'Filter by Trace: '+tid,
         icon:'🔗', action:()=>{
           CMD.close();
-          const el = $('trace-filter'); if (el) el.value = tid;
-          S.activeTraceId = tid;
-          UI.rv();
+          UI.setTraceFilter(tid);
         }
       });
     });
@@ -21700,12 +22058,7 @@ const TRACE_EXPLORER = (function() {
       clearFilter();
       return;
     }
-    S.activeTraceId = traceId;
-    const filterInput = $('trace-filter');
-    if (filterInput) {
-      filterInput.value = traceId;
-      filterInput.style.display = 'inline-block';
-    }
+    UI.setTraceFilter(traceId, true);
     toast(`Filtered views to Trace: ${traceId}`, 'info');
     const list = scanTraces();
     const match = list.find(t => t.id === traceId);
@@ -21718,12 +22071,7 @@ const TRACE_EXPLORER = (function() {
   }
 
   function clearFilter() {
-    S.activeTraceId = null;
-    const filterInput = $('trace-filter');
-    if (filterInput) {
-      filterInput.value = '';
-      filterInput.style.display = 'none';
-    }
+    UI.setTraceFilter(null, true);
     toast('Cleared Trace filter', 'info');
     if (_container) render(_container);
   }
@@ -21739,6 +22087,7 @@ UI.render = function(trees, threads, stats) {
   S.ruleFilter = null;
   S.highlightRules = null;
   S.timeFilterRange = null;
+  S.activeTraceId = null;
 
   _uiRenderBCB(trees, threads, stats);
   BCB.render();
