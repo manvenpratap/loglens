@@ -3,6 +3,18 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Light Theme Row Background Banding Resolution (v6.9.131 — COMPLETED)**:
+  - **Root Cause & Selector Fix**:
+    - Identified that `[data-theme=light] .tree-row:nth-child(even)` and `[data-theme=ivory] .tree-row:nth-child(even)` at line 2925 were unconditionally overriding `background: color-mix(in srgb, var(--bg-2) 35%, var(--bg-0)) !important;` on every alternating row in Execution Tree.
+    - Because this selector lacked `:not([data-thread])`, it clobbered the subtle thread background tint `--thr-bg` with a dark grayish-tan band on every second row, resulting in visible horizontal zebra banding in light/ivory themes.
+    - Updated the selectors in `loglens.html` to `:not([data-thread]):nth-child(even), [data-thread=""]:nth-child(even)` so zebra striping ONLY ever applies to events that lack a thread assignment.
+  - **Hover Color Blending Correction**:
+    - Fixed `[data-theme=light] .tree-row:hover` and `[data-theme=ivory] .tree-row:hover` which previously wiped out thread color by falling back to `var(--bg-1)` instead of `var(--thr-bg, var(--bg-1))`.
+    - Both light and dark themes now consistently blend hover amber tint over `--thr-bg` (`color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important`).
+  - **Automated Regression Verification**:
+    - Enhanced `test_split_view_row_background_colors_synchronized` in `tests/test_consolidated_visualizations_and_telemetry.py` to evaluate light/ivory theme rows, asserting 100% background uniformity (0 unique alternate backgrounds for same-thread rows) and exact parity between Tree and Waterfall panes.
+    - Verified all 96/96 tests passing in the full test suite.
+
 - **Split View Waterfall and Swimlane Row Background Colors Synchronized with Execution Tree (v6.9.130 — COMPLETED)**:
   - **Waterfall Pane Row Color Parity**:
     - In `GR.render`, rows now resolve their thread via `n.thread || (n.parent && n.parent.thread) || ''` and compute `tCol` via `TR.getThreadColor(thr)`.

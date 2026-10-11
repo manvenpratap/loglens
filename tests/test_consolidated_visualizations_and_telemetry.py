@@ -835,4 +835,32 @@ async def test_split_view_row_background_colors_synchronized(page_with_data):
     assert swim_check['validCount'] == swim_check['total']
     assert swim_check['total'] > 0
 
+    # 3. Verify Light / Ivory theme has zero row banding
+    await page.evaluate("""() => {
+        document.documentElement.setAttribute('data-theme', 'ivory');
+        S.swimlaneMode = false;
+        UI.svm('split');
+        UI.rv();
+    }""")
+    await page.wait_for_timeout(200)
+
+    light_check = await page.evaluate("""() => {
+        const treeRows = [...document.querySelectorAll('.res-split .sp-pane:last-child .tree-row:not(.tree-thr-group-row)')];
+        const gRows = [...document.querySelectorAll('.res-split .sp-pane:first-child .g-row:not(.g-thr-group-row)')];
+        const mainTreeBgs = [...new Set(treeRows.filter(r => r.dataset.thread === 'main').map(r => window.getComputedStyle(r).backgroundColor))];
+        const mainGBgs = [...new Set(gRows.filter(r => r.dataset.thread === 'main').map(r => window.getComputedStyle(r).backgroundColor))];
+        return {
+            mainTreeBgsCount: mainTreeBgs.length,
+            mainGBgsCount: mainGBgs.length,
+            treeBg: mainTreeBgs[0],
+            gBg: mainGBgs[0]
+        };
+    }""")
+    assert light_check['mainTreeBgsCount'] == 1, "Tree rows in main thread must have uniform background (no banding)"
+    assert light_check['mainGBgsCount'] == 1, "Waterfall rows in main thread must have uniform background (no banding)"
+    assert light_check['treeBg'] == light_check['gBg'], "Tree and Waterfall backgrounds must match in light theme"
+
+    # Reset theme back to dark
+    await page.evaluate("() => document.documentElement.setAttribute('data-theme', 'dark')")
+
     assert_no_critical_errors(page)
