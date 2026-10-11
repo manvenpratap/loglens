@@ -3640,6 +3640,29 @@ mark.hl{
 .sp-title{
   font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3);margin-bottom:12px;
 }
+/* Stats View Enhancements */
+.stats-scope-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.stats-scope-pill{padding:4px 12px;font-size:11px;font-weight:600;border-radius:var(--rounded-full);background:var(--bg-2);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;transition:all .15s;}
+.stats-scope-pill:hover{border-color:var(--bdr-hi);color:var(--t0);}
+.stats-scope-pill.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:700;}
+
+.stats-controls-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-md);padding:10px 12px;}
+.stats-filter-chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.stats-filter-chip{padding:4px 10px;font-size:11px;border-radius:var(--rounded-sm);background:var(--bg-1);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;transition:all .15s;}
+.stats-filter-chip:hover{border-color:var(--bdr-hi);color:var(--t0);}
+.stats-filter-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:700;}
+
+.stats-th-sortable{cursor:pointer;user-select:none;transition:color .12s,background .12s;white-space:nowrap;}
+.stats-th-sortable:hover{color:var(--t0);background:var(--bdr-d);}
+.stats-sort-arrow{display:inline-block;margin-left:4px;font-size:10px;opacity:.8;}
+
+.stats-dist-bar-wrap{width:100%;max-width:90px;height:4px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:4px;}
+.stats-dist-bar-fill{height:100%;border-radius:2px;transition:width .2s;}
+
+.stats-action-group{display:flex;gap:4px;align-items:center;justify-content:center;}
+.stats-action-group .btn{padding:2px 8px;font-size:11px;border-radius:var(--rounded-sm);background:var(--bg-1);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;transition:all .12s;}
+.stats-action-group .btn:hover{background:var(--bg-3);border-color:var(--bdr-hi);color:var(--t0);}
+
 /* A2 Heatmap Matrix Grid */
 .corr-grid-wrap{
   overflow-x:auto;padding-bottom:6px;
@@ -16959,6 +16982,14 @@ const STATS={
     }
   },
 
+  _sortBy: 'p95',
+  _sortDir: 'desc',
+  _filterQuery: '',
+  _filterStatus: 'all',
+  _activeScope: 'active',
+  _tree: null,
+  _container: null,
+
   compute(tree) {
     const map = {};
     this._getDurations(tree, map);
@@ -16996,9 +17027,73 @@ const STATS={
     return result;
   },
 
+  exportCsv(stats) {
+    const rows = [
+      ['Rule Name', 'Rule ID', 'Count', 'Min (ms)', 'Max (ms)', 'Avg (ms)', 'P50 (ms)', 'P95 (ms)', 'P99 (ms)', 'Outliers', 'SLA (ms)']
+    ];
+    for (const s of Object.values(stats || {})) {
+      rows.push([
+        `"${(s.ruleName || '').replace(/"/g, '""')}"`,
+        s.ruleId,
+        s.count,
+        (s.min || 0).toFixed(2),
+        (s.max || 0).toFixed(2),
+        (s.avg || 0).toFixed(2),
+        (s.p50 || 0).toFixed(2),
+        (s.p95 || 0).toFixed(2),
+        (s.p99 || 0).toFixed(2),
+        s.outliers,
+        s.sla != null ? s.sla : ''
+      ]);
+    }
+    const csvContent = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `loglens_latency_statistics_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if (typeof toast === 'function') toast('Exported latency statistics to CSV', 'success');
+  },
+
+  copyJson(stats) {
+    const summary = Object.values(stats || {}).map(s => ({
+      ruleName: s.ruleName,
+      ruleId: s.ruleId,
+      count: s.count,
+      minMs: +(s.min || 0).toFixed(2),
+      maxMs: +(s.max || 0).toFixed(2),
+      avgMs: +(s.avg || 0).toFixed(2),
+      p50Ms: +(s.p50 || 0).toFixed(2),
+      p95Ms: +(s.p95 || 0).toFixed(2),
+      p99Ms: +(s.p99 || 0).toFixed(2),
+      outliers: s.outliers
+    }));
+    navigator.clipboard.writeText(JSON.stringify(summary, null, 2)).then(() => {
+      if (typeof toast === 'function') toast('Latency statistics copied to clipboard (JSON)', 'success');
+    }).catch(() => {
+      if (typeof toast === 'function') toast('Unable to copy to clipboard', 'error');
+    });
+  },
+
   async render(tree, container) {
-    const stats = this.compute(tree);
-    
+    this._tree = tree;
+    this._container = container;
+
+    let currentTree = tree;
+    if (this._activeScope === 'all') {
+      currentTree = Object.values(S.trees || {}).flat();
+    } else if (this._activeScope !== 'active' && S.trees?.[this._activeScope]) {
+      currentTree = S.trees[this._activeScope];
+    }
+
+    const stats = this.compute(currentTree);
+    const allStats = Object.values(stats);
+    const maxP95 = allStats.reduce((m, s) => Math.max(m, s.p95 || 0), 1);
+
     // Build comparison selector option tags
     let sessions = [];
     try {
@@ -17010,31 +17105,121 @@ const STATS={
       .concat(sessions.map(s => `<option value="${esc(s.key)}">${esc(s.fileName)} (${new Date(s.ts).toLocaleTimeString()})</option>`))
       .join('');
 
-    const rowsHtml = Object.values(stats).map(s => {
-      const col = s.color;
+    // Filter list
+    let list = [...allStats];
+    if (this._filterQuery) {
+      const q = this._filterQuery.toLowerCase();
+      list = list.filter(s => s.ruleName.toLowerCase().includes(q) || s.ruleId.toLowerCase().includes(q));
+    }
+    if (this._filterStatus === 'outliers') {
+      list = list.filter(s => s.outliers > 0);
+    } else if (this._filterStatus === 'sla') {
+      list = list.filter(s => s.sla != null ? s.max > s.sla : (s.max > (S.globalSlaThresholdMs || 2000)));
+    } else if (this._filterStatus === 'volume') {
+      list = list.filter(s => s.count >= 5);
+    }
+
+    // Sort list
+    const sortField = this._sortBy;
+    const sortDir = this._sortDir === 'asc' ? 1 : -1;
+    list.sort((a, b) => {
+      let va = a[sortField] != null ? a[sortField] : 0;
+      let vb = b[sortField] != null ? b[sortField] : 0;
+      if (typeof va === 'string') return va.localeCompare(vb) * sortDir;
+      return (va - vb) * sortDir;
+    });
+
+    const getSortArrow = (col) => {
+      if (this._sortBy !== col) return '';
+      return `<span class="stats-sort-arrow">${this._sortDir === 'asc' ? '▴' : '▾'}</span>`;
+    };
+
+    // Chip counts
+    const totalCnt = allStats.length;
+    const outCnt = allStats.filter(s => s.outliers > 0).length;
+    const slaCnt = allStats.filter(s => s.sla != null ? s.max > s.sla : (s.max > (S.globalSlaThresholdMs || 2000))).length;
+    const volCnt = allStats.filter(s => s.count >= 5).length;
+
+    // Scope pills
+    const threads = S.threads || [];
+    const scopePills = [
+      `<button class="stats-scope-pill ${this._activeScope === 'active' ? 'active' : ''}" data-scope="active">Active: ${esc(S.activeThr || 'default')}</button>`,
+      `<button class="stats-scope-pill ${this._activeScope === 'all' ? 'active' : ''}" data-scope="all">All Threads (${threads.length})</button>`
+    ].concat(threads.map(th => 
+      `<button class="stats-scope-pill ${this._activeScope === th ? 'active' : ''}" data-scope="${esc(th)}">${esc(th)}</button>`
+    )).join('');
+
+    const rowsHtml = list.map(s => {
+      const col = s.color || 'var(--blue)';
+      const pct = Math.min(100, Math.round(((s.p95 || 0) / maxP95) * 100));
+      const isSlaBreached = s.sla != null ? s.max > s.sla : (s.max > (S.globalSlaThresholdMs || 2000));
+      const slaBadge = isSlaBreached ? `<span class="badge badge-r" style="font-size:10px; padding:1px 5px; margin-left:6px;" title="Max duration breached SLA threshold">SLA</span>` : '';
+      const outCell = s.outliers > 0 ? `<span style="color:var(--red); font-weight:bold;">${s.outliers}</span>` : `<span style="color:var(--t4);">0</span>`;
+
       return `<tr class="stats-row" data-rid="${s.ruleId}" style="border-bottom:1px solid var(--bdr); cursor:pointer;">
-        <td style="padding:10px; font-weight:bold; color:${col};">${esc(s.ruleName)}</td>
-        <td style="padding:10px; text-align:right;">${s.count}</td>
-        <td style="padding:10px; text-align:right;">${fmtMs(s.avg)}</td>
-        <td style="padding:10px; text-align:right;">${fmtMs(s.p50)}</td>
-        <td style="padding:10px; text-align:right; font-weight:bold; color:var(--amber);">${fmtMs(s.p95)}</td>
-        <td style="padding:10px; text-align:right;">${fmtMs(s.p99)}</td>
-        <td style="padding:10px; text-align:right; color:var(--red);">${s.outliers}</td>
-        <td style="padding:10px; text-align:center;">
-          <canvas class="spark-hist" data-rid="${s.ruleId}" width="120" height="24" style="border:1px solid var(--bdr); border-radius:var(--rounded-sm); background:var(--bg-1);"></canvas>
+        <td style="padding:10px; font-weight:bold; color:${col};">
+          ${esc(s.ruleName)}${slaBadge}
+        </td>
+        <td style="padding:10px; text-align:right; font-family:var(--mono);">${s.count}</td>
+        <td style="padding:10px; text-align:right; font-family:var(--mono);">${fmtMs(s.avg)}</td>
+        <td style="padding:10px; text-align:right; font-family:var(--mono);">${fmtMs(s.p50)}</td>
+        <td style="padding:10px; text-align:right; font-weight:bold; color:var(--amber); font-family:var(--mono);">${fmtMs(s.p95)}</td>
+        <td style="padding:10px; text-align:right; font-family:var(--mono);">${fmtMs(s.p99)}</td>
+        <td style="padding:10px; text-align:right; font-family:var(--mono);">${outCell}</td>
+        <td style="padding:8px 10px; text-align:center;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+            <canvas class="spark-hist" data-rid="${s.ruleId}" width="120" height="20" style="border:1px solid var(--bdr); border-radius:var(--rounded-sm); background:var(--bg-1);"></canvas>
+            <div class="stats-dist-bar-wrap" title="P95: ${fmtMs(s.p95)} (${pct}% of max P95)">
+              <div class="stats-dist-bar-fill" style="width:${pct}%; background:${col};"></div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:8px 10px; text-align:center;">
+          <div class="stats-action-group">
+            <button class="btn btn-xs btn-stats-inspect" data-rid="${s.ruleId}" title="Inspect slowest instance">Inspect</button>
+            <button class="btn btn-xs btn-stats-timeline" data-rid="${s.ruleId}" title="Jump to Timeline">Timeline</button>
+            <button class="btn btn-xs btn-stats-tree" data-rid="${s.ruleId}" title="Jump to Tree">Tree</button>
+          </div>
         </td>
       </tr>`;
     }).join('');
 
     container.innerHTML = `<div class="stats-layout-wrapper" style="display:flex; flex-direction:column; gap:16px;">
       <div class="stats-panel-card" style="margin-top:0;">
-        <div class="sp-title"><span class="ico">◬</span> Latency Statistics (Active Thread)</div>
-        
-        <div style="background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; padding:12px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <div class="sp-title" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <span style="display:flex; align-items:center; gap:6px;"><span class="ico">◬</span> Latency Statistics &amp; Benchmarks</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button id="btn-stats-export-csv" class="btn btn-g btn-xs">⤓ Export CSV</button>
+            <button id="btn-stats-copy-json" class="btn btn-g btn-xs">📋 Copy JSON</button>
+            <button id="btn-show-heatmap" class="btn btn-bl btn-xs">◧ Show Heatmap</button>
+          </div>
+        </div>
+
+        <!-- Thread Scope Selector -->
+        <div class="stats-scope-bar">
+          <span style="font-size:11px; font-weight:700; color:var(--t3); margin-right:4px;">SCOPE:</span>
+          ${scopePills}
+        </div>
+
+        <!-- Controls Row: Search & Quick Filter Chips -->
+        <div class="stats-controls-row">
+          <div style="display:flex; gap:8px; align-items:center; flex:1; min-width:240px;">
+            <span style="font-size:12px; color:var(--t3);">🔍</span>
+            <input type="text" id="stats-search-inp" class="inp" placeholder="Search operation or rule name..." value="${esc(this._filterQuery)}" style="width:100%; height:28px; font-size:12px;" />
+          </div>
+          <div class="stats-filter-chips">
+            <button class="stats-filter-chip ${this._filterStatus === 'all' ? 'active' : ''}" data-filter="all">All (${totalCnt})</button>
+            <button class="stats-filter-chip ${this._filterStatus === 'outliers' ? 'active' : ''}" data-filter="outliers">⚠ Outliers (${outCnt})</button>
+            <button class="stats-filter-chip ${this._filterStatus === 'sla' ? 'active' : ''}" data-filter="sla">🔴 SLA Breached (${slaCnt})</button>
+            <button class="stats-filter-chip ${this._filterStatus === 'volume' ? 'active' : ''}" data-filter="volume">⚡ High Volume (${volCnt})</button>
+          </div>
+        </div>
+
+        <!-- Comparison Bar -->
+        <div style="background:var(--bg-2); border:1px solid var(--bdr); border-radius:6px; padding:10px 12px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
           <span style="font-size:12px; font-weight:bold; color:var(--t2);">⌕ Compare with previous run:</span>
           <select id="comp-session-sel" class="inp" style="width:280px; font-size:12px; padding:4px 8px;">${opts}</select>
           <button id="btn-clear-comp" class="btn btn-g btn-sm hidden">Clear Comparison</button>
-          <button id="btn-show-heatmap" class="btn btn-bl btn-sm mla">◧ Show Heatmap</button>
         </div>
 
         <div id="heatmap-container" class="hidden stats-panel-card" style="margin-bottom:16px; margin-top:0;">
@@ -17050,19 +17235,20 @@ const STATS={
         <div class="tw" style="overflow-x:auto;">
           <table style="width:100%; border-collapse:collapse; font-size:12px;">
             <thead>
-              <tr style="background:var(--bg-2); border-bottom:1px solid var(--bdr); color:var(--t3); text-transform:uppercase; font-size: 12px;">
-                <th style="padding:10px; text-align:left;">Rule Name</th>
-                <th style="padding:10px; text-align:right;">Count</th>
-                <th style="padding:10px; text-align:right;">Avg Latency</th>
-                <th style="padding:10px; text-align:right;">P50</th>
-                <th style="padding:10px; text-align:right; font-weight:bold; color:var(--amber);">P95</th>
-                <th style="padding:10px; text-align:right;">P99</th>
-                <th style="padding:10px; text-align:right;">Outliers</th>
-                <th style="padding:10px; text-align:center; width:140px;">Latency Hist</th>
+              <tr style="background:var(--bg-2); border-bottom:1px solid var(--bdr); color:var(--t3); text-transform:uppercase; font-size: 11px;">
+                <th class="stats-th-sortable" data-sort="ruleName" style="padding:10px; text-align:left;">Rule Name ${getSortArrow('ruleName')}</th>
+                <th class="stats-th-sortable" data-sort="count" style="padding:10px; text-align:right;">Count ${getSortArrow('count')}</th>
+                <th class="stats-th-sortable" data-sort="avg" style="padding:10px; text-align:right;">Avg Latency ${getSortArrow('avg')}</th>
+                <th class="stats-th-sortable" data-sort="p50" style="padding:10px; text-align:right;">P50 ${getSortArrow('p50')}</th>
+                <th class="stats-th-sortable" data-sort="p95" style="padding:10px; text-align:right; font-weight:bold; color:var(--amber);">P95 ${getSortArrow('p95')}</th>
+                <th class="stats-th-sortable" data-sort="p99" style="padding:10px; text-align:right;">P99 ${getSortArrow('p99')}</th>
+                <th class="stats-th-sortable" data-sort="outliers" style="padding:10px; text-align:right;">Outliers ${getSortArrow('outliers')}</th>
+                <th class="stats-th-sortable" data-sort="max" style="padding:10px; text-align:center; width:150px;">Latency Dist ${getSortArrow('max')}</th>
+                <th style="padding:10px; text-align:center; width:170px;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              ${rowsHtml || '<tr><td colspan="8" style="padding:20px; text-align:center; color:var(--t3);">No operations found. Make sure rules have push/pop behavior.</td></tr>'}
+              ${rowsHtml || '<tr><td colspan="9" style="padding:28px; text-align:center; color:var(--t3); font-size:13px;">No operations match the selected criteria.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -17070,78 +17256,177 @@ const STATS={
     </div>`;
 
     // Render Canvas Spark Histograms
-    Object.values(stats).forEach(s => {
+    list.forEach(s => {
       const canv = container.querySelector(`canvas[data-rid="${s.ruleId}"]`);
       if (canv) this.drawSpark(canv, s.durations);
     });
 
-    // Wire up events
-    const sel = container.querySelector('#comp-session-sel');
-    sel.addEventListener('change', async () => {
-      const val = sel.value;
-      if (!val) {
-        container.querySelector('#comp-results-container').classList.add('hidden');
-        container.querySelector('#btn-clear-comp').classList.add('hidden');
-        return;
-      }
-      const sess = sessions.find(s => s.key === val);
-      if (sess) {
-        this.renderComp(stats, sess, container.querySelector('#comp-results-container'));
-        container.querySelector('#comp-results-container').classList.remove('hidden');
-        container.querySelector('#btn-clear-comp').classList.remove('hidden');
-      }
+    // Wire Scope pills
+    container.querySelectorAll('.stats-scope-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this._activeScope = btn.dataset.scope;
+        this.render(tree, container);
+      });
     });
 
-    container.querySelector('#btn-clear-comp').addEventListener('click', () => {
-      sel.value = '';
-      container.querySelector('#comp-results-container').classList.add('hidden');
-      container.querySelector('#btn-clear-comp').classList.add('hidden');
+    // Wire Search input
+    const searchInp = container.querySelector('#stats-search-inp');
+    if (searchInp) {
+      searchInp.addEventListener('input', (e) => {
+        this._filterQuery = e.target.value.trim();
+        this.render(tree, container);
+        const newInp = container.querySelector('#stats-search-inp');
+        if (newInp) {
+          newInp.focus();
+          newInp.selectionStart = newInp.selectionEnd = newInp.value.length;
+        }
+      });
+    }
+
+    // Wire Filter chips
+    container.querySelectorAll('.stats-filter-chip').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this._filterStatus = chip.dataset.filter;
+        this.render(tree, container);
+      });
     });
 
-    // Expand on click to show D3 Histogram and open worst node in Inspector
+    // Wire Sort headers
+    container.querySelectorAll('.stats-th-sortable').forEach(th => {
+      th.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const col = th.dataset.sort;
+        if (this._sortBy === col) {
+          this._sortDir = this._sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          this._sortBy = col;
+          this._sortDir = (col === 'ruleName') ? 'asc' : 'desc';
+        }
+        this.render(tree, container);
+      });
+    });
+
+    // Wire Export CSV & Copy JSON
+    const btnExport = container.querySelector('#btn-stats-export-csv');
+    if (btnExport) btnExport.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.exportCsv(stats);
+    });
+
+    const btnCopy = container.querySelector('#btn-stats-copy-json');
+    if (btnCopy) btnCopy.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.copyJson(stats);
+    });
+
+    // Helper to find slowest node for rule
+    const findMaxNodeForRule = (ruleId) => {
+      if (!S.trees) return null;
+      let maxNode = null;
+      const traverse = (nodes) => {
+        for (const n of nodes) {
+          if (n.ruleId === ruleId && n.duration != null) {
+            if (!maxNode || n.duration > maxNode.duration) maxNode = n;
+          }
+          if (n.events && n.events.length) traverse(n.events);
+        }
+      };
+      for (const t of Object.values(S.trees)) traverse(t);
+      return maxNode;
+    };
+
+    container.querySelectorAll('.btn-stats-inspect').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findMaxNodeForRule(btn.dataset.rid);
+        if (node && typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+      });
+    });
+
+    container.querySelectorAll('.btn-stats-timeline').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findMaxNodeForRule(btn.dataset.rid);
+        if (node) {
+          if (node.thread && S.threads.includes(node.thread)) S.activeThr = node.thread;
+          UI.svm('gantt');
+          if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-stats-tree').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findMaxNodeForRule(btn.dataset.rid);
+        if (node) {
+          if (node.thread && S.threads.includes(node.thread)) S.activeThr = node.thread;
+          UI.svm('tree');
+          if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+        }
+      });
+    });
+
+    // Row click: opens histogram modal
     container.addEventListener('click', e => {
+      if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) return;
       const row = e.target.closest('.stats-row');
       if (row) {
-        const rid = row.dataset.rid;
-        const s = stats[rid];
+        const s = stats[row.dataset.rid];
         if (s) {
           GRAPHIFY.showHistogramModal(s);
-          const findMaxNodeForRule = (ruleId) => {
-            if (!S.trees) return null;
-            let maxNode = null;
-            const traverse = (nodes) => {
-              for (const n of nodes) {
-                if (n.ruleId === ruleId && n.duration != null) {
-                  if (!maxNode || n.duration > maxNode.duration) {
-                    maxNode = n;
-                  }
-                }
-                if (n.events && n.events.length) traverse(n.events);
-              }
-            };
-            for (const tree of Object.values(S.trees)) {
-              traverse(tree);
-            }
-            return maxNode;
-          };
-          const maxNode = findMaxNodeForRule(rid);
-          if (maxNode && typeof INSPECTOR !== 'undefined') {
-            INSPECTOR.open(maxNode);
-          }
+          const node = findMaxNodeForRule(row.dataset.rid);
+          if (node && typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
         }
       }
     });
 
-    container.querySelector('#btn-show-heatmap').addEventListener('click', () => {
-      const heatCont = container.querySelector('#heatmap-container');
-      const wrap = container.querySelector('#heatmap-svg-wrap');
-      heatCont.classList.remove('hidden');
-      GRAPHIFY.renderHeatmap(tree, wrap);
-    });
+    // Wire Comparison events
+    const sel = container.querySelector('#comp-session-sel');
+    if (sel) {
+      sel.addEventListener('change', async () => {
+        const val = sel.value;
+        if (!val) {
+          container.querySelector('#comp-results-container').classList.add('hidden');
+          container.querySelector('#btn-clear-comp').classList.add('hidden');
+          return;
+        }
+        const sess = sessions.find(s => s.key === val);
+        if (sess) {
+          this.renderComp(stats, sess, container.querySelector('#comp-results-container'));
+          container.querySelector('#comp-results-container').classList.remove('hidden');
+          container.querySelector('#btn-clear-comp').classList.remove('hidden');
+        }
+      });
+    }
 
-    container.querySelector('#btn-close-heatmap').addEventListener('click', () => {
-      container.querySelector('#heatmap-container').classList.add('hidden');
-    });
+    const btnClearComp = container.querySelector('#btn-clear-comp');
+    if (btnClearComp) {
+      btnClearComp.addEventListener('click', () => {
+        sel.value = '';
+        container.querySelector('#comp-results-container').classList.add('hidden');
+        btnClearComp.classList.add('hidden');
+      });
+    }
+
+    const btnHeat = container.querySelector('#btn-show-heatmap');
+    if (btnHeat) {
+      btnHeat.addEventListener('click', () => {
+        const heatCont = container.querySelector('#heatmap-container');
+        const wrap = container.querySelector('#heatmap-svg-wrap');
+        heatCont.classList.remove('hidden');
+        GRAPHIFY.renderHeatmap(tree, wrap);
+      });
+    }
+
+    const btnCloseHeat = container.querySelector('#btn-close-heatmap');
+    if (btnCloseHeat) {
+      btnCloseHeat.addEventListener('click', () => {
+        container.querySelector('#heatmap-container').classList.add('hidden');
+      });
+    }
   },
 
   drawSpark(canvas, durations) {

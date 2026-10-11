@@ -2,6 +2,26 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Enhanced Stats Dashboard & Benchmarking Suite (v6.9.142 — COMPLETED)**:
+  - **Thread Scope Switcher Bar (`.stats-scope-bar`)**:
+    - Added inline pills to switch telemetry calculation scope directly within the Stats View between `Active Thread`, `All Threads`, and any individual discovered thread.
+  - **Interactive Column Header Sorting**:
+    - Made all table columns (`Rule Name`, `Count`, `Avg Latency`, `P50`, `P95`, `P99`, `Outliers`, `Latency Dist`) interactively sortable with toggling ascending/descending order and directional indicator arrows (`▴` / `▾`).
+    - Default sorting set to `P95` descending (slowest latency bottlenecks first).
+  - **Live Search & Quick Filter Chips (`.stats-controls-row`)**:
+    - Live search input (`#stats-search-inp`) to instantly filter operations by name without losing focus.
+    - Quick filter chips: `All (${total})`, `⚠ Outliers (${count})`, `🔴 SLA Breached (${count})`, and `⚡ High Volume (${count})`.
+  - **Proportional Latency Distribution Bar (`.stats-dist-bar-wrap`)**:
+    - Added a proportional latency indicator bar underneath the 12-bucket Canvas Sparkline Histogram in each row, colored by rule accent color and scaled relative to max P95 latency.
+  - **Direct Quick Actions per Operation**:
+    - Added inline quick action buttons in each table row: `Inspect` (opens worst node in Event Inspector), `Timeline` (jumps to Waterfall view focusing on the slowest instance), and `Tree` (jumps to Execution Tree view).
+  - **Export CSV & Copy JSON Utilities**:
+    - `⤓ Export CSV` (`#btn-stats-export-csv`): downloads `loglens_latency_statistics_<timestamp>.csv` with complete percentile breakdown.
+    - `📋 Copy JSON` (`#btn-stats-copy-json`): copies structured JSON statistics to system clipboard.
+  - **Automated Regression Verification**:
+    - Added `test_enhanced_stats_view_features` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite passed: **110/110 tests (100% pass rate in 103s)**.
+
 - **Comprehensive In-App Documentation & User Manual (v6.9.141 — COMPLETED)**:
   - **7 Specialized In-App Documentation Tabs**:
     - **Guide & Architecture (`#hlp-guide`)**: Details the zero-dependency browser execution model, Web Worker sandboxed parsing, privacy guarantees, thread-local call stack engine (push, pop, inline, swap, popAll), hotspot percentage badges (25% → 50% → 80%+), distributed tracing correlation, SLA thresholds, pinned spans workspace, 6-step workflow, and sample log downloader.

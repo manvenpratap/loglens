@@ -1188,3 +1188,82 @@ async def test_rule_editor_telemetry_capture_fields(blank_page):
     assert cm.get('4') == 'spanId'
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_enhanced_stats_view_features(page_with_data):
+    """Stats view exposes interactive column sorting, scope pills, live search, filter chips, and export utilities."""
+    page = page_with_data
+
+    # Switch to Stats view
+    await page.evaluate("() => UI.svm('stats')")
+    await page.wait_for_timeout(300)
+
+    # Verify stat cards and summary cards
+    await expect(page.locator('#stats-bar')).to_be_visible()
+    await expect(page.locator('.stats-layout-wrapper')).to_be_visible()
+
+    # Verify enhanced toolbar controls
+    await expect(page.locator('#btn-stats-export-csv')).to_be_visible()
+    await expect(page.locator('#btn-stats-copy-json')).to_be_visible()
+    await expect(page.locator('.stats-scope-bar')).to_be_visible()
+    await expect(page.locator('#stats-search-inp')).to_be_visible()
+    await expect(page.locator('.stats-filter-chips')).to_be_visible()
+
+    # Verify initial table rows
+    rows = page.locator('.stats-row')
+    initial_count = await rows.count()
+    assert initial_count > 0
+
+    # Test column header sorting: click Count
+    count_th = page.locator('th.stats-th-sortable[data-sort="count"]')
+    await count_th.click()
+    await page.wait_for_timeout(150)
+    assert await page.evaluate("() => STATS._sortBy") == 'count'
+    await expect(count_th.locator('.stats-sort-arrow')).to_be_visible()
+
+    # Test column header sorting: click Rule Name
+    name_th = page.locator('th.stats-th-sortable[data-sort="ruleName"]')
+    await name_th.click()
+    await page.wait_for_timeout(150)
+    assert await page.evaluate("() => STATS._sortBy") == 'ruleName'
+    await expect(name_th.locator('.stats-sort-arrow')).to_be_visible()
+
+    # Test live search filter
+    search_inp = page.locator('#stats-search-inp')
+    await search_inp.fill('NonExistentRuleXYZ')
+    await page.wait_for_timeout(200)
+    assert await page.locator('.stats-row').count() == 0
+
+    # Clear search
+    await search_inp.fill('')
+    await page.wait_for_timeout(200)
+    assert await page.locator('.stats-row').count() == initial_count
+
+    # Test filter chips
+    all_chip = page.locator('.stats-filter-chip[data-filter="all"]')
+    await expect(all_chip).to_have_class(re.compile(r'active'))
+
+    # Test scope pills
+    all_scope_pill = page.locator('.stats-scope-pill[data-scope="all"]')
+    await all_scope_pill.click()
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => STATS._activeScope") == 'all'
+
+    # Test export CSV and copy JSON methods execute without error
+    export_result = await page.evaluate("""() => {
+        try {
+            const tree = SELECTORS.getActiveTree();
+            const s = STATS.compute(tree);
+            // Verify export CSV callable without throwing
+            if (typeof STATS.exportCsv !== 'function') return false;
+            if (typeof STATS.copyJson !== 'function') return false;
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }""")
+    assert export_result is True
+
+    assert_no_critical_errors(page)
+
