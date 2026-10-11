@@ -4232,7 +4232,7 @@ mark.hl{
 }
 .trace-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 .trace-metric-card {
@@ -4244,10 +4244,16 @@ mark.hl{
   flex-direction: column;
   gap: 4px;
   transition: transform .2s, border-color .2s;
+  cursor: pointer;
+  user-select: none;
 }
 .trace-metric-card:hover {
   transform: translateY(-2px);
   border-color: var(--amber);
+}
+.trace-metric-card.active-metric-filter {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 1px var(--amber);
 }
 .trace-metric-val {
   font-size: 20px;
@@ -4261,6 +4267,36 @@ mark.hl{
   color: var(--t4);
   letter-spacing: 0.5px;
 }
+.trace-chips-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.trace-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--rounded-full, 999px);
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .15s ease;
+  user-select: none;
+}
+.trace-chip:hover {
+  border-color: var(--amber);
+  color: var(--t1);
+}
+.trace-chip.active-chip {
+  background: color-mix(in srgb, var(--amber) 15%, var(--bg-2));
+  border-color: var(--amber);
+  color: var(--amber);
+}
 .trace-table-card {
   background: var(--bg-2);
   border: 1px solid var(--bdr);
@@ -4272,7 +4308,7 @@ mark.hl{
 }
 .trace-table-hdr {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 100px;
+  grid-template-columns: 2fr 1fr 1.6fr 1.6fr 1fr 160px;
   padding: 10px 16px;
   background: var(--bg-3);
   border-bottom: 1px solid var(--bdr);
@@ -4283,6 +4319,18 @@ mark.hl{
   color: var(--t3);
   font-family: var(--display);
 }
+.trace-table-hdr > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+.trace-table-hdr > div.sortable {
+  cursor: pointer;
+}
+.trace-table-hdr > div.sortable:hover {
+  color: var(--amber);
+}
 .trace-rows-list {
   display: flex;
   flex-direction: column;
@@ -4291,7 +4339,7 @@ mark.hl{
 }
 .trace-row-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 100px;
+  grid-template-columns: 2fr 1fr 1.6fr 1.6fr 1fr 160px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--bdr-d);
   align-items: center;
@@ -4316,6 +4364,15 @@ mark.hl{
   white-space: nowrap;
   padding-right: 8px;
 }
+.trace-slowest-hint {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--t3);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .trace-count-col {
   color: var(--t2);
 }
@@ -4325,17 +4382,41 @@ mark.hl{
   gap: 4px;
 }
 .trace-thread-chip {
-  font-size: 12px;
+  font-size: 11px;
   font-family: var(--mono);
   background: var(--bg-1);
   border: 1px solid var(--bdr);
   border-radius: var(--rounded-xs);
-  padding: 1px 4px;
+  padding: 1px 6px;
   color: var(--t3);
 }
 .trace-duration-col {
   font-family: var(--mono);
   color: var(--t2);
+}
+.trace-dur-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 90%;
+}
+.trace-dur-text {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--t1);
+  font-weight: 600;
+}
+.trace-bar-bg {
+  height: 4px;
+  background: var(--bg-1);
+  border-radius: 2px;
+  overflow: hidden;
+  width: 100%;
+}
+.trace-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .2s ease;
 }
 .trace-sla-col {
   display: flex;
@@ -4343,6 +4424,12 @@ mark.hl{
 }
 .trace-act-col {
   display: flex;
+  justify-content: flex-end;
+}
+.trace-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   justify-content: flex-end;
 }
 
@@ -23328,8 +23415,10 @@ INSPECTOR.init();
    ================================================================ */
 const TRACE_EXPLORER = (function() {
   let _container = null;
-  let _activeTraceId = null;
   let _filterQuery = '';
+  let _statusFilter = 'all';
+  let _sortBy = 'duration';
+  let _sortDir = 'desc';
 
   function scanTraces() {
     const traces = {};
@@ -23391,6 +23480,27 @@ const TRACE_EXPLORER = (function() {
     });
   }
 
+  function setSort(col) {
+    if (_sortBy === col) {
+      _sortDir = _sortDir === 'desc' ? 'asc' : 'desc';
+    } else {
+      _sortBy = col;
+      _sortDir = (col === 'id' || col === 'threads') ? 'asc' : 'desc';
+    }
+    if (_container) render(_container);
+  }
+
+  function setStatusFilter(filter) {
+    _statusFilter = (_statusFilter === filter) ? 'all' : filter;
+    if (_container) render(_container);
+  }
+
+  function viewIn(mode, traceId) {
+    UI.setTraceFilter(traceId, true);
+    UI.svm(mode);
+    toast(`Filtered to Trace #${traceId} in ${mode === 'gantt' ? 'Timeline' : 'Execution Tree'}`, 'success');
+  }
+
   function render(el) {
     _container = el;
     el.innerHTML = '';
@@ -23406,39 +23516,78 @@ const TRACE_EXPLORER = (function() {
       return;
     }
 
-    // Filter traces by search bar query
-    const filtered = list.filter(t => {
-      const q = _filterQuery.trim().toLowerCase();
-      if (!q) return true;
-      return t.id.toLowerCase().includes(q) || t.threads.some(th => th.toLowerCase().includes(q));
-    });
-
     const totalTraces = list.length;
     const totalEvents = list.reduce((sum, t) => sum + t.count, 0);
     const totalBreaches = list.reduce((sum, t) => sum + t.slaBreaches, 0);
+    const multiThreadCount = list.filter(t => t.threads.length > 1).length;
     const breachRate = totalTraces > 0 ? ((totalBreaches / totalEvents) * 100).toFixed(1) + '%' : '0%';
+
+    const durations = list.map(t => t.duration).sort((a,b) => a - b);
+    const maxDuration = durations.length ? durations[durations.length - 1] : 0;
+    const p95Duration = durations.length ? durations[Math.floor(durations.length * 0.95)] : 0;
+
+    // Filter traces by search bar query and statusFilter
+    let filtered = list.filter(t => {
+      const q = _filterQuery.trim().toLowerCase();
+      const matchesQuery = !q || t.id.toLowerCase().includes(q) || t.threads.some(th => th.toLowerCase().includes(q)) || (t.slowestNode && (t.slowestNode.elementName || t.slowestNode.ruleName || '').toLowerCase().includes(q));
+      if (!matchesQuery) return false;
+
+      if (_statusFilter === 'sla') return t.slaBreaches > 0;
+      if (_statusFilter === 'healthy') return t.slaBreaches === 0;
+      if (_statusFilter === 'multi') return t.threads.length > 1;
+      return true;
+    });
+
+    // Sort
+    filtered.sort((a, b) => {
+      let diff = 0;
+      if (_sortBy === 'duration') diff = a.duration - b.duration;
+      else if (_sortBy === 'count') diff = a.count - b.count;
+      else if (_sortBy === 'threads') diff = a.threads.length - b.threads.length;
+      else if (_sortBy === 'sla') diff = a.slaBreaches - b.slaBreaches;
+      else if (_sortBy === 'id') return _sortDir === 'asc' ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
+      return _sortDir === 'asc' ? diff : -diff;
+    });
+
+    const sortIcon = (col) => _sortBy === col ? (_sortDir === 'asc' ? ' ▴' : ' ▾') : '';
 
     const metricsHtml = `
       <div class="trace-metrics-grid">
-        <div class="trace-metric-card">
+        <div class="trace-metric-card ${_statusFilter === 'all' ? 'active-metric-filter' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('all')" title="Click to view all traces">
           <div class="trace-metric-val">${totalTraces}</div>
           <div class="trace-metric-lbl">Total Traces</div>
         </div>
-        <div class="trace-metric-card">
+        <div class="trace-metric-card" title="Total events across all traces">
           <div class="trace-metric-val">${totalEvents}</div>
           <div class="trace-metric-lbl">Traced Events</div>
         </div>
-        <div class="trace-metric-card" style="${totalBreaches > 0 ? 'border-color:var(--red);' : ''}">
+        <div class="trace-metric-card" title="95th Percentile Duration across traces">
+          <div class="trace-metric-val">${fmtMs(p95Duration)}</div>
+          <div class="trace-metric-lbl">P95 Latency <span style="font-size:10px; opacity:0.8;">(Max: ${fmtMs(maxDuration)})</span></div>
+        </div>
+        <div class="trace-metric-card ${_statusFilter === 'sla' ? 'active-metric-filter' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('sla')" style="${totalBreaches > 0 ? 'border-color:var(--red);' : ''}" title="Click to filter by SLA Breaches">
           <div class="trace-metric-val" style="${totalBreaches > 0 ? 'color:var(--red);' : ''}">${totalBreaches} (${breachRate})</div>
           <div class="trace-metric-lbl">SLA Breaches</div>
         </div>
       </div>
     `;
 
+    const filterChipsHtml = `
+      <div class="trace-chips-bar">
+        <span class="trace-chip ${_statusFilter === 'all' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('all')">All (${totalTraces})</span>
+        <span class="trace-chip ${_statusFilter === 'sla' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('sla')">⚠ SLA Breaches (${list.filter(t => t.slaBreaches > 0).length})</span>
+        <span class="trace-chip ${_statusFilter === 'multi' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('multi')">⑂ Multi-Thread (${multiThreadCount})</span>
+        <span class="trace-chip ${_statusFilter === 'healthy' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('healthy')">✔ Healthy (${list.filter(t => t.slaBreaches === 0).length})</span>
+      </div>
+    `;
+
     const searchHtml = `
-      <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
-        <input type="text" id="trace-search-input" class="inp" placeholder="Search Trace ID or thread name..." value="${esc(_filterQuery)}" style="flex:1; height:28px; font-size: 12px;" />
-        ${S.activeTraceId ? `<button class="btn btn-sm btn-bl" onclick="TRACE_EXPLORER.clearFilter()">Clear Active Filter</button>` : ''}
+      <div style="display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px; position:relative;">
+          <input type="text" id="trace-search-input" class="inp" placeholder="Search Trace ID, thread name, or slowest operation..." value="${esc(_filterQuery)}" style="width:100%; height:32px; font-size:12px; box-sizing:border-box;" />
+        </div>
+        ${filterChipsHtml}
+        ${S.activeTraceId ? `<button class="btn btn-sm btn-bl" onclick="TRACE_EXPLORER.clearFilter()">Clear Active Filter (${esc(S.activeTraceId)})</button>` : ''}
       </div>
     `;
 
@@ -23446,37 +23595,61 @@ const TRACE_EXPLORER = (function() {
     filtered.forEach(t => {
       const isActive = S.activeTraceId === t.id;
       const slaBadge = t.slaBreaches > 0
-        ? `<span class="badge b-red">${t.slaBreaches} SLA</span>`
-        : `<span class="badge b-green">Healthy</span>`;
+        ? `<span class="badge b-red">⚠ ${t.slaBreaches} SLA</span>`
+        : `<span class="badge b-green">✔ Healthy</span>`;
       
-      const threadChips = t.threads.map(th => `<span class="trace-thread-chip">${esc(th)}</span>`).join('');
+      const threadChips = t.threads.map(th => {
+        const tCol = typeof TR !== 'undefined' ? TR.getThreadColor(th) : { col: 'var(--t2)', bg: 'var(--bg-1)', bdr: 'var(--bdr)' };
+        return `<span class="trace-thread-chip" style="color:${tCol.col}; background:${tCol.bg}; border-color:${tCol.bdr};">${esc(th)}</span>`;
+      }).join('');
+
+      const slowestName = t.slowestNode ? (t.slowestNode.elementName || t.slowestNode.ruleName || '') : '';
+      const slowestDur = t.slowestNode && t.slowestNode.duration != null ? fmtMs(t.slowestNode.duration) : '';
+      const slowestHtml = slowestName ? `<div class="trace-slowest-hint" title="Slowest operation: ${esc(slowestName)} (${esc(slowestDur)})">↳ ${esc(slowestName)} <span style="opacity:0.75;">(${esc(slowestDur)})</span></div>` : '';
+
+      const barPct = Math.max(4, Math.min(100, Math.round((t.duration / (maxDuration || 1)) * 100)));
+      const barColor = t.slaBreaches > 0 ? 'var(--red)' : 'var(--blue)';
       
       rowsHtml += `
         <div class="trace-row-item ${isActive ? 'active-trace' : ''}" onclick="TRACE_EXPLORER.selectTrace('${esc(t.id)}')">
-          <div class="trace-id-col" title="${esc(t.id)}">${esc(t.id)}</div>
-          <div class="trace-count-col">${t.count} events</div>
+          <div class="trace-id-col" title="${esc(t.id)}">
+            <div style="font-weight:700; color:var(--t1); overflow:hidden; text-overflow:ellipsis;">${esc(t.id)}</div>
+            ${slowestHtml}
+          </div>
+          <div class="trace-count-col">${t.count} spans</div>
           <div class="trace-threads-col">${threadChips}</div>
-          <div class="trace-duration-col">${fmtMs(t.duration)}</div>
+          <div class="trace-duration-col">
+            <div class="trace-dur-wrap">
+              <span class="trace-dur-text">${fmtMs(t.duration)}</span>
+              <div class="trace-bar-bg" title="${fmtMs(t.duration)} of ${fmtMs(maxDuration)} max">
+                <div class="trace-bar-fill" style="width:${barPct}%; background:${barColor};"></div>
+              </div>
+            </div>
+          </div>
           <div class="trace-sla-col">${slaBadge}</div>
           <div class="trace-act-col">
-            <button class="btn btn-xs ${isActive ? 'btn-bl' : ''}">${isActive ? 'Active' : 'Filter'}</button>
+            <div class="trace-actions-group">
+              <button class="btn btn-xs btn-g" title="View Trace in Timeline" onclick="event.stopPropagation(); TRACE_EXPLORER.viewIn('gantt', '${esc(t.id)}')">Timeline</button>
+              <button class="btn btn-xs btn-g" title="View Trace in Tree" onclick="event.stopPropagation(); TRACE_EXPLORER.viewIn('tree', '${esc(t.id)}')">Tree</button>
+              <button class="btn btn-xs ${isActive ? 'btn-bl' : 'btn-p'}" title="Filter application to Trace #${esc(t.id)}">${isActive ? 'Active' : 'Filter'}</button>
+            </div>
           </div>
         </div>
       `;
     });
 
     const tableHtml = `
-      <div class="trace-table-card" style="margin-top:16px;">
+      <div class="trace-table-card" style="margin-top:14px;">
         <div class="trace-table-hdr">
-          <div>Trace ID</div>
-          <div>Events</div>
-          <div>Threads</div>
-          <div>Duration</div>
-          <div>SLA Status</div>
-          <div style="text-align:right;">Actions</div>
+          <div class="sortable" onclick="TRACE_EXPLORER.setSort('id')">Trace ID${sortIcon('id')}</div>
+          <div class="sortable" onclick="TRACE_EXPLORER.setSort('count')">Spans${sortIcon('count')}</div>
+          <div class="sortable" onclick="TRACE_EXPLORER.setSort('threads')">Threads${sortIcon('threads')}</div>
+          <div class="sortable" onclick="TRACE_EXPLORER.setSort('duration')">Duration${sortIcon('duration')}</div>
+          <div class="sortable" onclick="TRACE_EXPLORER.setSort('sla')">SLA Status${sortIcon('sla')}</div>
+          <div style="justify-content:flex-end;">Actions</div>
         </div>
         <div class="trace-rows-list">
-          ${rowsHtml || '<div style="padding:24px; text-align:center; color:var(--t4);">No matches found</div>'}
+          ${rowsHtml || '<div style="padding:28px; text-align:center; color:var(--t4);">No matching traces found</div>'}
         </div>
       </div>
     `;
@@ -23519,7 +23692,7 @@ const TRACE_EXPLORER = (function() {
     if (_container) render(_container);
   }
 
-  return { render, selectTrace, clearFilter, scanTraces };
+  return { render, selectTrace, clearFilter, scanTraces, setSort, setStatusFilter, viewIn };
 })();
 
 // Update BCB after parse completes

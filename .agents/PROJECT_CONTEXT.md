@@ -3,6 +3,31 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Enhanced Distributed Trace Explorer (v6.9.135 — COMPLETED)**:
+  - **4 KPI Telemetry Cards**:
+    - `Total Traces`: displays unique correlation trace count; click toggles view back to all traces.
+    - `Traced Events`: total event/span count across all indexed correlation traces.
+    - `P95 Latency`: calculated 95th percentile duration across all traces, with dynamic `(Max: X.XXms)` subtitle.
+    - `SLA Breaches`: count of traces containing SLA threshold violations with breach rate percentage `(N.N%)`; click filters list directly to SLA-violating traces.
+  - **Interactive Quick Filter Chips**:
+    - Added one-click filter chips (`.trace-chip`): `All (N)`, `⚠ SLA Breaches (N)`, `⑂ Multi-Thread (N)`, `✔ Healthy (N)` with active amber outline and background color-mix highlighting.
+  - **Interactive Column Header Sorting**:
+    - Columns: `Trace ID`, `Spans`, `Threads`, `Duration`, `SLA Status`.
+    - Clicking any header toggles sort between ascending and descending with directional indicators (`▴` / `▾`).
+    - Default sort is `Duration desc` (slowest traces first), matching standard engineering triage workflows.
+  - **Latency Distribution Bars & Slowest Operation Callouts**:
+    - Trace ID column features a distinct subtitle callout identifying the slowest individual operation within the trace: `↳ <elementName> (<duration>)`.
+    - Duration column features a proportional horizontal bar (`.trace-bar-bg` + `.trace-bar-fill`) scaled against maximum trace duration, color-coded red for SLA breaches and blue/cyan for healthy traces.
+    - Thread chips (`.trace-thread-chip`) styled using dynamic thread color palette (`TR.getThreadColor(th)`).
+  - **Direct View Jump Actions**:
+    - Action group includes dedicated `Timeline` and `Tree` buttons per row.
+    - Clicking `Timeline` sets active trace filter and switches immediately to Timeline (`gantt`) view.
+    - Clicking `Tree` sets active trace filter and switches immediately to Execution Tree (`tree`) view.
+    - Clicking `Filter` sets trace filter in-place and inspects slowest operation in Event Inspector.
+  - **Automated Regression Verification**:
+    - Added `test_trace_explorer_sorting_chips_and_view_jumping` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Total regression suite increased to 100 tests with 100% pass rate (`100 passed in 95.10s`).
+
 - **Timeline & Split View Full Scroll Width Row Background Coverage (v6.9.134 — COMPLETED)**:
   - **Root Cause & Layout Mechanics**:
     - Discovered that `.g-row` previously lacked an explicit width rule matching the track contents, defaulting to the viewport's client width (`.g-rows.clientWidth`) inside the block formatting context.

@@ -134,7 +134,7 @@ async def test_event_inspector_auto_close_conditions(page_with_data):
     assert_no_critical_errors(page)
 @pytest.mark.asyncio
 async def test_trace_explorer_navigation_metrics_and_search(blank_page):
-    """Alt+7 navigates to Trace view, renders 3 metric cards and 2 trace rows, and filters via search."""
+    """Alt+7 navigates to Trace view, renders 4 metric cards and 2 trace rows, and filters via search."""
     page = blank_page
     await page.evaluate(INJECT_TRACE_JS, TRACE_TREES)
     await page.keyboard.press('Alt+7')
@@ -142,11 +142,14 @@ async def test_trace_explorer_navigation_metrics_and_search(blank_page):
     active = page.locator('.vt.active')
     await expect(active).to_have_attribute('data-v', 'trace')
 
-    # Metric cards
-    assert await page.locator('.trace-metric-card').count() == 3
+    # Metric cards: Total Traces, Traced Events, P95 Latency, SLA Breaches
+    assert await page.locator('.trace-metric-card').count() == 4
 
     # Row items
     assert await page.locator('.trace-row-item').count() == 2
+
+    # Latency bars and slowest hint
+    assert await page.locator('.trace-bar-fill').count() >= 1
 
     # Search filter
     search_input = page.locator('#trace-search-input')
@@ -157,6 +160,43 @@ async def test_trace_explorer_navigation_metrics_and_search(blank_page):
     assert await page.locator('.trace-row-item').count() == 2
 
     assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_trace_explorer_sorting_chips_and_view_jumping(blank_page):
+    """Trace view supports quick filter chips, column header sorting, and direct Timeline/Tree view jumps."""
+    page = blank_page
+    await page.evaluate(INJECT_TRACE_JS, TRACE_TREES)
+    await page.keyboard.press('Alt+7')
+
+    # Quick filter chips
+    chips = page.locator('.trace-chip')
+    assert await chips.count() == 4
+
+    # Click SLA breaches chip
+    sla_chip = page.locator('.trace-chip:has-text("SLA Breaches")')
+    await sla_chip.click()
+    assert await page.locator('.trace-row-item').count() == 1
+    assert 'TX-998877' in await page.locator('.trace-row-item').first.text_content()
+
+    # Click All chip to restore
+    all_chip = page.locator('.trace-chip:has-text("All")')
+    await all_chip.click()
+    assert await page.locator('.trace-row-item').count() == 2
+
+    # Column sort toggling
+    duration_hdr = page.locator('.trace-table-hdr > div.sortable:has-text("Duration")')
+    await duration_hdr.click()
+    
+    # Test Timeline jump button
+    timeline_btn = page.locator('.trace-row-item:has-text("TX-998877") button:has-text("Timeline")')
+    await timeline_btn.click()
+    
+    active_view = page.locator('.vt.active')
+    await expect(active_view).to_have_attribute('data-v', 'gantt')
+    assert await page.evaluate("S.activeTraceId") == 'TX-998877'
+
+    assert_no_critical_errors(page)
+
 @pytest.mark.asyncio
 async def test_trace_explorer_selection_inspector_and_clear(blank_page):
     """Selecting a trace row marks it active, auto-opens Event Inspector with slowest event, and clears cleanly."""
