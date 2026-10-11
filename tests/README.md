@@ -131,11 +131,11 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
-| Demo Showcase All Features | test_20_demo_showcase | 7 |
+| Demo Showcase All Features | test_20_demo_showcase | 8 |
 | Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
 | 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
 | Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
-| **Total** | | **127** |
+| **Total** | | **128** |
 
 ---
 

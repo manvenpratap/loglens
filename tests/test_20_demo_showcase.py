@@ -256,3 +256,58 @@ async def test_graphify_offline_fallback(blank_page):
     # Assert no critical runtime or console errors occurred
     assert_no_critical_errors(page)
 
+
+@pytest.mark.asyncio
+async def test_demo_execution_tree_all_threads_visibility(blank_page):
+    """Demo execution tree displays all threads by default (>16 root nodes, >40 total spans) instead of being cut off to 3-4 lines."""
+    page = blank_page
+    demo_btn = page.locator('#ob-btn-demo')
+    await expect(demo_btn).to_be_visible(timeout=5000)
+    await demo_btn.click()
+    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
+
+    # 1. Active thread defaults to 'all' when multi-thread log loads
+    active_thr = await page.evaluate("() => S.activeThr")
+    assert active_thr == 'all', f"Expected S.activeThr to default to 'all', got {active_thr}"
+
+    # 2. Stats bar s-nodes reports total nodes across all threads (>40)
+    nodes_text = await page.locator('#s-nodes').inner_text()
+    total_nodes = int(nodes_text.strip())
+    assert total_nodes >= 40, f"Expected total nodes in stats bar to be >= 40, got {total_nodes}"
+
+    # 3. Active label on thread switcher shows 'All Threads'
+    active_label = await page.locator('#vt-active-label').inner_text()
+    assert "All Threads" in active_label
+
+    # 4. Switch to tree view
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(300)
+
+    # 5. Tree badge count indicates all root nodes
+    tree_badge = (await page.locator('#tree-badge-count').inner_text()).lower()
+    assert "root node" in tree_badge
+    assert "all threads" in tree_badge
+
+    # Visible roots in tree is substantial (>=16 root nodes)
+    visible_roots = await page.evaluate("() => SELECTORS.getActiveTree().length")
+    assert visible_roots >= 16, f"Expected at least 16 root nodes in all threads view, got {visible_roots}"
+
+    # 6. Switching to worker-1 updates tree to worker-1 with enriched checkout steps
+    await page.evaluate("() => UI.sw('worker-1')")
+    await page.wait_for_timeout(200)
+    w1_label = await page.locator('#vt-active-label').inner_text()
+    assert w1_label == 'worker-1'
+
+    w1_nodes = await page.evaluate("() => SELECTORS.getActiveTree().length")
+    assert w1_nodes == 1  # 1 root node (ProcessOrder/42)
+    w1_total = await page.locator('#s-nodes').inner_text()
+    assert int(w1_total) >= 7, f"worker-1 should have complete checkout steps (>=7 nodes), got {w1_total}"
+
+    # 7. Switching back to all restores full aggregation
+    await page.evaluate("() => UI.sw('all')")
+    await page.wait_for_timeout(200)
+    restored_nodes = await page.locator('#s-nodes').inner_text()
+    assert int(restored_nodes) == total_nodes
+
+    assert_no_critical_errors(page)
+

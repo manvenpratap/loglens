@@ -3,6 +3,24 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **All Threads Execution Tree Aggregation & Multi-Thread Scoping (v6.9.107 — COMPLETED)**:
+  - **Root Cause Resolved**:
+    - Previously, when loading multi-thread logs (including `demo-springboot.log` with 16 threads and 108 lines), LogLens defaulted `S.activeThr` strictly to `threads[0]` (`worker-1`), which contained only 4 nodes. Split View, Gantt Waterfall, and Execution Tree only rendered the active thread's slice, concealing 95% of parsed events across the other 15 threads. Furthermore, the global stats strip incorrectly reported `Nodes` as only `cnt(trees[threads[0]])` (4 nodes) despite 108 lines being parsed at 100% coverage.
+  - **Universal All Threads Scope (`S.activeThr === 'all'`)**:
+    - Upgraded `SELECTORS.getActiveTree()` to aggregate all thread root nodes chronologically across all threads (`Object.values(S.trees).flat().sort(...)`) when `S.activeThr === 'all'` or unset.
+    - Updated `UI.render` to default `S.activeThr` to `'all'` whenever a multi-thread log (`threads.length > 1`) is loaded, ensuring the full distributed execution tree and waterfall timeline are immediately visible on initial load.
+    - Added an `All Threads (<count>)` option to `#vt-chips-menu` and synced `#vt-active-label` to display `All Threads`.
+  - **Global & Scoped Node Metrics**:
+    - Fixed top stats strip `#s-nodes` to calculate `totalNodes` across all threads (`Object.values(trees).reduce((sum, t) => sum + cnt(t), 0)`), accurately reflecting total parsed nodes (50+ spans) instead of single-thread counts.
+    - Updated `UI.sw(tid)` to dynamically update `#s-nodes` to the single thread's count when isolating an individual thread, or restore `totalNodes` when switching back to `All Threads`.
+  - **Toolbars & Tree Visual Context**:
+    - Execution Tree toolbar (`#tree-badge-count`) and Waterfall toolbar now display active thread context (e.g. `18 root nodes · All Threads` or `1 root node · worker-1`).
+    - Tree rows (`TR.renderRow`) now include subtle thread badges (`[worker-1]`, `[worker-2]`, etc.) when viewing multiple threads, making cross-service execution clear at a glance.
+    - Keyboard navigation (`[` and `]`) now smoothly cycles through `All Threads` and each individual thread.
+  - **Enriched Demo Log Checkout Steps**:
+    - Added the outgoing payment RPC request/response, inventory reservation RPC request/response, and confirmed order database save into `worker-1` during checkout. Now `worker-1` provides a complete, realistic 7-step checkout transaction even when isolated to a single thread.
+  - **Full Regression Test Suite Passed**: Authored `test_demo_execution_tree_all_threads_visibility` in `tests/test_20_demo_showcase.py` (8 tests). Full regression suite passing with **128 passed / 128 total** tests (0 failures).
+
 - **Multi-Capture Group Combining & Unified Log Element Mapping (v6.9.106 — COMPLETED)**:
   - **Interactive Regex Builder Group Combiner (`#rg-combine-bar`)**:
     - Users can select multiple tokens/patterns (e.g. Date, Pipe `|`, Time) in `#rg-tracks-container` or text selection, and combine them into a single capture group with a single click (`#btn-rg-combine-all` or `#btn-rg-combine`).
