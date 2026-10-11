@@ -981,3 +981,63 @@ async def test_advanced_swimlane_studio_telemetry_stacking_and_controls(page_wit
     }""")
     assert_no_critical_errors(page)
 
+
+@pytest.mark.asyncio
+async def test_timeline_row_background_full_scroll_width(page_with_data):
+    """
+    Verify that on Timeline and Split views, row backgrounds and borders
+    span the full scrollable width when scrolled horizontally, preventing
+    uncolored/gray clipping on the right.
+    """
+    page = page_with_data
+
+    # 1. Switch to Timeline (Gantt) view
+    await page.evaluate("() => { if (typeof UI !== 'undefined') UI.svm('gantt'); }")
+    await page.wait_for_selector('.g-rows', timeout=5000)
+
+    # 2. Test horizontal scroll at zoom 1.0 and 2.0
+    for zoom in [1.0, 2.0]:
+        await page.evaluate(f"() => {{ S.ganttZoom = {zoom}; document.documentElement.style.setProperty('--g-zoom', {zoom}); }}")
+        await page.wait_for_timeout(100)
+
+        # Scroll fully to the right
+        await page.evaluate("() => { const r = document.querySelector('.g-rows'); if (r) r.scrollLeft = r.scrollWidth; }")
+        await page.wait_for_timeout(100)
+
+        check = await page.evaluate("""() => {
+            const rowsCont = document.querySelector('.g-rows');
+            const rows = Array.from(document.querySelectorAll('.g-row'));
+            if (!rowsCont || rows.length === 0) return { ok: false };
+            const cRect = rowsCont.getBoundingClientRect();
+            
+            // Check first 5 rows
+            const sample = rows.slice(0, 5);
+            for (const r of sample) {
+                const rRect = r.getBoundingClientRect();
+                const diff = cRect.right - rRect.right;
+                if (diff > 3) return { ok: false, reason: 'Row right edge cut off: diff=' + diff };
+            }
+            return { ok: true, scrollLeft: rowsCont.scrollLeft, scrollWidth: rowsCont.scrollWidth };
+        }""")
+        assert check['ok'] is True, f"Timeline row should span full width at zoom {zoom}: {check}"
+
+    # 3. Test in Split view
+    await page.evaluate("() => { if (typeof UI !== 'undefined') UI.svm('split'); }")
+    await page.wait_for_selector('.res-split .g-rows', timeout=5000)
+    await page.evaluate("() => { const r = document.querySelector('.res-split .g-rows'); if (r) r.scrollLeft = r.scrollWidth; }")
+    await page.wait_for_timeout(100)
+
+    split_check = await page.evaluate("""() => {
+        const rowsCont = document.querySelector('.res-split .g-rows');
+        const row = rowsCont ? rowsCont.querySelector('.g-row') : null;
+        if (!rowsCont || !row) return { ok: false };
+        const cRect = rowsCont.getBoundingClientRect();
+        const rRect = row.getBoundingClientRect();
+        const diff = cRect.right - rRect.right;
+        return { ok: diff <= 5, diff };
+    }""")
+    assert split_check['ok'] is True, f"Split view row should span full track width: {split_check}"
+
+    assert_no_critical_errors(page)
+
+

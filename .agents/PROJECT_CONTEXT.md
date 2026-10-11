@@ -3,6 +3,21 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Timeline & Split View Full Scroll Width Row Background Coverage (v6.9.134 — COMPLETED)**:
+  - **Root Cause & Layout Mechanics**:
+    - Discovered that `.g-row` previously lacked an explicit width rule matching the track contents, defaulting to the viewport's client width (`.g-rows.clientWidth`) inside the block formatting context.
+    - Inside `.g-row`, `.g-lbl` is sticky (`var(--gantt-lbl-w, 250px)`) and `.g-trk` had `width: calc(100% * var(--g-zoom, 1))`. When zoomed or with wide tracks, `.g-lbl + .g-trk` overflowed `.g-row` horizontally.
+    - Because `.g-row` ended at `clientWidth` and `.g-trk` had `background: transparent !important;`, scrolling horizontally revealed unstyled base container background (`var(--bg-0)`), making the right part of rows lose their thread color (as seen in light/ivory themes).
+  - **Comprehensive CSS Grid/Flex Width Sizing**:
+    - Sized `.g-row` to `width: calc(var(--gantt-lbl-w, 250px) + (100% * var(--g-zoom, 1))) !important; min-width: 100% !important; box-sizing: border-box !important;`.
+    - Updated `.g-trk` to `flex: 1 1 0; width: auto; min-width: 0;`, perfectly occupying the remaining width of the row at all zoom levels without double-compounding or overflowing.
+    - In Split View, sized `.res-split .g-row` to `width: calc(var(--gantt-lbl-w, 170px) + max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px)) !important;` and `.res-split .g-trk` to `min-width: max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px) !important; width: auto !important;`.
+    - Maintained `.g-hdr` as the scrollable header element synchronized in 1-to-1 lockstep with `.g-rows.scrollLeft`.
+    - Row backgrounds (`var(--thr-bg)`), bottom borders (`border-bottom: 1px solid var(--bdr-d)`), and hover/selection highlights now seamlessly span 100% of the scrollable track across all zoom levels (1x, 2x, 4x, 8x).
+  - **Automated Regression Verification**:
+    - Added `test_timeline_row_background_full_scroll_width` in `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - All 99/99 regression tests passing (100% pass rate).
+
 - **Split View Simultaneous Sideways Timeline Advancement (v6.9.133 — COMPLETED)**:
   - **Simultaneous Sideways Timeline Camera Tracking**:
     - Enhanced `UI._setupSplitSync` so that as the user traverses down the tree vertically (either scrolling in Tree or Waterfall), the timeline simultaneously glides sideways horizontally (`syncSidewaysTimeline`), following the waterfall cascade down the mountain.

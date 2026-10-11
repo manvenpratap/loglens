@@ -837,10 +837,15 @@ html,body{
 }
 
 /* Split View Timeline Simultaneous Sideways Advancement Track */
+.res-split .g-row {
+  width: calc(var(--gantt-lbl-w, 170px) + max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px)) !important;
+}
 .res-split .g-trk,
 .res-split .g-ch:last-child {
-  min-width: max(calc(100% - 170px), 1100px) !important;
+  min-width: max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px) !important;
+  width: auto !important;
 }
+
 
 
 @container pane (max-width: 860px) {
@@ -1326,7 +1331,7 @@ select.inp{cursor:pointer}
 }
 .g-ch:first-child{
   border-right:1px solid var(--bdr);
-  flex:0 0 250px;width:250px;
+  flex:0 0 var(--gantt-lbl-w, 250px);width:var(--gantt-lbl-w, 250px);
   position:sticky;left:0;z-index:3;background:var(--bg-1);
 }
 .g-ch:last-child{flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);}
@@ -1358,6 +1363,7 @@ select.inp{cursor:pointer}
   height:32px !important;min-height:32px !important;max-height:32px !important;
   background:var(--thr-bg, var(--bg-0)) !important;
   transition:background .12s ease, border-left-color .15s ease !important;
+  width:calc(var(--gantt-lbl-w, 250px) + (100% * var(--g-zoom, 1))) !important;
   min-width:100% !important;box-sizing:border-box !important;
   position:relative !important;
 }
@@ -1388,7 +1394,7 @@ select.inp{cursor:pointer}
 .g-lbl{
   padding:4px 9px;border-right:1px solid var(--bdr-d);
   display:flex;align-items:center;gap:5px;overflow:hidden;
-  flex:0 0 250px;width:250px;height:100%;box-sizing:border-box;
+  flex:0 0 var(--gantt-lbl-w, 250px);width:var(--gantt-lbl-w, 250px);height:100%;box-sizing:border-box;
   position:sticky;left:0;z-index:2;
   background:var(--thr-bg, var(--bg-0)) !important;
   transition:background .12s ease !important;
@@ -1409,7 +1415,7 @@ select.inp{cursor:pointer}
 }
 .g-li{font-size: 12px;flex-shrink:0}
 .g-lt{font-size: 12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.g-trk{position:relative;background:transparent !important;flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);height:100%;}
+.g-trk{position:relative;background:transparent !important;flex:1 1 0;width:auto;min-width:0;height:100%;}
 .g-gl{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);pointer-events:none;opacity:.6}
 .g-bar{
   position:absolute;top:5px;bottom:5px;
