@@ -264,6 +264,27 @@ async def test_timeline_nav_mounting_chips_and_presets(page_with_data):
     await expect(page.locator('.tl-zoom-preset:has-text("Fit")')).to_be_visible(timeout=3000)
 
     assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_timeline_nav_only_enabled_in_timeline_view(page_with_data):
+    """Timeline navigator must only be enabled in dedicated timeline (gantt) view and absent in split view."""
+    page = page_with_data
+    # 1. Split view must not mount navigator
+    await page.evaluate("() => UI.svm('split')")
+    await page.wait_for_timeout(300)
+    assert await page.locator('.tl-nav-wrap').count() == 0, "Navigator should not exist in split view"
+
+    # 2. Timeline view must mount navigator
+    await page.evaluate("() => UI.svm('gantt')")
+    await page.wait_for_timeout(300)
+    await expect(page.locator('.tl-nav-wrap')).to_be_visible(timeout=3000)
+
+    # 3. Switching back to split view must cleanly remove navigator
+    await page.evaluate("() => UI.svm('split')")
+    await page.wait_for_timeout(300)
+    assert await page.locator('.tl-nav-wrap').count() == 0, "Navigator should be cleaned up when leaving timeline view"
+
+    assert_no_critical_errors(page)
 @pytest.mark.asyncio
 async def test_timeline_nav_focus_mode_integration(page_with_data):
     """Timeline navigator is cleanly hidden when focus mode is active."""

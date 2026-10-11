@@ -3,6 +3,20 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Timeline Navigator Dedicated View Isolation (v6.9.124 — COMPLETED)**:
+  - **Timeline-Exclusive Navigator (`TIMELINE_NAV`)**:
+    - Restricted Timeline Navigator mini-map mounting strictly to dedicated Timeline View (`S.viewMode === 'gantt'`).
+    - Guarded `TIMELINE_NAV.mount(containerEl, scrollEl)` with `if (S.viewMode !== 'gantt') return;`.
+    - Updated `GR.render` and `SWIMLANE.render` to mount the navigator only when `S.viewMode === 'gantt'`, explicitly stripping any stale `.tl-nav-wrap` when rendering in Split view.
+    - Added comprehensive cleanup in `UI.cleanupCurrentView()` to remove `.tl-nav-wrap` whenever navigating between views.
+    - Added CSS constraint `.res-split .tl-nav-wrap { display: none !important; }` to guarantee no visual bleed-through.
+  - **Perfect Split View Vertical Balance**:
+    - With the navigator removed from Waterfall in Split view, both `.g-rows` and `#tree-vscroll` have identical 100% available container heights (`clientHeight = 656px`), identical scroll limits, and identical row boundaries from row 0 to the very last row.
+  - **Full Regression Verification & Zero Antipatterns**:
+    - Added `test_timeline_nav_only_enabled_in_timeline_view` in `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Suite total expanded to 92 tests with 100% pass rate.
+    - Impeccable design detector verified 0 findings (`[]`).
+
 - **Split View Synchronized Auto-Alignment, Auto-Scroll & Responsive Column Adaptation (v6.9.123 — COMPLETED)**:
   - **Pixel-Perfect Vertical Auto-Alignment Across Splitter**:
     - Aligned header offsets: `.g-toolbar` (38px) + `.g-hdr` (28px) exactly matches `.tree-toolbar` (38px) + `.tree-hdr` (28px), ensuring rows on both sides start at the exact same Y coordinate (185px).

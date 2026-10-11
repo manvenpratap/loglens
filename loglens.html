@@ -906,6 +906,11 @@ html,body{
 .tree-row.split-row-hover {
   background: color-mix(in srgb, var(--amber) 9%, var(--bg-1)) !important;
 }
+
+/* Ensure Timeline Navigator is strictly disabled in Split View */
+.res-split .tl-nav-wrap {
+  display: none !important;
+}
 .sp-hdl-btn {
   position: absolute;
   left: 50%;
@@ -13106,6 +13111,7 @@ const UI={
     if (typeof LANDSCAPE3D !== 'undefined' && LANDSCAPE3D.destroy) {
       LANDSCAPE3D.destroy();
     }
+    document.querySelectorAll('.tl-nav-wrap').forEach(el => el.remove());
   },
 
   svm(vm){
@@ -23558,12 +23564,17 @@ GR.render = function(tree, el) {
     });
   }
 
-  // ── Mount Timeline Navigator mini-map below Gantt
+  // ── Mount Timeline Navigator mini-map below Gantt (Timeline view only)
   if (typeof TIMELINE_NAV !== 'undefined') {
     const gw = el.querySelector('.gw');
     const rows = el.querySelector('.g-rows');
     if (gw && rows) {
-      TIMELINE_NAV.mount(gw, rows);
+      if (S.viewMode === 'gantt') {
+        TIMELINE_NAV.mount(gw, rows);
+      } else {
+        const old = gw.querySelector('.tl-nav-wrap');
+        if (old) old.remove();
+      }
     }
   }
 };
@@ -25060,12 +25071,17 @@ SWIMLANE.init = function(el) {
     });
   }
 
-  // ── Mount Timeline Navigator mini-map below Swimlane
+  // ── Mount Timeline Navigator mini-map below Swimlane (Timeline view only)
   if (typeof TIMELINE_NAV !== 'undefined') {
     const gw = el.querySelector('.gw');
     const swimRows = el.querySelector('#swim-lanes-rows');
     if (gw && swimRows) {
-      TIMELINE_NAV.mount(gw, swimRows);
+      if (S.viewMode === 'gantt') {
+        TIMELINE_NAV.mount(gw, swimRows);
+      } else {
+        const old = gw.querySelector('.tl-nav-wrap');
+        if (old) old.remove();
+      }
     }
   }
 };
@@ -25243,6 +25259,11 @@ const TIMELINE_NAV = (() => {
     // Remove stale panel if present
     const old = containerEl.querySelector('.tl-nav-wrap');
     if (old) old.remove();
+
+    // Enable navigator ONLY in dedicated timeline (gantt) view
+    if (S.viewMode !== 'gantt') {
+      return;
+    }
 
     _attachScroll(scrollEl);
 

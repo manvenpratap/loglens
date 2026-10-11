@@ -120,7 +120,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Waterfall View Scrolling & Header Sync | test_24_waterfall_scrolling | 5 |
 | Execution Tree Telemetry, Controls & Column Resizing | test_25_execution_tree_telemetry | 5 |
 | Stat Cards Scope Exclusivity & Graph Navigation Persistence | test_consolidated_navigation_and_shell | 4 |
-| **Total** | | **91** |
+| Timeline Navigator View Isolation & Gantt Exclusivity | test_consolidated_visualizations_and_telemetry | 1 |
+| **Total** | | **92** |
 
 ---
 
