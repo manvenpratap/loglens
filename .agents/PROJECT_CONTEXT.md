@@ -2,6 +2,28 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Execution Tree Multi-Row Selection & Seamless Rule Generation (v6.9.137 — COMPLETED)**:
+  - **Intuitive Multi-Row Range Selection**:
+    - Enhanced `TR` with full multi-selection state (`_selectedIndices = new Set()`, `_lastSelectedIdx = null`).
+    - Supports native pointer modifiers: single click selects one row, `Shift`+click selects a continuous range, and `Ctrl`/`Cmd`+click toggles individual rows.
+    - Updated `OVERDRIVE` click wrapper to preserve `TR.selectRow(idx, e)` and double-click annotation while maintaining Event Inspector reactivity.
+    - Added high-visibility `.tree-row-selected` visual styling with accent left border and theme-calibrated selection tint in both Dark and Ivory themes.
+  - **Floating Action Pill (`#tree-selection-bar`)**:
+    - Rendered an anchored floating action bar (`#tree-selection-bar`) above the bottom edge of the tree viewport.
+    - Displays dynamic selection count (`📌 N rows selected`), prominent `➕ Create Rule` primary action button, and `✕` dismiss button.
+    - Automatically updates or dismisses as rows are selected, deselected, or when `Escape` key is pressed.
+  - **Right-Click Context Menu Integration (`CTX`)**:
+    - Enhanced context menu (`CTX.show`) with dynamic rule creation item: `➕ Create Rule for Selected (N rows)` when multiple rows are selected, or `➕ Create Rule for Row`.
+    - Clicking creates and populates the rule immediately from the selection.
+  - **Smart Rule Pre-Population (`TR.createRuleForSelected`)**:
+    - Automatically extracts raw log lines (`rawLine`) or formatted sample payloads from the selected node(s).
+    - Populates the primary sample line into `#e-tl` and triggers live parsing/regex building.
+    - Intelligently generates rule names (`nodes[0].elementName` or `Selected Events Rule`).
+    - If multiple distinct operations are selected, seeds keyword chips into `S.wizKw` for multi-pattern recognition.
+  - **Automated Regression Verification**:
+    - Added `test_tree_view_multiselection_and_rule_creation` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite now passes 102/102 tests (100% pass rate).
+
 - **Automatic Pipe-Delimited Log Splitting for Rule Creator (v6.9.136 — COMPLETED)**:
   - **Dynamic Multi-Column Pipe-Delimited Auto-Split**:
     - Added `WIZ.buildPipeSplit(line, kws)` to dynamically inspect sample log lines containing pipe characters (`|`) and automatically generate regex patterns (`^([^|]+)\|([^|]+)\|...`) without requiring manual token marking.

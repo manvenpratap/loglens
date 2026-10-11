@@ -1081,3 +1081,72 @@ async def test_timeline_row_background_full_scroll_width(page_with_data):
     assert_no_critical_errors(page)
 
 
+@pytest.mark.asyncio
+async def test_tree_view_multiselection_and_rule_creation(page_with_data):
+    """Tree view supports multi-row selection (Shift/Ctrl), floating action pill, context menu rule creation, and modal population."""
+    page = page_with_data
+
+    # 1. Switch to Tree view
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_selector('.tree-row', timeout=5000)
+
+    rows = page.locator('.tree-row')
+    row_count = await rows.count()
+    assert row_count >= 5, f"Expected at least 5 tree rows, got {row_count}"
+
+    # 2. Single click on row 1 (the first child span)
+    await rows.nth(1).click()
+    await page.wait_for_timeout(150)
+
+    selected_count = await page.evaluate("() => TR._selectedIndices.size")
+    assert selected_count == 1, f"Expected 1 selected, got {selected_count}"
+
+    sel_bar = page.locator('#tree-selection-bar')
+    await expect(sel_bar).to_be_visible()
+    bar_text = await sel_bar.text_content()
+    assert "1 row selected" in bar_text
+
+    # 3. Shift+click on row 4 to select a range
+    await page.keyboard.down('Shift')
+    await rows.nth(4).click()
+    await page.keyboard.up('Shift')
+    await page.wait_for_timeout(150)
+
+    multi_count = await page.evaluate("() => TR._selectedIndices.size")
+    assert multi_count == 4, f"Expected 4 selected rows, got {multi_count}"
+    bar_text_multi = await sel_bar.text_content()
+    assert "4 rows selected" in bar_text_multi
+
+    # 4. Right-click row 3 to check context menu
+    await rows.nth(3).click(button='right')
+    ctx_menu = page.locator('#ctx-menu')
+    await expect(ctx_menu).to_be_visible()
+    ctx_text = await ctx_menu.text_content()
+    assert "Create Rule for Selected" in ctx_text
+
+    # 5. Click Create Rule from floating pill
+    await page.click('#btn-tree-create-rule')
+    modal = page.locator('#mm')
+    await expect(modal).to_be_visible()
+
+    # Verify rule builder fields are prepopulated
+    rule_name = await page.input_value('#e-name')
+    sample_line = await page.input_value('#e-tl')
+    assert len(rule_name) > 0, "Rule name should be pre-populated"
+    assert len(sample_line) > 0, "Sample line should be pre-populated"
+
+    # Close modal
+    await page.evaluate("() => UI.closeM()")
+    await expect(modal).not_to_be_visible()
+
+    # 6. Press Escape to clear selection
+    await page.keyboard.press('Escape')
+    await page.wait_for_timeout(100)
+    cleared_count = await page.evaluate("() => TR._selectedIndices.size")
+    assert cleared_count == 0, f"Expected selection to clear on Escape, got {cleared_count}"
+    await expect(sel_bar).not_to_be_visible()
+
+    assert_no_critical_errors(page)
+
+
+

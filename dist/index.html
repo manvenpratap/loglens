@@ -2556,6 +2556,45 @@ body.tree-col-resizing {
   z-index: 2;
 }
 
+.tree-row.tree-row-selected {
+  background: color-mix(in srgb, var(--blue) 20%, var(--thr-bg, var(--bg-1))) !important;
+  outline: 1px solid var(--blue) !important;
+  outline-offset: -1px;
+}
+.tree-row.tree-row-selected::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--blue);
+  z-index: 2;
+}
+[data-theme=light] .tree-row.tree-row-selected,
+[data-theme=ivory] .tree-row.tree-row-selected {
+  background: color-mix(in srgb, var(--blue) 14%, #fff) !important;
+  outline: 1px solid var(--blue) !important;
+}
+
+.tree-selection-bar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr-m);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 60;
+  font-size: 12px;
+  color: var(--t1);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
 /* Zone 1: Tree Spine & Identity (Flex Column with calibrated minimum width) */
 .tree-spine {
   display: inline-flex !important;
@@ -12311,6 +12350,8 @@ const TR={
   _maxDuration: 1,
   _colFilters: { op: '', sla: 'all', dur: '', self: '', thread: 'all', ts: '' },
   _showFilterBar: false,
+  _selectedIndices: new Set(),
+  _lastSelectedIdx: null,
   
   THREAD_PALETTE: [
     { id: 'sky',       col: 'var(--blue)',             bg: 'color-mix(in srgb, var(--blue) 12%, transparent)',             bdr: 'color-mix(in srgb, var(--blue) 35%, transparent)' },
@@ -12678,6 +12719,8 @@ const TR={
     this._rawTree = tree;
     const processedTree = this.groupTreeByThread(tree);
     this._activeTree = processedTree;
+    this._selectedIndices = new Set();
+    this._lastSelectedIdx = null;
     el.style.overflow = 'hidden';
     el.style.padding = '0';
     el.style.display = 'flex';
@@ -12817,6 +12860,7 @@ const TR={
             <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
             <div class="vscroll-content" id="tree-content" style="position:absolute; left:0; top:0; right:0; will-change:transform;"></div>
           </div>
+          <div class="tree-selection-bar" id="tree-selection-bar" style="display:none;"></div>
         </div>
       </div>
     `;
@@ -12837,8 +12881,9 @@ const TR={
     this.closePayloadPopover();
     this._container.addEventListener('scroll', () => this.drawVisible());
     this._container.addEventListener('click', (e) => {
-      if (!e.target.closest('.tree-row, button, input, .tchev, [data-a]')) {
+      if (!e.target.closest('.tree-row, button, input, .tchev, [data-a], #tree-selection-bar')) {
         if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) INSPECTOR.close();
+        this.clearSelection();
       }
     });
 
@@ -13286,9 +13331,10 @@ const TR={
     const isCrit = !!n._isCriticalPath;
     const critClass = S.criticalPathOn ? (isCrit ? ' tree-critical' : ' tree-dim') : '';
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
+    const selClass = (this._selectedIndices && this._selectedIndices.has(idx)) ? ' tree-row-selected' : '';
 
     return `
-      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" data-thread="${esc(thr)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+      <div class="tree-row${critClass}${kbFocusClass}${selClass}" data-idx="${idx}" data-thread="${esc(thr)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
         <div class="tree-spine">
           ${guideLines}
           ${chev}
@@ -13349,6 +13395,7 @@ const TR={
     }
 
     KBN._idx = idx;
+    this.selectRow(idx, e);
     this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
     row.classList.add('kb-focus');
     
@@ -13513,12 +13560,130 @@ const TR={
     pop.style.width = `${popW}px`;
   },
 
+  selectRow(idx, e) {
+    if (idx == null) return;
+    if (e && e.shiftKey && this._lastSelectedIdx != null) {
+      const start = Math.min(this._lastSelectedIdx, idx);
+      const end = Math.max(this._lastSelectedIdx, idx);
+      for (let i = start; i <= end; i++) {
+        this._selectedIndices.add(i);
+      }
+    } else if (e && (e.ctrlKey || e.metaKey)) {
+      if (this._selectedIndices.has(idx)) {
+        this._selectedIndices.delete(idx);
+      } else {
+        this._selectedIndices.add(idx);
+        this._lastSelectedIdx = idx;
+      }
+    } else {
+      this._selectedIndices.clear();
+      this._selectedIndices.add(idx);
+      this._lastSelectedIdx = idx;
+    }
+    this.updateSelectionUI();
+  },
+
+  clearSelection() {
+    this._selectedIndices.clear();
+    this._lastSelectedIdx = null;
+    this.updateSelectionUI();
+  },
+
+  getSelectedNodes() {
+    if (!this._visibleNodes || !this._visibleNodes.length) return [];
+    if (!this._selectedIndices || this._selectedIndices.size === 0) {
+      if (KBN._idx != null && this._visibleNodes[KBN._idx] && !this._visibleNodes[KBN._idx].isThreadGroup) {
+        return [this._visibleNodes[KBN._idx]];
+      }
+      return [];
+    }
+    const nodes = [];
+    const sorted = [...this._selectedIndices].sort((a, b) => a - b);
+    for (const i of sorted) {
+      const n = this._visibleNodes[i];
+      if (n && !n.isThreadGroup) nodes.push(n);
+    }
+    return nodes;
+  },
+
+  updateSelectionUI() {
+    if (this._content) {
+      this._content.querySelectorAll('.tree-row').forEach(r => {
+        const i = parseInt(r.dataset.idx, 10);
+        r.classList.toggle('tree-row-selected', this._selectedIndices.has(i));
+      });
+    }
+
+    const count = this._selectedIndices.size;
+    const bar = $('tree-selection-bar');
+    if (bar) {
+      if (count >= 1) {
+        bar.innerHTML = `
+          <span style="font-weight:600; display:flex; align-items:center; gap:4px;">
+            <span>📌</span> <span>${count} row${count > 1 ? 's' : ''} selected</span>
+          </span>
+          <button class="btn btn-xs btn-p" id="btn-tree-create-rule" onclick="TR.createRuleForSelected()" style="padding:3px 8px; font-weight:600;" title="Create new rule matching selected row(s)">➕ Create Rule</button>
+          <button class="btn btn-xs btn-d" id="btn-tree-clear-selection" onclick="TR.clearSelection()" style="padding:3px 6px;" title="Clear selection">✕</button>
+        `;
+        bar.style.display = 'flex';
+      } else {
+        bar.style.display = 'none';
+      }
+    }
+  },
+
+  createRuleForSelected() {
+    const nodes = this.getSelectedNodes();
+    if (!nodes || nodes.length === 0) {
+      toast('No row(s) selected in tree.', 'warn');
+      return;
+    }
+
+    const rawLines = nodes.map(n => n.rawLine).filter(Boolean);
+    const primaryLine = rawLines[0] || (
+      nodes[0].payload ? nodes[0].payload : `${nodes[0].timestamp ? new Date(nodes[0].timestamp).toISOString() : ''} [${nodes[0].thread || 'main'}] ${nodes[0].level || 'INFO'} ${nodes[0].elementName || nodes[0].ruleName || ''}`
+    );
+
+    const kws = [...new Set(nodes.map(n => n.elementName || n.ruleName).filter(Boolean))];
+    const defaultName = nodes.length === 1 
+      ? (nodes[0].elementName || nodes[0].ruleName || 'New Rule')
+      : (nodes[0].elementName || nodes[0].ruleName || 'Selected Events Rule');
+
+    UI.openM(null);
+    
+    const nameInput = $('e-name');
+    if (nameInput) nameInput.value = defaultName;
+
+    const sampleInput = $('e-tl');
+    if (sampleInput) {
+      sampleInput.value = primaryLine;
+      sampleInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    if (kws.length > 1) {
+      S.wizKw = kws;
+      if (typeof WIZ !== 'undefined') {
+        WIZ.renderChips();
+        WIZ.gen();
+      }
+    }
+
+    toast(`Rule creator populated for ${nodes.length} selected row${nodes.length > 1 ? 's' : ''}`, 'success');
+  },
+
   handleContextMenu(e) {
     const row = e.target.closest('.tree-row');
     if (!row) return;
     const idx = parseInt(row.dataset.idx, 10);
     const n = this._visibleNodes[idx];
     if (!n) return;
+    
+    if (!this._selectedIndices.has(idx)) {
+      this._selectedIndices.clear();
+      this._selectedIndices.add(idx);
+      this._lastSelectedIdx = idx;
+      this.updateSelectionUI();
+    }
     
     KBN._idx = idx;
     this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
@@ -15626,8 +15791,13 @@ const CTX={
   show(e,node){
     e.preventDefault();
     this._node=node;
+    const selectedCount = (typeof TR !== 'undefined' && TR._selectedIndices && TR._selectedIndices.size > 0) ? TR._selectedIndices.size : 1;
+    const isMulti = selectedCount > 1;
+    const ruleLabel = isMulti ? `➕ Create Rule for Selected (${selectedCount} rows)` : `➕ Create Rule for Row`;
     const m=$('ctx-menu');
     m.innerHTML=`
+      <div class="ctx-mi" data-ca="create-rule">${ruleLabel}</div>
+      <div class="ctx-sep"></div>
       <div class="ctx-mi" data-ca="copy-name">▤ Copy element name</div>
       <div class="ctx-mi" data-ca="copy-line">🗎 Copy raw line</div>
       <div class="ctx-sep"></div>
@@ -15639,7 +15809,7 @@ const CTX={
       <div class="ctx-sep"></div>
       <div class="ctx-mi" data-ca="jira">⚲ Create JIRA Ticket</div>
     `;
-    const mw=180,mh=220;
+    const mw=220,mh=260;
     let x=e.clientX,y=e.clientY;
     if(x+mw>window.innerWidth)x=window.innerWidth-mw-8;
     if(y+mh>window.innerHeight)y=window.innerHeight-mh-8;
@@ -15649,6 +15819,7 @@ const CTX={
   hide(){$('ctx-menu').classList.remove('vis');this._node=null;},
   act(action){
     const n=this._node;if(!n)return;
+    if(action==='create-rule'){if(typeof TR !== 'undefined') TR.createRuleForSelected();}
     if(action==='copy-name'){navigator.clipboard?.writeText(n.elementName||n.ruleName);toast('Copied element name.','success');}
     if(action==='copy-line'){navigator.clipboard?.writeText(n.rawLine||'');toast('Copied raw line.','success');}
     if(action==='pin'){PIN.toggle(n);}
@@ -20216,6 +20387,7 @@ document.addEventListener('keydown',e=>{
 
   if(e.key==='Escape'){
     UI.closeM();UI.closeAnn();$('sh-ov')?.classList.add('hidden');CTX.hide();
+    if(typeof TR !== 'undefined') TR.clearSelection();
     $('exp-menu')?.classList.remove('open');
     const ad=$('analysis-dropdown');if(ad)ad.classList.remove('open');
     return;
@@ -29284,9 +29456,13 @@ TR.handleClick = function(e) {
       if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(n);
       // OVERDRIVE detail modal bypassed to keep Event Inspector persistent and non-blocking
       // OVERDRIVE.OD.open(n);
+      this.selectRow(idx, e);
       // Also keep the kb-focus highlight
       this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
       row.classList.add('kb-focus');
+      if (e.detail === 2) {
+        UI.openAnn(n);
+      }
     }
     return; // swallow — chevron expand handled below
   }
