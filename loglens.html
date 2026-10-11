@@ -2438,7 +2438,7 @@ body.tree-col-resizing {
   border-left: 3px solid var(--thr-col, transparent) !important;
   font-family: var(--ui) !important;
   font-size: 12px !important;
-  background: var(--bg-0) !important;
+  background: var(--thr-bg, transparent), var(--bg-0) !important;
   transition: background 0.12s ease, border-left-color 0.15s ease !important;
   cursor: pointer !important;
   user-select: none !important;
@@ -12584,7 +12584,7 @@ const TR={
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
 
     return `
-      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px; border-left:3px solid ${tCol.col} !important;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" data-thread="${esc(n.thread || '')}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
         <div class="tree-spine">
           ${guideLines}
           ${chev}
