@@ -11635,6 +11635,8 @@ const UI={
       ? S.activeThr
       : (threads.length > 1 ? 'all' : (threads[0] || null));
     const pms = performance.now() - S.parseStart;
+    S.parseMs = pms;
+    if (stats) stats.parseMs = pms;
     const totalNodes = Object.values(trees).reduce((sum, t) => sum + cnt(t), 0);
     const at = SELECTORS.getActiveTree();
     HS.ann(at, null);
@@ -11652,20 +11654,7 @@ const UI={
     }
     $('trace-filter').style.display = hasCorr ? 'inline-block' : 'none';
 
-    const cov = stats.linesProcessed > 0 && stats.matchedLines != null
-      ? ((stats.matchedLines / stats.linesProcessed) * 100).toFixed(1) + '%'
-      : 'N/A';
-    const statsH=`<div class="stats" id="stats-bar">
-      <div class="sc"><div class="sv">${esc(fmtB(stats.fileSize))}</div><div class="sl">File Size</div></div>
-      <div class="sc"><div class="sv">${(stats.linesProcessed||0).toLocaleString()}</div><div class="sl">Lines</div></div>
-      <div class="sc"><div class="sv">${cov}</div><div class="sl">Coverage</div></div>
-      <div class="sc"><div class="sv">${threads.length}</div><div class="sl">Threads</div></div>
-      <div class="sc"><div class="sv" id="s-nodes">${totalNodes}</div><div class="sl">Nodes</div></div>
-      <div class="sc"><div class="sv" style="color:var(--red); font-weight:bold;">${S.outlierCount||0}</div><div class="sl">Outliers</div></div>
-      <div class="sc"><div class="sv">${esc(fmtMs(pms))}</div><div class="sl">Parse Time</div></div>
-    </div>`;
-
-    const r=$('res');r.innerHTML=statsH;r.scrollTop=0;
+    const r=$('res');r.innerHTML='';r.scrollTop=0;
     $('vtabs').classList.add('on');
     $('action-bar').classList.add('on');
 
@@ -11786,6 +11775,28 @@ const UI={
     this.rv();
   },
 
+  renderStatsBar() {
+    const stats = S.stats || {};
+    const threads = S.threads || [];
+    const cov = stats.linesProcessed > 0 && stats.matchedLines != null
+      ? ((stats.matchedLines / stats.linesProcessed) * 100).toFixed(1) + '%'
+      : 'N/A';
+    const isAll = S.activeThr === 'all' || !S.activeThr;
+    const totalNodes = isAll
+      ? Object.values(S.trees || {}).reduce((sum, t) => sum + cnt(t), 0)
+      : cnt(S.trees?.[S.activeThr] || []);
+    const pms = S.parseMs || stats.parseMs || 0;
+    return `<div class="stats" id="stats-bar">
+      <div class="sc"><div class="sv">${esc(fmtB(stats.fileSize || 0))}</div><div class="sl">File Size</div></div>
+      <div class="sc"><div class="sv">${(stats.linesProcessed || 0).toLocaleString()}</div><div class="sl">Lines</div></div>
+      <div class="sc"><div class="sv">${cov}</div><div class="sl">Coverage</div></div>
+      <div class="sc"><div class="sv">${threads.length}</div><div class="sl">Threads</div></div>
+      <div class="sc"><div class="sv" id="s-nodes">${totalNodes}</div><div class="sl">Nodes</div></div>
+      <div class="sc"><div class="sv" style="color:var(--red); font-weight:bold;">${S.outlierCount || 0}</div><div class="sl">Outliers</div></div>
+      <div class="sc"><div class="sv">${esc(fmtMs(pms))}</div><div class="sl">Parse Time</div></div>
+    </div>`;
+  },
+
   rv(){
     if (typeof LANDSCAPE3D !== 'undefined' && LANDSCAPE3D.destroy) {
       LANDSCAPE3D.destroy();
@@ -11803,7 +11814,7 @@ const UI={
     const r=$('res');
     r.style.overflowY = 'auto';
     r.style.padding = '14px';
-    [...r.children].filter(el=>el.id!=='stats-bar' && el.id!=='res-top-dock').forEach(el=>el.remove());
+    [...r.children].filter(el=>el.id!=='res-top-dock').forEach(el=>el.remove());
     let tree=SELECTORS.getActiveTree();HS.ann(tree,null);
     const q = (S.searchQuery || '').trim().toLowerCase();
     if(q || S.activeTraceId){
@@ -11873,6 +11884,9 @@ const UI={
       r.appendChild(d);
       TRACE_EXPLORER.render(d);
     } else if(vm==='stats'){
+      const sbWrap = document.createElement('div');
+      sbWrap.innerHTML = this.renderStatsBar();
+      r.appendChild(sbWrap.firstElementChild);
       const d=document.createElement('div');r.appendChild(d);STATS.render(tree,d);
     } else if(vm==='graph'){
       const d=document.createElement('div');r.appendChild(d);GRAPHIFY.render(S.trees,d);
@@ -12035,8 +12049,8 @@ const UI={
         hc.appendChild(el);
       }
     });
-    // Clear #res (preserve stats-bar and res-top-dock)
-    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
+    // Clear #res (preserve res-top-dock)
+    [...r.children].filter(el => el.id !== 'res-top-dock').forEach(el => el.remove());
     r.style.overflowY = 'auto';
     r.style.padding = '0';
     // Append the requested panel from the hidden container to #res and force visible
@@ -21353,7 +21367,7 @@ UI.rv = function() {
     const r = $('res');
     r.style.overflowY = 'hidden';
     r.style.padding = '0';
-    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
+    [...r.children].filter(el => el.id !== 'res-top-dock').forEach(el => el.remove());
 
     const w = document.createElement('div');
     w.className = 'res-split';
@@ -21382,7 +21396,7 @@ UI.rv = function() {
     const r = $('res');
     r.style.overflowY = 'hidden';
     r.style.padding = '0';
-    [...r.children].filter(el => el.id !== 'stats-bar' && el.id !== 'res-top-dock').forEach(el => el.remove());
+    [...r.children].filter(el => el.id !== 'res-top-dock').forEach(el => el.remove());
 
     const w = document.createElement('div');
     w.className = 'res-split';

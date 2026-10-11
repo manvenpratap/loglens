@@ -9,33 +9,13 @@ All tests run against the local single-file HTML app using **Playwright + pytest
 
 ```
 tests/
-├── conftest.py                    # Shared fixtures & helpers
+├── conftest.py                    # Shared fixtures, browser lifecycle & helpers
 ├── requirements.txt               # Python dependencies
-├── test_01_onboarding.py          # Onboarding overlay + first-run guide
-├── test_02_view_navigation.py     # Tab switching, Settings/Help/Split views
-├── test_03_parser.py              # WM.parse stack behaviours (push/swap/popAll/inline)
-├── test_04_command_palette.py     # Ctrl+K, search, Enter, Escape, recent history
-├── test_05_event_inspector.py     # Inspector open/close, metadata, Escape dismiss
-├── test_06_settings_preferences.py  # App Prefs accordion (Performance, Appearance)
-├── test_07_trace_explorer.py      # Trace view, metric cards, search, active select
-├── test_08_timeline_nav.py        # Mini-map panel, chips, zoom presets, ARIA
-├── test_09_ai_insights.py         # AI Insights card, severity, ARIA, empty state
-├── test_10_focus_mode.py          # F-key toggle, toast, sidebar, sessionStorage
-├── test_11_accessibility.py       # Skip link, aria-live, chip ARIA, keyboard access
-├── test_12_log4j_import.py        # Log4j Config XML Import
-├── test_13_rule_creator.py        # Unified Rule Creator & Tooltips
-├── test_14_unparsed_analyzer.py   # Unparsed Analyzer Create Rule flow
-├── test_15_regex_undo_redo.py     # Regex Pattern Undo-Redo option
-├── test_16_interactive_regex_builder.py # Interactive Regex Builder flow
-├── test_17_auto_detect_and_retention.py # Auto-detect formats, save to file & live sync
-├── test_18_custom_log_pattern_journey.py # Custom log pattern user journey & rule setup
-├── test_19_multiline_block_payload.py # Multiline block & class payload parsing
-├── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
-├── test_21_custom_log_setup_journey.py # Custom log setup journey & 100% parsing workflow
-├── test_22_two_tier_navigation.py    # 2-Tier navigation & macOS toolbar utilities
-├── test_23_combine_capture_groups.py # Combine multiple capture groups into 1 log element
-├── test_24_waterfall_scrolling.py    # Waterfall timeline row scrolling and header sync
-└── test_25_execution_tree_telemetry.py # Execution Tree Swiss telemetry & depth controls
+├── test_consolidated_navigation_and_shell.py         # Onboarding, Demo showcase, 2-tier nav, command palette, tabs
+├── test_consolidated_parser_and_ingestion.py         # WM.parse stack behaviors, Log4j import, multiline, unparsed analyzer
+├── test_consolidated_rules_and_regex.py              # Rule creator, regex builder, auto-sniff, pattern journey, capture groups
+├── test_consolidated_settings_and_accessibility.py   # Settings preferences, a11y skip links, focus mode, AI insights
+└── test_consolidated_visualizations_and_telemetry.py # Gantt, Waterfall scrolling, Trace Explorer, Execution Tree, Event Inspector
 ```
 
 ---
@@ -139,7 +119,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
 | Waterfall View Scrolling & Header Sync | test_24_waterfall_scrolling | 5 |
 | Execution Tree Telemetry & Controls | test_25_execution_tree_telemetry | 4 |
-| **Total** | | **86** |
+| Stat Cards Scope Exclusivity & Graph Navigation Persistence | test_consolidated_navigation_and_shell | 2 |
+| **Total** | | **88** |
 
 ---
 

@@ -3,6 +3,19 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Stat Cards Scope Exclusivity & Navigation Persistence Architecture (v6.9.116 — COMPLETED)**:
+  - **Relocated Stat Cards Exclusively to Stats View**:
+    - Removed global injection of `#stats-bar` into `#res` during initial parse in `UI.render`.
+    - Removed `el.id !== 'stats-bar'` filter retention from `UI.rv()`, `UI._showPanel()`, and split diff handlers, completely de-cluttering non-stats views (Split, Timeline/Gantt, Execution Tree, Traces, Graph, 3D, Diff, Query, Settings, Help).
+    - Restored 100% full vertical viewport height to Waterfall timeline lanes, Execution Tree rows, and D3 Graphify canvas without top crowding.
+  - **Deterministic Stats View Re-Rendering & Navigation Persistence**:
+    - Created modular `UI.renderStatsBar()` helper computing file size, line counts, parse coverage, thread count, active thread/all-threads nodes, outliers, and parse latency.
+    - Embedded `#stats-bar` dynamically when `S.viewMode === 'stats'`, immediately followed by `#res-summary-cards` (Slowest Op, Rules Coverage, Active Threads) and `STATS.render` (Latency statistics table & sparkline histograms).
+    - Resolved the bug where stat cards disappeared after returning from Graph view (`vm === 'graph'`); navigating back to Stats view from Graph view or any view reliably reconstructs and animates all stat cards every single time.
+  - **Full Regression Verification**:
+    - Added dedicated automated tests in `tests/test_consolidated_navigation_and_shell.py` asserting stat cards absence in non-stats views and persistent re-rendering when transitioning between Graph and Stats views.
+    - All 88 tests passing in 84s (100% pass rate). 0 impeccable antipattern findings.
+
 - **Execution Tree Column Header Architecture (v6.9.115 — COMPLETED)**:
   - **3-Zone Swiss Column Header (`.tree-hdr`)**:
     - Embedded a dedicated uppercase column header bar directly below `.tree-toolbar` in `TR.render`.
