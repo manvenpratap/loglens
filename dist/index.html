@@ -840,6 +840,7 @@ html,body{
 /* Responsive revelation when dragged / Default width fit (50/50 split <= 840px) */
 @container pane (max-width: 980px) {
   .tree-th-ts,
+  .tree-filter-ts,
   .tree-metric-ts,
   .tree-metric-ts-none {
     display: none !important;
@@ -848,6 +849,7 @@ html,body{
 
 @container pane (max-width: 860px) {
   .tree-th-thread,
+  .tree-filter-thread,
   .tree-thread-pill,
   .tree-thread-none {
     display: none !important;
@@ -856,6 +858,7 @@ html,body{
 
 @container pane (max-width: 750px) {
   .tree-th-self,
+  .tree-filter-self,
   .tree-metric-self,
   .tree-metric-self-none {
     display: none !important;
@@ -864,6 +867,7 @@ html,body{
 
 @container pane (max-width: 520px) {
   .tree-th-spark,
+  .tree-filter-spark,
   .tree-sparkbar,
   .tree-sparkbar-none {
     display: none !important;
@@ -2265,6 +2269,186 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 body.tree-col-resizing {
   cursor: col-resize !important;
   user-select: none !important;
+}
+
+/* Tree Inline Column Filter Bar */
+.tree-filter-bar {
+  display: flex;
+  align-items: center !important;
+  background: var(--bg-1) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  flex-shrink: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+.tree-filter-inner {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  padding-right: 14px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+.tree-filter-spine {
+  flex: 1 1 var(--tree-spine-w, 420px) !important;
+  min-width: var(--tree-spine-w, 420px) !important;
+  padding-left: 28px !important;
+  padding-right: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+.tree-filter-telemetry {
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  margin-left: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  padding-right: 4px !important;
+  box-sizing: border-box !important;
+}
+.tree-filter-spark {
+  width: var(--tree-spark-w, 44px) !important;
+  min-width: var(--tree-spark-w, 44px) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.tree-filter-dur {
+  width: var(--tree-dur-w, 68px) !important;
+  min-width: var(--tree-dur-w, 68px) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.tree-filter-self {
+  width: var(--tree-self-w, 78px) !important;
+  min-width: var(--tree-self-w, 78px) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.tree-filter-thread {
+  width: var(--tree-thread-w, 68px) !important;
+  min-width: var(--tree-thread-w, 68px) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.tree-filter-ts {
+  width: var(--tree-ts-w, 84px) !important;
+  min-width: var(--tree-ts-w, 84px) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Inline Filter Inputs and Controls */
+.tree-filter-inp-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+.tree-filter-inp {
+  width: 100% !important;
+  height: 20px !important;
+  padding: 1px 16px 1px 6px !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-xs) !important;
+  color: var(--t1) !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+.tree-filter-inp:focus {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 1px var(--cyan) !important;
+  background: var(--bg-0) !important;
+}
+.tree-filter-select {
+  width: 100% !important;
+  height: 20px !important;
+  padding: 0 2px !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-xs) !important;
+  color: var(--t1) !important;
+  font-family: var(--mono) !important;
+  font-size: 10.5px !important;
+  outline: none !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+.tree-filter-select:focus {
+  border-color: var(--cyan) !important;
+}
+.tree-filter-clear-btn {
+  position: absolute !important;
+  right: 2px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--t3) !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  padding: 2px !important;
+  cursor: pointer !important;
+  display: none;
+}
+.tree-filter-clear-btn:hover {
+  color: var(--red) !important;
+}
+.tree-col-filter-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 15px !important;
+  height: 15px !important;
+  margin-left: 4px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 2px !important;
+  color: var(--t4) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  vertical-align: middle !important;
+}
+.tree-col-filter-btn:hover {
+  color: var(--t1) !important;
+  background: var(--glass) !important;
+}
+.tree-col-filter-btn.active {
+  color: var(--cyan) !important;
+  background: color-mix(in srgb, var(--cyan) 18%, transparent) !important;
+}
+
+/* Critical Path Tree Row Styling */
+.tree-row.tree-dim {
+  opacity: 0.28 !important;
+  filter: grayscale(0.85);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+.tree-row.tree-dim:hover {
+  opacity: 0.75 !important;
+  filter: none;
+}
+.tree-row.tree-critical {
+  border-left: 2px solid var(--purple) !important;
+  background: color-mix(in srgb, var(--purple) 8%, transparent) !important;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 /* Tree Row Architecture */
@@ -11460,6 +11644,9 @@ const GR={
         <button class="btn btn-xs btn-g" id="btn-zoom-fit" style="flex-shrink:0;">Fit</button>
         <button class="btn btn-xs btn-g" id="btn-zoom-reset" style="flex-shrink:0;">Reset</button>
       </div>
+      <div class="g-filter-spacer" id="g-filter-spacer" style="display:${(typeof TR !== 'undefined' && TR._showFilterBar) ? 'flex' : 'none'}; height:28px; min-height:28px; background:var(--bg-1); border-bottom:1px solid var(--bdr); align-items:center; padding:0 12px; font-size:11px; color:var(--t3); box-sizing:border-box;">
+        <span>✦ Filter Mode Active</span>
+      </div>
       <div class="g-hdr"><div class="g-ch">Element</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
       <div class="g-rows" tabindex="0" role="region" aria-label="Waterfall timeline rows">${rh}</div>
     </div>`;
@@ -11481,6 +11668,172 @@ const TR={
   _activeTree: null,
   _rowHeight: 32,
   _maxDuration: 1,
+  _colFilters: { op: '', sla: 'all', dur: '', self: '', thread: 'all', ts: '' },
+  _showFilterBar: false,
+  
+  hasActiveFilters() {
+    const f = this._colFilters;
+    return !!(
+      (f.op && f.op.trim()) ||
+      (f.sla && f.sla !== 'all') ||
+      (f.dur && f.dur.trim()) ||
+      (f.self && f.self.trim()) ||
+      (f.thread && f.thread !== 'all') ||
+      (f.ts && f.ts.trim())
+    );
+  },
+
+  activeFilterCount() {
+    const f = this._colFilters;
+    let cnt = 0;
+    if (f.op && f.op.trim()) cnt++;
+    if (f.sla && f.sla !== 'all') cnt++;
+    if (f.dur && f.dur.trim()) cnt++;
+    if (f.self && f.self.trim()) cnt++;
+    if (f.thread && f.thread !== 'all') cnt++;
+    if (f.ts && f.ts.trim()) cnt++;
+    return cnt;
+  },
+
+  matchesFilters(n) {
+    const f = this._colFilters;
+    if (f.op && f.op.trim()) {
+      const q = f.op.trim().toLowerCase();
+      const rMatch = (n.ruleName || '').toLowerCase().includes(q);
+      const eMatch = (n.elementName || '').toLowerCase().includes(q);
+      const pMatch = (n.payload || '').toLowerCase().includes(q);
+      const lMatch = (n.level || '').toLowerCase().includes(q);
+      if (!rMatch && !eMatch && !pMatch && !lMatch) return false;
+    }
+    if (f.sla && f.sla !== 'all') {
+      const isBreach = !!(n._isSlaBreach || n.slaBreached || (n.duration > 2000));
+      if (f.sla === 'breach' && !isBreach) return false;
+      if (f.sla === 'ok' && isBreach) return false;
+    }
+    if (f.dur && f.dur.trim()) {
+      const val = parseFloat(f.dur.replace(/[^0-9.]/g, ''));
+      if (!isNaN(val) && (n.duration || 0) < val) return false;
+    }
+    if (f.self && f.self.trim()) {
+      const val = parseFloat(f.self.replace(/[^0-9.]/g, ''));
+      if (!isNaN(val) && (n._sm || 0) < val) return false;
+    }
+    if (f.thread && f.thread !== 'all') {
+      if (n.thread !== f.thread) return false;
+    }
+    if (f.ts && f.ts.trim()) {
+      const q = f.ts.trim().toLowerCase();
+      const tsStr = n.timestamp != null ? new Date(n.timestamp).toISOString().slice(11, 23).toLowerCase() : '';
+      const fullStr = n.timestamp != null ? new Date(n.timestamp).toISOString().toLowerCase() : '';
+      if (!tsStr.includes(q) && !fullStr.includes(q)) return false;
+    }
+    return true;
+  },
+
+  applyColumnFilters() {
+    this.updateVisible();
+    this.updateLayout();
+    this.syncFilterUI();
+  },
+
+  syncFilterUI() {
+    if (!this._container) return;
+    const root = this._container.closest('.tw');
+    if (!root) return;
+    
+    const cnt = this.activeFilterCount();
+    const countBadge = root.querySelector('#tree-filter-count');
+    const toggleBtn = root.querySelector('#btn-tree-filter-toggle');
+    if (countBadge) {
+      countBadge.textContent = cnt;
+      countBadge.style.display = cnt > 0 ? 'inline-block' : 'none';
+    }
+    if (toggleBtn) {
+      toggleBtn.classList.toggle('active', this._showFilterBar || cnt > 0);
+    }
+
+    const f = this._colFilters;
+    const btnOp = root.querySelector('.tree-col-filter-btn[data-col="op"]');
+    if (btnOp) btnOp.classList.toggle('active', !!(f.op && f.op.trim()));
+    const btnSla = root.querySelector('.tree-col-filter-btn[data-col="sla"]');
+    if (btnSla) btnSla.classList.toggle('active', f.sla !== 'all');
+    const btnDur = root.querySelector('.tree-col-filter-btn[data-col="dur"]');
+    if (btnDur) btnDur.classList.toggle('active', !!(f.dur && f.dur.trim()));
+    const btnSelf = root.querySelector('.tree-col-filter-btn[data-col="self"]');
+    if (btnSelf) btnSelf.classList.toggle('active', !!(f.self && f.self.trim()));
+    const btnThread = root.querySelector('.tree-col-filter-btn[data-col="thread"]');
+    if (btnThread) btnThread.classList.toggle('active', f.thread !== 'all');
+    const btnTs = root.querySelector('.tree-col-filter-btn[data-col="ts"]');
+    if (btnTs) btnTs.classList.toggle('active', !!(f.ts && f.ts.trim()));
+
+    ['op', 'dur', 'self', 'ts'].forEach(col => {
+      const clr = root.querySelector(`.tree-filter-clear-btn[data-clear="${col}"]`);
+      if (clr) clr.style.display = (f[col] && f[col].trim()) ? 'block' : 'none';
+    });
+  },
+
+  clearColumnFilters() {
+    this._colFilters = { op: '', sla: 'all', dur: '', self: '', thread: 'all', ts: '' };
+    if (this._container) {
+      const root = this._container.closest('.tw');
+      if (root) {
+        const inpOp = root.querySelector('#tree-col-filter-op'); if (inpOp) inpOp.value = '';
+        const selSla = root.querySelector('#tree-col-filter-sla'); if (selSla) selSla.value = 'all';
+        const inpDur = root.querySelector('#tree-col-filter-dur'); if (inpDur) inpDur.value = '';
+        const inpSelf = root.querySelector('#tree-col-filter-self'); if (inpSelf) inpSelf.value = '';
+        const selThread = root.querySelector('#tree-col-filter-thread'); if (selThread) selThread.value = 'all';
+        const inpTs = root.querySelector('#tree-col-filter-ts'); if (inpTs) inpTs.value = '';
+      }
+    }
+    this.applyColumnFilters();
+  },
+
+  toggleFilterBar(force) {
+    this._showFilterBar = force != null ? force : !this._showFilterBar;
+    if (this._container) {
+      const root = this._container.closest('.tw');
+      if (root) {
+        const fb = root.querySelector('#tree-filter-bar');
+        if (fb) fb.style.display = this._showFilterBar ? 'flex' : 'none';
+      }
+    }
+    const gSpacer = document.getElementById('g-filter-spacer');
+    if (gSpacer) gSpacer.style.display = this._showFilterBar ? 'flex' : 'none';
+    this.syncFilterUI();
+  },
+
+  toggleCriticalPath(on) {
+    S.criticalPathOn = on;
+    document.querySelectorAll('#tree-crit-chk, #gantt-crit-chk').forEach(c => { c.checked = on; });
+    
+    document.querySelectorAll('.tree-row').forEach(row => {
+      const idx = parseInt(row.dataset.idx, 10);
+      const n = this._visibleNodes[idx];
+      if (!n) return;
+      if (on) {
+        if (n._isCriticalPath) {
+          row.classList.add('tree-critical');
+          row.classList.remove('tree-dim');
+        } else {
+          row.classList.add('tree-dim');
+          row.classList.remove('tree-critical');
+        }
+      } else {
+        row.classList.remove('tree-critical', 'tree-dim');
+      }
+    });
+
+    document.querySelectorAll('.g-row').forEach(row => {
+      const bar = row.querySelector('.g-bar');
+      if (bar) {
+        if (on && !bar.classList.contains('g-critical')) {
+          bar.classList.add('g-trk-dim');
+        } else {
+          bar.classList.remove('g-trk-dim');
+        }
+      }
+    });
+  },
   
   flatten(nodes, depth = 0, parent = null, flatList = []) {
     for (const n of (nodes || [])) {
@@ -11499,16 +11852,51 @@ const TR={
   },
 
   updateVisible() {
-    const visible = [];
-    const traverse = (nodes) => {
+    if (!this.hasActiveFilters()) {
+      const visible = [];
+      const traverse = (nodes) => {
+        for (const n of (nodes || [])) {
+          visible.push(n);
+          if (n.hasChildren && n.expanded) {
+            traverse(n.events);
+          }
+        }
+      };
+      traverse(this._activeTree);
+      this._visibleNodes = visible;
+      return;
+    }
+
+    const ancestorSet = new Set();
+    const markMatches = (nodes) => {
+      let branchMatched = false;
       for (const n of (nodes || [])) {
-        visible.push(n);
-        if (n.hasChildren && n.expanded) {
-          traverse(n.events);
+        let childMatched = false;
+        if (n.events && n.events.length > 0) {
+          childMatched = markMatches(n.events);
+        }
+        const selfMatched = this.matchesFilters(n);
+        if (selfMatched || childMatched) {
+          ancestorSet.add(n);
+          branchMatched = true;
+        }
+      }
+      return branchMatched;
+    };
+    markMatches(this._activeTree);
+
+    const visible = [];
+    const traverseFiltered = (nodes) => {
+      for (const n of (nodes || [])) {
+        if (ancestorSet.has(n)) {
+          visible.push(n);
+          if (n.hasChildren) {
+            traverseFiltered(n.events);
+          }
         }
       }
     };
-    traverse(this._activeTree);
+    traverseFiltered(this._activeTree);
     this._visibleNodes = visible;
   },
 
@@ -11586,6 +11974,9 @@ const TR={
     
     const thrLabel = S.activeThr === 'all' ? 'All Threads' : (S.activeThr || '');
     const thrSuffix = thrLabel ? ` · ${thrLabel}` : '';
+    const threads = S.threads || [];
+    const threadsOptions = threads.map(t => `<option value="${esc(t)}"${this._colFilters.thread === t ? ' selected' : ''}>${esc(t)}</option>`).join('');
+
     el.innerHTML = `
       <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
         <div class="pt tree-toolbar" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui); white-space:nowrap; overflow:hidden;">
@@ -11600,34 +11991,103 @@ const TR={
           <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:6px; flex-shrink:0;">Expand All</button>
           <button class="btn btn-g btn-xs" id="btn-tree-col" style="margin-left:4px; flex-shrink:0;">Collapse All</button>
           <button class="btn btn-g btn-xs" id="btn-tree-map-toggle" title="Toggle Minimap" style="margin-left:4px; flex-shrink:0;">Map</button>
+          <button class="btn btn-g btn-xs${this._showFilterBar || this.hasActiveFilters() ? ' active' : ''}" id="btn-tree-filter-toggle" style="margin-left:6px; flex-shrink:0;" title="Toggle inline column filters">
+            <span>⑂ Filter</span>
+            <span class="badge b-cyan" id="tree-filter-count" style="display:${this.activeFilterCount() > 0 ? 'inline-block' : 'none'}; margin-left:4px; padding:0 4px; font-size:11px;">${this.activeFilterCount()}</span>
+          </button>
+          <label class="tree-crit-toggle" style="display:inline-flex; align-items:center; gap:4px; margin-left:8px; cursor:pointer; font-size:11px; font-weight:600; color:var(--purple); user-select:none; flex-shrink:0;" title="Toggle Critical Path (greys out non-critical rows)">
+            <input type="checkbox" id="tree-crit-chk" class="tree-crit-chk" ${S.criticalPathOn ? 'checked' : ''} style="margin:0; accent-color:var(--purple); cursor:pointer;">
+            <span>✦ Critical</span>
+          </label>
         </div>
         <div class="tree-hdr" id="tree-hdr" role="row" aria-label="Tree Column Headers">
           <div class="tree-hdr-inner">
             <div class="tree-hdr-spine" role="columnheader" data-col="spine">
               <span>Operation &amp; Hierarchy</span>
+              <button class="tree-col-filter-btn${this._colFilters.op ? ' active' : ''}" data-col="op" title="Filter Operation" aria-label="Filter Operation">
+                <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+              </button>
               <span class="tree-col-resizer" data-col="spine" role="separator" aria-orientation="vertical" title="Drag to resize Operation &amp; Hierarchy, double-click to reset"></span>
             </div>
             <div class="tree-hdr-telemetry">
               <span class="tree-th-spark" role="columnheader" data-col="spark">
                 <span>SLA</span>
+                <button class="tree-col-filter-btn${this._colFilters.sla !== 'all' ? ' active' : ''}" data-col="sla" title="Filter SLA" aria-label="Filter SLA">
+                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
+                </button>
                 <span class="tree-col-resizer" data-col="spark" role="separator" aria-orientation="vertical" title="Drag to resize SLA, double-click to reset"></span>
               </span>
               <span class="tree-th-dur" role="columnheader" data-col="dur">
                 <span>Duration</span>
+                <button class="tree-col-filter-btn${this._colFilters.dur ? ' active' : ''}" data-col="dur" title="Filter Duration" aria-label="Filter Duration">
+                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
+                </button>
                 <span class="tree-col-resizer" data-col="dur" role="separator" aria-orientation="vertical" title="Drag to resize Duration, double-click to reset"></span>
               </span>
               <span class="tree-th-self" role="columnheader" data-col="self">
                 <span>Self</span>
+                <button class="tree-col-filter-btn${this._colFilters.self ? ' active' : ''}" data-col="self" title="Filter Self Time" aria-label="Filter Self">
+                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
+                </button>
                 <span class="tree-col-resizer" data-col="self" role="separator" aria-orientation="vertical" title="Drag to resize Self, double-click to reset"></span>
               </span>
               <span class="tree-th-thread" role="columnheader" data-col="thread">
                 <span>Thread</span>
+                <button class="tree-col-filter-btn${this._colFilters.thread !== 'all' ? ' active' : ''}" data-col="thread" title="Filter Thread" aria-label="Filter Thread">
+                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
+                </button>
                 <span class="tree-col-resizer" data-col="thread" role="separator" aria-orientation="vertical" title="Drag to resize Thread, double-click to reset"></span>
               </span>
               <span class="tree-th-ts" role="columnheader" data-col="ts">
                 <span>Timestamp</span>
+                <button class="tree-col-filter-btn${this._colFilters.ts ? ' active' : ''}" data-col="ts" title="Filter Timestamp" aria-label="Filter Timestamp">
+                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
+                </button>
                 <span class="tree-col-resizer" data-col="ts" role="separator" aria-orientation="vertical" title="Drag to resize Timestamp, double-click to reset"></span>
               </span>
+            </div>
+          </div>
+        </div>
+        <div class="tree-filter-bar" id="tree-filter-bar" role="row" aria-label="Tree Column Filters" style="display:${this._showFilterBar ? 'flex' : 'none'};">
+          <div class="tree-filter-inner">
+            <div class="tree-filter-spine">
+              <div class="tree-filter-inp-wrap">
+                <input type="text" class="tree-filter-inp" id="tree-col-filter-op" value="${esc(this._colFilters.op)}" placeholder="Filter operation..." aria-label="Filter Operation &amp; Hierarchy">
+                <button class="tree-filter-clear-btn" data-clear="op" title="Clear filter" style="display:${this._colFilters.op ? 'block' : 'none'};">✕</button>
+              </div>
+            </div>
+            <div class="tree-filter-telemetry">
+              <div class="tree-filter-spark">
+                <select class="tree-filter-select" id="tree-col-filter-sla" title="Filter SLA status" aria-label="Filter SLA">
+                  <option value="all"${this._colFilters.sla === 'all' ? ' selected' : ''}>All</option>
+                  <option value="breach"${this._colFilters.sla === 'breach' ? ' selected' : ''}>Breach</option>
+                  <option value="ok"${this._colFilters.sla === 'ok' ? ' selected' : ''}>OK</option>
+                </select>
+              </div>
+              <div class="tree-filter-dur">
+                <div class="tree-filter-inp-wrap">
+                  <input type="text" class="tree-filter-inp" id="tree-col-filter-dur" value="${esc(this._colFilters.dur)}" placeholder="&gt; ms" title="Filter min duration in ms" aria-label="Filter Duration">
+                  <button class="tree-filter-clear-btn" data-clear="dur" title="Clear filter" style="display:${this._colFilters.dur ? 'block' : 'none'};">✕</button>
+                </div>
+              </div>
+              <div class="tree-filter-self">
+                <div class="tree-filter-inp-wrap">
+                  <input type="text" class="tree-filter-inp" id="tree-col-filter-self" value="${esc(this._colFilters.self)}" placeholder="&gt; ms" title="Filter min self duration in ms" aria-label="Filter Self">
+                  <button class="tree-filter-clear-btn" data-clear="self" title="Clear filter" style="display:${this._colFilters.self ? 'block' : 'none'};">✕</button>
+                </div>
+              </div>
+              <div class="tree-filter-thread">
+                <select class="tree-filter-select" id="tree-col-filter-thread" title="Filter by thread" aria-label="Filter Thread">
+                  <option value="all"${this._colFilters.thread === 'all' ? ' selected' : ''}>All</option>
+                  ${threadsOptions}
+                </select>
+              </div>
+              <div class="tree-filter-ts">
+                <div class="tree-filter-inp-wrap">
+                  <input type="text" class="tree-filter-inp" id="tree-col-filter-ts" value="${esc(this._colFilters.ts)}" placeholder="Time..." title="Filter by timestamp" aria-label="Filter Timestamp">
+                  <button class="tree-filter-clear-btn" data-clear="ts" title="Clear filter" style="display:${this._colFilters.ts ? 'block' : 'none'};">✕</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -11645,9 +12105,11 @@ const TR={
     this._content = el.querySelector('#tree-content');
     
     const treeHdr = el.querySelector('#tree-hdr');
-    if (treeHdr && this._container) {
+    const treeFilterBar = el.querySelector('#tree-filter-bar');
+    if (this._container) {
       this._container.addEventListener('scroll', () => {
-        treeHdr.scrollLeft = this._container.scrollLeft;
+        if (treeHdr) treeHdr.scrollLeft = this._container.scrollLeft;
+        if (treeFilterBar) treeFilterBar.scrollLeft = this._container.scrollLeft;
       }, { passive: true });
     }
     
@@ -11690,7 +12152,82 @@ const TR={
     this._content.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
     
     this.initColumnResize(el);
+    this.initFilters(el);
     this.updateLayout();
+  },
+
+  initFilters(el) {
+    const critChk = el.querySelector('#tree-crit-chk');
+    if (critChk) {
+      critChk.addEventListener('change', e => {
+        this.toggleCriticalPath(e.target.checked);
+      });
+    }
+
+    const btnFilterToggle = el.querySelector('#btn-tree-filter-toggle');
+    if (btnFilterToggle) {
+      btnFilterToggle.addEventListener('click', () => {
+        this.toggleFilterBar();
+      });
+    }
+
+    el.querySelectorAll('.tree-col-filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleFilterBar(true);
+        const col = btn.dataset.col;
+        const target = el.querySelector(`#tree-col-filter-${col}`);
+        if (target) {
+          target.focus();
+          if (target.select) target.select();
+        }
+      });
+    });
+
+    const bindInp = (id, col) => {
+      const inp = el.querySelector(id);
+      if (!inp) return;
+      inp.addEventListener('input', () => {
+        this._colFilters[col] = inp.value;
+        this.applyColumnFilters();
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          inp.value = '';
+          this._colFilters[col] = '';
+          this.applyColumnFilters();
+        }
+      });
+    };
+    bindInp('#tree-col-filter-op', 'op');
+    bindInp('#tree-col-filter-dur', 'dur');
+    bindInp('#tree-col-filter-self', 'self');
+    bindInp('#tree-col-filter-ts', 'ts');
+
+    const bindSel = (id, col) => {
+      const sel = el.querySelector(id);
+      if (!sel) return;
+      sel.addEventListener('change', () => {
+        this._colFilters[col] = sel.value;
+        this.applyColumnFilters();
+      });
+    };
+    bindSel('#tree-col-filter-sla', 'sla');
+    bindSel('#tree-col-filter-thread', 'thread');
+
+    el.querySelectorAll('.tree-filter-clear-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const col = btn.dataset.clear;
+        this._colFilters[col] = (col === 'sla' || col === 'thread') ? 'all' : '';
+        const target = el.querySelector(`#tree-col-filter-${col}`);
+        if (target) {
+          target.value = (col === 'sla' || col === 'thread') ? 'all' : '';
+          target.focus();
+        }
+        this.applyColumnFilters();
+      });
+    });
   },
 
   _colConfig: {
@@ -11853,7 +12390,11 @@ const TR={
     if (countBadge && this._activeTree) {
       const thrLabel = S.activeThr === 'all' ? 'All Threads' : (S.activeThr || '');
       const thrSuffix = thrLabel ? ` · ${thrLabel}` : '';
-      countBadge.textContent = `${this._activeTree.length} root node${this._activeTree.length!==1?'s':''}${thrSuffix}`;
+      if (this.hasActiveFilters()) {
+        countBadge.textContent = `${this._visibleNodes.length} node${this._visibleNodes.length!==1?'s':''} (filtered)${thrSuffix}`;
+      } else {
+        countBadge.textContent = `${this._activeTree.length} root node${this._activeTree.length!==1?'s':''}${thrSuffix}`;
+      }
     }
 
     if (S.viewMode === 'split' && this._activeTree && typeof GR !== 'undefined') {
@@ -11921,9 +12462,6 @@ const TR={
     if (n.correlationId && isRootOrNewTrace) {
       ab += `<span class="tbadge tbadge-trace" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by Trace ID">#${esc(n.correlationId)}</span>`;
     }
-    if (n._isCriticalPath && (d === 0 || n._isSlaBreach || n._isOutlier)) {
-      ab += `<span class="tbadge tbadge-critical" title="Part of the Critical Path">✦ CRIT</span>`;
-    }
     if (n._isQuietPeriod && d === 0) {
       ab += `<span class="tbadge tbadge-amber" title="Quiet period gap: ${esc(fmtMs(n._quietGap))}">⧖ GAP</span>`;
     }
@@ -11981,10 +12519,12 @@ const TR={
       : `<span class="tree-thread-none"></span>`;
     const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : `<span class="tree-metric-ts-none"></span>`;
 
+    const isCrit = !!n._isCriticalPath;
+    const critClass = S.criticalPathOn ? (isCrit ? ' tree-critical' : ' tree-dim') : '';
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
 
     return `
-      <div class="tree-row${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
         <div class="tree-spine">
           ${guideLines}
           ${chev}
@@ -22507,13 +23047,19 @@ UI.rv = function() {
         SEARCH_HL.highlight(q);
       });
     }
-    // Highlight Critical Path border left in tree
+    // Highlight Critical Path in tree (greying out non-critical rows)
     if (S.criticalPathOn) {
       document.querySelectorAll('.tree-row').forEach(row => {
         const idx = parseInt(row.dataset.idx, 10);
-        const n = TR._visibleNodes[idx];
-        if (n && n._isCriticalPath) {
-          row.classList.add('tree-critical');
+        const n = TR._visibleNodes ? TR._visibleNodes[idx] : null;
+        if (n) {
+          if (n._isCriticalPath) {
+            row.classList.add('tree-critical');
+            row.classList.remove('tree-dim');
+          } else {
+            row.classList.add('tree-dim');
+            row.classList.remove('tree-critical');
+          }
         }
       });
     }
@@ -22533,8 +23079,8 @@ UI.rv = function() {
     DIFF.render(r);
   }
 
-  // Update Critical path display on Gantt
-  if (S.viewMode === 'gantt' && S.criticalPathOn) {
+  // Update Critical path display on Gantt (dim non-critical bars)
+  if ((S.viewMode === 'gantt' || S.viewMode === 'split') && S.criticalPathOn) {
     document.querySelectorAll('.g-row').forEach(row => {
       const bar = row.querySelector('.g-bar');
       if (bar && !bar.classList.contains('g-critical')) {
@@ -24769,8 +25315,12 @@ const GANTT_ZOOM_PAN = {
     if (critChk && !critChk._wired) {
       critChk._wired = true;
       critChk.addEventListener('change', e => {
-        S.criticalPathOn = e.target.checked;
-        UI.rv();
+        if (typeof TR !== 'undefined' && TR.toggleCriticalPath) {
+          TR.toggleCriticalPath(e.target.checked);
+        } else {
+          S.criticalPathOn = e.target.checked;
+          UI.rv();
+        }
       });
     }
 

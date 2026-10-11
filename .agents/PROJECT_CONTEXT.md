@@ -3,6 +3,28 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Inline Column Filters & Critical Path Toggle (v6.9.125 — COMPLETED)**:
+  - **Inline Column Filters Bar (`#tree-filter-bar`)**:
+    - Integrated an inline filter bar directly beneath `.tree-hdr` in Execution Tree with inputs aligned to the 6 column slots:
+      - `Operation & Hierarchy`: text input (`Filter operation...`) with real-time substring matching across rule name, element name, payload, and log level, plus quick `✕` clear button.
+      - `SLA`: dropdown filter (`All`, `Breach`, `OK`).
+      - `Duration`: numeric threshold input (`> ms`).
+      - `Self`: numeric threshold input (`> ms`).
+      - `Thread`: dropdown filter populated dynamically from parsed threads (`S.threads`).
+      - `Timestamp`: text input matching ISO timestamp substrings with quick `✕` clear button.
+    - Synchronized horizontal scrolling between `#tree-hdr`, `#tree-filter-bar`, and `#tree-vscroll`.
+    - Toolbar toggle button (`#btn-tree-filter-toggle`, `⑂ Filter`) with active filter count badge (`#tree-filter-count`).
+    - Column header filter trigger buttons (`.tree-col-filter-btn`) that reveal the filter bar and focus the respective column input with one click.
+  - **Critical Path Toggle & Contrast-Preserving Greying Out**:
+    - Added dedicated Critical Path toggle checkbox (`#tree-crit-chk`, `✦ Critical`) in `.tree-toolbar`.
+    - Synchronized critical path state with Gantt / Swimlane view (`#gantt-crit-chk`).
+    - When enabled, rows on the critical path (`_isCriticalPath`) are highlighted with vivid color, while non-critical rows are greyed out (`.tree-dim`, `opacity: 0.28`, `filter: grayscale(0.85)`). Hovering over dimmed rows temporarily restores legibility (`opacity: 0.75`).
+    - Cleaned up redundant `✦ CRIT` badges on tree rows to avoid visual clutter and maintain pristine column alignment.
+  - **Full Regression Verification & Zero Design Findings**:
+    - Added `test_execution_tree_inline_column_filters` and `test_execution_tree_critical_path_toggle_and_dimming` in `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Regression test suite expanded to 94 tests with 100% pass rate.
+    - Impeccable design detector verified 0 findings (`[]`).
+
 - **Timeline Navigator Dedicated View Isolation (v6.9.124 — COMPLETED)**:
   - **Timeline-Exclusive Navigator (`TIMELINE_NAV`)**:
     - Restricted Timeline Navigator mini-map mounting strictly to dedicated Timeline View (`S.viewMode === 'gantt'`).

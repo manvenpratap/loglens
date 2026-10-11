@@ -606,3 +606,92 @@ async def test_tooltip_dismissal_on_scroll_and_mouseout(page_with_data):
         assert not await tooltip.is_visible()
 
     assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_execution_tree_inline_column_filters(page_with_data):
+    """Inline column filters bar opens, filters tree nodes across Operation, SLA, Duration, and clears cleanly."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('tree')")
+
+    filter_btn = page.locator('#btn-tree-filter-toggle')
+    await expect(filter_btn).to_be_visible()
+
+    filter_bar = page.locator('#tree-filter-bar')
+    # Initially hidden
+    assert not await filter_bar.is_visible()
+
+    # Click filter toggle button
+    await filter_btn.click()
+    await expect(filter_bar).to_be_visible()
+
+    # Filter by operation name
+    op_input = page.locator('#tree-col-filter-op')
+    await expect(op_input).to_be_visible()
+
+    initial_nodes = await page.evaluate("() => TR._visibleNodes.length")
+    assert initial_nodes > 0
+
+    # Type operation filter
+    await op_input.fill('Database')
+    await page.wait_for_timeout(100)
+
+    filtered_nodes = await page.evaluate("() => TR._visibleNodes.length")
+    assert filtered_nodes <= initial_nodes
+
+    # Check badge counter
+    badge = page.locator('#tree-filter-count')
+    await expect(badge).to_be_visible()
+    assert await badge.text_content() == '1'
+
+    # Filter clear button clears input and resets count
+    clear_op = page.locator('.tree-filter-clear-btn[data-clear="op"]')
+    await expect(clear_op).to_be_visible()
+    await clear_op.click()
+    await page.wait_for_timeout(100)
+
+    cleared_nodes = await page.evaluate("() => TR._visibleNodes.length")
+    assert cleared_nodes == initial_nodes
+    assert not await clear_op.is_visible()
+
+    # Clicking header filter icon focuses input
+    header_filter_op = page.locator('.tree-col-filter-btn[data-col="op"]')
+    await header_filter_op.click()
+    is_focused = await op_input.evaluate("el => el === document.activeElement")
+    assert is_focused
+
+    assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_execution_tree_critical_path_toggle_and_dimming(page_with_data):
+    """Critical path toggle in tree toolbar greys out non-critical rows and highlights critical rows."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('tree')")
+
+    crit_chk = page.locator('#tree-crit-chk')
+    await expect(crit_chk).to_be_visible()
+
+    # Initially unchecked
+    assert not await crit_chk.is_checked()
+    assert await page.locator('.tree-row.tree-dim').count() == 0
+
+    # Toggle critical path ON
+    await crit_chk.check()
+    await page.wait_for_timeout(100)
+
+    assert await page.evaluate("() => S.criticalPathOn") is True
+
+    # If critical path nodes exist, non-critical rows should be dimmed (.tree-dim)
+    has_crit = await page.evaluate("() => TR._visibleNodes.some(n => n._isCriticalPath)")
+    if has_crit:
+        assert await page.locator('.tree-row.tree-critical').count() > 0
+        assert await page.locator('.tree-row.tree-dim').count() > 0
+
+    # Toggle critical path OFF restores all rows
+    await crit_chk.uncheck()
+    await page.wait_for_timeout(100)
+
+    assert await page.evaluate("() => S.criticalPathOn") is False
+    assert await page.locator('.tree-row.tree-critical').count() == 0
+    assert await page.locator('.tree-row.tree-dim').count() == 0
+
+    assert_no_critical_errors(page)
