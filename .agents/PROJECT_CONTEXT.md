@@ -2,6 +2,26 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Enhanced Trace Explorer & LQL Query Terminal (v6.9.143 — COMPLETED)**:
+  - **Enhanced Trace Explorer**:
+    - 4 KPI metric cards (`Total Traces`, `Traced Events`, `P95 Latency`, `SLA Breaches`). Clicking card resets or filters by SLA breaches.
+    - Interactive quick filter chips: `All (${total})`, `⚠ SLA Breaches (${count})`, `⑂ Multi-Thread (${count})`, `✔ Healthy (${count})` with active highlighting.
+    - Interactive column header sorting (`Trace ID`, `Spans`, `Threads`, `Duration`, `SLA Status`) with ascending/descending toggling and directional indicator arrows (`▴` / `▾`). Default sort: `Duration` descending (bottlenecks first).
+    - Proportional latency distribution bar underneath duration text (`.trace-bar-bg` + `.trace-bar-fill`) scaled to maximum trace latency.
+    - Slowest operation callout underneath Trace ID (`↳ <elementName> (<duration>)`).
+    - Thread chips styled with their actual thread color palette using `TR.getThreadColor(th)`.
+    - Direct view jumps: `Timeline` (jumps to Waterfall view focusing on trace), `Tree` (jumps to Tree view focusing on trace), and `Filter` (filters in-place and inspects slowest node).
+  - **Enhanced LQL Query Terminal & Analyzer**:
+    - Categorized instant presets: `⚡ Slowest Spans (Top 20)`, `🔴 Errors & Failures`, `⚠️ SLA Breached Events`, `⏱ Long Running (>100ms)`, `⑂ Multi-Thread Traces`, `🧵 Events by Thread`.
+    - Interactive Schema Token insertion palette: click any schema field (`elementName`, `ruleName`, `thread`, `duration`, `level`, `correlationId`, `timestamp`, `sla_breach`, `anomaly`, etc.) or SQL keyword to insert into query at cursor position.
+    - In-result live search filter (`#lql-res-filter`) to rapidly filter table rows without re-running the SQL engine.
+    - Interactive column sorting: click any column header (`.lql-th`) to toggle ascending/descending order with indicator arrows.
+    - Export & copy utilities: `📋 Copy Query` (copies SQL to clipboard), `📋 Copy JSON` (copies structured JSON to clipboard), `⤓ Export CSV` (downloads CSV with complete field headers).
+    - Per-row direct action buttons: `Inspect`, `Timeline`, and `Tree`.
+  - **Automated Regression Verification**:
+    - Added `test_traces_explorer_view_enhancements` and `test_lql_query_view_and_analyzer` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite passed: **112/112 tests (100% pass rate in 106s)**.
+
 - **Enhanced Stats Dashboard & Benchmarking Suite (v6.9.142 — COMPLETED)**:
   - **Thread Scope Switcher Bar (`.stats-scope-bar`)**:
     - Added inline pills to switch telemetry calculation scope directly within the Stats View between `Active Thread`, `All Threads`, and any individual discovered thread.

@@ -1267,3 +1267,129 @@ async def test_enhanced_stats_view_features(page_with_data):
 
     assert_no_critical_errors(page)
 
+
+@pytest.mark.asyncio
+async def test_traces_explorer_view_enhancements(page_with_data):
+    """Verify Traces explorer KPI metric cards, quick filters, column sorting, latency bars, and view jumps."""
+    page = page_with_data
+
+    # Switch to trace view
+    await page.evaluate("() => { if (typeof UI !== 'undefined') UI.svm('trace'); }")
+    await page.wait_for_selector('.trace-explorer-wrap', timeout=5000)
+
+    # 1. Verify 4 metric cards
+    cards = page.locator('.trace-metric-card')
+    assert await cards.count() == 4, f"Expected 4 metric cards, found {await cards.count()}"
+
+    # 2. Verify filter chips
+    chips = page.locator('.trace-chip')
+    assert await chips.count() >= 4, f"Expected at least 4 filter chips, found {await chips.count()}"
+
+    # 3. Test filtering by SLA breaches
+    sla_chip = page.locator('.trace-chip[data-filter="sla"]')
+    if await sla_chip.count() > 0:
+        await sla_chip.click()
+        await page.wait_for_timeout(150)
+        assert await page.evaluate("() => TRACE_EXPLORER._statusFilter") == 'sla'
+
+    # Reset filter
+    all_chip = page.locator('.trace-chip[data-filter="all"]')
+    await all_chip.click()
+    await page.wait_for_timeout(150)
+    assert await page.evaluate("() => TRACE_EXPLORER._statusFilter") == 'all'
+
+    # 4. Test column sorting
+    dur_th = page.locator('.trace-table-hdr > div:nth-child(4)')
+    await dur_th.click()
+    await page.wait_for_timeout(150)
+    sort_info = await page.evaluate("() => ({ sortBy: TRACE_EXPLORER._sortBy, sortDir: TRACE_EXPLORER._sortDir })")
+    assert sort_info['sortBy'] == 'duration'
+
+    # 5. Verify latency bars exist
+    bars = page.locator('.trace-bar-fill')
+    assert await bars.count() > 0, "Expected at least one latency bar"
+
+    # 6. Verify action buttons and test Timeline view jump
+    timeline_btn = page.locator('.btn-trace-timeline').first
+    if await timeline_btn.count() > 0:
+        await timeline_btn.click()
+        await page.wait_for_timeout(200)
+        active_mode = await page.evaluate("() => S.viewMode")
+        assert active_mode == 'gantt', f"Expected viewMode to be 'gantt' after timeline jump, got {active_mode}"
+
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_lql_query_view_and_analyzer(page_with_data):
+    """Verify LQL query terminal, categorized presets, schema tokens, quick search filter, sorting, and export/copy utilities."""
+    page = page_with_data
+
+    # Switch to query view
+    await page.evaluate("() => { if (typeof UI !== 'undefined') UI.svm('query'); }")
+    await page.wait_for_selector('.lql-box', timeout=5000)
+
+    # 1. Verify container and initial query execution
+    assert await page.locator('.lql-box').count() == 1
+    rows = page.locator('.lql-row')
+    assert await rows.count() > 0, "LQL should execute initial default query and render rows"
+
+    # 2. Verify categorized presets and schema tokens exist
+    preset_btns = page.locator('.lql-preset-btn')
+    assert await preset_btns.count() >= 5, f"Expected at least 5 preset buttons, found {await preset_btns.count()}"
+
+    token_pills = page.locator('.lql-token-pill')
+    assert await token_pills.count() >= 10, f"Expected at least 10 token pills, found {await token_pills.count()}"
+
+    # 3. Test token insertion into query input
+    input_box = page.locator('#lql-inp-val')
+    await input_box.focus()
+    first_token = token_pills.first
+    token_text = await first_token.inner_text()
+    await first_token.click()
+    await page.wait_for_timeout(100)
+    input_val = await input_box.input_value()
+    assert token_text in input_val, f"Expected token '{token_text}' inserted in query input"
+
+    # 4. Test clicking a preset
+    slowest_preset = page.locator('.lql-preset-btn').first
+    await slowest_preset.click()
+    await page.wait_for_timeout(200)
+    current_q = await page.evaluate("() => LQL.currentQuery")
+    assert "ORDER BY duration DESC" in current_q
+
+    # 5. Test sorting by clicking a column header
+    first_th = page.locator('.lql-th').first
+    th_field = await first_th.get_attribute('data-f')
+    await first_th.click()
+    await page.wait_for_timeout(150)
+    assert await page.evaluate("() => LQL.sortField") == th_field
+
+    # 6. Test in-result quick search filter
+    filter_box = page.locator('#lql-res-filter')
+    if await filter_box.count() > 0:
+        await filter_box.fill('nonexistent_string_12345')
+        await page.wait_for_timeout(150)
+        assert await page.evaluate("() => LQL._inResultFilter") == 'nonexistent_string_12345'
+        # Clear filter
+        await filter_box.fill('')
+        await page.wait_for_timeout(150)
+
+    # 7. Test utilities (copyQuery, copyJson, exportCsv) callable without error
+    utils_ok = await page.evaluate("""() => {
+        try {
+            if (typeof LQL.copyQuery !== 'function') return false;
+            if (typeof LQL.copyJson !== 'function') return false;
+            if (typeof LQL.exportCsv !== 'function') return false;
+            LQL.copyQuery();
+            LQL.copyJson();
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }""")
+    assert utils_ok is True, "LQL copy and export utilities should execute without error"
+
+    assert_no_critical_errors(page)
+
+

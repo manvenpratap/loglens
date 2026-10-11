@@ -3818,6 +3818,17 @@ mark.hl{
 .lql-table tr:hover td{
   background:var(--amber-d);color:var(--t1);
 }
+.lql-token-bar{display:flex;gap:5px;align-items:center;flex-wrap:wrap;padding:4px 0;}
+.lql-token-pill{padding:2px 8px;font-size:11px;font-family:var(--mono);border-radius:var(--rounded-sm);background:var(--bg-2);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;transition:all .12s;}
+.lql-token-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.lql-token-pill.kw{color:var(--blue);font-weight:600;}
+
+.lql-toolbar-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:6px 0;font-size:12px;color:var(--t3);font-family:var(--mono);}
+.lql-actions-cell{display:flex;gap:4px;align-items:center;justify-content:center;}
+.lql-actions-cell .btn{padding:2px 6px;font-size:10px;border-radius:var(--rounded-sm);background:var(--bg-1);border:1px solid var(--bdr);color:var(--t2);transition:all .12s;}
+.lql-actions-cell .btn:hover{background:var(--bg-3);border-color:var(--bdr-hi);color:var(--t0);}
+
+.lql-sort-arrow{display:inline-block;margin-left:4px;font-size:10px;opacity:.8;}
 
 /* ============================================================
    CSS §26 · REGEX EXPLAINER BREAKDOWN & QUICK EDIT
@@ -14923,6 +14934,8 @@ const UI={
       const el = $('p-cfg'); if (el) { el.classList.add('active'); r.appendChild(el); }
     } else if(vm==='hlp'){
       const el = $('p-hlp'); if (el) { el.classList.add('active'); r.appendChild(el); }
+    } else if(vm==='query'){
+      LQL.render(r);
     } else {
       r.style.overflowY = 'hidden';
       const d=document.createElement('div');
@@ -25433,10 +25446,10 @@ const TRACE_EXPLORER = (function() {
 
     const filterChipsHtml = `
       <div class="trace-chips-bar">
-        <span class="trace-chip ${_statusFilter === 'all' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('all')">All (${totalTraces})</span>
-        <span class="trace-chip ${_statusFilter === 'sla' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('sla')">⚠ SLA Breaches (${list.filter(t => t.slaBreaches > 0).length})</span>
-        <span class="trace-chip ${_statusFilter === 'multi' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('multi')">⑂ Multi-Thread (${multiThreadCount})</span>
-        <span class="trace-chip ${_statusFilter === 'healthy' ? 'active-chip' : ''}" onclick="TRACE_EXPLORER.setStatusFilter('healthy')">✔ Healthy (${list.filter(t => t.slaBreaches === 0).length})</span>
+        <span class="trace-chip ${_statusFilter === 'all' ? 'active-chip' : ''}" data-filter="all" onclick="TRACE_EXPLORER.setStatusFilter('all')">All (${totalTraces})</span>
+        <span class="trace-chip ${_statusFilter === 'sla' ? 'active-chip' : ''}" data-filter="sla" onclick="TRACE_EXPLORER.setStatusFilter('sla')">⚠ SLA Breaches (${list.filter(t => t.slaBreaches > 0).length})</span>
+        <span class="trace-chip ${_statusFilter === 'multi' ? 'active-chip' : ''}" data-filter="multi" onclick="TRACE_EXPLORER.setStatusFilter('multi')">⑂ Multi-Thread (${multiThreadCount})</span>
+        <span class="trace-chip ${_statusFilter === 'healthy' ? 'active-chip' : ''}" data-filter="healthy" onclick="TRACE_EXPLORER.setStatusFilter('healthy')">✔ Healthy (${list.filter(t => t.slaBreaches === 0).length})</span>
       </div>
     `;
 
@@ -25551,7 +25564,12 @@ const TRACE_EXPLORER = (function() {
     if (_container) render(_container);
   }
 
-  return { render, selectTrace, clearFilter, scanTraces, setSort, setStatusFilter, viewIn, invalidate };
+  return {
+    render, selectTrace, clearFilter, scanTraces, setSort, setStatusFilter, viewIn, invalidate,
+    get _statusFilter() { return _statusFilter; },
+    get _sortBy() { return _sortBy; },
+    get _sortDir() { return _sortDir; }
+  };
 })();
 
 // Update BCB after parse completes
@@ -27269,13 +27287,35 @@ const LQL = {
   currentQuery: '',
   sortField: 'duration',
   sortAsc: false,
+  _inResultFilter: '',
   
   presets: [
-    { label: 'Top 10 slowest events', q: 'SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10' },
-    { label: 'All SLA breaches', q: 'SELECT * FROM events WHERE sla_breach = true ORDER BY duration DESC' },
-    { label: 'Events by thread', q: 'SELECT thread, COUNT(*) FROM events GROUP BY thread ORDER BY COUNT DESC' },
-    { label: 'Unmatched blocks', q: 'SELECT * FROM events WHERE anomaly = true AND behavior = "push"' },
-    { label: 'Error events', q: 'SELECT * FROM events WHERE ruleName CONTAINS "Error" OR ruleName CONTAINS "error"' }
+    { label: '⚡ Slowest Spans (Top 20)', q: 'SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 20' },
+    { label: '🚨 All SLA Breaches', q: 'SELECT elementName, duration, thread, correlationId FROM events WHERE sla_breach = true ORDER BY duration DESC' },
+    { label: '⚠️ Errors & Failures', q: 'SELECT elementName, ruleName, thread, payload FROM events WHERE level = "ERROR" OR ruleName CONTAINS "error"' },
+    { label: '🧵 Events by Thread', q: 'SELECT thread, COUNT(*) FROM events GROUP BY thread ORDER BY COUNT DESC' },
+    { label: '⏱️ Avg Duration by Rule', q: 'SELECT ruleName, COUNT(*), avg(duration), max(duration) FROM events GROUP BY ruleName ORDER BY max DESC' },
+    { label: '🔍 Outliers & Anomalies', q: 'SELECT elementName, duration, thread FROM events WHERE anomaly = true ORDER BY duration DESC' },
+    { label: '🔗 Multi-Thread Traces', q: 'SELECT correlationId, COUNT(*), max(duration) FROM events WHERE correlationId != "" GROUP BY correlationId ORDER BY COUNT DESC LIMIT 15' }
+  ],
+
+  tokens: [
+    { label: 'elementName', type: 'fld' },
+    { label: 'ruleName', type: 'fld' },
+    { label: 'duration', type: 'fld' },
+    { label: 'thread', type: 'fld' },
+    { label: 'level', type: 'fld' },
+    { label: 'correlationId', type: 'fld' },
+    { label: 'payload', type: 'fld' },
+    { label: 'sla_breach', type: 'fld' },
+    { label: 'anomaly', type: 'fld' },
+    { label: 'WHERE', type: 'kw' },
+    { label: 'ORDER BY', type: 'kw' },
+    { label: 'DESC', type: 'kw' },
+    { label: 'LIMIT', type: 'kw' },
+    { label: 'CONTAINS', type: 'kw' },
+    { label: 'AND', type: 'kw' },
+    { label: 'COUNT(*)', type: 'kw' }
   ],
   
   parse(query) {
@@ -27365,12 +27405,12 @@ const LQL = {
             endTimestamp: n.endTimestamp,
             duration: n.duration,
             payload: n.payload,
-            correlationId: n.correlationId,
+            correlationId: n.correlationId || '',
             level: n.level || null,
             rawLine: n.rawLine,
             behavior: n.behavior,
-            sla_breach: !!n._isSlaBreach,
-            anomaly: !!n._isOutlier,
+            sla_breach: !!(n._isSlaBreach || n.slaBreached),
+            anomaly: !!(n._isOutlier || n.anomaly),
             pinned: !!(S.pins && S.pins[n.id]),
             nodeRef: n
           });
@@ -27459,62 +27499,175 @@ const LQL = {
     }
   },
   
+  copyQuery() {
+    const q = this.currentQuery;
+    if (!q) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(q).then(() => {
+        if (typeof toast === 'function') toast('LQL query copied to clipboard', 'success');
+      });
+    }
+  },
+
+  copyJson() {
+    if (!this.currentResults || !this.currentResults.length) return;
+    const json = JSON.stringify(this.currentResults, (k, v) => k === 'nodeRef' ? undefined : v, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(() => {
+        if (typeof toast === 'function') toast('Query results copied as JSON', 'success');
+      });
+    }
+  },
+
+  exportCsv() {
+    if (!this.currentResults || !this.currentResults.length) return;
+    const fields = this.currentFields.includes('*')
+      ? ['elementName', 'ruleName', 'thread', 'timestamp', 'duration', 'payload']
+      : this.currentFields;
+    let csv = fields.join(',') + '\n';
+    this.currentResults.forEach(row => {
+      const line = fields.map(f => {
+        let val = row[f] ?? '';
+        if (f === 'timestamp') val = val ? new Date(val).toISOString() : '';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(',');
+      csv += line + '\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `loglens_query_results_${Date.now()}.csv`);
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    if (typeof toast === 'function') toast('Exported query results to CSV', 'success');
+  },
+
   render(container) {
+    if (!this.currentQuery) {
+      this.currentQuery = 'SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 20';
+      this.runQuery(this.currentQuery);
+    }
+
     const presetPills = this.presets.map(p =>
       `<button class="lql-preset-btn" data-q="${esc(p.q)}">${esc(p.label)}</button>`
     ).join('');
-    
-    const historyPills = this.history.map(h =>
-      `<span class="lql-hist-chip" data-q="${esc(h)}">${esc(h.slice(0, 30))}${h.length>30?'…':''}</span>`
+
+    const tokenPills = this.tokens.map(t =>
+      `<button class="lql-token-pill ${t.type==='kw'?'kw':''}" data-val="${esc(t.label)}">${esc(t.label)}</button>`
     ).join('');
-    
+
+    const historyPills = this.history.map(h =>
+      `<span class="lql-hist-chip" data-q="${esc(h)}" title="${esc(h)}">${esc(h.slice(0, 32))}${h.length>32?'…':''}</span>`
+    ).join('');
+
     let tableHtml = '';
+    let displayedCount = 0;
+    let totalCount = 0;
+
     if (this.error) {
-      tableHtml = `<div style="color:var(--red); font-family:var(--mono); padding:20px; font-weight:bold;">⚠️ Error: ${esc(this.error)}</div>`;
+      tableHtml = `<div style="background:var(--red-g); border:1px solid var(--red); border-radius:6px; color:var(--red); font-family:var(--mono); padding:16px; margin:10px; font-weight:bold;">
+        ⚠️ Query Error: ${esc(this.error)}
+        <div style="font-size:11px; font-weight:normal; margin-top:6px; opacity:.85;">Syntax tip: Use SELECT &lt;fields&gt; FROM events WHERE &lt;condition&gt; ORDER BY &lt;field&gt; DESC LIMIT &lt;n&gt;</div>
+      </div>`;
     } else if (this.currentResults) {
-      // Table headers
+      totalCount = this.currentResults.length;
+      let filtered = this.currentResults;
+      if (this._inResultFilter) {
+        const q = this._inResultFilter.toLowerCase();
+        filtered = filtered.filter(row => Object.values(row).some(v => String(v).toLowerCase().includes(q)));
+      }
+      displayedCount = filtered.length;
+
       const fields = this.currentFields.includes('*')
         ? ['elementName', 'ruleName', 'thread', 'timestamp', 'duration', 'payload']
         : this.currentFields;
-      
-      const ths = fields.map(f => `<th class="lql-th" data-f="${esc(f)}">${esc(f)}</th>`).join('');
-      
-      const trs = this.currentResults.map(row => {
+
+      const hasActions = filtered.some(r => !!r.nodeRef);
+
+      const getSortArrow = (col) => {
+        if (this.sortField !== col) return '';
+        return `<span class="lql-sort-arrow">${this.sortAsc ? '▴' : '▾'}</span>`;
+      };
+
+      const ths = fields.map(f => `<th class="lql-th" data-f="${esc(f)}">${esc(f)} ${getSortArrow(f)}</th>`).join('') +
+        (hasActions ? `<th style="text-align:center; width:150px;">Actions</th>` : '');
+
+      const trs = filtered.map(row => {
         const tds = fields.map(f => {
           let val = row[f];
           if (f === 'timestamp' || f === 'endTimestamp') {
             val = val ? new Date(val).toLocaleTimeString() : '';
+          } else if (f === 'duration' && typeof val === 'number') {
+            val = `<span style="font-weight:600; color:var(--amber);">${fmtMs(val)}</span>`;
+          } else if (f === 'level' && val) {
+            const col = val === 'ERROR' ? 'var(--red)' : val === 'WARN' ? 'var(--amber)' : 'var(--blue)';
+            val = `<span class="badge" style="background:${col}; color:#fff; font-size:10px;">${esc(val)}</span>`;
+          } else if (f === 'sla_breach') {
+            val = val ? `<span class="badge badge-r" style="font-size:10px;">SLA BREACH</span>` : `<span style="color:var(--t4);">false</span>`;
+          } else if (f === 'anomaly') {
+            val = val ? `<span class="badge" style="background:var(--amber); color:#000; font-size:10px;">OUTLIER</span>` : `<span style="color:var(--t4);">false</span>`;
+          } else if (f === 'correlationId' && val) {
+            val = `<span style="font-family:var(--mono); color:var(--cyan);">${esc(val)}</span>`;
+          } else {
+            val = esc(val ?? '');
           }
-          if (f === 'duration' && typeof val === 'number') {
-            val = fmtMs(val);
-          }
-          return `<td style="padding:10px 12px;">${esc(val)}</td>`;
+          return `<td style="padding:8px 12px;">${val}</td>`;
         }).join('');
-        
+
         const jumpId = row.nodeRef ? row.nodeRef.id : '';
-        return `<tr class="lql-row" data-id="${esc(jumpId)}">${tds}</tr>`;
+        const actionsHtml = hasActions ? `
+          <td style="padding:6px 10px; text-align:center;">
+            ${row.nodeRef ? `
+              <div class="lql-actions-cell">
+                <button class="btn btn-xs btn-lql-inspect" data-id="${esc(jumpId)}" title="Inspect in Event Inspector">Inspect</button>
+                <button class="btn btn-xs btn-lql-timeline" data-id="${esc(jumpId)}" title="Jump to Timeline">Timeline</button>
+                <button class="btn btn-xs btn-lql-tree" data-id="${esc(jumpId)}" title="Jump to Tree">Tree</button>
+              </div>
+            ` : ''}
+          </td>
+        ` : '';
+
+        return `<tr class="lql-row" data-id="${esc(jumpId)}">${tds}${actionsHtml}</tr>`;
       }).join('');
-      
+
       tableHtml = `
         <table class="lql-table">
-          <thead>
-            <tr>${ths}</tr>
-          </thead>
+          <thead><tr>${ths}</tr></thead>
           <tbody>
-            ${trs || '<tr><td colspan="10" style="padding:20px; text-align:center; color:var(--t4);">No query results found.</td></tr>'}
+            ${trs || '<tr><td colspan="12" style="padding:28px; text-align:center; color:var(--t4);">No query results match the filter criteria.</td></tr>'}
           </tbody>
         </table>
       `;
     }
-    
+
     container.innerHTML = `
       <div class="lql-box">
-        <div style="font-weight:bold; font-size:13px; font-family:var(--display); color:var(--t2); display:flex; align-items:center; gap:6px;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> LQL Plain-English Query Engine</div>
-        
+        <div style="font-weight:bold; font-size:13px; font-family:var(--display); color:var(--t2); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="ico" aria-hidden="true">&gt;_</span>
+            LogLens Query Language (LQL) Terminal &amp; Analyzer
+          </span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn btn-g btn-xs" id="btn-lql-copy-q" title="Copy current query SQL to clipboard">📋 Copy Query</button>
+            ${totalCount ? `
+              <button class="btn btn-g btn-xs" id="btn-lql-json" title="Copy results as JSON to clipboard">📋 Copy JSON</button>
+              <button class="btn btn-g btn-xs" id="btn-lql-csv" title="Download query results as CSV">⤓ Export CSV</button>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Categorized Presets Bar -->
         <div class="lql-presets-bar">
           ${presetPills}
         </div>
-        
+
+        <!-- Schema / Field Token Palette -->
+        <div class="lql-token-bar">
+          <span style="font-size:11px; font-weight:700; color:var(--t3); margin-right:4px;">INSERT:</span>
+          ${tokenPills}
+        </div>
+
+        <!-- Query Input Box -->
         <div class="lql-input-row">
           <span class="lql-caret">&gt;_</span>
           <input class="lql-inp" id="lql-inp-val" type="text"
@@ -27522,21 +27675,29 @@ const LQL = {
             value="${esc(this.currentQuery)}" autocomplete="off" spellcheck="false" aria-label="LQL Query Input"/>
           <button class="btn btn-p btn-sm" id="btn-lql-run">Run Query</button>
         </div>
-        
+
         ${this.history.length ? `<div class="lql-history-bar"><span>History:</span> ${historyPills}</div>` : ''}
-        
+
+        <!-- Results Toolbar Meta -->
+        <div class="lql-toolbar-meta">
+          <span>
+            ${this.currentResults ? `${displayedCount}${displayedCount!==totalCount?` of ${totalCount}`:''} rows returned · ${(this.queryTime||0).toFixed(1)}ms execution` : ''}
+          </span>
+          ${totalCount ? `
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span style="font-size:11px; color:var(--t4);">Filter results:</span>
+              <input type="text" id="lql-res-filter" class="inp" placeholder="Quick search..." value="${esc(this._inResultFilter)}" style="height:22px; font-size:11px; width:140px; padding:2px 6px;" />
+            </div>
+          ` : ''}
+        </div>
+
         <div class="lql-table-wrap">
           ${tableHtml}
         </div>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 12px; color:var(--t3); font-family:var(--mono);">
-          <span>${this.currentResults ? `${this.currentResults.length} rows returned · ${(this.queryTime||0).toFixed(1)}ms` : ''}</span>
-          ${this.currentResults && this.currentResults.length ? `<button class="btn btn-xs btn-g" id="btn-lql-csv">Export as CSV</button>` : ''}
-        </div>
       </div>
     `;
-    
-    // Wire LQL events
+
+    // Wire events
     const inp = container.querySelector('#lql-inp-val');
     const run = () => {
       const q = inp.value.trim();
@@ -27545,37 +27706,61 @@ const LQL = {
       this.runQuery(q);
       this.render(container);
     };
-    
-    container.querySelector('#btn-lql-run').addEventListener('click', run);
-    inp.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); run(); }
-      // Up/Down arrows to cycle query history
-      if (e.key === 'ArrowUp') {
+
+    container.querySelector('#btn-lql-run')?.addEventListener('click', run);
+    inp?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); run(); }
+      if (e.key === 'ArrowUp' && this.history.length) {
         e.preventDefault();
-        if (this.history.length) {
-          const curIdx = this.history.indexOf(inp.value);
-          const nextQ = this.history[curIdx + 1] || this.history[0];
-          inp.value = nextQ;
-        }
+        const curIdx = this.history.indexOf(inp.value);
+        inp.value = this.history[curIdx + 1] || this.history[0];
       }
-      if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' && this.history.length) {
         e.preventDefault();
-        if (this.history.length) {
-          const curIdx = this.history.indexOf(inp.value);
-          const nextQ = this.history[curIdx - 1] || this.history[this.history.length - 1];
-          inp.value = nextQ;
-        }
+        const curIdx = this.history.indexOf(inp.value);
+        inp.value = this.history[curIdx - 1] || this.history[this.history.length - 1];
       }
     });
-    
+
+    // Preset & history buttons
     container.querySelectorAll('.lql-preset-btn, .lql-hist-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         inp.value = btn.dataset.q;
         run();
       });
     });
-    
-    // Sort columns
+
+    // Token inserter
+    container.querySelectorAll('.lql-token-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const val = pill.dataset.val;
+        const cur = inp.value;
+        const start = inp.selectionStart ?? cur.length;
+        const end = inp.selectionEnd ?? cur.length;
+        const prefix = (start > 0 && cur[start - 1] !== ' ') ? ' ' : '';
+        const suffix = (end < cur.length && cur[end] !== ' ') ? ' ' : ' ';
+        inp.value = cur.slice(0, start) + prefix + val + suffix + cur.slice(end);
+        inp.focus();
+        const newPos = start + prefix.length + val.length + suffix.length;
+        inp.setSelectionRange(newPos, newPos);
+      });
+    });
+
+    // In-result filter
+    const resFilter = container.querySelector('#lql-res-filter');
+    if (resFilter) {
+      resFilter.addEventListener('input', (e) => {
+        this._inResultFilter = e.target.value.trim();
+        this.render(container);
+        const newFilter = container.querySelector('#lql-res-filter');
+        if (newFilter) {
+          newFilter.focus();
+          newFilter.selectionStart = newFilter.selectionEnd = newFilter.value.length;
+        }
+      });
+    }
+
+    // Column sorting
     container.querySelectorAll('.lql-th').forEach(th => {
       th.addEventListener('click', () => {
         const f = th.dataset.f;
@@ -27587,55 +27772,74 @@ const LQL = {
         }
       });
     });
-    
-    // Jump row click
-    container.querySelectorAll('.lql-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const id = row.dataset.id;
-        if (!id) return;
-        let foundNode = null;
-        for (const tree of Object.values(S.trees)) {
-          const find = (nodes) => {
-            for (const n of nodes) {
-              if (n.id === id) { foundNode = n; return; }
-              if (n.events && n.events.length) find(n.events);
-            }
-          };
-          find(tree);
-          if (foundNode) break;
-        }
-        if (foundNode) {
-          S.activeThr = foundNode.thread;
-          jumpToNode(foundNode);
+
+    // Node lookup helper
+    const findNode = (id) => {
+      if (!id || !S.trees) return null;
+      let found = null;
+      for (const t of Object.values(S.trees)) {
+        const traverse = (nodes) => {
+          for (const n of nodes) {
+            if (n.id === id) { found = n; return; }
+            if (n.events && n.events.length) traverse(n.events);
+          }
+        };
+        traverse(t);
+        if (found) break;
+      }
+      return found;
+    };
+
+    // Action buttons
+    container.querySelectorAll('.btn-lql-inspect').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findNode(btn.dataset.id);
+        if (node && typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+      });
+    });
+
+    container.querySelectorAll('.btn-lql-timeline').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findNode(btn.dataset.id);
+        if (node) {
+          if (node.thread && S.threads && S.threads.includes(node.thread)) S.activeThr = node.thread;
+          UI.svm('gantt');
+          if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
         }
       });
     });
-    
-    // Export CSV from LQL query
-    const csvBtn = container.querySelector('#btn-lql-csv');
-    if (csvBtn) {
-      csvBtn.addEventListener('click', () => {
-        const fields = this.currentFields.includes('*')
-          ? ['elementName', 'ruleName', 'thread', 'timestamp', 'duration', 'payload']
-          : this.currentFields;
-        
-        let csv = fields.join(',') + '\n';
-        this.currentResults.forEach(row => {
-          const line = fields.map(f => {
-            let val = row[f] ?? '';
-            if (f === 'timestamp') val = val ? new Date(val).toISOString() : '';
-            return `"${String(val).replace(/"/g, '""')}"`;
-          }).join(',');
-          csv += line + '\n';
-        });
-        
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', `loglens-query-${Date.now()}.csv`);
-        link.click();
+
+    container.querySelectorAll('.btn-lql-tree').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = findNode(btn.dataset.id);
+        if (node) {
+          if (node.thread && S.threads && S.threads.includes(node.thread)) S.activeThr = node.thread;
+          UI.svm('tree');
+          if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+        }
       });
-    }
+    });
+
+    // Row click
+    container.querySelectorAll('.lql-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('input')) return;
+        const node = findNode(row.dataset.id);
+        if (node && typeof INSPECTOR !== 'undefined') INSPECTOR.open(node);
+      });
+    });
+
+    // Copy Query button
+    container.querySelector('#btn-lql-copy-q')?.addEventListener('click', () => this.copyQuery());
+
+    // Copy JSON button
+    container.querySelector('#btn-lql-json')?.addEventListener('click', () => this.copyJson());
+
+    // Export CSV button
+    container.querySelector('#btn-lql-csv')?.addEventListener('click', () => this.exportCsv());
   }
 };
 
