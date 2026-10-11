@@ -5663,44 +5663,55 @@ label[for="watch-auto-reload"] {
   display: inline-flex !important;
   align-items: center !important;
   height: 100% !important;
-  margin-left: 4px !important;
+  margin-left: 2px !important;
 }
 .analysis-btn {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  height: 28px !important;
+  height: 100% !important;
   padding: 0 10px !important;
   border-radius: var(--rounded-md) !important;
-  background: var(--bg-2) !important;
-  border: 1px solid var(--bdr) !important;
-  color: var(--t2) !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--t3) !important;
   font-family: var(--display) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+  transition: color 0.15s ease !important;
   user-select: none !important;
   white-space: nowrap !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 .analysis-btn:hover {
-  background: var(--bg-3) !important;
   color: var(--t1) !important;
-  border-color: var(--bdr-m, var(--bdr)) !important;
+  background: transparent !important;
+  border: none !important;
 }
 .analysis-btn.has-active {
-  background: var(--amber-d) !important;
   color: var(--amber) !important;
-  border-color: var(--amber) !important;
+  background: transparent !important;
+  border: none !important;
+}
+.analysis-btn.has-active .ico svg {
+  stroke: var(--amber) !important;
 }
 .analysis-chevron {
   font-size: 8px !important;
   color: var(--t4) !important;
-  transition: transform 0.2s var(--ease-snap) !important;
+  transition: transform 0.2s var(--ease-snap), color 0.15s ease !important;
   margin-left: 2px !important;
+}
+.analysis-btn:hover .analysis-chevron {
+  color: var(--t2) !important;
 }
 .analysis-btn.has-active .analysis-chevron {
   color: var(--amber) !important;
+}
+.analysis-dropdown.open .analysis-btn:not(.has-active) {
+  color: var(--t1) !important;
 }
 .analysis-dropdown.open .analysis-chevron {
   transform: rotate(180deg) !important;

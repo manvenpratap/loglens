@@ -88,6 +88,17 @@ async def test_analysis_dropdown_toggle_and_items(page_with_data):
     btn_text = await dropdown_btn.locator('.analysis-btn-text').text_content()
     assert 'Stats' in btn_text, f'Expected Stats in button text, got {btn_text}'
 
+    # Ensure no duplicate inner box or border: button has transparent background and zero border width
+    btn_styles = await dropdown_btn.evaluate("""el => {
+        const style = window.getComputedStyle(el);
+        return {
+            bg: style.backgroundColor,
+            borderWidth: style.borderWidth
+        };
+    }""")
+    assert btn_styles['borderWidth'] == '0px', f"Expected zero border width (no inner box), got {btn_styles['borderWidth']}"
+    assert btn_styles['bg'] in ('rgba(0, 0, 0, 0)', 'transparent'), f"Expected transparent background, got {btn_styles['bg']}"
+
     assert_no_critical_errors(page)
 
 

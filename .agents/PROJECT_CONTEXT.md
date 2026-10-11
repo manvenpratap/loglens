@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Analysis Dropdown Unified Navigation Pill Styling (v6.9.109 — COMPLETED)**:
+  - **Root Cause Resolved**:
+    - Previously, `#btn-analysis` had hardcoded button styles (`height: 28px !important; background: var(--bg-2) !important; border: 1px solid var(--bdr) !important;`) and `.has-active` styles (`background: var(--amber-d) !important; border: 1px solid var(--amber) !important;`).
+    - Meanwhile, `#vtabs-pill` (the gliding active tab indicator with amber background and border) also slid behind `#btn-analysis` when an analysis view (Graph, Stats, Query, 3D, Diff) was active.
+    - This resulted in an unsightly double-box visual defect: an outer 41px amber rounded pill (`#vtabs-pill`) containing an inner 28px amber bordered button (`.analysis-btn.has-active`).
+  - **Seamless Navigation Pill Integration**:
+    - Updated `.analysis-dropdown` and `.analysis-btn` styles to seamlessly match `.hdr .vt`: `height: 100% !important; background: transparent !important; border: none !important; position: relative !important; z-index: 1 !important;`.
+    - Removed the redundant inner border and background on `.has-active`. The gliding `#vtabs-pill` now acts as the sole pill container, creating a single, clean, pixel-perfect amber indicator matching Split, Timeline, Tree, and Traces pills across both Obsidian Dark and Ivory Light themes.
+    - Updated `#btn-analysis .ico svg` to turn amber on `.has-active`, with smooth chevron rotation when opened.
+  - **Full Regression Test Suite Passed**: Updated `tests/test_22_two_tier_navigation.py` to assert zero inner border and transparent background on `#btn-analysis`. Full suite passing with **133 passed / 133 total** tests (0 failures).
+
 - **Waterfall Mode Layout Constraints & Viewport Scrolling (v6.9.108 — COMPLETED)**:
   - **Root Cause Resolved**:
     - Previously, when switching to Waterfall (Gantt) mode (`vm === 'gantt'`), `UI.rv` appended an unstyled `<div>` into `#res` without `flex: 1` or `min-height: 0`, and left `#res.style.overflowY = 'auto'`.
