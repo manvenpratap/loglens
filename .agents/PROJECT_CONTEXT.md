@@ -3,6 +3,13 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Extended 24-Color Thread Palette & Zero Duplicate Collision Avoidance (v6.9.128 — COMPLETED)**:
+  - **24 Curated Distinct Thread Colors**:
+    - Expanded `TR.THREAD_PALETTE` from 6 basic colors to 24 hand-calibrated, high-contrast OKLCH hues spanning the entire color wheel (Sky Blue, Royal Purple, Emerald Green, Warm Amber, Bright Cyan, Coral Red, Vivid Magenta, Chartreuse Lime, Electric Indigo, Sunflower Gold, Deep Teal, Orchid, Cobalt, Tangerine, Mint, Plum, Cerulean, Peridot, Peach, Lavender, Turquoise, Ruby, Apricot, Sapphire).
+    - Prevents repeating colors across multi-threaded thread pools (e.g., worker-1 through worker-16 and beyond).
+  - **Dynamic Golden-Angle Fallback for Arbitrary Thread Counts**:
+    - For high thread counts (>24) or unindexed threads, `TR.getThreadColor(thread)` deterministically synthesizes equidistant unique hues using the golden angle (`(idx * 137.508) % 360`) to mathematically guarantee zero color collisions.
+
 - **Thread Span Uniform Background Color & macOS Header Icons Sizing (v6.9.127 — COMPLETED)**:
   - **Uniform Thread Background Color Across Entire Span**:
     - Unified the background of `.tree-row` and `.tree-thr-group-row` to use `--thr-bg` consistently for all rows belonging to a thread.

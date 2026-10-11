@@ -11666,22 +11666,53 @@ const TR={
   _showFilterBar: false,
   
   THREAD_PALETTE: [
-    { id: 'sky',    col: 'var(--blue)',   bg: 'color-mix(in srgb, var(--blue) 12%, transparent)',   bdr: 'color-mix(in srgb, var(--blue) 35%, transparent)' },
-    { id: 'purple', col: 'var(--purple)', bg: 'color-mix(in srgb, var(--purple) 12%, transparent)', bdr: 'color-mix(in srgb, var(--purple) 35%, transparent)' },
-    { id: 'green',  col: 'var(--green)',  bg: 'color-mix(in srgb, var(--green) 12%, transparent)',  bdr: 'color-mix(in srgb, var(--green) 35%, transparent)' },
-    { id: 'amber',  col: 'var(--amber)',  bg: 'color-mix(in srgb, var(--amber) 12%, transparent)',  bdr: 'color-mix(in srgb, var(--amber) 35%, transparent)' },
-    { id: 'cyan',   col: 'var(--cyan)',   bg: 'color-mix(in srgb, var(--cyan) 12%, transparent)',   bdr: 'color-mix(in srgb, var(--cyan) 35%, transparent)' },
-    { id: 'red',    col: 'var(--red)',    bg: 'color-mix(in srgb, var(--red) 12%, transparent)',    bdr: 'color-mix(in srgb, var(--red) 35%, transparent)' }
+    { id: 'sky',       col: 'var(--blue)',             bg: 'color-mix(in srgb, var(--blue) 12%, transparent)',             bdr: 'color-mix(in srgb, var(--blue) 35%, transparent)' },
+    { id: 'purple',    col: 'var(--purple)',           bg: 'color-mix(in srgb, var(--purple) 12%, transparent)',           bdr: 'color-mix(in srgb, var(--purple) 35%, transparent)' },
+    { id: 'green',     col: 'var(--green)',            bg: 'color-mix(in srgb, var(--green) 12%, transparent)',            bdr: 'color-mix(in srgb, var(--green) 35%, transparent)' },
+    { id: 'amber',     col: 'var(--amber)',            bg: 'color-mix(in srgb, var(--amber) 12%, transparent)',            bdr: 'color-mix(in srgb, var(--amber) 35%, transparent)' },
+    { id: 'cyan',      col: 'var(--cyan)',             bg: 'color-mix(in srgb, var(--cyan) 12%, transparent)',             bdr: 'color-mix(in srgb, var(--cyan) 35%, transparent)' },
+    { id: 'red',       col: 'var(--red)',              bg: 'color-mix(in srgb, var(--red) 12%, transparent)',              bdr: 'color-mix(in srgb, var(--red) 35%, transparent)' },
+    { id: 'magenta',   col: 'oklch(68% 0.19 350)',     bg: 'color-mix(in srgb, oklch(68% 0.19 350) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(68% 0.19 350) 35%, transparent)' },
+    { id: 'lime',      col: 'oklch(73% 0.17 125)',     bg: 'color-mix(in srgb, oklch(73% 0.17 125) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(73% 0.17 125) 35%, transparent)' },
+    { id: 'indigo',    col: 'oklch(62% 0.18 280)',     bg: 'color-mix(in srgb, oklch(62% 0.18 280) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(62% 0.18 280) 35%, transparent)' },
+    { id: 'gold',      col: 'oklch(76% 0.16 85)',      bg: 'color-mix(in srgb, oklch(76% 0.16 85) 12%, transparent)',      bdr: 'color-mix(in srgb, oklch(76% 0.16 85) 35%, transparent)' },
+    { id: 'teal',      col: 'oklch(69% 0.14 175)',     bg: 'color-mix(in srgb, oklch(69% 0.14 175) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(69% 0.14 175) 35%, transparent)' },
+    { id: 'orchid',    col: 'oklch(67% 0.19 328)',     bg: 'color-mix(in srgb, oklch(67% 0.19 328) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(67% 0.19 328) 35%, transparent)' },
+    { id: 'cobalt',    col: 'oklch(63% 0.17 260)',     bg: 'color-mix(in srgb, oklch(63% 0.17 260) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(63% 0.17 260) 35%, transparent)' },
+    { id: 'tangerine', col: 'oklch(69% 0.18 42)',      bg: 'color-mix(in srgb, oklch(69% 0.18 42) 12%, transparent)',      bdr: 'color-mix(in srgb, oklch(69% 0.18 42) 35%, transparent)' },
+    { id: 'mint',      col: 'oklch(74% 0.14 158)',     bg: 'color-mix(in srgb, oklch(74% 0.14 158) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(74% 0.14 158) 35%, transparent)' },
+    { id: 'plum',      col: 'oklch(61% 0.16 338)',     bg: 'color-mix(in srgb, oklch(61% 0.16 338) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(61% 0.16 338) 35%, transparent)' },
+    { id: 'cerulean',  col: 'oklch(68% 0.14 228)',     bg: 'color-mix(in srgb, oklch(68% 0.14 228) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(68% 0.14 228) 35%, transparent)' },
+    { id: 'peridot',   col: 'oklch(71% 0.15 110)',     bg: 'color-mix(in srgb, oklch(71% 0.15 110) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(71% 0.15 110) 35%, transparent)' },
+    { id: 'peach',     col: 'oklch(71% 0.17 35)',      bg: 'color-mix(in srgb, oklch(71% 0.17 35) 12%, transparent)',      bdr: 'color-mix(in srgb, oklch(71% 0.17 35) 35%, transparent)' },
+    { id: 'lavender',  col: 'oklch(72% 0.14 290)',     bg: 'color-mix(in srgb, oklch(72% 0.14 290) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(72% 0.14 290) 35%, transparent)' },
+    { id: 'turquoise', col: 'oklch(71% 0.14 192)',     bg: 'color-mix(in srgb, oklch(71% 0.14 192) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(71% 0.14 192) 35%, transparent)' },
+    { id: 'ruby',      col: 'oklch(63% 0.20 12)',      bg: 'color-mix(in srgb, oklch(63% 0.20 12) 12%, transparent)',      bdr: 'color-mix(in srgb, oklch(63% 0.20 12) 35%, transparent)' },
+    { id: 'apricot',   col: 'oklch(73% 0.16 68)',      bg: 'color-mix(in srgb, oklch(73% 0.16 68) 12%, transparent)',      bdr: 'color-mix(in srgb, oklch(73% 0.16 68) 35%, transparent)' },
+    { id: 'sapphire',  col: 'oklch(65% 0.16 242)',     bg: 'color-mix(in srgb, oklch(65% 0.16 242) 12%, transparent)',     bdr: 'color-mix(in srgb, oklch(65% 0.16 242) 35%, transparent)' }
   ],
 
   getThreadColor(thread) {
     if (!thread) return this.THREAD_PALETTE[0];
     const list = S.threads || [];
-    const idx = list.indexOf(thread);
-    if (idx >= 0) return this.THREAD_PALETTE[idx % this.THREAD_PALETTE.length];
-    let h = 0;
-    for (let i = 0; i < thread.length; i++) h = (h * 31 + thread.charCodeAt(i)) >>> 0;
-    return this.THREAD_PALETTE[h % this.THREAD_PALETTE.length];
+    let idx = list.indexOf(thread);
+    if (idx < 0) {
+      let h = 0;
+      for (let i = 0; i < thread.length; i++) h = (h * 31 + thread.charCodeAt(i)) >>> 0;
+      idx = h;
+    }
+    if (idx < this.THREAD_PALETTE.length) {
+      return this.THREAD_PALETTE[idx];
+    }
+    // Dynamic distinct generation for arbitrary thread counts to prevent duplicates
+    const hue = Math.round((idx * 137.508) % 360);
+    const col = `oklch(68% 0.16 ${hue})`;
+    return {
+      id: `dyn-${idx}`,
+      col: col,
+      bg: `color-mix(in srgb, ${col} 12%, transparent)`,
+      bdr: `color-mix(in srgb, ${col} 35%, transparent)`
+    };
   },
 
   groupTreeByThread(tree) {
