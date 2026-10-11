@@ -147,7 +147,98 @@ async def test_split_view_auto_alignment_and_sync_scroll(page_with_data):
     gantt_top = await g_rows.evaluate('el => el.scrollTop')
     assert abs(gantt_top - 150) < 2, f"Scroll sync Tree->Gantt failed: {gantt_top}"
 
+    assert_no_critical_errors(page)
+
+
 @pytest.mark.asyncio
+async def test_split_view_simultaneous_sideways_timeline_advancement(page_with_data):
+    """In Split view, scrolling down advances the timeline horizontally to reveal Gantt bars."""
+    page = page_with_data
+    await page.evaluate("""() => {
+        const _t0 = Date.now() - 10000;
+        const _mk = (i, thr, lvl, dur, cid) => ({
+            id: 'n' + i,
+            ruleId: 'r1', ruleName: 'Op-' + i,
+            elementName: 'Step-' + i, payload: '{}',
+            thread: thr,
+            timestamp: _t0 + i * 250,
+            duration: dur,
+            endTimestamp: _t0 + i * 250 + dur,
+            behavior: 'push', level: lvl,
+            slaBreached: (dur > 2000),
+            correlationId: cid || 'trace-1',
+            rawLine: 'line ' + i, events: [], visualStyle: {}
+        });
+        S.trees.main = Array.from({length: 45}, (_, i) => _mk(i, 'main', i % 5 === 0 ? 'ERROR' : 'INFO', 160 + (i % 4) * 80, 'TX-A'));
+        UI.render(S.trees, S.threads, S.stats);
+        UI.svm('split');
+    }""")
+    await page.wait_for_timeout(350)
+
+    # 1. At top of split view, verify initial horizontal scroll is 0
+    init_state = await page.evaluate("""() => {
+        const gRows = document.querySelector('.res-split .sp-pane:first-child .g-rows');
+        const gHdr = document.querySelector('.res-split .sp-pane:first-child .g-hdr');
+        return {
+            scrollLeft: gRows.scrollLeft,
+            hdrLeft: gHdr ? gHdr.scrollLeft : 0,
+            maxScrollLeft: gRows.scrollWidth - gRows.clientWidth
+        };
+    }""")
+    assert init_state['scrollLeft'] == 0
+    assert init_state['hdrLeft'] == 0
+    assert init_state['maxScrollLeft'] > 0, "Split view timeline track must have horizontal overflow to glide sideways"
+
+    # 2. Scroll down vertically halfway in Tree pane
+    tree_vscroll = page.locator('#tree-vscroll')
+    await tree_vscroll.evaluate('el => { el.scrollTop = 450; el.dispatchEvent(new Event("scroll")); }')
+    await page.wait_for_timeout(200)
+
+    halfway_state = await page.evaluate("""() => {
+        const gRows = document.querySelector('.res-split .sp-pane:first-child .g-rows');
+        const gHdr = document.querySelector('.res-split .sp-pane:first-child .g-hdr');
+        return {
+            scrollTop: gRows.scrollTop,
+            scrollLeft: gRows.scrollLeft,
+            hdrLeft: gHdr ? gHdr.scrollLeft : 0
+        };
+    }""")
+    assert halfway_state['scrollTop'] == 450
+    assert halfway_state['scrollLeft'] > 0, "Timeline should scroll sideways to reveal advancing Gantt bars"
+    assert halfway_state['hdrLeft'] == halfway_state['scrollLeft'], "Timeline header must scroll in lockstep"
+
+    # 3. Scroll down further towards bottom
+    await tree_vscroll.evaluate('el => { el.scrollTop = 850; el.dispatchEvent(new Event("scroll")); }')
+    await page.wait_for_timeout(200)
+
+    bottom_state = await page.evaluate("""() => {
+        const gRows = document.querySelector('.res-split .sp-pane:first-child .g-rows');
+        const gHdr = document.querySelector('.res-split .sp-pane:first-child .g-hdr');
+        return {
+            scrollLeft: gRows.scrollLeft,
+            hdrLeft: gHdr ? gHdr.scrollLeft : 0
+        };
+    }""")
+    assert bottom_state['scrollLeft'] > halfway_state['scrollLeft'], "Advancing further down must advance timeline further right"
+    assert bottom_state['hdrLeft'] == bottom_state['scrollLeft']
+
+    # 4. Scroll back up to top (scrollTop = 0)
+    await tree_vscroll.evaluate('el => { el.scrollTop = 0; el.dispatchEvent(new Event("scroll")); }')
+    await page.wait_for_timeout(200)
+
+    top_return_state = await page.evaluate("""() => {
+        const gRows = document.querySelector('.res-split .sp-pane:first-child .g-rows');
+        return {
+            scrollLeft: gRows.scrollLeft
+        };
+    }""")
+    assert top_return_state['scrollLeft'] == 0, "Returning to top must glide timeline back to start"
+
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+
 async def test_split_view_responsive_column_reveal(page_with_data):
     """In 50/50 split only fitting columns display; dragging responsively reveals additional columns."""
     page = page_with_data

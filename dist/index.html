@@ -836,6 +836,13 @@ html,body{
   min-width: auto !important;
 }
 
+/* Split View Timeline Simultaneous Sideways Advancement Track */
+.res-split .g-trk,
+.res-split .g-ch:last-child {
+  min-width: max(calc(100% - 170px), 1100px) !important;
+}
+
+
 @container pane (max-width: 860px) {
   .tree-th-ts,
   .tree-filter-ts,
@@ -13832,12 +13839,86 @@ const UI={
 
     let isSyncing = false;
     let syncSource = null;
+    let isAutoSideways = false;
+    let lastManualHScroll = 0;
+    let prevScrollLeft = gRows.scrollLeft;
+    let prevScrollTop = gRows.scrollTop;
+
+    // Simultaneous sideways advancement on timeline as user traverses down the tree
+    const syncSidewaysTimeline = (scrollTop) => {
+      if (Date.now() - lastManualHScroll < 600) return;
+      const maxScrollLeft = gRows.scrollWidth - gRows.clientWidth;
+      if (maxScrollLeft <= 0) return;
+
+      const clientH = gRows.clientHeight;
+      const scrollH = gRows.scrollHeight;
+      const maxScrollTop = scrollH - clientH;
+      if (maxScrollTop <= 0) return;
+
+      let targetScrollLeft = 0;
+      if (scrollTop <= 2) {
+        targetScrollLeft = 0;
+      } else if (scrollTop >= maxScrollTop - 2) {
+        targetScrollLeft = maxScrollLeft;
+      } else {
+        const vertRatio = Math.max(0, Math.min(1, scrollTop / maxScrollTop));
+        let timeRatio = vertRatio;
+
+        const activeRows = (typeof GR !== 'undefined' && GR._activeRows) ? GR._activeRows : null;
+        if (activeRows && activeRows.length > 0) {
+          const focalIdx = Math.min(activeRows.length - 1, Math.floor(vertRatio * (activeRows.length - 1)));
+          const r = activeRows[focalIdx];
+          if (r && r.sp != null) {
+            timeRatio = Math.max(0, Math.min(1, r.sp / 100));
+          }
+        }
+
+        // Blend 70% active bar time position + 30% continuous forward scroll momentum
+        const blendRatio = (timeRatio * 0.7) + (vertRatio * 0.3);
+        targetScrollLeft = Math.round(Math.max(0, Math.min(maxScrollLeft, blendRatio * maxScrollLeft)));
+      }
+
+      if (Math.abs(gRows.scrollLeft - targetScrollLeft) > 1) {
+        isAutoSideways = true;
+        gRows.scrollLeft = targetScrollLeft;
+        prevScrollLeft = targetScrollLeft;
+        const gHdr = l.querySelector('.g-hdr');
+        if (gHdr) gHdr.scrollLeft = targetScrollLeft;
+        requestAnimationFrame(() => {
+          isAutoSideways = false;
+        });
+      }
+    };
 
     const onGanttScroll = () => {
+      if (isAutoSideways) {
+        prevScrollLeft = gRows.scrollLeft;
+        prevScrollTop = gRows.scrollTop;
+        return;
+      }
+      const curLeft = gRows.scrollLeft;
+      const curTop = gRows.scrollTop;
+      const deltaLeft = Math.abs(curLeft - prevScrollLeft);
+      const deltaTop = Math.abs(curTop - prevScrollTop);
+
+      // If user performed a manual horizontal scroll (e.g. shift-wheel or horizontal pan)
+      if (deltaLeft > 2 && deltaTop === 0) {
+        lastManualHScroll = Date.now();
+        prevScrollLeft = curLeft;
+        const gHdr = l.querySelector('.g-hdr');
+        if (gHdr) gHdr.scrollLeft = curLeft;
+        return;
+      }
+      prevScrollLeft = curLeft;
+      prevScrollTop = curTop;
+
       if (isSyncing && syncSource !== 'gantt') return;
       isSyncing = true;
       syncSource = 'gantt';
-      treeScroll.scrollTop = gRows.scrollTop;
+      treeScroll.scrollTop = curTop;
+
+      syncSidewaysTimeline(curTop);
+
       requestAnimationFrame(() => {
         isSyncing = false;
         syncSource = null;
@@ -13848,7 +13929,12 @@ const UI={
       if (isSyncing && syncSource !== 'tree') return;
       isSyncing = true;
       syncSource = 'tree';
-      gRows.scrollTop = treeScroll.scrollTop;
+      const curTop = treeScroll.scrollTop;
+      gRows.scrollTop = curTop;
+      prevScrollTop = curTop;
+
+      syncSidewaysTimeline(curTop);
+
       requestAnimationFrame(() => {
         isSyncing = false;
         syncSource = null;

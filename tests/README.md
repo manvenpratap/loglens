@@ -13,14 +13,14 @@ The test suite is organized into 5 consolidated test modules for fast, session-s
 tests/
 ├── conftest.py                                      # Shared fixtures, browser lifecycle & helpers
 ├── requirements.txt                                 # Python dependencies (playwright, pytest, pytest-asyncio)
-├── test_consolidated_navigation_and_shell.py        # 23 tests: Navigation, onboarding, 2-tier tabs, split sync, responsive containers
+├── test_consolidated_navigation_and_shell.py        # 24 tests: Navigation, onboarding, 2-tier tabs, split sync, simultaneous sideways advancement, responsive containers
 ├── test_consolidated_parser_and_ingestion.py        # 14 tests: Web Worker parser, multiline stack traces, Log4j XML, unparsed analyzer
 ├── test_consolidated_rules_and_regex.py             # 30 tests: Rule wizard, regex builder, token palette, group combiner, undo/redo
 ├── test_consolidated_settings_and_accessibility.py  # 7 tests: 4-pillar settings, a11y skip links, focus mode, AI insights
-└── test_consolidated_visualizations_and_telemetry.py# 22 tests: Execution tree, resizable columns, thread grouping, split view row color sync
+└── test_consolidated_visualizations_and_telemetry.py# 23 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio
 ```
 
-**Total: 96 automated regression tests** with 100% pass rate.
+**Total: 98 automated regression tests** with 100% pass rate.
 
 ---
 
@@ -81,12 +81,12 @@ Injects 20 `main` thread events (every 5th marked as `ERROR`) and 10 `worker` th
 
 | Module Suite | Scope & Features Covered | Test Count |
 |---|---|:---:|
-| `test_consolidated_navigation_and_shell.py` | • Onboarding modal lifecycle & dismissal<br>• Demo showcase end-to-end user journey<br>• 2-Tier navigation header & Analysis dropdown<br>• Command Palette (`Cmd+K` / `Ctrl+K`) search & actions<br>• Split View 32px lockstep row vertical alignment<br>• Split View bidirectional loop-safe scroll synchronization<br>• Split View CSS Container Query responsive column adaptation<br>• Stat Cards scope exclusivity in Stats view & Graph persistence | **23** |
+| `test_consolidated_navigation_and_shell.py` | • Onboarding modal lifecycle & dismissal<br>• Demo showcase end-to-end user journey<br>• 2-Tier navigation header & Analysis dropdown<br>• Command Palette (`Cmd+K` / `Ctrl+K`) search & actions<br>• Split View 32px lockstep row vertical alignment<br>• Split View bidirectional loop-safe scroll synchronization<br>• **Split View simultaneous sideways timeline advancement** (revealing Gantt bars dynamically as user scrolls down)<br>• Split View CSS Container Query responsive column adaptation<br>• Stat Cards scope exclusivity in Stats view & Graph persistence | **24** |
 | `test_consolidated_parser_and_ingestion.py` | • Web Worker parser (`WM.parse`) orchestration<br>• Stack behavior engine: `push`, `pop`, `inline` events<br>• Multiline block parsing & stack trace aggregation<br>• Log4j / Logback XML configuration importer<br>• Unparsed log line analyzer & regex pattern generator<br>• Multi-thread discovery scan (first 200 KB) & `.gz` decompression | **14** |
 | `test_consolidated_rules_and_regex.py` | • Unified rule creation wizard & preset templates<br>• Token palette (timestamp, UUID, thread, duration tokens)<br>• Interactive regex builder tracks & visual segments<br>• Multi-capture group combiner (`#rg-combine-bar`)<br>• Regex undo/redo history buffer<br>• Auto-detect log format & file retention<br>• Custom log pattern setup journey & 100% parse verification | **30** |
 | `test_consolidated_settings_and_accessibility.py` | • 4-Pillar settings dashboard (Rules, Sources, Storage, Prefs)<br>• Keyboard navigation (`J`, `K`, numbers `1`–`4`, shortcuts)<br>• Accessibility skip links & ARIA treeitem / tab roles<br>• Focus Mode (`F` hotkey) and uncluttered workspace<br>• AI Insights engine & anomaly summary cards | **7** |
 | `test_consolidated_visualizations_and_telemetry.py` | • Event Inspector drawer lifecycle, metadata & auto-close<br>• Trace Explorer navigation, metrics table & search<br>• **Dynamic Trace ID Filter Dropdown** mounting, search & clearing<br>• Execution Tree 3-zone architecture & depth filtering (`D1..D3`, `All`)<br>• Execution Tree **CSS custom properties virtualized column resizing**<br>• Execution Tree **inline column filter bar (`#tree-filter-bar`)**<br>• Execution Tree **critical path toggle (`✦ Critical`) & dimming**<br>• Execution Tree **thread grouping (`.tree-thr-group-row`) & color coding**<br>• **Split View row background color & border sync with Tree**<br>• **Advanced Swimlane Studio**: interval-scheduling concurrency stacking, KPI headers, crosshair guideline, hover card, search filtering, and multi-mode grouping<br>• Interactive inline `{ } Payload` button & anchored popover dialog<br>• Timeline Navigator mini-map (`TIMELINE_NAV`) view isolation & zoom<br>• Waterfall timeline bounded scrolling & header synchronization | **23** |
-| **Total** | **Comprehensive End-to-End Regression Test Suite** | **97** |
+| **Total** | **Comprehensive End-to-End Regression Test Suite** | **98** |
 
 ---
 

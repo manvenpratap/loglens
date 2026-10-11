@@ -3,6 +3,23 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Split View Simultaneous Sideways Timeline Advancement (v6.9.133 — COMPLETED)**:
+  - **Simultaneous Sideways Timeline Camera Tracking**:
+    - Enhanced `UI._setupSplitSync` so that as the user traverses down the tree vertically (either scrolling in Tree or Waterfall), the timeline simultaneously glides sideways horizontally (`syncSidewaysTimeline`), following the waterfall cascade down the mountain.
+    - Implemented mathematical focus tracking that blends active bar time position (70%) with continuous forward scroll momentum (30%):
+      `blendRatio = (timeRatio * 0.7) + (vertRatio * 0.3); targetScrollLeft = blendRatio * maxScrollLeft;`.
+    - Mathematically guarantees that the Gantt chart bar corresponding to the focal row currently entering the viewport is always brought into the visible track window.
+    - Synchronized the timeline header axis (`.g-hdr`) in 1-to-1 lockstep with `.g-rows.scrollLeft` so elapsed time markers glide across simultaneously.
+  - **Ample Horizontal Travel Track Sizing**:
+    - Added `.res-split .g-trk, .res-split .g-ch:last-child { min-width: max(calc(100% - 170px), 1100px) !important; }` in Split View.
+    - Provides a generous 500px–750px of horizontal travel distance even at 1x zoom, ensuring high time resolution without cramping.
+  - **Intentional Horizontal Exploration Protection**:
+    - Detects manual horizontal gestures (e.g. shift-scroll or trackpad sideways swipe: `deltaLeft > 2 && deltaTop === 0`) and pauses automatic sideways advancement for 600ms, respecting user-directed horizontal exploration while instantly resuming on vertical traversal.
+    - Uses loop-safe `isAutoSideways` guard flag to prevent programmatic horizontal scroll events from misidentifying as manual gestures.
+  - **Automated Regression Verification**:
+    - Added `test_split_view_simultaneous_sideways_timeline_advancement` in `tests/test_consolidated_navigation_and_shell.py`.
+    - All 98/98 tests passing across all test modules (100% pass rate).
+
 - **Advanced Swimlane Studio with Concurrency Stacking, Telemetry, and Multi-Grouping (v6.9.132 — COMPLETED)**:
   - **Interval-Scheduling Concurrency Stacking**:
     - Greedy interval-scheduling tier allocation algorithm for concurrent async spans within lanes. Overlapping child spans and parallel worker executions now render in discrete vertical tiers (`_swimTier`), preventing span masking or bar overlap.
