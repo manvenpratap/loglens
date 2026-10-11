@@ -3,6 +3,21 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Column Header Architecture (v6.9.115 — COMPLETED)**:
+  - **3-Zone Swiss Column Header (`.tree-hdr`)**:
+    - Embedded a dedicated uppercase column header bar directly below `.tree-toolbar` in `TR.render`.
+    - Aligned columns 1:1 with `.tree-row` telemetry zones:
+      - Zone 1 (`.tree-hdr-spine`, 420px): "Operation & Hierarchy"
+      - Zone 2 (`.tree-hdr-payload`, 1fr): "Payload Preview"
+      - Zone 3 (`.tree-hdr-telemetry`, 320px): Fixed-width sub-columns for Latency (`44px`), Duration (`60px`), Self (`66px`), Thread (`60px`), and Timestamp (`76px`).
+  - **Horizontal Scroll Synchronization**:
+    - Connected `#tree-vscroll` scroll listener to `#tree-hdr` (`treeHdr.scrollLeft = this._container.scrollLeft`), guaranteeing flawless column alignment on narrow tablet and mobile viewports.
+  - **Semantic Accessibility & Theming**:
+    - Added ARIA `role="row"` and `role="columnheader"` attributes.
+    - Calibrated colors using `var(--t3)` on `var(--bg-1)` with 1px `var(--bdr)` hairline border for seamless dark and light theme integration.
+  - **Regression Verification**:
+    - Expanded `tests/test_25_execution_tree_telemetry.py` covering header visibility, label matching, and scroll synchronization.
+
 - **Impeccable Antipattern Remediation: 0 Findings Across All Detectors (v6.9.114 — COMPLETED)**:
   - **Full Audit Resolution (297 → 0 findings)**:
     - Resolved all 297 design-system, contrast, sizing, and layout antipatterns detected by `./.agents/skills/impeccable/scripts/impeccable detect --json loglens.html` down to 0.

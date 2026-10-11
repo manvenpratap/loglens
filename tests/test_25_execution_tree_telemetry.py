@@ -21,6 +21,20 @@ async def test_execution_tree_three_zone_architecture(page_with_data):
     tree_vscroll = page.locator('#tree-vscroll')
     await expect(tree_vscroll).to_be_visible(timeout=5000)
 
+    # Column header row
+    tree_hdr = page.locator('#tree-hdr')
+    await expect(tree_hdr).to_be_visible()
+    await expect(tree_hdr.locator('.tree-hdr-spine')).to_contain_text('Operation & Hierarchy')
+    await expect(tree_hdr.locator('.tree-hdr-payload')).to_contain_text('Payload Preview')
+    await expect(tree_hdr.locator('.tree-th-dur')).to_contain_text('Duration')
+    await expect(tree_hdr.locator('.tree-th-ts')).to_contain_text('Timestamp')
+
+    # Horizontal scroll synchronization (when viewport overflows 820px min-width)
+    await page.set_viewport_size({'width': 600, 'height': 800})
+    await page.evaluate("() => { const vs = document.getElementById('tree-vscroll'); vs.scrollLeft = 50; vs.dispatchEvent(new Event('scroll')); }")
+    assert await page.evaluate("() => document.getElementById('tree-hdr').scrollLeft") == 50
+    await page.set_viewport_size({'width': 1400, 'height': 900})
+
     # First row has 3 zones
     row = page.locator('.tree-row').first
     await expect(row).to_be_visible()

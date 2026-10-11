@@ -2024,6 +2024,98 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   background: var(--bg-0) !important;
 }
 
+/* Tree Column Header Architecture */
+.tree-hdr {
+  display: flex !important;
+  align-items: center !important;
+  background: var(--bg-1) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  font-family: var(--display) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--t3) !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  flex-shrink: 0 !important;
+  overflow-x: hidden !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+.tree-hdr-inner {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 820px !important;
+  padding-right: 14px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+.tree-hdr-spine {
+  flex: 0 0 420px !important;
+  width: 420px !important;
+  min-width: 320px !important;
+  max-width: 440px !important;
+  padding-left: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.tree-hdr-payload {
+  flex: 1 1 auto !important;
+  min-width: 100px !important;
+  padding: 0 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.tree-hdr-telemetry {
+  flex: 0 0 320px !important;
+  width: 320px !important;
+  min-width: 320px !important;
+  margin-left: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  padding-right: 4px !important;
+  box-sizing: border-box !important;
+  font-family: var(--mono) !important;
+}
+.tree-th-spark {
+  width: 44px !important;
+  text-align: left !important;
+  flex-shrink: 0 !important;
+}
+.tree-th-dur {
+  width: 60px !important;
+  min-width: 60px !important;
+  text-align: right !important;
+  flex-shrink: 0 !important;
+}
+.tree-th-self {
+  width: 66px !important;
+  min-width: 66px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+}
+.tree-th-thread {
+  width: 60px !important;
+  min-width: 60px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+}
+.tree-th-ts {
+  width: 76px !important;
+  min-width: 76px !important;
+  text-align: right !important;
+  flex-shrink: 0 !important;
+}
+
 /* Tree Row Architecture */
 .tree-row {
   display: flex !important;
@@ -11147,6 +11239,19 @@ const TR={
           <button class="btn btn-g btn-xs" id="btn-tree-col" style="margin-left:4px; flex-shrink:0;">Collapse All</button>
           <button class="btn btn-g btn-xs" id="btn-tree-map-toggle" title="Toggle Minimap" style="margin-left:4px; flex-shrink:0;">Map</button>
         </div>
+        <div class="tree-hdr" id="tree-hdr" role="row" aria-label="Tree Column Headers">
+          <div class="tree-hdr-inner">
+            <div class="tree-hdr-spine" role="columnheader">Operation &amp; Hierarchy</div>
+            <div class="tree-hdr-payload" role="columnheader">Payload Preview</div>
+            <div class="tree-hdr-telemetry">
+              <span class="tree-th-spark" role="columnheader">Latency</span>
+              <span class="tree-th-dur" role="columnheader">Duration</span>
+              <span class="tree-th-self" role="columnheader">Self</span>
+              <span class="tree-th-thread" role="columnheader">Thread</span>
+              <span class="tree-th-ts" role="columnheader">Timestamp</span>
+            </div>
+          </div>
+        </div>
         <div id="tree-scroll-wrap" style="flex:1; position:relative; min-height:0; display:flex; flex-direction:column;">
           <div class="vscroll-container tree-vscroll" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:auto; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
             <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
@@ -11159,6 +11264,13 @@ const TR={
     this._container = el.querySelector('#tree-vscroll');
     this._spacer = el.querySelector('#tree-spacer');
     this._content = el.querySelector('#tree-content');
+    
+    const treeHdr = el.querySelector('#tree-hdr');
+    if (treeHdr && this._container) {
+      this._container.addEventListener('scroll', () => {
+        treeHdr.scrollLeft = this._container.scrollLeft;
+      }, { passive: true });
+    }
     
     this._container.addEventListener('scroll', () => this.drawVisible());
     this._container.addEventListener('click', (e) => {
