@@ -3,6 +3,22 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **UI Layout Collision & Overlap Remediation (v6.9.117 — COMPLETED)**:
+  - **Top Navigation Header Collision Fix**:
+    - Relocated `#trace-filter` input from centered `.vtabs` to `.action-bar-left` directly beside `#vt-chips` thread selector, freeing ~130px in the top header.
+    - Updated `.hdr .vtabs` with `position: relative !important;` so the animated `#vtabs-pill` indicator computes pixel-perfect offsets under all layout modes.
+    - Added `@media (max-width: 1380px)` breakpoint allowing `.vtabs.on` to switch gracefully to relative flow with `margin: 0 auto`, eliminating the collision with `.hr` status badges (`#hdr-sla`, `#hdr-outliers`) on standard 1280px/1366px screens.
+  - **Execution Tree Column Header & Telemetry Strip Alignment**:
+    - Changed the sparkbar column header label from `LATENCY` to `SLA`, cleanly separating it from `DURATION` and eliminating the `LATENCYDURATION` text collision.
+    - Expanded `.tree-hdr-telemetry` and `.tree-telemetry-col` width from 320px to 378px with calibrated sub-column widths: SLA sparkbar (`44px`), Duration (`68px`), Self time (`78px`), Thread pill (`68px`), and Millisecond timestamp (`84px`).
+    - Eliminated all text clipping and horizontal overflow in tree row badges (`self 13.0ms`, `WORKER-1`, `02:37:04.970`).
+  - **Minimap Synchronization Alignment**:
+    - Synchronized `margin-right: 56px` on `#tree-hdr` whenever `#tree-scroll-wrap` activates `.has-minimap`, achieving 0px column header vs data row horizontal drift.
+  - **Full Verification & Quality Gates**:
+    - Verified 0 element overlaps across all 10 view modes (`split`, `gantt`, `tree`, `traces`, `stats`, `search`, `anomaly`, `insights`, `3d`, `diff`).
+    - All 87 regression tests passed (100% pass rate in 83s).
+    - Ran `./.agents/skills/impeccable/scripts/impeccable detect --json loglens.html` with 0 antipattern findings (`[]`).
+
 - **Stat Cards Scope Exclusivity & Navigation Persistence Architecture (v6.9.116 — COMPLETED)**:
   - **Relocated Stat Cards Exclusively to Stats View**:
     - Removed global injection of `#stats-bar` into `#res` during initial parse in `UI.render`.

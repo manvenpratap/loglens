@@ -673,6 +673,7 @@ html,body{
 /* Header view switcher overrides */
 .hdr .vtabs {
   display: none;
+  position: relative !important;
   align-items: center;
   background: transparent !important;
   border-bottom: none !important;
@@ -696,11 +697,14 @@ html,body{
   z-index: 10 !important;
   margin: 0 !important;
 }
-@media (max-width: 1050px) {
+@media (max-width: 1380px) {
   .hdr .vtabs.on {
-    position: static !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
     transform: none !important;
     margin: 0 auto !important;
+    max-width: none !important;
   }
 }
 .hdr .logo {
@@ -2074,9 +2078,9 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   box-sizing: border-box !important;
 }
 .tree-hdr-telemetry {
-  flex: 0 0 320px !important;
-  width: 320px !important;
-  min-width: 320px !important;
+  flex: 0 0 378px !important;
+  width: 378px !important;
+  min-width: 378px !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2088,30 +2092,31 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tree-th-spark {
   width: 44px !important;
-  text-align: left !important;
+  min-width: 44px !important;
+  text-align: center !important;
   flex-shrink: 0 !important;
 }
 .tree-th-dur {
-  width: 60px !important;
-  min-width: 60px !important;
+  width: 68px !important;
+  min-width: 68px !important;
   text-align: right !important;
   flex-shrink: 0 !important;
 }
 .tree-th-self {
-  width: 66px !important;
-  min-width: 66px !important;
+  width: 78px !important;
+  min-width: 78px !important;
   text-align: center !important;
   flex-shrink: 0 !important;
 }
 .tree-th-thread {
-  width: 60px !important;
-  min-width: 60px !important;
+  width: 68px !important;
+  min-width: 68px !important;
   text-align: center !important;
   flex-shrink: 0 !important;
 }
 .tree-th-ts {
-  width: 76px !important;
-  min-width: 76px !important;
+  width: 84px !important;
+  min-width: 84px !important;
   text-align: right !important;
   flex-shrink: 0 !important;
 }
@@ -2374,9 +2379,9 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 
 /* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
 .tree-telemetry-col {
-  flex: 0 0 320px !important;
-  width: 320px !important;
-  min-width: 320px !important;
+  flex: 0 0 378px !important;
+  width: 378px !important;
+  min-width: 378px !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2390,6 +2395,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tree-sparkbar {
   width: 44px !important;
+  min-width: 44px !important;
   height: 5px !important;
   background: var(--bg-3) !important;
   border-radius: var(--rounded-xs, 2px) !important;
@@ -2412,8 +2418,8 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   font-size: 12px !important;
   font-weight: 700 !important;
   color: var(--t1) !important;
-  width: 60px !important;
-  min-width: 60px !important;
+  width: 68px !important;
+  min-width: 68px !important;
   text-align: right !important;
   flex-shrink: 0 !important;
 }
@@ -2421,14 +2427,14 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   color: var(--red) !important;
 }
 .tree-metric-self {
-  font-size: 12px !important;
+  font-size: 11px !important;
   color: var(--t3) !important;
   background: var(--bg-2) !important;
   border: 1px solid var(--bdr-d) !important;
   border-radius: var(--rounded-xs, 2px) !important;
   padding: 1px 4px !important;
-  width: 66px !important;
-  min-width: 66px !important;
+  width: 78px !important;
+  min-width: 78px !important;
   box-sizing: border-box !important;
   text-align: center !important;
   white-space: nowrap !important;
@@ -2436,31 +2442,32 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tree-metric-self-none {
   display: inline-block !important;
-  width: 66px !important;
+  width: 78px !important;
+  min-width: 78px !important;
   flex-shrink: 0 !important;
 }
 .tree-thread-pill {
-  font-size: 12px !important;
+  font-size: 11px !important;
   color: var(--t3) !important;
   background: var(--bg-1) !important;
   border: 1px solid var(--bdr) !important;
   border-radius: var(--rounded-xs, 2px) !important;
-  padding: 1px 5px !important;
+  padding: 1px 4px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.02em !important;
   white-space: nowrap !important;
-  width: 60px !important;
-  min-width: 60px !important;
+  width: 68px !important;
+  min-width: 68px !important;
   box-sizing: border-box !important;
   text-align: center !important;
   flex-shrink: 0 !important;
 }
 .tree-metric-ts {
-  font-size: 12px !important;
+  font-size: 11px !important;
   color: var(--t4) !important;
-  width: 76px !important;
-  min-width: 76px !important;
+  width: 84px !important;
+  min-width: 84px !important;
   text-align: right !important;
   letter-spacing: -0.02em !important;
   white-space: nowrap !important;
@@ -4403,6 +4410,10 @@ body.focus-mode #res {
 /* Make tree-vscroll leave room for minimap */
 .has-minimap > #tree-vscroll,
 .has-minimap > .vscroll-container { margin-right: 56px; }
+.tw:has(.has-minimap) #tree-hdr,
+#tree-hdr.has-minimap-pad {
+  margin-right: 56px !important;
+}
 
 /* --- 3. Interactive Time Scrubber Guide --- */
 #ll-scrubber {
@@ -6171,9 +6182,11 @@ label[for="watch-auto-reload"] {
 #trace-filter {
   width: 128px !important;
   font-size: 12px !important;
-  padding: 4px 8px !important;
-  margin-left: 8px !important;
+  padding: 3px 8px !important;
+  margin-left: 0 !important;
   border-radius: var(--rounded-sm) !important;
+  height: 24px !important;
+  box-sizing: border-box !important;
 }
 
 /* vt-chips — no height jump when chips appear */
@@ -7537,12 +7550,13 @@ label[for="watch-auto-reload"] {
 /* Action bar below header */
 .action-bar {
   display: none;
-  height: 32px;
+  height: 36px;
   background: var(--bg-1);
   border-bottom: 1px solid var(--bdr);
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 4px 16px;
+  box-sizing: border-box;
   flex-shrink: 0;
   z-index: 150;
 }
@@ -7743,8 +7757,6 @@ label[for="watch-auto-reload"] {
         </div>
       </div>
     </div>
-
-    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="width:120px;font-size: 12px;padding:3px 6px;margin-left:8px;border-radius:var(--rounded-sm);display:none;"/>
   </div>
 
   <!-- Right-side slot system: A=live · B=status badges · C=state chips · D=actions · E=overflow -->
@@ -8542,6 +8554,7 @@ label[for="watch-auto-reload"] {
 <div class="action-bar" id="action-bar">
   <div class="action-bar-left">
     <div class="vt-chips" id="vt-chips"></div>
+    <input class="inp" id="trace-filter" placeholder="Trace ID Filter" title="Filter timeline by trace correlation ID" style="display:none;"/>
   </div>
   <div class="action-bar-right">
     <div class="hdr-search-container" id="hdr-search-container">
@@ -11244,7 +11257,7 @@ const TR={
             <div class="tree-hdr-spine" role="columnheader">Operation &amp; Hierarchy</div>
             <div class="tree-hdr-payload" role="columnheader">Payload Preview</div>
             <div class="tree-hdr-telemetry">
-              <span class="tree-th-spark" role="columnheader">Latency</span>
+              <span class="tree-th-spark" role="columnheader">SLA</span>
               <span class="tree-th-dur" role="columnheader">Duration</span>
               <span class="tree-th-self" role="columnheader">Self</span>
               <span class="tree-th-thread" role="columnheader">Thread</span>
@@ -11473,7 +11486,7 @@ const TR={
       : `<span class="tree-metric-self-none"></span>`;
     const thrHtml = (n.thread && S.threads && S.threads.length > 1) 
       ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` 
-      : `<span style="display:inline-block; width:60px; flex-shrink:0;"></span>`;
+      : `<span style="display:inline-block; width:68px; flex-shrink:0;"></span>`;
     const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : '';
 
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
@@ -22636,6 +22649,20 @@ const DIFF = {
   },
   
   render(container) {
+    if (!this.fileA || !this.fileB) {
+      container.innerHTML = `
+        <div class="emp-card" style="padding:60px 20px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:24px; color:var(--amber); margin-bottom:12px;">⚖</div>
+          <div style="font-size:16px; font-weight:700; color:var(--t1);">Side-by-Side Run Comparison</div>
+          <div style="color:var(--t3); max-width:440px; margin:8px auto 16px; font-size:13px; line-height:1.5;">
+            Compare two parsed log runs to identify performance regressions, rule count differences, and execution flow divergences.
+          </div>
+          <div style="font-size:12px; color:var(--t4); font-family:var(--mono);">Load at least 2 log files in the Files drawer or drop them to compare.</div>
+        </div>
+      `;
+      return;
+    }
+
     const sumA = this.report.reduce((s, r) => s + r.countA, 0);
     const sumB = this.report.reduce((s, r) => s + r.countB, 0);
     
@@ -22687,6 +22714,11 @@ const DIFF = {
           ▲ ${incCount} rules increased · ▼ ${decCount} rules decreased · ⧓ ${eqCount} unchanged
         </div>
       `;
+    } else {
+      const thr = Object.keys(this.treeA || {})[0] || 'main';
+      const seqA = this.getSequence(this.treeA?.[thr] || []);
+      const seqB = this.getSequence(this.treeB?.[thr] || []);
+      const diffs = this.lcsDiff(seqA, seqB);
       const diffRows = diffs.map(d => {
         let leftCol = '';
         let rightCol = '';
@@ -25749,6 +25781,8 @@ const OVERDRIVE = (() => {
       if (!parent) return;
       parent.style.position = 'relative';
       parent.classList.add('has-minimap');
+      const hdr = document.getElementById('tree-hdr');
+      if (hdr) hdr.classList.add('has-minimap-pad');
 
       // Build minimap DOM
       this._wrap = document.createElement('div');
@@ -25961,6 +25995,8 @@ const OVERDRIVE = (() => {
     detach() {
       const w = document.getElementById('ll-minimap-wrap');
       if (w) { w.parentElement?.classList.remove('has-minimap'); w.remove(); }
+      const hdr = document.getElementById('tree-hdr');
+      if (hdr) hdr.classList.remove('has-minimap-pad');
       if (this._tooltip) { this._tooltip.remove(); this._tooltip = null; }
       this._canvas = null; this._ctx = null; this._container = null;
     }
