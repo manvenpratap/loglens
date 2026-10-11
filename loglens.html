@@ -68,9 +68,6 @@
   --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
   /* Execution Tree column widths */
   --tree-spine-w: 420px;
-  --tree-payload-w: auto;
-  --tree-payload-flex: 1 1 auto;
-  --tree-payload-min: 100px;
   --tree-spark-w: 44px;
   --tree-dur-w: 68px;
   --tree-self-w: 78px;
@@ -2062,29 +2059,16 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-payload-min, 100px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
   padding-right: 14px !important;
   height: 100% !important;
   box-sizing: border-box !important;
 }
 .tree-hdr-spine {
-  flex: 0 0 var(--tree-spine-w, 420px) !important;
-  width: var(--tree-spine-w, 420px) !important;
-  min-width: 180px !important;
+  flex: 1 1 var(--tree-spine-w, 420px) !important;
+  min-width: var(--tree-spine-w, 420px) !important;
   max-width: none !important;
   padding-left: 28px !important;
-  padding-right: 8px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-}
-.tree-hdr-payload {
-  flex: var(--tree-payload-flex, 1 1 auto) !important;
-  width: var(--tree-payload-w, auto) !important;
-  min-width: 80px !important;
-  padding: 0 12px !important;
   padding-right: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2185,7 +2169,7 @@ body.tree-col-resizing {
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-payload-min, 100px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
   box-sizing: border-box !important;
   padding-right: 14px !important;
   border-bottom: 1px solid var(--bdr-d) !important;
@@ -2227,14 +2211,13 @@ body.tree-col-resizing {
   z-index: 2;
 }
 
-/* Zone 1: Tree Spine & Identity (Fixed Column for Grid Alignment) */
+/* Zone 1: Tree Spine & Identity (Flex Column with calibrated minimum width) */
 .tree-spine {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  flex: 0 0 var(--tree-spine-w, 420px) !important;
-  width: var(--tree-spine-w, 420px) !important;
-  min-width: 180px !important;
+  flex: 1 1 var(--tree-spine-w, 420px) !important;
+  min-width: var(--tree-spine-w, 420px) !important;
   max-width: none !important;
   overflow: hidden !important;
   position: relative !important;
@@ -2400,42 +2383,111 @@ body.tree-col-resizing {
   gap: 3px !important;
 }
 
-/* Zone 2: Payload Preview (Center Column — strictly single-line monospace) */
-.tree-payload-col {
-  flex: var(--tree-payload-flex, 1 1 auto) !important;
-  width: var(--tree-payload-w, auto) !important;
-  min-width: 80px !important;
-  overflow: hidden !important;
+/* Interactive Payload Button & Popover */
+.tree-payload-btn {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 0 12px !important;
-  padding-right: 8px !important;
-  height: 100% !important;
-  box-sizing: border-box !important;
-}
-.tree-payload-preview {
-  display: inline-block !important;
+  gap: 4px !important;
+  height: 18px !important;
+  padding: 0 6px !important;
   font-family: var(--mono) !important;
-  font-size: 12px !important;
-  color: var(--t3) !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  background: color-mix(in srgb, var(--bg-2) 65%, transparent) !important;
-  border: 1px solid var(--bdr-d) !important;
-  border-radius: 4px !important;
-  padding: 1px 7px !important;
-  max-width: 100% !important;
-  line-height: 18px !important;
-  height: 20px !important;
-  box-sizing: border-box !important;
-  cursor: pointer !important;
-  transition: all 0.12s ease !important;
-}
-.tree-payload-preview:hover {
-  color: var(--t1) !important;
-  border-color: var(--amber) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--t2) !important;
   background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-xs, 2px) !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  transition: all 0.15s ease !important;
+  margin-left: 6px !important;
+  vertical-align: middle !important;
+}
+.tree-payload-btn:hover {
+  color: var(--amber) !important;
+  border-color: var(--amber) !important;
+  background: var(--amber-d) !important;
+  box-shadow: 0 0 6px var(--amber-g) !important;
+}
+.tree-payload-btn.active {
+  color: #000 !important;
+  background: var(--amber) !important;
+  border-color: var(--amber) !important;
+  font-weight: 700 !important;
+}
+.tree-payload-btn-icon {
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  opacity: 0.8 !important;
+}
+
+.tree-payload-popover {
+  position: fixed !important;
+  z-index: 1000 !important;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr-h, var(--bdr)) !important;
+  border-radius: var(--rounded-md, 6px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--bdr) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  max-height: 340px !important;
+  animation: treePopoverIn 0.14s var(--ease-snap) !important;
+  font-family: var(--ui) !important;
+}
+@keyframes treePopoverIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.tree-payload-popover-hdr {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 6px 10px !important;
+  background: var(--bg-2) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  font-size: 12px !important;
+  flex-shrink: 0 !important;
+  gap: 8px !important;
+}
+.tree-payload-popover-title {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+}
+.tree-payload-popover-tools {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+.tree-payload-popover-body {
+  padding: 8px 10px !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  max-height: 280px !important;
+  background: var(--bg-0) !important;
+}
+.tree-payload-code {
+  margin: 0 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  color: var(--t1) !important;
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+  user-select: text !important;
+}
+.tree-payload-len-badge {
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  background: var(--bg-3) !important;
+  padding: 1px 4px !important;
+  border-radius: var(--rounded-xs, 2px) !important;
 }
 
 /* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
@@ -11329,10 +11381,6 @@ const TR={
               <span>Operation &amp; Hierarchy</span>
               <span class="tree-col-resizer" data-col="spine" role="separator" aria-orientation="vertical" title="Drag to resize Operation &amp; Hierarchy, double-click to reset"></span>
             </div>
-            <div class="tree-hdr-payload" role="columnheader" data-col="payload">
-              <span>Payload Preview</span>
-              <span class="tree-col-resizer" data-col="payload" role="separator" aria-orientation="vertical" title="Drag to resize Payload Preview, double-click to reset"></span>
-            </div>
             <div class="tree-hdr-telemetry">
               <span class="tree-th-spark" role="columnheader" data-col="spark">
                 <span>SLA</span>
@@ -11377,6 +11425,7 @@ const TR={
       }, { passive: true });
     }
     
+    this.closePayloadPopover();
     this._container.addEventListener('scroll', () => this.drawVisible());
     this._container.addEventListener('click', (e) => {
       if (!e.target.closest('.tree-row, button, input, .tchev, [data-a]')) {
@@ -11419,8 +11468,7 @@ const TR={
   },
 
   _colConfig: {
-    spine: { var: '--tree-spine-w', default: 420, min: 180, max: 1200, unit: 'px', name: 'Operation & Hierarchy' },
-    payload: { var: '--tree-payload-w', default: null, min: 80, max: 1500, unit: 'px', name: 'Payload Preview', isFlex: true },
+    spine: { var: '--tree-spine-w', default: 420, min: 240, max: 1200, unit: 'px', name: 'Operation & Hierarchy' },
     spark: { var: '--tree-spark-w', default: 44, min: 32, max: 140, unit: 'px', name: 'SLA' },
     dur: { var: '--tree-dur-w', default: 68, min: 48, max: 180, unit: 'px', name: 'Duration' },
     self: { var: '--tree-self-w', default: 78, min: 50, max: 180, unit: 'px', name: 'Self' },
@@ -11436,10 +11484,6 @@ const TR={
           const val = parseInt(saved, 10);
           if (!isNaN(val) && val >= cfg.min && val <= cfg.max) {
             document.documentElement.style.setProperty(cfg.var, val + cfg.unit);
-            if (cfg.isFlex) {
-              document.documentElement.style.setProperty('--tree-payload-flex', `0 0 ${val}${cfg.unit}`);
-              document.documentElement.style.setProperty('--tree-payload-min', `${val}${cfg.unit}`);
-            }
           }
         }
       } catch (e) {}
@@ -11456,10 +11500,6 @@ const TR={
       document.documentElement.style.setProperty(cfg.var, cfg.default + cfg.unit);
     } else {
       document.documentElement.style.removeProperty(cfg.var);
-    }
-    if (cfg.isFlex) {
-      document.documentElement.style.removeProperty('--tree-payload-flex');
-      document.documentElement.style.removeProperty('--tree-payload-min');
     }
     if (typeof toast === 'function') {
       toast(`Reset ${cfg.name} column width`, 'info');
@@ -11486,10 +11526,6 @@ const TR={
         if (newW < cfg.min) newW = cfg.min;
         if (newW > cfg.max) newW = cfg.max;
         document.documentElement.style.setProperty(cfg.var, newW + cfg.unit);
-        if (cfg.isFlex) {
-          document.documentElement.style.setProperty('--tree-payload-flex', `0 0 ${newW}${cfg.unit}`);
-          document.documentElement.style.setProperty('--tree-payload-min', `${newW}${cfg.unit}`);
-        }
       };
 
       const onPointerUp = (e) => {
@@ -11686,14 +11722,11 @@ const TR={
       : `<span class="tchev-leaf" style="margin-left:${chevMargin}px;"></span>`;
 
     // Zone 2: Payload Preview Chip (strictly single-line)
-    let payCol = '';
-    if (n.payload) {
-      payCol = `<div class="tree-payload-col"><span class="tree-payload-preview tpy" title="${esc(n.payload)}">${esc(n.payload)}</span></div>`;
-    } else {
-      payCol = `<div class="tree-payload-col"></div>`;
-    }
+    const payBtn = n.payload 
+      ? `<button class="tree-payload-btn" data-a="tree-payload" data-idx="${idx}" title="Click to reveal payload" aria-label="Reveal payload for ${esc(n.ruleName)}"><span class="tree-payload-btn-icon">{ }</span><span>Payload</span></button>` 
+      : '';
 
-    // Zone 3: Telemetry Strip (Sparkbar, Duration, Self Time, Thread, Timestamp)
+    // Zone 2: Telemetry Strip (Sparkbar, Duration, Self Time, Thread, Timestamp)
     const maxDur = this._maxDuration || 1;
     const durVal = n.duration != null ? n.duration : 0;
     const pct = Math.min(100, Math.max(3, Math.round((durVal / maxDur) * 100)));
@@ -11724,9 +11757,9 @@ const TR={
           ${elB}
           <div class="tree-status-group">
             ${ab}
+            ${payBtn}
           </div>
         </div>
-        ${payCol}
         <div class="tree-telemetry-col">
           ${sparkbarHtml}
           ${durHtml}
@@ -11753,6 +11786,13 @@ const TR={
       return;
     }
     
+    const payBtn = e.target.closest('[data-a="tree-payload"]');
+    if (payBtn) {
+      e.stopPropagation();
+      this.togglePayloadPopover(payBtn, n);
+      return;
+    }
+
     const traceBadge = e.target.closest('[data-a="trace-click"]');
     if (traceBadge) {
       S.activeTraceId = traceBadge.dataset.tc;
@@ -11773,6 +11813,159 @@ const TR={
     if (e.detail === 2) {
       UI.openAnn(n);
     }
+  },
+
+  _activePayloadBtn: null,
+  _popoverCleanup: null,
+
+  closePayloadPopover() {
+    const pop = document.getElementById('tree-payload-popover');
+    if (pop) pop.remove();
+    if (this._activePayloadBtn) {
+      this._activePayloadBtn.classList.remove('active');
+      this._activePayloadBtn = null;
+    }
+    if (this._popoverCleanup) {
+      this._popoverCleanup();
+      this._popoverCleanup = null;
+    }
+  },
+
+  togglePayloadPopover(anchorBtn, n) {
+    const existing = document.getElementById('tree-payload-popover');
+    if (existing && this._activePayloadBtn === anchorBtn) {
+      this.closePayloadPopover();
+      return;
+    }
+    this.closePayloadPopover();
+    if (!n || !n.payload) return;
+
+    this._activePayloadBtn = anchorBtn;
+    anchorBtn.classList.add('active');
+
+    const pop = document.createElement('div');
+    pop.id = 'tree-payload-popover';
+    pop.className = 'tree-payload-popover';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Payload Viewer');
+
+    let formatted = n.payload;
+    let isJson = false;
+    try {
+      const parsed = JSON.parse(n.payload);
+      formatted = JSON.stringify(parsed, null, 2);
+      isJson = true;
+    } catch (e) {}
+
+    let isShowingFormatted = isJson;
+
+    pop.innerHTML = `
+      <div class="tree-payload-popover-hdr">
+        <div class="tree-payload-popover-title">
+          <span style="font-family:var(--mono); color:var(--amber); font-weight:700;">{ }</span>
+          <span style="font-weight:600; color:var(--t1);">Payload</span>
+          <span class="badge b-gray" style="font-size:11px;">${esc(n.ruleName)}</span>
+          <span class="tree-payload-len-badge">${n.payload.length.toLocaleString()} chars</span>
+        </div>
+        <div class="tree-payload-popover-tools">
+          <button class="btn btn-xs btn-g" id="tree-popover-copy-btn" title="Copy payload">Copy</button>
+          ${isJson ? `<button class="btn btn-xs btn-g" id="tree-popover-fmt-btn" title="Toggle JSON formatting">Raw</button>` : ''}
+          <button class="btn btn-xs btn-g" id="tree-popover-ins-btn" title="Open in Event Inspector">Inspect</button>
+          <button class="btn btn-xs btn-g" id="tree-popover-close-btn" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="tree-payload-popover-body">
+        <pre class="tree-payload-code" id="tree-payload-code">${esc(isShowingFormatted ? formatted : n.payload)}</pre>
+      </div>
+    `;
+
+    document.body.appendChild(pop);
+    this.positionPayloadPopover(anchorBtn, pop);
+
+    const copyBtn = pop.querySelector('#tree-popover-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        try {
+          navigator.clipboard.writeText(n.payload);
+          if (typeof toast === 'function') toast('Payload copied to clipboard', 'success');
+        } catch (err) {
+          if (typeof toast === 'function') toast('Failed to copy', 'error');
+        }
+      });
+    }
+
+    const fmtBtn = pop.querySelector('#tree-popover-fmt-btn');
+    if (fmtBtn) {
+      fmtBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isShowingFormatted = !isShowingFormatted;
+        fmtBtn.textContent = isShowingFormatted ? 'Raw' : 'Format';
+        const codeEl = pop.querySelector('#tree-payload-code');
+        if (codeEl) codeEl.textContent = isShowingFormatted ? formatted : n.payload;
+      });
+    }
+
+    const insBtn = pop.querySelector('#tree-popover-ins-btn');
+    if (insBtn) {
+      insBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closePayloadPopover();
+        if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(n);
+      });
+    }
+
+    const closeBtn = pop.querySelector('#tree-popover-close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closePayloadPopover();
+      });
+    }
+
+    const onDocClick = (e) => {
+      if (!pop.contains(e.target) && !anchorBtn.contains(e.target)) {
+        this.closePayloadPopover();
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        this.closePayloadPopover();
+      }
+    };
+    const onScroll = () => {
+      this.closePayloadPopover();
+    };
+
+    const cleanup = () => {
+      document.removeEventListener('pointerdown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+      if (this._container) this._container.removeEventListener('scroll', onScroll);
+    };
+    this._popoverCleanup = cleanup;
+    document.addEventListener('pointerdown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    if (this._container) this._container.addEventListener('scroll', onScroll, { passive: true, once: true });
+  },
+
+  positionPayloadPopover(anchorBtn, pop) {
+    const rect = anchorBtn.getBoundingClientRect();
+    const popW = Math.min(540, window.innerWidth - 32);
+    let left = rect.left;
+    if (left + popW > window.innerWidth - 16) {
+      left = window.innerWidth - popW - 16;
+    }
+    if (left < 16) left = 16;
+
+    let top = rect.bottom + 6;
+    const estH = 240;
+    if (top + estH > window.innerHeight - 16 && rect.top > estH + 16) {
+      top = rect.top - estH - 6;
+    }
+
+    pop.style.left = `${Math.round(left)}px`;
+    pop.style.top = `${Math.round(top)}px`;
+    pop.style.width = `${popW}px`;
   },
 
   handleContextMenu(e) {
@@ -26347,6 +26540,16 @@ const OVERDRIVE = (() => {
 // Wire into tree click: open detail overlay on non-chevron click
 const _origTrHandleClick = TR.handleClick.bind(TR);
 TR.handleClick = function(e) {
+  const payBtn = e.target.closest('[data-a="tree-payload"]');
+  if (payBtn) {
+    _origTrHandleClick(e);
+    return;
+  }
+  const traceBadge = e.target.closest('[data-a="trace-click"]');
+  if (traceBadge) {
+    _origTrHandleClick(e);
+    return;
+  }
   const row = e.target.closest('.tree-row');
   // Chevron still expands/collapses, everything else opens the detail panel
   if (row && !e.target.classList.contains('tchev')) {

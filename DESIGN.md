@@ -259,10 +259,9 @@ LogLens organizes complex telemetry through an uncompromised spatial grid design
 - **Header Bar (`.hdr`)**: Fixed 50px height (`--hh: 50px`) spanning 100% width. Features a 120px branding anchor on the left, utility actions on the right, and the view switcher (`.hdr .vtabs.on`) mathematically centered (`position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10`).
 - **Sidebar (`#sb`)**: Fixed 322px width (`--sw: 322px`), collapsible to 0px via toggle button or `Alt+B`. Houses file upload dropzone, regex pattern editor, thread filter dropdown, and rule management cards.
 - **Canvas Container (`#res`)**: Bounded viewport container (`flex: 1; min-height: 0; overflow: hidden;`). Child views (Split, Timeline, Tree, Traces, Stats) inherit `flex: 1; min-height: 0; display: flex; flex-direction: column;` to guarantee isolated scrolling without parent page expansion.
-- **Swiss 3-Zone Execution Tree (`TR.renderRow`)**:
-  - **Zone 1 (Left — 420px Fixed Spine)**: Contains SVG branch guide lines (15px step increments), micro-chevrons, icons, operation name, element pill, and high-signal alert badges (`ERR`, `WARN`, `SLA BREACH`, `OUTLIER`, `✦ CRIT`, `#TraceID`).
-  - **Zone 2 (Center — Flexible Payload)**: Single-line monospace chip (`.tree-payload-preview`) with `white-space: nowrap !important; text-overflow: ellipsis !important; line-height: 18px; height: 20px;`, preventing multi-line wrap staircases.
-  - **Zone 3 (Right — 306px Fixed Telemetry Strip)**: Rigidly aligned columns: 44px sparkbar, 60px duration, 66px self-time, 60px thread pill, 76px timestamp.
+- **Swiss Execution Tree (`TR.renderRow`)**:
+  - **Zone 1 (Left — Resizable Flexible Spine)**: Contains SVG branch guide lines (15px step increments), micro-chevrons, icons, operation name, element pill, high-signal alert badges (`ERR`, `WARN`, `SLA BREACH`, `OUTLIER`, `✦ CRIT`, `#TraceID`), and interactive `{ } Payload` button (`.tree-payload-btn`) which opens the anchored syntax-highlighted payload popover on click.
+  - **Zone 2 (Right — Pinned Telemetry Strip)**: Rigidly aligned resizable columns: SLA sparkbar (`--tree-spark-w`), duration (`--tree-dur-w`), self-time (`--tree-self-w`), thread pill (`--tree-thread-w`), and timestamp (`--tree-ts-w`). Columns can be dragged to resize and double-clicked to reset.
 
 ### Responsive Breakpoints
 - **Desktop Wide (≥1280px)**: Full side-by-side split views, pinned 420px spine, expanded telemetry strips, detached minimap.
@@ -334,10 +333,9 @@ LogLens maintains a disciplined corner radius and form language inspired by Appl
 - **Top Stats Bar (`#stats-bar`):** Single-row flex container with `flex-shrink: 0`, height `62px`, border `1px solid var(--bdr)`, rounded `var(--rounded-lg)`. Inner `.sc` metric cells separated by `1px solid var(--bdr)` borders extending cleanly from top to bottom edge.
 
 ### Execution Tree Swiss Telemetry Rows (`TR.renderRow`)
-- **Row Architecture:** Strict 3-zone layout with hover highlight `background: var(--bg-1)`.
-- **Zone 1 (Spine & Identity):** Fixed 420px anchor across all tree depths; SVG guide lines with 15px step increments meeting chevrons at midpoints; operational icons (`.tico`), span name (`.tnm`), element pill (`.tel`), and diagnostic badges. Healthy `INFO` rows suppress redundant badges.
-- **Zone 2 (Payload Preview):** Single-line monospace chip (`.tree-payload-preview`) with `white-space: nowrap !important; text-overflow: ellipsis !important; line-height: 18px; height: 20px;`.
-- **Zone 3 (Pinned Telemetry Strip):** 306px fixed right cluster: 44px sparkbar with proportional fill (`var(--blue)`, `var(--yellow)`, `var(--red)`), 60px bold duration (`.tree-metric-dur`), 66px self-time (`.tree-metric-self`), 60px thread pill, and 76px millisecond timestamp (`HH:mm:ss.SSS`).
+- **Row Architecture:** 2-zone layout with hover highlight `background: var(--bg-1)` and virtual row height.
+- **Zone 1 (Spine & Identity):** Resizable anchor across all tree depths; SVG guide lines with 15px step increments meeting chevrons at midpoints; operational icons (`.tico`), span name (`.tnm`), element pill (`.tel`), diagnostic badges, and interactive `{ } Payload` button (`.tree-payload-btn`) revealing payload in anchored popover.
+- **Zone 2 (Pinned Telemetry Strip):** Resizable right cluster: sparkbar with proportional fill (`var(--blue)`, `var(--yellow)`, `var(--red)`), duration (`.tree-metric-dur`), self-time (`.tree-metric-self`), thread pill, and timestamp (`HH:mm:ss.SSS`). Headers and rows sync dynamically via CSS custom properties.
 
 ### Waterfall Gantt Timeline (`.gw`)
 - **Container Structure:** Pinned `.g-toolbar` and `.g-hdr` at top, scrollable `.g-rows` occupying remaining flex height (`overflow-y: auto`), pinned `.tl-nav-wrap` minimap at bottom.

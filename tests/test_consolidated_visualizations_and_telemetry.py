@@ -363,21 +363,21 @@ async def test_execution_tree_three_zone_architecture(page_with_data):
     tree_vscroll = page.locator('#tree-vscroll')
     await expect(tree_vscroll).to_be_visible(timeout=5000)
 
-    # Column header row
+    # Column header row (Payload Preview column is removed; payload is accessed via inline row button)
     tree_hdr = page.locator('#tree-hdr')
     await expect(tree_hdr).to_be_visible()
     await expect(tree_hdr.locator('.tree-hdr-spine')).to_contain_text('Operation & Hierarchy')
-    await expect(tree_hdr.locator('.tree-hdr-payload')).to_contain_text('Payload Preview')
+    assert await tree_hdr.locator('.tree-hdr-payload').count() == 0
     await expect(tree_hdr.locator('.tree-th-dur')).to_contain_text('Duration')
     await expect(tree_hdr.locator('.tree-th-ts')).to_contain_text('Timestamp')
 
-    # Horizontal scroll synchronization (when viewport overflows 820px min-width)
+    # Horizontal scroll synchronization (when viewport overflows min-width)
     await page.set_viewport_size({'width': 600, 'height': 800})
     await page.evaluate("() => { const vs = document.getElementById('tree-vscroll'); vs.scrollLeft = 50; vs.dispatchEvent(new Event('scroll')); }")
     assert await page.evaluate("() => document.getElementById('tree-hdr').scrollLeft") == 50
     await page.set_viewport_size({'width': 1400, 'height': 900})
 
-    # First row has 3 zones
+    # Rows have spine + telemetry strip; no .tree-payload-col
     row = page.locator('.tree-row').first
     await expect(row).to_be_visible()
 
@@ -385,13 +385,24 @@ async def test_execution_tree_three_zone_architecture(page_with_data):
     await expect(spine).to_be_visible()
     await expect(spine.locator('.tnm')).to_be_visible()
 
-    payload_col = row.locator('.tree-payload-col')
-    await expect(payload_col).to_be_attached()
+    assert await row.locator('.tree-payload-col').count() == 0
 
     telemetry_col = row.locator('.tree-telemetry-col')
     await expect(telemetry_col).to_be_visible()
     await expect(telemetry_col.locator('.tree-metric-dur')).to_be_visible()
     await expect(telemetry_col.locator('.tree-metric-ts')).to_be_visible()
+
+    # Interactive payload button reveals payload popover on click
+    payload_btn = page.locator('.tree-payload-btn').first
+    if await payload_btn.count() > 0:
+        await expect(payload_btn).to_be_visible()
+        await payload_btn.click()
+        popover = page.locator('#tree-payload-popover')
+        await expect(popover).to_be_visible()
+        await expect(popover.locator('#tree-payload-code')).to_be_visible()
+        # Close button closes popover
+        await popover.locator('#tree-popover-close-btn').click()
+        await expect(popover).not_to_be_attached()
 
     assert_no_critical_errors(page)
 @pytest.mark.asyncio
@@ -403,11 +414,11 @@ async def test_execution_tree_column_resizing(page_with_data):
     tree_hdr = page.locator('#tree-hdr')
     await expect(tree_hdr).to_be_visible()
 
-    # All 7 resizers exist
+    # All 6 resizers exist (spine, spark, dur, self, thread, ts)
     resizers = tree_hdr.locator('.tree-col-resizer')
-    assert await resizers.count() == 7
+    assert await resizers.count() == 6
 
-    col_keys = ['spine', 'payload', 'spark', 'dur', 'self', 'thread', 'ts']
+    col_keys = ['spine', 'spark', 'dur', 'self', 'thread', 'ts']
     for key in col_keys:
         resizer = tree_hdr.locator(f'.tree-col-resizer[data-col="{key}"]')
         await expect(resizer).to_be_visible()

@@ -500,16 +500,20 @@ async def test_event_inspector_renders_multiline_payload(blank_page):
     """, {"log": SAMPLE_CLASS_LOG, "cfg": TEST_CFG})
     await page.wait_for_timeout(300)
 
-    # Verify tree item renders with .tpy payload element
-    tree_payload = page.locator('.tpy')
-    await expect(tree_payload.first).to_be_visible()
-    payload_text = await tree_payload.first.inner_text()
-    assert "class OrderRequest" in payload_text
-    assert "private Long orderId" in payload_text
+    # Verify tree item renders with .tree-payload-btn and clicking reveals the payload in popover
+    tree_payload_btn = page.locator('.tree-payload-btn')
+    await expect(tree_payload_btn.first).to_be_visible()
 
-    # Verify CSS formatting on tree preview chip is nowrap for fixed-height virtual scrolling
-    ws = await tree_payload.first.evaluate("el => window.getComputedStyle(el).whiteSpace")
-    assert ws == "nowrap"
+    await tree_payload_btn.first.click()
+    popover = page.locator('#tree-payload-popover')
+    await expect(popover).to_be_visible()
+    popover_code = await popover.locator('#tree-payload-code').inner_text()
+    assert "class OrderRequest" in popover_code
+    assert "private Long orderId" in popover_code
+
+    # Close popover
+    await popover.locator('#tree-popover-close-btn').click()
+    await expect(popover).not_to_be_attached()
 
     # Click first tree row to open Event Inspector
     first_row = page.locator('.tree-row').first

@@ -3,6 +3,25 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Interactive Payload Button & Popover Architecture (v6.9.119 — COMPLETED)**:
+  - **Removed Payload Column from Table Grid**:
+    - De-cluttered the Execution Tree table grid by removing the static, truncated "Payload Preview" column from the header (`.tree-hdr-payload`) and virtualized rows (`.tree-payload-col`).
+    - Expanded the Operation & Hierarchy column (`.tree-spine`) to flex flexibly (`flex: 1 1 var(--tree-spine-w, 420px)`), giving log operations, branch guides, and element pills ample breathing room while retaining the draggable resizer handle on its right edge.
+    - Updated resizers to 6 calibrated telemetry columns: Operation & Hierarchy, SLA, Duration, Self Time, Thread, and Timestamp.
+  - **Interactive Inline Payload Button (`.tree-payload-btn`)**:
+    - Displayed a compact `{ } Payload` button in `.tree-status-group` exclusively on table rows that contain a payload (`n.payload`).
+    - Clean Swiss styling (`var(--mono)`, 11px font, amber hover glow, `.active` state during inspection).
+  - **Anchored Syntax-Aware Payload Popover (`#tree-payload-popover`)**:
+    - Clicking the payload button immediately reveals an anchored popover balloon positioned directly beneath the button with smart viewport boundary collision avoidance.
+    - Displays full payload content in monospace with automatic JSON formatting detection (`JSON.stringify(parsed, null, 2)`).
+    - Features quick action tools: `Copy` (with clipboard toast), `Raw / Format` JSON toggle, `Inspect` (opens in full Event Inspector), and `✕` close button.
+    - Dismisses gracefully on click outside, Esc key, tree scrolling, or clicking the button again.
+    - Bypassed monkey-patched `TR.handleClick` click interceptor for `[data-a="tree-payload"]` and `[data-a="trace-click"]`.
+  - **Full Regression Verification & Quality Gates**:
+    - Updated regression tests in `test_consolidated_visualizations_and_telemetry.py` and `test_consolidated_parser_and_ingestion.py`.
+    - 88/88 tests passed in 82.82s (100% pass rate).
+    - Ran `./.agents/skills/impeccable/scripts/impeccable detect --json loglens.html` with 0 antipattern findings (`[]`).
+
 - **Execution Tree Interactive Column Resizing Architecture (v6.9.118 — COMPLETED)**:
   - **CSS Custom Properties Virtualized Column System**:
     - Architected high-performance CSS variable binding system (`--tree-spine-w`, `--tree-payload-w`, `--tree-payload-flex`, `--tree-payload-min`, `--tree-spark-w`, `--tree-dur-w`, `--tree-self-w`, `--tree-thread-w`, `--tree-ts-w`) controlling header (`#tree-hdr`) and all virtualized rows (`#tree-content .tree-row`) simultaneously.
