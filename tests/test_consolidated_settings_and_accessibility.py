@@ -191,3 +191,66 @@ async def test_interactive_component_accessibility(page_with_data):
     assert await items.first.get_attribute('tabindex') == '0'
 
     assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_settings_appearance_and_sla_guardrails_configuration(page_with_data):
+    """Appearance options (mono font, rounded bars, contrast) and SLA guardrails (presets, recalc) configure state and DOM."""
+    page = page_with_data
+    await page.click('.vt[data-v="cfg"]')
+
+    # 1. Appearance options
+    appear_hdr = page.locator('#ss-appear-hdr')
+    await expect(appear_hdr).to_be_visible(timeout=3000)
+    await appear_hdr.click()
+
+    # Monospace font
+    mono_select = page.locator('#pref-mono-font')
+    await expect(mono_select).to_be_visible()
+    await mono_select.select_option('jetbrains')
+    mono_val = await page.evaluate("() => document.documentElement.style.getPropertyValue('--mono')")
+    assert 'JetBrains Mono' in mono_val
+
+    # Rounded gantt bars
+    rounded_toggle = page.locator('#pref-gantt-rounded')
+    await rounded_toggle.evaluate("el => { el.checked = true; el.dispatchEvent(new Event('change')); }")
+    has_rounded = await page.evaluate("() => document.body.classList.contains('g-rounded-bars')")
+    assert has_rounded, 'document.body should have g-rounded-bars class'
+
+    # High contrast borders
+    contrast_toggle = page.locator('#pref-high-contrast')
+    await contrast_toggle.evaluate("el => { el.checked = true; el.dispatchEvent(new Event('change')); }")
+    has_contrast = await page.evaluate("() => document.body.classList.contains('high-contrast-mode')")
+    assert has_contrast, 'document.body should have high-contrast-mode class'
+
+    # 2. SLA & Latency Guardrails
+    sla_hdr = page.locator('#ss-sla-hdr')
+    await expect(sla_hdr).to_be_visible(timeout=3000)
+    await sla_hdr.scroll_into_view_if_needed()
+    await sla_hdr.click()
+
+    sla_body = page.locator('#ss-sla-body')
+    await expect(sla_body).to_be_visible(timeout=3000)
+
+    # Click 500ms preset button
+    preset_500 = page.locator('.sla-preset-btn[data-sla="500"]')
+    await preset_500.scroll_into_view_if_needed()
+    await preset_500.click()
+
+    # Verify input updated to 500
+    sla_input = page.locator('#pref-global-sla')
+    assert await sla_input.input_value() == '500'
+    assert await page.evaluate("() => S.globalSlaThresholdMs") == 500
+
+    # Click Recalculate button
+    recalc_btn = page.locator('#btn-sla-recalc')
+    await recalc_btn.scroll_into_view_if_needed()
+    await recalc_btn.click()
+
+    # Verify summary text updated
+    summary = page.locator('#sla-recalc-summary')
+    await expect(summary).to_be_visible()
+    summary_text = await summary.inner_text()
+    assert 'Active breaches' in summary_text
+
+    assert_no_critical_errors(page)
+

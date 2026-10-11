@@ -2,6 +2,28 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Settings Appearance Options & SLA Guardrails Configuration (v6.9.138 — COMPLETED)**:
+  - **Comprehensive SVG Iconography & Visual Polish**:
+    - Embedded bespoke inline SVG icons across every configuration row in the Settings panel (`#p-gs`): IDB Cache, Web Worker Status, Animation Speed, Font Density, Gantt Bar Height, Search Highlighting, Monospace Font, Tree Spine Guides, Rounded Gantt Bars, High Contrast Borders, Global SLA Limit, Degradation Warning, Outlier Multiplier, and Breached Span Pulse.
+  - **Appearance Customization Suite**:
+    - **Monospace Font Engine (`#pref-mono-font`)**: Added selector dynamically switching `--mono` between System Default, JetBrains Mono, Fira Code, SF Mono / Menlo, and Consolas across timestamps, traces, and payload viewers.
+    - **Tree Spine Guides Toggle (`#pref-tree-guides`)**: Toggles `.hide-tree-guides` to show or conceal vertical hierarchy connectors in the execution tree.
+    - **Rounded Gantt Bars Toggle (`#pref-gantt-rounded`)**: Toggles `.g-rounded-bars` between sleek modern capsule bars and sharp industrial bars.
+    - **High Contrast Borders Toggle (`#pref-high-contrast`)**: Toggles `.high-contrast-mode` for enhanced visual border demarcation.
+  - **Interactive SLA & Latency Guardrails (`#ss-sla`)**:
+    - **Global SLA Threshold & Presets (`#pref-global-sla`)**: Fallback threshold for unconfigured rules with quick presets (200ms, 500ms, 1000ms, 2000ms, 5000ms).
+    - **Degradation Warning Slider (`#pref-sla-warn`)**: Sets latency warning threshold (50%–95%, default 80%) before SLA is officially breached.
+    - **Outlier Anomaly Factor (`#pref-outlier-mult`)**: Configures statistical outlier sensitivity (2.0×, 3.0×, 5.0× mean latency).
+    - **Breached Span Pulse Toggle (`#pref-sla-pulse`)**: Toggles glowing amber/red pulse animation on timeline and tree nodes.
+    - **Recalculation Engine (`#btn-sla-recalc`)**: Dynamically traverses active execution trees, updates `_isSlaBreach`, `_isSlaWarning`, and `_isOutlier`, and updates live breach counts without page reload.
+  - **Near SLA Warning Badges**:
+    - Added `⚠ NEAR SLA` amber badge rendering in `TR.renderRow` when span execution latency approaches threshold.
+  - **Export / Import Persistence (`SETTINGS_IO`)**:
+    - Settings export and import now seamlessly bundle and restore all appearance and SLA guardrail parameters.
+  - **Automated Regression Verification**:
+    - Added `test_settings_appearance_and_sla_guardrails_configuration` to `tests/test_consolidated_settings_and_accessibility.py`.
+    - Full regression test suite now passes 106/106 tests (100% pass rate in 102s).
+
 - **Execution Tree Multi-Row Selection & Seamless Rule Generation (v6.9.137 — COMPLETED)**:
   - **Intuitive Multi-Row Range Selection**:
     - Enhanced `TR` with full multi-selection state (`_selectedIndices = new Set()`, `_lastSelectedIdx = null`).

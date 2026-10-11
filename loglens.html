@@ -3507,6 +3507,53 @@ button:focus-visible,.stab:focus-visible,.vt:focus-visible,
 .toggle-sw input:checked + .toggle-track{background:var(--amber-g);border-color:var(--amber)}
 .toggle-sw input:checked ~ .toggle-thumb{transform:translateX(16px);background:var(--amber)}
 
+/* Preference row icon badge */
+.pref-ico{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:var(--rounded-sm);
+  background:var(--bg-2);border:1px solid var(--bdr);
+  color:var(--t3);flex-shrink:0;transition:all .15s ease;
+}
+.pref-row:hover .pref-ico{
+  color:var(--amber);border-color:var(--bdr-h);background:var(--bg-3);
+}
+.pref-row .pref-label > div:first-child{
+  display:flex;align-items:center;gap:6px;font-weight:600;color:var(--t1);
+}
+.sla-preset-group{
+  display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;
+}
+.sla-preset-btn{
+  font-size:11px;padding:2px 7px;border-radius:var(--rounded-sm);
+  background:var(--bg-2);border:1px solid var(--bdr);
+  color:var(--t3);cursor:pointer;transition:all .15s ease;
+  font-family:var(--mono);
+}
+.sla-preset-btn:hover{
+  background:var(--bg-3);color:var(--t1);border-color:var(--bdr-h);
+}
+.sla-preset-btn.active{
+  background:rgba(245,158,11,0.15);color:var(--amber);border-color:var(--amber);font-weight:700;
+}
+/* Visual appearance toggles */
+.hide-tree-guides .tree-guide-line,
+.hide-tree-guides .tree-guide-branch { opacity: 0 !important; }
+.g-rounded-bars .g-bar { border-radius: 6px !important; }
+body.high-contrast-mode {
+  --bdr: rgba(255,255,255,0.22);
+  --bdr-d: rgba(255,255,255,0.32);
+}
+body.no-sla-pulse .g-bar.g-sla-breach { animation: none !important; }
+.tbadge-near-sla {
+  background: rgba(245,158,11,0.15);
+  color: var(--amber);
+  border: 1px solid rgba(245,158,11,0.35);
+}
+.g-bar.g-sla-warning {
+  border-top: 1px dashed var(--amber) !important;
+  border-bottom: 1px dashed var(--amber) !important;
+}
+
 /* ============================================================
    CSS §22 · ACCESSIBILITY UTILITIES
    ============================================================ */
@@ -9120,11 +9167,11 @@ label[for="watch-auto-reload"] {
                   <span id="lfname" class="cm mono trunc" style="font-size: 12px;"></span>
                 </div>
                 <div class="dock-row">
-                  <button class="btn btn-p" id="btn-parse" disabled title="Parse selected log file under current configuration rules (Shortcut: Ctrl+Enter)">▶ Parse</button>
-                  <button class="btn btn-d btn-sm" id="btn-abort" disabled title="Abort current parsing job">■ Abort</button>
+                  <button class="btn btn-p" id="btn-parse" disabled title="Parse selected log file under current configuration rules (Shortcut: Ctrl+Enter)"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Parse</button>
+                  <button class="btn btn-d btn-sm" id="btn-abort" disabled title="Abort current parsing job"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Abort</button>
                   <span class="cm" style="font-size: 12px;color:var(--t4);margin-left:4px;user-select:none;">(Ctrl+Enter)</span>
                   <div id="cg-stream-ctrl" style="display:none;align-items:center;gap:6px;margin-left:auto;">
-                    <button class="btn btn-g btn-sm" id="btn-stream-pause" title="Pause or resume live streaming log data">⏸ Pause</button>
+                    <button class="btn btn-g btn-sm" id="btn-stream-pause" title="Pause or resume live streaming log data"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>Pause</button>
                     <span id="stream-buf-count" class="badge b-gray" style="font-family:var(--mono);">Buffer: 0 / 2000</span>
                   </div>
                 </div>
@@ -9145,8 +9192,8 @@ label[for="watch-auto-reload"] {
                   <input class="inp" id="stream-ws-url" placeholder="ws://localhost:8080/logs" style="font-size: 12px;padding:4px 6px;" value="ws://localhost:8080/logs"/>
                 </div>
                 <div class="flex gap1 mt1">
-                  <button class="btn btn-p btn-sm wf" id="btn-stream-conn">▶ Connect</button>
-                  <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled>■ Disconnect</button>
+                  <button class="btn btn-p btn-sm wf" id="btn-stream-conn"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Connect</button>
+                  <button class="btn btn-d btn-sm wf" id="btn-stream-disc" disabled><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Disconnect</button>
                 </div>
                 <button class="btn btn-sm wf mt1" id="btn-stream-clear"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span> Clear Log Stream</button>
               </div>
@@ -10521,6 +10568,10 @@ const S={
   activeTraceId:null,
   outlierCount:0,
   slaBreachCount:0,
+  globalSlaThresholdMs:2000,
+  slaWarningPct:80,
+  outlierMultiplier:3.0,
+  slaPulseAnimation:true,
   annotations:{},
   stats:null,
 };
@@ -13264,6 +13315,8 @@ const TR={
       ab += `<span class="tbadge tbadge-outlier">OUTLIER</span>`;
     } else if (n._isSlaBreach) {
       ab += `<span class="tbadge tbadge-sla">SLA BREACH</span>`;
+    } else if (n._isSlaWarning) {
+      ab += `<span class="tbadge tbadge-near-sla" title="Execution latency approaching SLA limit">⚠ NEAR SLA</span>`;
     }
     if (n._cause) ab += `<span class="tbadge tbadge-amber" title="Potential Cause: ${esc(n._cause)}">⚠ Cause</span>`;
     
@@ -16440,13 +16493,16 @@ const ANOMALY={
           n._isOutlier = false;
         }
 
-        // SLA Breach
-        if(n.behavior==='push' && n.duration!=null && n.slaThresholdMs != null && n.duration > n.slaThresholdMs){
+        // SLA Breach & Warning
+        const effectiveSla = n.slaThresholdMs != null ? n.slaThresholdMs : (S.globalSlaThresholdMs || 2000);
+        if(n.behavior==='push' && n.duration!=null && n.duration > effectiveSla){
           n._isSlaBreach = true;
           slaBreachCount++;
         } else {
           n._isSlaBreach = false;
         }
+        const warnPct = (S.slaWarningPct || 80) / 100;
+        n._isSlaWarning = !!(n.behavior==='push' && n.duration!=null && !n._isSlaBreach && n.duration >= (effectiveSla * warnPct));
 
         // Error Cascade (if slow, search nested inline events for errors)
         if(n._isOutlier || n._isSlaBreach){
@@ -23174,33 +23230,47 @@ S.appPrefs = {
   ganttBarHeight: 26,       // px
   showSwimlaneGrid: true,
   enableHighlighting: true,
+  treeGuideLines: true,
+  monoFont: 'default',
+  ganttRoundedBars: false,
+  highContrastBorders: false,
+  globalSlaThresholdMs: 2000,
+  slaWarningPct: 80,
+  outlierMultiplier: 3.0,
+  slaPulseAnimation: true,
 };
 
 const SETTINGS_ADDITIONS = (() => {
   function _buildHTML() {
+    const curSla = S.globalSlaThresholdMs || 2000;
+    const curWarn = S.slaWarningPct || 80;
+    const curBreaches = S.slaBreachCount || 0;
+
     return `
       <div class="div" style="margin:12px 0;"></div>
 
       <!-- Performance Section -->
       <div class="settings-section" id="ss-perf">
         <div class="settings-section-hdr" id="ss-perf-hdr" tabindex="0" role="button" aria-expanded="false">
-          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Performance
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Performance
           <span class="ss-chev">▶</span>
         </div>
         <div class="settings-sub-body" id="ss-perf-body">
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
             <div class="pref-label">
               <div>IDB Cache</div>
               <div class="pref-sub">IndexedDB stores parse results for instant reload</div>
             </div>
             <div class="pref-ctrl">
-              <button class="btn btn-xs btn-d" id="btn-idb-clear">Clear Cache</button>
+              <button class="btn btn-xs btn-d" id="btn-idb-clear"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;vertical-align:-1px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>Clear Cache</button>
             </div>
           </div>
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>
             <div class="pref-label">
               <div>Worker Status</div>
-              <div class="pref-sub">Web Worker parse engine</div>
+              <div class="pref-sub">Web Worker background parse engine</div>
             </div>
             <div class="pref-ctrl">
               <span class="badge b-green" id="pref-worker-status">Active</span>
@@ -23212,11 +23282,12 @@ const SETTINGS_ADDITIONS = (() => {
       <!-- Appearance Section -->
       <div class="settings-section" id="ss-appear" style="margin-top:8px;">
         <div class="settings-section-hdr" id="ss-appear-hdr" tabindex="0" role="button" aria-expanded="false">
-          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="11.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/></svg></span> Appearance
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 10 10v-.5a1.5 1.5 0 0 0-1.5-1.5H18c-.83 0-1.5-.67-1.5-1.5v-1A1.5 1.5 0 0 0 15 6.5h-1A1.5 1.5 0 0 1 12.5 5V2.5A1.5 1.5 0 0 0 11 1h1z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="11.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="14.5" r="1.5"/></svg></span> Appearance
           <span class="ss-chev">▶</span>
         </div>
         <div class="settings-sub-body" id="ss-appear-body">
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
             <div class="pref-label">
               <div>Animation Speed</div>
               <div class="pref-sub">Controls UI transition timing</div>
@@ -23228,9 +23299,10 @@ const SETTINGS_ADDITIONS = (() => {
             </div>
           </div>
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg></span>
             <div class="pref-label">
               <div>Font Density</div>
-              <div class="pref-sub">Controls tree row spacing</div>
+              <div class="pref-sub">Controls tree row spacing and vertical rhythm</div>
             </div>
             <div class="pref-ctrl">
               <select class="inp" id="pref-density" style="font-size: 12px;padding:3px 6px;width:auto;">
@@ -23241,9 +23313,10 @@ const SETTINGS_ADDITIONS = (() => {
             </div>
           </div>
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></span>
             <div class="pref-label">
               <div>Gantt Bar Height</div>
-              <div class="pref-sub">Rows in timeline view</div>
+              <div class="pref-sub">Timeline swimlane row height</div>
             </div>
             <div class="pref-ctrl" style="display:flex;align-items:center;gap:6px;">
               <input type="range" class="range-inp" id="pref-gantt-h"
@@ -23252,9 +23325,10 @@ const SETTINGS_ADDITIONS = (() => {
             </div>
           </div>
           <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <div class="pref-label">
               <div>Search Highlighting</div>
-              <div class="pref-sub">Highlight matches in tree view</div>
+              <div class="pref-sub">Highlight active query matches in tree view</div>
             </div>
             <div class="pref-ctrl">
               <label class="toggle-sw">
@@ -23262,6 +23336,141 @@ const SETTINGS_ADDITIONS = (() => {
                 <span class="toggle-track"></span>
                 <span class="toggle-thumb"></span>
               </label>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <div class="pref-label">
+              <div>Monospace Font</div>
+              <div class="pref-sub">Typography for timestamps and logs</div>
+            </div>
+            <div class="pref-ctrl">
+              <select class="inp" id="pref-mono-font" style="font-size: 12px;padding:3px 6px;width:auto;">
+                <option value="default" selected>System Default</option>
+                <option value="jetbrains">JetBrains Mono</option>
+                <option value="fira">Fira Code</option>
+                <option value="sf">SF Mono / Menlo</option>
+                <option value="consolas">Consolas</option>
+              </select>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="21"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M6 6h9M6 18h9"/></svg></span>
+            <div class="pref-label">
+              <div>Tree Spine Guides</div>
+              <div class="pref-sub">Show hierarchical connector lines in tree</div>
+            </div>
+            <div class="pref-ctrl">
+              <label class="toggle-sw">
+                <input type="checkbox" id="pref-tree-guides" checked>
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+              </label>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="5" ry="5"/></svg></span>
+            <div class="pref-label">
+              <div>Rounded Gantt Bars</div>
+              <div class="pref-sub">Soft capsule bars vs sharp industrial edges</div>
+            </div>
+            <div class="pref-ctrl">
+              <label class="toggle-sw">
+                <input type="checkbox" id="pref-gantt-rounded">
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+              </label>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z"/></svg></span>
+            <div class="pref-label">
+              <div>High Contrast Borders</div>
+              <div class="pref-sub">Increase panel and card border separation</div>
+            </div>
+            <div class="pref-ctrl">
+              <label class="toggle-sw">
+                <input type="checkbox" id="pref-high-contrast">
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLA & Latency Guardrails Section -->
+      <div class="settings-section" id="ss-sla" style="margin-top:8px;">
+        <div class="settings-section-hdr" id="ss-sla-hdr" tabindex="0" role="button" aria-expanded="false">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> SLA &amp; Latency Guardrails
+          <span class="ss-chev">▶</span>
+        </div>
+        <div class="settings-sub-body" id="ss-sla-body">
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+            <div class="pref-label">
+              <div>Global SLA Limit</div>
+              <div class="pref-sub">Fallback threshold when a rule has no custom SLA</div>
+              <div class="sla-preset-group">
+                <button type="button" class="sla-preset-btn ${curSla===200?'active':''}" data-sla="200">200ms</button>
+                <button type="button" class="sla-preset-btn ${curSla===500?'active':''}" data-sla="500">500ms</button>
+                <button type="button" class="sla-preset-btn ${curSla===1000?'active':''}" data-sla="1000">1000ms</button>
+                <button type="button" class="sla-preset-btn ${curSla===2000?'active':''}" data-sla="2000">2000ms</button>
+                <button type="button" class="sla-preset-btn ${curSla===5000?'active':''}" data-sla="5000">5000ms</button>
+              </div>
+            </div>
+            <div class="pref-ctrl" style="display:flex;align-items:center;gap:4px;">
+              <input type="number" class="inp" id="pref-global-sla" min="10" max="60000" step="50" value="${curSla}" style="width:70px;font-size:12px;padding:3px 6px;text-align:right;"/>
+              <span class="cm" style="font-size:11px;color:var(--t4);">ms</span>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+            <div class="pref-label">
+              <div>Degradation Warning</div>
+              <div class="pref-sub">Alert when span latency reaches % of SLA limit</div>
+            </div>
+            <div class="pref-ctrl" style="display:flex;align-items:center;gap:6px;">
+              <input type="range" class="range-inp" id="pref-sla-warn"
+                min="50" max="95" step="5" value="${curWarn}">
+              <span class="pref-val" id="pref-sla-warn-val">${curWarn}%</span>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span>
+            <div class="pref-label">
+              <div>Outlier Anomaly Factor</div>
+              <div class="pref-sub">Identify statistical latency spikes vs mean</div>
+            </div>
+            <div class="pref-ctrl">
+              <select class="inp" id="pref-outlier-mult" style="font-size:12px;padding:3px 6px;width:auto;">
+                <option value="2.0">2.0× (Sensitive)</option>
+                <option value="3.0" selected>3.0× (Standard)</option>
+                <option value="5.0">5.0× (Conservative)</option>
+              </select>
+            </div>
+          </div>
+          <div class="pref-row">
+            <span class="pref-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+            <div class="pref-label">
+              <div>Pulse Breached Spans</div>
+              <div class="pref-sub">Animated glowing accent on timeline SLA breaches</div>
+            </div>
+            <div class="pref-ctrl">
+              <label class="toggle-sw">
+                <input type="checkbox" id="pref-sla-pulse" checked>
+                <span class="toggle-track"></span>
+                <span class="toggle-thumb"></span>
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;padding-top:8px;border-top:1px solid var(--bdr);">
+            <button class="btn btn-p btn-sm wf" id="btn-sla-recalc" style="font-size:12px;padding:5px 10px;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="margin-right:4px;vertical-align:-1px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Apply &amp; Recalculate SLAs
+            </button>
+            <div id="sla-recalc-summary" style="font-size:11px;color:var(--t4);text-align:center;">
+              Active breaches: <strong style="color:${curBreaches > 0 ? 'var(--red)' : 'var(--green)'};">${curBreaches}</strong>
             </div>
           </div>
         </div>
@@ -23292,6 +23501,96 @@ const SETTINGS_ADDITIONS = (() => {
     });
   }
 
+  function _applyMonoFont(key) {
+    S.appPrefs.monoFont = key;
+    const fonts = {
+      default: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+      jetbrains: '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace',
+      fira: '"Fira Code", ui-monospace, Menlo, Consolas, monospace',
+      sf: '"SF Mono", Menlo, Monaco, Consolas, monospace',
+      consolas: 'Consolas, "Lucida Console", Monaco, monospace'
+    };
+    const val = fonts[key] || fonts.default;
+    document.documentElement.style.setProperty('--mono', val);
+  }
+
+  function _applyTreeGuides(enabled) {
+    S.appPrefs.treeGuideLines = enabled;
+    document.body.classList.toggle('hide-tree-guides', !enabled);
+  }
+
+  function _applyGanttRounded(enabled) {
+    S.appPrefs.ganttRoundedBars = enabled;
+    document.body.classList.toggle('g-rounded-bars', enabled);
+  }
+
+  function _applyHighContrast(enabled) {
+    S.appPrefs.highContrastBorders = enabled;
+    document.body.classList.toggle('high-contrast-mode', enabled);
+  }
+
+  function _applySlaPulse(enabled) {
+    S.appPrefs.slaPulseAnimation = enabled;
+    document.body.classList.toggle('no-sla-pulse', !enabled);
+  }
+
+  function recalcSla() {
+    let totalBreaches = 0;
+    let totalOutliers = 0;
+    const globalLimit = S.globalSlaThresholdMs || 2000;
+    const warnPct = (S.slaWarningPct || 80) / 100;
+    const mult = S.outlierMultiplier || 3.0;
+
+    const allDurations = [];
+    if (S.trees) {
+      Object.values(S.trees).forEach(tree => {
+        function collect(nodes) {
+          (nodes || []).forEach(n => {
+            if (n.behavior === 'push' && n.duration != null) allDurations.push(n.duration);
+            if (n.events) collect(n.events);
+          });
+        }
+        collect(tree);
+      });
+    }
+
+    const avgDur = allDurations.length ? (allDurations.reduce((a, b) => a + b, 0) / allDurations.length) : 500;
+    const outlierThresh = Math.max(1000, avgDur * mult);
+
+    if (S.trees) {
+      Object.values(S.trees).forEach(tree => {
+        function update(nodes) {
+          (nodes || []).forEach(n => {
+            if (n.behavior === 'push' && n.duration != null) {
+              const limit = n.slaThresholdMs != null ? n.slaThresholdMs : globalLimit;
+              n._isSlaBreach = n.duration > limit;
+              n._isSlaWarning = !n._isSlaBreach && (n.duration >= limit * warnPct);
+              n._isOutlier = n.duration > outlierThresh;
+              if (n._isSlaBreach) totalBreaches++;
+              if (n._isOutlier) totalOutliers++;
+            }
+            if (n.events) update(n.events);
+          });
+        }
+        update(tree);
+      });
+    }
+
+    S.slaBreachCount = totalBreaches;
+    S.outlierCount = totalOutliers;
+    if (S.stats) {
+      S.stats.slaBreaches = totalBreaches;
+    }
+
+    const statusEl = $('sla-recalc-summary');
+    if (statusEl) {
+      statusEl.innerHTML = `Active breaches: <strong style="color:${totalBreaches > 0 ? 'var(--red)' : 'var(--green)'};">${totalBreaches}</strong> · Outliers: <strong>${totalOutliers}</strong>`;
+    }
+
+    UI.rv();
+    toast(`SLA guardrails recalculated: ${totalBreaches} breaches found.`, totalBreaches > 0 ? 'warn' : 'success');
+  }
+
   function _wireSection(hdrId, bodyId) {
     const hdr = $(hdrId), body = $(bodyId);
     if (!hdr || !body) return;
@@ -23316,6 +23615,7 @@ const SETTINGS_ADDITIONS = (() => {
     // Wire section toggles
     _wireSection('ss-perf-hdr', 'ss-perf-body');
     _wireSection('ss-appear-hdr', 'ss-appear-body');
+    _wireSection('ss-sla-hdr', 'ss-sla-body');
 
     // IDB Clear button
     const idbBtn = $('btn-idb-clear');
@@ -23324,7 +23624,6 @@ const SETTINGS_ADDITIONS = (() => {
         if (IDB && IDB.clear) {
           IDB.clear().then(() => toast('IDB cache cleared.', 'success')).catch(() => toast('Could not clear cache.', 'warn'));
         } else {
-          // Fallback: delete the database
           indexedDB.deleteDatabase('LogLensCache');
           toast('IDB cache cleared.', 'success');
         }
@@ -23369,9 +23668,91 @@ const SETTINGS_ADDITIONS = (() => {
         }
       });
     }
+
+    // Monospace Font
+    const monoFont = $('pref-mono-font');
+    if (monoFont) {
+      monoFont.addEventListener('change', e => _applyMonoFont(e.target.value));
+    }
+
+    // Tree Guides Toggle
+    const treeGuides = $('pref-tree-guides');
+    if (treeGuides) {
+      treeGuides.addEventListener('change', e => _applyTreeGuides(e.target.checked));
+    }
+
+    // Rounded Gantt Bars Toggle
+    const ganttRound = $('pref-gantt-rounded');
+    if (ganttRound) {
+      ganttRound.addEventListener('change', e => _applyGanttRounded(e.target.checked));
+    }
+
+    // High Contrast Borders Toggle
+    const highContrast = $('pref-high-contrast');
+    if (highContrast) {
+      highContrast.addEventListener('change', e => _applyHighContrast(e.target.checked));
+    }
+
+    // Global SLA Input
+    const globalSla = $('pref-global-sla');
+    if (globalSla) {
+      globalSla.addEventListener('change', e => {
+        const val = parseInt(e.target.value, 10) || 2000;
+        S.globalSlaThresholdMs = val;
+        S.appPrefs.globalSlaThresholdMs = val;
+        document.querySelectorAll('.sla-preset-btn').forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.sla, 10) === val);
+        });
+      });
+    }
+
+    // SLA Preset Buttons
+    document.querySelectorAll('.sla-preset-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const val = parseInt(e.currentTarget.dataset.sla, 10);
+        if (globalSla) globalSla.value = val;
+        S.globalSlaThresholdMs = val;
+        S.appPrefs.globalSlaThresholdMs = val;
+        document.querySelectorAll('.sla-preset-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+      });
+    });
+
+    // SLA Warning Level Slider
+    const slaWarn = $('pref-sla-warn');
+    if (slaWarn) {
+      slaWarn.addEventListener('input', e => {
+        const val = parseInt(e.target.value, 10);
+        $('pref-sla-warn-val').textContent = val + '%';
+        S.slaWarningPct = val;
+        S.appPrefs.slaWarningPct = val;
+      });
+    }
+
+    // Outlier Multiplier Select
+    const outlierMult = $('pref-outlier-mult');
+    if (outlierMult) {
+      outlierMult.addEventListener('change', e => {
+        const val = parseFloat(e.target.value);
+        S.outlierMultiplier = val;
+        S.appPrefs.outlierMultiplier = val;
+      });
+    }
+
+    // SLA Pulse Toggle
+    const slaPulse = $('pref-sla-pulse');
+    if (slaPulse) {
+      slaPulse.addEventListener('change', e => _applySlaPulse(e.target.checked));
+    }
+
+    // Recalculate SLA Button
+    const btnRecalc = $('btn-sla-recalc');
+    if (btnRecalc) {
+      btnRecalc.addEventListener('click', () => recalcSla());
+    }
   }
 
-  return { init, _applyDensity, _applyAnimSpeed, _applyGanttH };
+  return { init, _applyDensity, _applyAnimSpeed, _applyGanttH, _applyMonoFont, _applyTreeGuides, _applyGanttRounded, _applyHighContrast, _applySlaPulse, recalcSla };
 })();
 
 SETTINGS_ADDITIONS.init();
@@ -23452,6 +23833,39 @@ const SETTINGS_IO = {
           if (gh) { gh.value = S.appPrefs.ganttBarHeight; $('pref-gantt-h-val').textContent = S.appPrefs.ganttBarHeight + 'px'; }
           const hl = $('pref-hl-toggle');
           if (hl) hl.checked = S.appPrefs.enableHighlighting !== false;
+          if (S.appPrefs.monoFont && $('pref-mono-font')) {
+            $('pref-mono-font').value = S.appPrefs.monoFont;
+            SETTINGS_ADDITIONS._applyMonoFont(S.appPrefs.monoFont);
+          }
+          if (S.appPrefs.treeGuideLines !== undefined && $('pref-tree-guides')) {
+            $('pref-tree-guides').checked = S.appPrefs.treeGuideLines;
+            SETTINGS_ADDITIONS._applyTreeGuides(S.appPrefs.treeGuideLines);
+          }
+          if (S.appPrefs.ganttRoundedBars !== undefined && $('pref-gantt-rounded')) {
+            $('pref-gantt-rounded').checked = S.appPrefs.ganttRoundedBars;
+            SETTINGS_ADDITIONS._applyGanttRounded(S.appPrefs.ganttRoundedBars);
+          }
+          if (S.appPrefs.highContrastBorders !== undefined && $('pref-high-contrast')) {
+            $('pref-high-contrast').checked = S.appPrefs.highContrastBorders;
+            SETTINGS_ADDITIONS._applyHighContrast(S.appPrefs.highContrastBorders);
+          }
+          if (S.appPrefs.globalSlaThresholdMs) {
+            S.globalSlaThresholdMs = S.appPrefs.globalSlaThresholdMs;
+            if ($('pref-global-sla')) $('pref-global-sla').value = S.globalSlaThresholdMs;
+          }
+          if (S.appPrefs.slaWarningPct) {
+            S.slaWarningPct = S.appPrefs.slaWarningPct;
+            if ($('pref-sla-warn')) $('pref-sla-warn').value = S.slaWarningPct;
+            if ($('pref-sla-warn-val')) $('pref-sla-warn-val').textContent = S.slaWarningPct + '%';
+          }
+          if (S.appPrefs.outlierMultiplier) {
+            S.outlierMultiplier = S.appPrefs.outlierMultiplier;
+            if ($('pref-outlier-mult')) $('pref-outlier-mult').value = S.outlierMultiplier;
+          }
+          if (S.appPrefs.slaPulseAnimation !== undefined && $('pref-sla-pulse')) {
+            $('pref-sla-pulse').checked = S.appPrefs.slaPulseAnimation;
+            SETTINGS_ADDITIONS._applySlaPulse(S.appPrefs.slaPulseAnimation);
+          }
         }
 
         // Theme
