@@ -100,6 +100,85 @@ async def test_split_view_activates_splitter(page_with_data):
     await page.click('.vt[data-v="split"]')
     await page.wait_for_timeout(400)
     await expect(page.locator('#sp-hdl')).to_be_visible(timeout=3000)
+
+@pytest.mark.asyncio
+async def test_split_view_auto_alignment_and_sync_scroll(page_with_data):
+    """Split view rows must auto-align vertically and auto-scroll in sync on both sides."""
+    page = page_with_data
+    # Inject 40 rows to ensure both sides have ample scrollable overflow
+    await page.evaluate("""() => {
+        const _t0 = Date.now() - 10000;
+        const _mk = (i, thr, lvl, dur, cid) => ({
+            id: 'n' + i,
+            ruleId: 'r1', ruleName: 'Op-' + i,
+            elementName: 'Element-' + i, payload: '{}',
+            thread: thr, timestamp: _t0 + i * 300, duration: dur,
+            endTimestamp: _t0 + i * 300 + dur,
+            behavior: 'push', level: lvl,
+            slaBreached: (dur > 2000),
+            correlationId: cid || 'trace-' + (i % 3 + 1),
+            rawLine: 'line ' + i, events: [], visualStyle: {}
+        });
+        S.trees.main = Array.from({length: 40}, (_, i) => _mk(i, 'main', 'INFO', 200, 'TX-A' + (i % 3)));
+        UI.render(S.trees, S.threads, S.stats);
+        UI.svm('split');
+    }""")
+    await page.wait_for_timeout(400)
+
+    g_row0 = page.locator('.g-row').first
+    t_row0 = page.locator('.tree-row').first
+    g_box = await g_row0.bounding_box()
+    t_box = await t_row0.bounding_box()
+    assert abs(g_box['y'] - t_box['y']) < 2, f"Y misalignment: Gantt={g_box['y']} vs Tree={t_box['y']}"
+    assert abs(g_box['height'] - 32) < 2, f"Gantt row height not 32: {g_box['height']}"
+    assert abs(t_box['height'] - 32) < 2, f"Tree row height not 32: {t_box['height']}"
+
+    # Sync scroll Gantt -> Tree
+    g_rows = page.locator('.g-rows')
+    tree_vscroll = page.locator('#tree-vscroll')
+    await g_rows.evaluate('el => { el.scrollTop = 100; el.dispatchEvent(new Event("scroll")); }')
+    await page.wait_for_timeout(150)
+    tree_top = await tree_vscroll.evaluate('el => el.scrollTop')
+    assert abs(tree_top - 100) < 2, f"Scroll sync Gantt->Tree failed: {tree_top}"
+
+    # Sync scroll Tree -> Gantt
+    await tree_vscroll.evaluate('el => { el.scrollTop = 150; el.dispatchEvent(new Event("scroll")); }')
+    await page.wait_for_timeout(150)
+    gantt_top = await g_rows.evaluate('el => el.scrollTop')
+    assert abs(gantt_top - 150) < 2, f"Scroll sync Tree->Gantt failed: {gantt_top}"
+
+@pytest.mark.asyncio
+async def test_split_view_responsive_column_reveal(page_with_data):
+    """In 50/50 split only fitting columns display; dragging responsively reveals additional columns."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('split')")
+    await page.wait_for_timeout(400)
+
+    # In default 50/50 split, verify no horizontal overflow on Tree
+    tree_vscroll = page.locator('#tree-vscroll')
+    dims = await tree_vscroll.evaluate('el => ({ scrollWidth: el.scrollWidth, clientWidth: el.clientWidth })')
+    assert dims['scrollWidth'] <= dims['clientWidth'], f"Horizontal overflow in 50/50 split: {dims}"
+
+    # Drag splitter to widen right pane
+    hdl = page.locator('#sp-hdl')
+    hdl_box = await hdl.bounding_box()
+    await page.mouse.move(hdl_box['x'] + hdl_box['width'] / 2, hdl_box['y'] + 100)
+    await page.mouse.down()
+    await page.mouse.move(360, hdl_box['y'] + 100)
+    await page.mouse.up()
+    await page.wait_for_timeout(300)
+
+    ts_hdr = page.locator('.tree-th-ts')
+    self_hdr = page.locator('.tree-th-self')
+    thread_hdr = page.locator('.tree-th-thread')
+    assert await ts_hdr.is_visible()
+    assert await self_hdr.is_visible()
+    assert await thread_hdr.is_visible()
+
+    # Double click to reset to 50%
+    await hdl.dblclick()
+    await page.wait_for_timeout(300)
+    assert await page.evaluate('S.splitRatio') == 50
 @pytest.mark.asyncio
 async def test_gantt_view_active_tab(page_with_data):
     """After switching to gantt, the .vt[data-v=gantt] must have .active class."""

@@ -3,6 +3,26 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Split View Synchronized Auto-Alignment, Auto-Scroll & Responsive Column Adaptation (v6.9.123 — COMPLETED)**:
+  - **Pixel-Perfect Vertical Auto-Alignment Across Splitter**:
+    - Aligned header offsets: `.g-toolbar` (38px) + `.g-hdr` (28px) exactly matches `.tree-toolbar` (38px) + `.tree-hdr` (28px), ensuring rows on both sides start at the exact same Y coordinate (185px).
+    - Locked row height: `.g-row` is locked to 32px (`height: 32px !important; min-height: 32px !important; max-height: 32px !important; box-sizing: border-box !important; align-items: center !important;`), matching `.tree-row` (32px) with 1-to-1 pixel precision.
+    - Synchronized tree hierarchy expansion: updated `GR._fl` to respect `n.expanded !== false`, so when nodes are collapsed or expanded in Tree view, Waterfall view reflects the exact same visible node set, guaranteeing row `i` on the left is always node `i` on the right.
+  - **Bidirectional Loop-Safe Auto-Scroll Synchronization (`UI._setupSplitSync`)**:
+    - Attached synchronized vertical scroll handlers between `.g-rows` and `#tree-vscroll` using a loop-guarded `requestAnimationFrame` lock.
+    - Scrolling either pane via mouse wheel, scrollbar dragging, keyboard navigation, or inspector focus instantly updates the opposing pane with identical `scrollTop`.
+    - Added delegated bidirectional row hover effect (`.split-row-hover`) that highlights matching rows across the splitter synchronously.
+  - **Responsive Information Revelation & Default 50/50 Width Fitting**:
+    - Configured CSS Container Queries on `.res-split .sp-pane` (`container-type: inline-size; container-name: pane;`).
+    - By default in 50/50 split (pane width <= 840px / 750px): only essential content that fits into the width is displayed (`Operation & Hierarchy`, `SLA`, and `Duration`), completely eliminating horizontal scrollbars and cutoff text.
+    - When the splitter is dragged to the LEFT (widening the right pane): `Self` (>= 750px), `Thread` (>= 860px), and `Timestamp` (>= 980px) are responsively revealed.
+    - When the splitter is dragged to the RIGHT (widening the left pane): full element hierarchy labels and secondary waterfall controls are revealed.
+    - Double-clicking the splitter handle (`#sp-hdl`) resets the split ratio back to 50/50.
+  - **Full Regression Verification & Zero Antipatterns**:
+    - Added comprehensive regression tests in `test_consolidated_navigation_and_shell.py` (`test_split_view_auto_alignment_and_sync_scroll` and `test_split_view_responsive_column_reveal`).
+    - Total regression test suite expanded to 91 tests.
+    - Impeccable design detector verified 0 findings (`[]`).
+
 - **Dynamic Trace ID Filter Dropdown Architecture (v6.9.122 — COMPLETED)**:
   - **Dynamic Dropdown Component (`#trace-dropdown`)**:
     - Replaced the static `<input id="trace-filter">` text box with a rich, interactive, dynamic Trace ID dropdown in `.action-bar-left` next to the thread selector (`vt-chips`).

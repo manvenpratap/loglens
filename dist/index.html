@@ -795,8 +795,13 @@ html,body{
   padding:14px;display:flex;flex-direction:column;gap:14px;
   background:var(--bg-0);
 }
-.res-split{display:flex;gap:0;flex:1;overflow:hidden;min-height:0}
-.sp-pane{flex:1;min-width:0 !important;overflow-y:auto;padding:14px}
+.res-split{display:flex;gap:0;flex:1;overflow:hidden;min-height:0;}
+.sp-pane{
+  flex:1;min-width:0 !important;overflow:hidden;padding:14px;
+  display:flex;flex-direction:column;min-height:0;
+  container-type:inline-size;container-name:pane;
+  position:relative;
+}
 .sp-pane.collapsible-anim {
   transition: flex 0.28s cubic-bezier(0.4, 0, 0.2, 1), padding 0.28s ease, opacity 0.28s ease;
 }
@@ -805,11 +810,101 @@ html,body{
   background: var(--bdr-d);
   cursor: col-resize;
   flex-shrink: 0;
-  transition: background 0.16s;
+  transition: background 0.16s, box-shadow 0.16s;
   position: relative;
+  touch-action: none;
+  user-select: none;
 }
 .sp-hdl:hover, .sp-hdl.drag {
   background: var(--amber);
+  box-shadow: 0 0 6px var(--amber-g);
+}
+
+/* Split View Responsive Column Adaptation */
+.res-split .tree-hdr-inner,
+.res-split .tree-row {
+  min-width: 100% !important;
+  width: 100% !important;
+}
+.res-split .tree-hdr-spine {
+  min-width: 160px !important;
+  flex: 1 1 200px !important;
+}
+.res-split .tree-hdr-telemetry,
+.res-split .tree-telemetry-col {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: auto !important;
+}
+
+/* Responsive revelation when dragged / Default width fit (50/50 split <= 840px) */
+@container pane (max-width: 980px) {
+  .tree-th-ts,
+  .tree-metric-ts,
+  .tree-metric-ts-none {
+    display: none !important;
+  }
+}
+
+@container pane (max-width: 860px) {
+  .tree-th-thread,
+  .tree-thread-pill,
+  .tree-thread-none {
+    display: none !important;
+  }
+}
+
+@container pane (max-width: 750px) {
+  .tree-th-self,
+  .tree-metric-self,
+  .tree-metric-self-none {
+    display: none !important;
+  }
+}
+
+@container pane (max-width: 520px) {
+  .tree-th-spark,
+  .tree-sparkbar,
+  .tree-sparkbar-none {
+    display: none !important;
+  }
+}
+
+/* Responsive Waterfall in Split View */
+@container pane (max-width: 700px) {
+  .g-ch:first-child,
+  .g-lbl {
+    flex: 0 0 170px !important;
+    width: 170px !important;
+  }
+  .g-trk {
+    min-width: calc(100% - 170px) !important;
+  }
+  .g-toolbar #btn-swim-toggle,
+  .g-toolbar #btn-zoom-reset {
+    display: none !important;
+  }
+}
+
+@container pane (max-width: 500px) {
+  .g-ch:first-child,
+  .g-lbl {
+    flex: 0 0 120px !important;
+    width: 120px !important;
+  }
+  .g-trk {
+    min-width: calc(100% - 120px) !important;
+  }
+  .g-toolbar #gantt-crit-chk,
+  .g-toolbar label[title*="Critical"] {
+    display: none !important;
+  }
+}
+
+/* Synchronized row hover highlight */
+.g-row.split-row-hover,
+.tree-row.split-row-hover {
+  background: color-mix(in srgb, var(--amber) 9%, var(--bg-1)) !important;
 }
 .sp-hdl-btn {
   position: absolute;
@@ -1208,17 +1303,20 @@ select.inp{cursor:pointer}
   color:var(--t3);font-family:var(--display);
 }
 .g-hdr{
-  display:flex;flex-direction:row;
+  display:flex;flex-direction:row;align-items:center;
+  height:28px;min-height:28px;
   background:var(--bg-1);
-  border-bottom:2px solid var(--bdr);
+  border-bottom:1px solid var(--bdr);
   position:sticky;top:0;z-index:5;
   min-width:100%;
   overflow-x:hidden;
+  box-sizing:border-box;
 }
 .g-ch{
-  padding:5px 10px;font-size: 12px;font-weight:700;
+  padding:0 10px;font-size: 12px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;color:var(--t4);
   font-family:var(--display);
+  height:100%;display:flex;align-items:center;box-sizing:border-box;
 }
 .g-ch:first-child{
   border-right:1px solid var(--bdr);
@@ -1226,18 +1324,18 @@ select.inp{cursor:pointer}
   position:sticky;left:0;z-index:3;background:var(--bg-1);
 }
 .g-ch:last-child{flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);}
-.g-ax{position:relative;height:28px}
+.g-ax{position:relative;height:28px;width:100%;}
 /* Major tick marks */
 .g-at{position:absolute;display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-end;padding-bottom:3px}
+  align-items:center;justify-content:center;top:0;bottom:0;height:100%;padding-bottom:1px;}
 .g-al{
   position:absolute;top:0;bottom:0;width:1px;
   background:linear-gradient(to bottom, var(--amber) 0%, var(--bdr-d) 40%);
   opacity:.6;
 }
 .g-am{
-  font-size: 12px;font-family:var(--mono);color:var(--t4);white-space:nowrap;
-  background:var(--bg-1);padding:0 2px;border-radius:var(--rounded-sm);
+  font-size: 11px;font-family:var(--mono);color:var(--t4);white-space:nowrap;
+  background:var(--bg-1);padding:0 2px;border-radius:var(--rounded-xs, 2px);
 }
 /* Minor tick marks between majors (injected by JS) */
 .g-al-minor{
@@ -1248,10 +1346,10 @@ select.inp{cursor:pointer}
 .g-rows{overflow-x:auto;overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
 .g-rows:focus{outline:none;}
 .g-row{
-  display:flex;flex-direction:row;
-  border-bottom:1px solid var(--bdr-d);min-height:30px;
+  display:flex;flex-direction:row;align-items:center;
+  border-bottom:1px solid var(--bdr-d);height:32px;min-height:32px;max-height:32px;
   transition:background .1s ease;
-  min-width:100%;
+  min-width:100%;box-sizing:border-box;
 }
 .g-row:last-child{border-bottom:none}
 .g-row:hover{background:var(--glass)}
@@ -1259,12 +1357,12 @@ select.inp{cursor:pointer}
 .g-lbl{
   padding:4px 9px;border-right:1px solid var(--bdr-d);
   display:flex;align-items:center;gap:5px;overflow:hidden;
-  flex:0 0 250px;width:250px;
+  flex:0 0 250px;width:250px;height:100%;box-sizing:border-box;
   position:sticky;left:0;z-index:2;background:var(--bg-0);
 }
 .g-li{font-size: 12px;flex-shrink:0}
 .g-lt{font-size: 12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.g-trk{position:relative;background:var(--bg-0);flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);}
+.g-trk{position:relative;background:var(--bg-0);flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);height:100%;}
 .g-gl{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);pointer-events:none;opacity:.6}
 .g-bar{
   position:absolute;top:5px;bottom:5px;
@@ -11254,7 +11352,7 @@ const GR={
       const wp=n.behavior!=='inline'&&n.duration>0?Math.max(.4,n.duration/rd*100):0;
       const sfp=n._sm!=null&&n.duration>0?n._sm/n.duration*100:0;
       rows.push({n,d,sp,wp,sfp});
-      if(n.events?.length)rows.push(...this._fl(n.events,d+1,rs,rd));
+      if(n.events?.length && (n.expanded !== false))rows.push(...this._fl(n.events,d+1,rs,rd));
     }
     return rows;
   },
@@ -11751,6 +11849,16 @@ const TR={
       const thrLabel = S.activeThr === 'all' ? 'All Threads' : (S.activeThr || '');
       const thrSuffix = thrLabel ? ` · ${thrLabel}` : '';
       countBadge.textContent = `${this._activeTree.length} root node${this._activeTree.length!==1?'s':''}${thrSuffix}`;
+    }
+
+    if (S.viewMode === 'split' && this._activeTree && typeof GR !== 'undefined') {
+      const lp = document.querySelector('.res-split .sp-pane:first-child');
+      if (lp) {
+        GR.render(this._activeTree, lp);
+        if (typeof UI !== 'undefined' && UI._setupSplitSync) {
+          UI._setupSplitSync(lp, this._container ? this._container.closest('.sp-pane') : null);
+        }
+      }
     }
     
     this.drawVisible();
@@ -12426,6 +12534,7 @@ const UI={
       w.append(l,h,rp);r.appendChild(w);
       GR.render(tree,l);TR.render(tree,rp);
       this._res(h,l,rp);
+      this._setupSplitSync(l, rp);
     } else if(vm==='gantt'){
       r.style.overflowY = 'hidden';
       const d=document.createElement('div');
@@ -12570,6 +12679,96 @@ const UI={
       document.body.style.cursor='';
       document.body.style.userSelect='';
     });
+
+    h.addEventListener('dblclick', () => {
+      if (S.collapsedPane) return;
+      S.splitRatio = 50;
+      l.style.flex = '0 0 50%';
+      rp.style.flex = '0 0 50%';
+    });
+  },
+
+  _setupSplitSync(l, rp) {
+    if (!l || !rp) {
+      l = document.querySelector('.res-split .sp-pane:first-child');
+      rp = document.querySelector('.res-split .sp-pane:last-child');
+      if (!l || !rp) return;
+    }
+    const gRows = l.querySelector('.g-rows');
+    const treeScroll = rp.querySelector('#tree-vscroll');
+    if (!gRows || !treeScroll) return;
+
+    if (this._splitSyncCleanup) {
+      this._splitSyncCleanup();
+      this._splitSyncCleanup = null;
+    }
+
+    let isSyncing = false;
+    let syncSource = null;
+
+    const onGanttScroll = () => {
+      if (isSyncing && syncSource !== 'gantt') return;
+      isSyncing = true;
+      syncSource = 'gantt';
+      treeScroll.scrollTop = gRows.scrollTop;
+      requestAnimationFrame(() => {
+        isSyncing = false;
+        syncSource = null;
+      });
+    };
+
+    const onTreeScroll = () => {
+      if (isSyncing && syncSource !== 'tree') return;
+      isSyncing = true;
+      syncSource = 'tree';
+      gRows.scrollTop = treeScroll.scrollTop;
+      requestAnimationFrame(() => {
+        isSyncing = false;
+        syncSource = null;
+      });
+    };
+
+    gRows.addEventListener('scroll', onGanttScroll, { passive: true });
+    treeScroll.addEventListener('scroll', onTreeScroll, { passive: true });
+
+    // Delegated bidirectional row hover
+    const splitWrap = l.parentElement;
+    const onHover = (e) => {
+      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx]');
+      if (!row) return;
+      const idx = row.dataset.idx;
+      if (idx == null) return;
+      const isGantt = row.classList.contains('g-row');
+      const partner = isGantt 
+        ? treeScroll.querySelector(`.tree-row[data-idx="${idx}"]`)
+        : gRows.querySelector(`.g-row[data-idx="${idx}"]`);
+      if (partner) partner.classList.add('split-row-hover');
+    };
+    const onUnhover = (e) => {
+      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx]');
+      if (!row) return;
+      const idx = row.dataset.idx;
+      if (idx == null) return;
+      const isGantt = row.classList.contains('g-row');
+      const partner = isGantt 
+        ? treeScroll.querySelector(`.tree-row[data-idx="${idx}"]`)
+        : gRows.querySelector(`.g-row[data-idx="${idx}"]`);
+      if (partner) partner.classList.remove('split-row-hover');
+    };
+
+    if (splitWrap) {
+      splitWrap.addEventListener('mouseover', onHover);
+      splitWrap.addEventListener('mouseout', onUnhover);
+    }
+
+    this._splitSyncCleanup = () => {
+      gRows.removeEventListener('scroll', onGanttScroll);
+      treeScroll.removeEventListener('scroll', onTreeScroll);
+      if (splitWrap) {
+        splitWrap.removeEventListener('mouseover', onHover);
+        splitWrap.removeEventListener('mouseout', onUnhover);
+      }
+    };
   },
 
   sw(tid){
