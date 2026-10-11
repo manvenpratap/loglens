@@ -238,7 +238,61 @@ async def test_split_view_simultaneous_sideways_timeline_advancement(page_with_d
 
 
 @pytest.mark.asyncio
+async def test_split_view_timeline_toolbar_controls(page_with_data):
+    """In Split view, timeline toolbar controls (critical toggle, zoom slider, fit, reset) are fully operational."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('split')")
+    await page.wait_for_timeout(350)
 
+    # 1. Verify toolbar buttons are visible and wired
+    crit_chk = page.locator('#gantt-crit-chk')
+    zoom_slider = page.locator('#gantt-zoom-slider')
+    btn_fit = page.locator('#btn-zoom-fit')
+    btn_reset = page.locator('#btn-zoom-reset')
+    zoom_val = page.locator('#gantt-zoom-val')
+
+    assert await crit_chk.count() >= 1
+    assert await zoom_slider.count() >= 1
+    assert await btn_fit.count() >= 1
+    assert await btn_reset.count() >= 1
+
+    # 2. Test Critical Path toggle
+    assert await page.evaluate("() => S.criticalPathOn") is False
+    await page.evaluate("() => document.getElementById('gantt-crit-chk').click()")
+    assert await page.evaluate("() => S.criticalPathOn") is True
+    assert await page.evaluate("() => document.getElementById('tree-crit-chk').checked") is True
+
+    # Verify dimming applied
+    dimmed_count = await page.evaluate("() => document.querySelectorAll('.g-bar.g-trk-dim').length")
+    assert dimmed_count > 0, "Non-critical bars must be dimmed when critical toggle is active"
+
+    # Toggle off
+    await page.evaluate("() => document.getElementById('gantt-crit-chk').click()")
+    assert await page.evaluate("() => S.criticalPathOn") is False
+    dimmed_off = await page.evaluate("() => document.querySelectorAll('.g-bar.g-trk-dim').length")
+    assert dimmed_off == 0, "Dimming must be removed when critical toggle is off"
+
+    # 3. Test Zoom Slider
+    await page.evaluate("() => { const s = document.getElementById('gantt-zoom-slider'); s.value = 2.0; s.dispatchEvent(new Event('input')); }")
+    assert await page.evaluate("() => S.ganttZoom") == 2.0
+    assert "×2.0" in await zoom_val.first.text_content()
+
+    # 4. Test Fit Button
+    await page.evaluate("() => document.getElementById('btn-zoom-fit').click()")
+    fit_zoom = await page.evaluate("() => S.ganttZoom")
+    assert fit_zoom > 0 and fit_zoom != 2.0, f"Fit button should adjust zoom, got {fit_zoom}"
+    scroll_left = await page.evaluate("() => document.querySelector('.res-split .sp-pane:first-child .g-rows').scrollLeft")
+    assert scroll_left == 0, "Fit must align scrollLeft to 0"
+
+    # 5. Test Reset Button
+    await page.evaluate("() => document.getElementById('btn-zoom-reset').click()")
+    assert await page.evaluate("() => S.ganttZoom") == 1.0
+    assert "×1.0" in await zoom_val.first.text_content()
+
+    assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
 async def test_split_view_responsive_column_reveal(page_with_data):
     """In 50/50 split only fitting columns display; dragging responsively reveals additional columns."""
     page = page_with_data

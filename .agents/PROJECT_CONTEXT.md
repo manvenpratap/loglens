@@ -2,6 +2,19 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Split View Timeline Toolbar Controls & Synchronized Zoom (v6.9.140 — COMPLETED)**:
+  - **Toolbar Controls Wiring & Visibility**:
+    - Wired Critical Path toggle (`#gantt-crit-chk`), Zoom slider (`#gantt-zoom-slider`), Fit window button (`#btn-zoom-fit`), and Reset button (`#btn-zoom-reset`) in Split view mode (`S.viewMode === 'split'`).
+    - Container query polish ensures toolbar controls remain visible and functional in narrow pane widths, with overflow containment and badge collapsing.
+  - **Synchronized Zoom & Dimming Engine**:
+    - Updated `GANTT_ZOOM_PAN.initEvents(scopeEl)` to query both global and scoped controls.
+    - Updated `applyZoom` to synchronize zoom variables across `.g-rows`, `#swim-lanes-rows`, and `.swim-track-wrap`.
+    - Enhanced `fitWindow` in Split view to accurately calculate the available track space relative to `--gantt-lbl-w` and set a proportional fit zoom factor.
+    - Fixed track scaling calculation in `.res-split .g-row` and `.res-split .g-ch:last-child` (`calc(1100px * var(--g-zoom, 1))`) with `flex: 1 1 0` on `.g-trk`, preventing double-zoom discrepancies and ensuring 100% horizontal scroll edge alignment.
+  - **Automated Regression Verification**:
+    - Added `test_split_view_timeline_toolbar_controls` to `tests/test_consolidated_navigation_and_shell.py`.
+    - Verified full 108/108 regression test pass across all modules (100% pass rate in 100s).
+
 - **Rule Editor Extended Telemetry Capture Mappings & Trace View Integration (v6.9.139 — COMPLETED)**:
   - **Extended Capture Mapping Inputs in Rule Modal (`#mm`)**:
     - Added dedicated form fields for `duration` (`#cm-du`), `service` (`#cm-sv`), `statusCode` (`#cm-sc`), and `spanId` (`#cm-sp`) in the custom regex section of the Rule Editor modal.

@@ -838,15 +838,19 @@ html,body{
 
 /* Split View Timeline Simultaneous Sideways Advancement Track */
 .res-split .g-row {
-  width: calc(var(--gantt-lbl-w, 170px) + max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px)) !important;
+  width: calc(var(--gantt-lbl-w, 170px) + (1100px * var(--g-zoom, 1))) !important;
+  min-width: 100% !important;
 }
-.res-split .g-trk,
 .res-split .g-ch:last-child {
-  min-width: max(calc(100% - var(--gantt-lbl-w, 170px)), 1100px) !important;
-  width: auto !important;
+  flex: 0 0 calc(1100px * var(--g-zoom, 1)) !important;
+  width: calc(1100px * var(--g-zoom, 1)) !important;
+  min-width: calc(1100px * var(--g-zoom, 1)) !important;
 }
-
-
+.res-split .g-trk {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
 
 @container pane (max-width: 860px) {
   .tree-th-ts,
@@ -876,17 +880,22 @@ html,body{
 }
 
 /* Responsive Waterfall in Split View */
+.res-split .g-toolbar {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.res-split .g-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
 @container pane (max-width: 700px) {
   .g-ch:first-child,
   .g-lbl {
     flex: 0 0 170px !important;
     width: 170px !important;
   }
-  .g-trk {
-    min-width: calc(100% - 170px) !important;
-  }
-  .g-toolbar #btn-swim-toggle,
-  .g-toolbar #btn-zoom-reset {
+  .g-toolbar .badge.b-gray {
     display: none !important;
   }
 }
@@ -896,13 +905,6 @@ html,body{
   .g-lbl {
     flex: 0 0 120px !important;
     width: 120px !important;
-  }
-  .g-trk {
-    min-width: calc(100% - 120px) !important;
-  }
-  .g-toolbar #gantt-crit-chk,
-  .g-toolbar label[title*="Critical"] {
-    display: none !important;
   }
 }
 
@@ -24899,8 +24901,8 @@ UI.rv = function() {
     });
   }
 
-  // Render zoom value onto Gantt view elements
-  if (S.viewMode === 'gantt') {
+  // Render zoom value onto Gantt and Split view elements
+  if (S.viewMode === 'gantt' || S.viewMode === 'split') {
     document.documentElement.style.setProperty('--g-zoom', S.ganttZoom || 1);
     GANTT_ZOOM_PAN.initEvents();
   }
@@ -25890,9 +25892,9 @@ GR.render = function(tree, el) {
     });
   }
 
-  // Apply current zoom and rebind drag/wheel to the fresh container
+  // Wire toolbar events, apply current zoom, and rebind drag/wheel to the fresh container
   if (typeof GANTT_ZOOM_PAN !== 'undefined') {
-    GANTT_ZOOM_PAN.rebind();
+    GANTT_ZOOM_PAN.initEvents(el);
     if (S.ganttZoom && S.ganttZoom !== 1) {
       const rows = el.querySelector('.g-rows');
       if (rows) rows.style.setProperty('--g-zoom', S.ganttZoom);
@@ -27100,39 +27102,50 @@ const GANTT_ZOOM_PAN = {
   isPanned: false,
   _lastContainer: null,
   
-  initEvents() {
+  initEvents(scopeEl) {
+    const root = (scopeEl && scopeEl.querySelectorAll) ? scopeEl : document;
     // ── 1. Remove legacy duplicate bar if present
     const legacyBar = $('g-zoom-ctrl-row');
     if (legacyBar) legacyBar.remove();
 
     // ── 2. Wire controls in the unified .g-toolbar
-    const slider = $('gantt-zoom-slider');
-    if (slider && !slider._wired) {
-      slider._wired = true;
-      slider.addEventListener('input', e => this.applyZoom(parseFloat(e.target.value)));
-    }
-    const btnReset = $('btn-zoom-reset');
-    if (btnReset && !btnReset._wired) {
-      btnReset._wired = true;
-      btnReset.addEventListener('click', () => this.applyZoom(1));
-    }
-    const btnFit = $('btn-zoom-fit');
-    if (btnFit && !btnFit._wired) {
-      btnFit._wired = true;
-      btnFit.addEventListener('click', () => this.fitWindow());
-    }
-    const critChk = $('gantt-crit-chk');
-    if (critChk && !critChk._wired) {
-      critChk._wired = true;
-      critChk.addEventListener('change', e => {
-        if (typeof TR !== 'undefined' && TR.toggleCriticalPath) {
-          TR.toggleCriticalPath(e.target.checked);
-        } else {
-          S.criticalPathOn = e.target.checked;
-          UI.rv();
-        }
-      });
-    }
+    root.querySelectorAll('#gantt-zoom-slider').forEach(slider => {
+      if (!slider._wired) {
+        slider._wired = true;
+        slider.addEventListener('input', e => this.applyZoom(parseFloat(e.target.value)));
+      }
+    });
+    root.querySelectorAll('#btn-zoom-reset').forEach(btnReset => {
+      if (!btnReset._wired) {
+        btnReset._wired = true;
+        btnReset.addEventListener('click', () => {
+          this.applyZoom(1);
+          const c = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
+          if (c) c.scrollLeft = 0;
+          const h = document.querySelector('.g-hdr');
+          if (h) h.scrollLeft = 0;
+        });
+      }
+    });
+    root.querySelectorAll('#btn-zoom-fit').forEach(btnFit => {
+      if (!btnFit._wired) {
+        btnFit._wired = true;
+        btnFit.addEventListener('click', () => this.fitWindow());
+      }
+    });
+    root.querySelectorAll('#gantt-crit-chk').forEach(critChk => {
+      if (!critChk._wired) {
+        critChk._wired = true;
+        critChk.addEventListener('change', e => {
+          if (typeof TR !== 'undefined' && TR.toggleCriticalPath) {
+            TR.toggleCriticalPath(e.target.checked);
+          } else {
+            S.criticalPathOn = e.target.checked;
+            UI.rv();
+          }
+        });
+      }
+    });
 
     // ── 3. Always rebind drag / wheel to the current live rows container
     this.rebind();
@@ -27140,20 +27153,28 @@ const GANTT_ZOOM_PAN = {
 
   applyZoom(z) {
     S.ganttZoom = z;
-    const slider = $('gantt-zoom-slider');
-    if (slider) slider.value = z;
-    const lbl = $('gantt-zoom-val');
-    if (lbl) lbl.textContent = `×${z.toFixed(1)}`;
+    document.querySelectorAll('#gantt-zoom-slider').forEach(s => s.value = z);
+    document.querySelectorAll('#gantt-zoom-val').forEach(lbl => lbl.textContent = `×${z.toFixed(1)}`);
     document.documentElement.style.setProperty('--g-zoom', z);
-    const rows = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
-    if (rows) rows.style.setProperty('--g-zoom', z);
+    document.querySelectorAll('.g-rows, #swim-lanes-rows').forEach(rows => rows.style.setProperty('--g-zoom', z));
+    document.querySelectorAll('.swim-track-wrap').forEach(tw => { tw.style.width = (z * 100) + '%'; });
   },
   
   fitWindow() {
     const container = document.querySelector('.g-rows') || document.querySelector('#swim-lanes-rows');
     if (!container) return;
-    this.applyZoom(1);
+    if (S.viewMode === 'split') {
+      const lblW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gantt-lbl-w')) || 170;
+      const availW = Math.max(100, container.clientWidth - lblW);
+      const baseTrackW = Math.max(availW, 1100);
+      const fitZoom = Math.max(0.2, Math.min(8, parseFloat((availW / baseTrackW).toFixed(2))));
+      this.applyZoom(fitZoom);
+    } else {
+      this.applyZoom(1);
+    }
     container.scrollLeft = 0;
+    const h = document.querySelector('.g-hdr');
+    if (h) h.scrollLeft = 0;
   },
 
   /** Re-bind drag/scroll/wheel events to the current live container */
