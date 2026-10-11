@@ -3,6 +3,19 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Impeccable Design System Documentation Overhaul (v6.9.113 — COMPLETED)**:
+  - **Official DESIGN.md Spec Alignment**:
+    - Completely restructured `DESIGN.md` according to the canonical 8-section specification (`## Overview`, `## Colors`, `## Typography`, `## Layout`, `## Elevation & Depth`, `## Shapes`, `## Components`, `## Do's and Don'ts`).
+    - Staged machine-readable YAML frontmatter with strict token schemas (`colors`, `typography`, `rounded`, `spacing`, `components`) using exact project variables.
+    - Integrated concrete architectural rules including **The 10% Accent Rule**, **The Contrast Floor Rule**, **The Monospace Data Rule**, **The Native System Zero-Shift Rule**, **The Bounded Viewport Rule**, **The Swiss Ledger Alignment Rule**, **The Frosted Backdrop Rule**, and **The Hierarchy-Driven Radius Rule**.
+  - **Sidecar `.impeccable/design.json` (schemaVersion 2)**:
+    - Updated sidecar extensions with 8-step OKLCH tonal ramps for all primary, semantic status, and theme neutral palettes.
+    - Added self-contained shadow DOM component implementations (`.ds-btn-primary`, `.ds-btn-ghost`, `.ds-btn-close`, `.ds-input-search`, `.ds-nav-pill`, `.ds-tree-telemetry`, `.ds-badge-sla`).
+    - Synced elevation shadows, motion easing tokens (`--ease-snap`, `--ease-spring`, `--ease-out`), responsive breakpoints (`sm`, `md`, `lg`), and narrative philosophy.
+  - **CSS Token Cleanup**:
+    - Wrapped pulsing badge keyframes in `@media (prefers-reduced-motion: no-preference)` and harmonized pulse colors with `oklch(from var(--amber|red|green) ...)`.
+  - **Full Regression Verification**: All 86 tests passing in 83s (100% pass rate).
+
 - **Top View Switcher Mathematical Centering & D3 Execution Tree Telemetry Polish (v6.9.112 — COMPLETED)**:
   - **Top View Switcher Centering (`.hdr .vtabs.on`)**:
     - Resolved asymmetrical spacing caused by flexbox auto margins between the 120px logo on the left and the 450px utility group on the right.

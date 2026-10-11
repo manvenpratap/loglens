@@ -1,24 +1,214 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-27T01:32:00Z",
+  "generatedAt": "2026-10-11T10:39:15Z",
   "title": "Design System: LogLens",
   "extensions": {
     "colorMeta": {
-      "primary": { "role": "primary", "displayName": "Console Amber", "canonical": "oklch(74% 0.16 48)" },
-      "secondary": { "role": "info", "displayName": "Diagnostics Blue", "canonical": "oklch(72% 0.14 250)" },
-      "tertiary": { "role": "success", "displayName": "Success Green", "canonical": "oklch(72% 0.17 142)" },
-      "bg-dark": { "role": "neutral", "displayName": "Deep Void", "canonical": "oklch(15% 0.02 240)" }
+      "primary": {
+        "role": "primary",
+        "displayName": "Console Amber",
+        "canonical": "oklch(67% 0.16 55)",
+        "tonalRamp": [
+          "oklch(18% 0.05 55)",
+          "oklch(28% 0.08 55)",
+          "oklch(42% 0.12 55)",
+          "oklch(55% 0.15 55)",
+          "oklch(67% 0.16 55)",
+          "oklch(76% 0.14 55)",
+          "oklch(86% 0.10 55)",
+          "oklch(95% 0.04 55)"
+        ]
+      },
+      "secondary": {
+        "role": "info",
+        "displayName": "Diagnostics Blue",
+        "canonical": "oklch(70% 0.12 250)",
+        "tonalRamp": [
+          "oklch(18% 0.04 250)",
+          "oklch(28% 0.06 250)",
+          "oklch(42% 0.09 250)",
+          "oklch(56% 0.11 250)",
+          "oklch(70% 0.12 250)",
+          "oklch(78% 0.10 250)",
+          "oklch(87% 0.07 250)",
+          "oklch(96% 0.03 250)"
+        ]
+      },
+      "tertiary": {
+        "role": "success",
+        "displayName": "Health Green",
+        "canonical": "oklch(68% 0.14 140)",
+        "tonalRamp": [
+          "oklch(18% 0.04 140)",
+          "oklch(28% 0.07 140)",
+          "oklch(42% 0.10 140)",
+          "oklch(55% 0.12 140)",
+          "oklch(68% 0.14 140)",
+          "oklch(77% 0.12 140)",
+          "oklch(87% 0.08 140)",
+          "oklch(96% 0.04 140)"
+        ]
+      },
+      "danger": {
+        "role": "danger",
+        "displayName": "Breach Red",
+        "canonical": "oklch(63.5% 0.18 25)",
+        "tonalRamp": [
+          "oklch(18% 0.05 25)",
+          "oklch(28% 0.09 25)",
+          "oklch(42% 0.13 25)",
+          "oklch(54% 0.16 25)",
+          "oklch(63.5% 0.18 25)",
+          "oklch(74% 0.15 25)",
+          "oklch(85% 0.10 25)",
+          "oklch(95% 0.04 25)"
+        ]
+      },
+      "warning": {
+        "role": "warning",
+        "displayName": "Outlier Yellow",
+        "canonical": "oklch(78% 0.15 85)",
+        "tonalRamp": [
+          "oklch(20% 0.05 85)",
+          "oklch(32% 0.08 85)",
+          "oklch(46% 0.11 85)",
+          "oklch(62% 0.13 85)",
+          "oklch(78% 0.15 85)",
+          "oklch(85% 0.13 85)",
+          "oklch(91% 0.09 85)",
+          "oklch(97% 0.04 85)"
+        ]
+      },
+      "purple": {
+        "role": "accent",
+        "displayName": "Trace Purple",
+        "canonical": "oklch(65% 0.18 310)",
+        "tonalRamp": [
+          "oklch(18% 0.05 310)",
+          "oklch(28% 0.09 310)",
+          "oklch(42% 0.14 310)",
+          "oklch(54% 0.16 310)",
+          "oklch(65% 0.18 310)",
+          "oklch(75% 0.15 310)",
+          "oklch(85% 0.10 310)",
+          "oklch(95% 0.04 310)"
+        ]
+      },
+      "cyan": {
+        "role": "accent",
+        "displayName": "Stream Cyan",
+        "canonical": "oklch(72% 0.11 210)",
+        "tonalRamp": [
+          "oklch(18% 0.03 210)",
+          "oklch(28% 0.05 210)",
+          "oklch(42% 0.08 210)",
+          "oklch(57% 0.10 210)",
+          "oklch(72% 0.11 210)",
+          "oklch(80% 0.09 210)",
+          "oklch(88% 0.06 210)",
+          "oklch(96% 0.03 210)"
+        ]
+      },
+      "bg-dark": {
+        "role": "neutral",
+        "displayName": "Obsidian Deep",
+        "canonical": "oklch(12% 0.012 240)",
+        "tonalRamp": [
+          "oklch(8% 0.008 240)",
+          "oklch(12% 0.012 240)",
+          "oklch(15% 0.014 240)",
+          "oklch(18% 0.016 240)",
+          "oklch(22% 0.018 240)",
+          "oklch(27% 0.020 240)",
+          "oklch(35% 0.022 240)",
+          "oklch(50% 0.020 240)"
+        ]
+      },
+      "bg-light": {
+        "role": "neutral",
+        "displayName": "Ivory Base",
+        "canonical": "oklch(94.5% 0.012 55)",
+        "tonalRamp": [
+          "oklch(65% 0.020 55)",
+          "oklch(75% 0.022 55)",
+          "oklch(83% 0.020 55)",
+          "oklch(88% 0.018 55)",
+          "oklch(92% 0.015 55)",
+          "oklch(94.5% 0.012 55)",
+          "oklch(97% 0.008 55)",
+          "oklch(99% 0.003 55)"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display Title", "purpose": "App branding banner only." },
-      "body": { "displayName": "Interface Body", "purpose": "Navigation tabs, parameter controls, settings inputs." },
-      "mono": { "displayName": "Console Monospace", "purpose": "Trace timestamps, log table rows, raw code parameters." }
+      "display": {
+        "displayName": "Display Title",
+        "purpose": "Spotlight headers, app branding, and primary modal titles."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Dashboard card headers and primary section titles."
+      },
+      "title": {
+        "displayName": "Section Title",
+        "purpose": "Summary card titles, table column headers, and view toolbar labels."
+      },
+      "body": {
+        "displayName": "Interface Body",
+        "purpose": "Navigation tabs, parameter controls, settings descriptions, and inspector text."
+      },
+      "label": {
+        "displayName": "Telemetry Label",
+        "purpose": "Metric badges, SLA status tags, thread pills, and keyboard shortcut hints."
+      },
+      "mono": {
+        "displayName": "Console Monospace",
+        "purpose": "Raw log lines, timestamps, regex patterns, execution durations, and LQL queries."
+      }
     },
     "shadows": [
-      { "name": "ambient-popover", "value": "0 4px 24px rgba(0,0,0,0.15)", "purpose": "Floating context tooltips and dropdown overlay menus." }
+      {
+        "name": "surface-rest",
+        "value": "none",
+        "purpose": "Flat-by-default in-canvas timeline tracks, tree rows, and data tables."
+      },
+      {
+        "name": "grouped-card",
+        "value": "0 1px 4px rgba(0,0,0,0.35)",
+        "purpose": "Double depth on inset dashboard cards and top metric bar."
+      },
+      {
+        "name": "mac-hud",
+        "value": "0 4px 16px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.4)",
+        "purpose": "Floating timeline controllers and hover tooltip inspection popovers."
+      },
+      {
+        "name": "sheet-modal",
+        "value": "0 0 0 1px rgba(255,255,255,0.07), 0 24px 64px -12px rgba(0,0,0,0.55), 0 12px 28px -6px rgba(0,0,0,0.35)",
+        "purpose": "Apple sheet dialogs and Spotlight command palette."
+      }
     ],
     "motion": [
-      { "name": "standard-fade", "value": "all 0.15s ease-in-out", "purpose": "Interaction response for hover/focus transitions." }
+      {
+        "name": "ease-snap",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Spring entrance easing for modals, sliding indicator pills, and drawer transitions."
+      },
+      {
+        "name": "ease-spring",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Interactive hover and scale responses for buttons and control chips."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Smooth panel expansion and collapse transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "768px" },
+      { "name": "md", "value": "1050px" },
+      { "name": "lg", "value": "1280px" }
     ]
   },
   "components": [
@@ -26,48 +216,128 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Standard action triggers, configurations load, or sessions exports.",
+      "description": "Primary action triggers, file loading, and rule creation.",
       "html": "<button class=\"ds-btn-primary\">LOAD LOGS</button>",
-      "css": ".ds-btn-primary { background: #f0883e; color: #060a0f; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s ease-in-out; } .ds-btn-primary:hover { background: #f5a36c; } .ds-btn-primary:focus-visible { outline: 2px solid #f0883e; outline-offset: 2px; }"
+      "css": ".ds-btn-primary { background: #f0883e; color: #060a0f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; } .ds-btn-primary:hover { background: #f5a36c; } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid #f0883e; outline-offset: 2px; }"
     },
     {
-      "name": "Text Input",
+      "name": "Ghost Tool Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary toolbar actions, view toggles, and modal dismissals.",
+      "html": "<button class=\"ds-btn-ghost\">EXPORT TRACE</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #8b949e; border: 1px solid #30363d; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 10px; cursor: pointer; transition: all 0.15s ease; } .ds-btn-ghost:hover { color: #f0f6fc; border-color: #58a6ff; background: rgba(88,166,255,0.06); } .ds-btn-ghost:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Apple Circular Close Button",
+      "kind": "button",
+      "description": "Universal 26px macOS circular close button for modals and inspectors.",
+      "html": "<button class=\"ds-btn-close\" aria-label=\"Close\">✕</button>",
+      "css": ".ds-btn-close { width: 26px; height: 26px; border-radius: 50%; background: transparent; border: 1px solid rgba(255,255,255,0.12); color: #8b949e; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease, color 0.15s ease; } .ds-btn-close:hover { transform: scale(1.06); color: #f0f6fc; background: rgba(255,255,255,0.08); } .ds-btn-close:active { transform: scale(0.94); }"
+    },
+    {
+      "name": "Search & Filter Input",
       "kind": "input",
       "refersTo": "input-text",
-      "description": "Regex capture fields, SLA timers, search inputs, and filters text box.",
-      "html": "<input type=\"text\" class=\"ds-input-text\" placeholder=\"Enter query...\" />",
-      "css": ".ds-input-text { background: #0d1117; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px; font-family: Inter, system-ui, sans-serif; font-size: 12px; padding: 6px 10px; width: 100%; box-sizing: border-box; transition: border-color 0.15s ease-in-out; } .ds-input-text::placeholder { color: #8b949e; } .ds-input-text:focus { border-color: #f0883e; outline: none; }"
+      "description": "Regex capture fields, LQL query editor, and search boxes.",
+      "html": "<input type=\"text\" class=\"ds-input-search\" placeholder=\"Search traces, spans, or payload...\" />",
+      "css": ".ds-input-search { background: #161b22; color: #f0f6fc; border: 1px solid #30363d; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 12px; padding: 6px 10px; width: 100%; box-sizing: border-box; transition: border-color 0.15s ease; } .ds-input-search::placeholder { color: #8b949e; } .ds-input-search:focus { border-color: #f0883e; outline: none; }"
     },
     {
-      "name": "View Selector Tab",
+      "name": "Top Navigation Pill",
       "kind": "chip",
-      "description": "Interactive selectors toggling between Gantt, Tree, Stats, and Swimlane layouts.",
-      "html": "<div class=\"ds-tab-container\"><button class=\"ds-tab active\">Gantt</button><button class=\"ds-tab\">Tree</button></div>",
-      "css": ".ds-tab-container { display: inline-flex; gap: 2px; padding: 2px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; } .ds-tab { background: transparent; color: #8b949e; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 500; border: none; border-radius: 5px; padding: 4px 12px; cursor: pointer; transition: all 0.15s ease-in-out; } .ds-tab.active { background: #161b22; color: #f0f6fc; } .ds-tab:hover:not(.active) { color: #f0f6fc; }"
+      "refersTo": "nav-pill",
+      "description": "Mathematically centered top view switcher item with sliding indicator.",
+      "html": "<div class=\"ds-nav-pill-wrap\"><button class=\"ds-nav-pill active\">Tree</button><button class=\"ds-nav-pill\">Timeline</button></div>",
+      "css": ".ds-nav-pill-wrap { display: inline-flex; gap: 2px; padding: 2px; background: rgba(0,0,0,0.3); border: 1px solid #30363d; border-radius: 8px; } .ds-nav-pill { background: transparent; color: #8b949e; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 12px; font-weight: 500; border: none; border-radius: 6px; padding: 4px 12px; cursor: pointer; transition: all 0.16s cubic-bezier(0.16,1,0.3,1); } .ds-nav-pill.active { background: #f0883e; color: #060a0f; font-weight: 600; } .ds-nav-pill:hover:not(.active) { color: #f0f6fc; }"
+    },
+    {
+      "name": "Swiss Execution Tree Telemetry Row",
+      "kind": "custom",
+      "description": "Fixed 3-zone execution tree row with spine anchor, single-line chip, and Swiss metrics.",
+      "html": "<div class=\"ds-tree-row\"><div class=\"ds-tree-spine\"><span class=\"ds-tree-ico\">⚡</span><span class=\"ds-tree-name\">OrderProcessing</span><span class=\"ds-badge-sla breach\">SLA BREACH</span></div><div class=\"ds-tree-payload\"><span class=\"ds-payload-chip\">POST /api/v1/orders { items: 3, total: 128.50 }</span></div><div class=\"ds-tree-telemetry\"><div class=\"ds-sparkbar\"><div class=\"ds-sparkbar-fill\" style=\"width: 85%; background: #f85149;\"></div></div><span class=\"ds-metric-dur\">342.1ms</span><span class=\"ds-thread-pill\">worker-1</span><span class=\"ds-metric-ts\">14:23:01.412</span></div></div>",
+      "css": ".ds-tree-row { display: flex; align-items: center; height: 26px; border-bottom: 1px solid #202428; background: #060a0f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 11px; padding: 0 8px; gap: 8px; } .ds-tree-spine { width: 420px; flex-shrink: 0; display: flex; align-items: center; gap: 6px; } .ds-tree-ico { font-size: 11px; color: #8b949e; } .ds-tree-name { font-weight: 600; color: #f0f6fc; } .ds-badge-sla.breach { font-size: 9px; font-weight: 700; color: #f85149; background: rgba(248,81,73,0.12); padding: 1px 5px; border-radius: 4px; } .ds-tree-payload { flex: 1; min-width: 0; } .ds-payload-chip { display: block; font-family: 'SF Mono', Menlo, monospace; font-size: 10.5px; color: #8b949e; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 1px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 18px; height: 20px; } .ds-tree-telemetry { width: 306px; flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; font-family: 'SF Mono', Menlo, monospace; } .ds-sparkbar { width: 44px; height: 4px; background: #202428; border-radius: 2px; overflow: hidden; } .ds-sparkbar-fill { height: 100%; border-radius: 2px; } .ds-metric-dur { width: 60px; text-align: right; font-weight: 700; color: #f0f6fc; } .ds-thread-pill { font-size: 10px; color: #58a6ff; background: rgba(88,166,255,0.1); padding: 1px 5px; border-radius: 99px; } .ds-metric-ts { width: 76px; text-align: right; color: #8b949e; font-size: 10.5px; }"
+    },
+    {
+      "name": "Diagnostic Status Pill",
+      "kind": "chip",
+      "description": "High-signal SLA breach, outlier, or severity badge.",
+      "html": "<span class=\"ds-pill-crit\">✦ CRIT</span>",
+      "css": ".ds-pill-crit { display: inline-flex; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #f85149; background: rgba(248,81,73,0.14); border: 1px solid rgba(248,81,73,0.3); border-radius: 9999px; padding: 2px 7px; }"
     }
   ],
   "narrative": {
-    "northStar": "The Developer's Console",
-    "overview": "LogLens is built to look like a terminal-adjacent, low-chrome dark dashboard focused entirely on high information density, clear grids, and immediate utility. Visual styling should be highly professional, avoiding decorative elements and emphasizing a private, local-first environment for developers and SREs.",
+    "northStar": "The macOS Developer Console",
+    "overview": "LogLens is an offline-first, browser-native log forensics and distributed tracing console. It pairs extreme information density (Gantt waterfall timelines, Swiss-aligned execution trees, flamegraphs, dependency topologies) with Apple Human Interface Guidelines (HIG) craft: native San Francisco typography, translucent frosted backdrops, double-layer sheet depth, and grouped card layouts. The design strictly serves developer velocity: zero telemetry or tracking, zero cloud friction, zero dependencies, and zero decorative noise.",
     "keyCharacteristics": [
-      "Zero Decorative Noise: Every border, outline, and background shift must serve a structural or interactive purpose.",
-      "High Information Density: Sizing and spacing are compact, designed to display thousands of log messages and complex Gantt timelines without wasting vertical viewport space.",
-      "Theme-Agnostic Structure: Dark mode is the primary console layout, but the visual hierarchy maps 1:1 onto a clean, high-contrast light mode."
+      "Extreme Information Density: Compact 50px header, collapsible 322px sidebar, Swiss 3-zone execution tree grid, and bounded viewport flex layouts that never waste vertical canvas space.",
+      "Apple HIG Refinement: Native San Francisco font stack (-apple-system, SF Pro, SF Mono), 26px circular close buttons, macOS sheet modal elevations (backdrop-filter: blur(14px) saturate(160%)), and spring-animated sliding pills.",
+      "Perceptually Calibrated Theming: 6 distinct calibrated themes (Obsidian, Ivory, Aurora, Midnight, Forest, Crimson) built on OKLCH color ramps sharing uniform semantic token interfaces.",
+      "Tactile Developer Ergonomics: Seamless keyboard shortcuts (Alt+1..0, direct single-keystroke 1..0 navigation, ⌘K / Ctrl+K Spotlight, J/K tree traversal), instant zero-network file processing, and zero layout shift."
     ],
     "rules": [
-      { "name": "The 10% Accent Rule", "body": "Accent colors (Amber, Blue, Green, Red) must never cover more than 10% of any given viewport surface area. Their primary purpose is diagnostic feedback.", "section": "colors" },
-      { "name": "The Monospace Code Rule", "body": "Any string output that originates from a log stream, regex pattern, or LQL query statement must be strictly wrapped in a monospaced font block to preserve horizontal indentation and parsing alignment.", "section": "typography" },
-      { "name": "The Flat-First Rule", "body": "Surfaces are completely flat at rest. Drop shadows are only permitted on floating elements, such as dropdown menus, help popovers, and modal dialog overlays.", "section": "elevation" }
+      {
+        "name": "The 10% Accent Rule",
+        "body": "Saturated semantic accents (Amber, Blue, Green, Red) must never exceed 10% of any viewport surface area. They carry diagnostic state, not decorative wallpaper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast Floor Rule",
+        "body": "Body text, timestamps, and log payload strings must maintain ≥4.5:1 contrast against their card background across all 6 themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Monospace Data Rule",
+        "body": "Any value originating from a log file, duration calculation, capture token, or LQL query expression must render in --mono to preserve strict tabular column alignment.",
+        "section": "typography"
+      },
+      {
+        "name": "The Native System Zero-Shift Rule",
+        "body": "All font stacks prioritize native system fonts (-apple-system, SF Pro, SF Mono). Web fonts must never be downloaded at runtime, guaranteeing zero layout shift (CLS = 0) and zero offline font failures.",
+        "section": "typography"
+      },
+      {
+        "name": "The Bounded Viewport Rule",
+        "body": "Canvas containers must define min-height: 0 and flex: 1 with strict overflow isolation. Outer parent pages must never scroll vertically when a timeline, tree, or table is active.",
+        "section": "layout"
+      },
+      {
+        "name": "The Swiss Ledger Alignment Rule",
+        "body": "Numbers, durations, sparkbars, and timestamps in telemetry columns must occupy fixed-width sub-columns with right alignment, ensuring clean vertical scanning like a Swiss financial ledger.",
+        "section": "layout"
+      },
+      {
+        "name": "The Frosted Backdrop Rule",
+        "body": "All modal backdrops and floating toolbars must pair translucent backgrounds (rgba(..., 0.8)) with backdrop-filter: blur(14px) saturate(160%) to maintain background context without visual clutter.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "All in-canvas data surfaces (tables, Gantt tracks, tree nodes) are completely flat at rest with 1px hairline borders. Drop shadows appear solely as responses to elevation states.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Hierarchy-Driven Radius Rule",
+        "body": "Corner radius scales strictly with container area: 4px for tags, 6px for controls, 14px for grouped cards/modals. Controls inside cards must never have a larger corner radius than their parent card.",
+        "section": "shapes"
+      }
     ],
     "dos": [
-      "Do respect the 10% accent rule: keep visual prominence focused on log data rows, not colored header panels.",
-      "Do use strict variable mappings (var(--bg-0) to var(--bg-4)) to ensure instant theme toggling works reliably.",
-      "Do outline form items with visible keyboard focus rings."
+      "Do maintain strict single-file HTML architecture (loglens.html) with zero runtime npm or CDN dependencies.",
+      "Do preserve full vertical real estate for timeline and execution tree views by limiting metric summary cards exclusively to the dedicated Stats dashboard.",
+      "Do lock Zone 1 of the Execution Tree to a 420px spine anchor across all nesting depths to prevent payload preview jitter.",
+      "Do wrap all interactive dialogs and HUD cards with macOS frosted blurs (backdrop-filter: blur(14px) saturate(160%)) and double-layer shadows.",
+      "Do use flex-shrink: 0 on structural metric bars (#stats-bar, #res-summary-cards) to prevent layout squashing inside scrollable containers.",
+      "Do maintain strict keyboard navigation parity (Alt+1..0, direct 1..0 navigation, ⌘K / Ctrl+K, Escape to close drawers/modals, J/K tree traversal).",
+      "Do enforce white-space: nowrap on tree row payload previews to prevent multi-line word wrap staircases."
     ],
     "donts": [
-      "Don't use glowing neon gradients, purple shadows, or frosted glass panels that evoke a generic consumer-facing SaaS layout.",
-      "Don't insert margin spacing exceeding 16px around log panels, as space must be optimized for developer timeline density.",
-      "Don't hide critical help hints inside submenus; use inline context tooltips (?) beside controls."
+      "Don't add bulky decorative hero cards above the timeline canvas or execution tree.",
+      "Don't use generic fluid clamp scales that distort dashboard information density.",
+      "Don't import external CSS frameworks (Tailwind, Bootstrap), icon libraries (FontAwesome, Lucide), or runtime web fonts; rely strictly on vanilla CSS and native San Francisco stacks.",
+      "Don't display redundant blue INFO badges on healthy execution tree rows.",
+      "Don't allow saturated semantic accents to exceed 10% of any viewport surface area.",
+      "Don't use side-stripe borders or gradient text for emphasis."
     ]
   }
 }

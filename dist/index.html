@@ -2955,11 +2955,13 @@ mark.hl{
   border-radius:0 var(--rounded-sm) var(--rounded-sm) 0;
 }
 /* Gantt SLA pulsing animation */
-@keyframes sla-pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,149,0,.5)}
-  50%{box-shadow:0 0 0 3px rgba(255,149,0,.0)}
+@media (prefers-reduced-motion: no-preference) {
+  .g-bar.g-sla-breach { animation: sla-pulse 1.8s ease-in-out infinite; }
 }
-.g-bar.g-sla-breach{animation:sla-pulse 1.8s ease-in-out infinite}
+@keyframes sla-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0.5); }
+  50% { box-shadow: 0 0 0 3px oklch(from var(--amber) l c h / 0); }
+}
 
 /* Thread chip search-active state */
 .tc.search-active{
@@ -3218,7 +3220,10 @@ mark.hl{
   background:var(--amber-d) !important;
   border:1px solid var(--amber) !important;
   color:var(--amber) !important;
-  cursor:pointer;animation:sla-pulse 1.8s ease-in-out infinite;
+  cursor:pointer;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .badge-zero-match { animation: sla-pulse 1.8s ease-in-out infinite; }
 }
 
 /* ============================================================
@@ -4426,21 +4431,23 @@ body.focus-mode #res {
 }
 
 /* Header badge pulses */
-.badge.b-red:not(.hidden) {
-  animation: badge-pulse-red 2s infinite;
-}
-.badge.b-amber:not(.hidden) {
-  animation: badge-pulse-amber 2s infinite;
+@media (prefers-reduced-motion: no-preference) {
+  .badge.b-red:not(.hidden) {
+    animation: badge-pulse-red 2s infinite;
+  }
+  .badge.b-amber:not(.hidden) {
+    animation: badge-pulse-amber 2s infinite;
+  }
 }
 @keyframes badge-pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(248, 81, 73, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+  0% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0.4); }
+  70% { box-shadow: 0 0 0 6px oklch(from var(--red) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0); }
 }
 @keyframes badge-pulse-amber {
-  0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(255, 149, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); }
+  0% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0.4); }
+  70% { box-shadow: 0 0 0 6px oklch(from var(--amber) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0); }
 }
 
 /* Slide-up animations */
@@ -6872,18 +6879,6 @@ label[for="watch-auto-reload"] {
 
 /* ── O. TOKEN SYSTEM CLEANUP ──────────────────────────────────────── */
 
-/* Fix: badge pulse keyframes — replace hardcoded RGBA with OKLCH */
-@keyframes badge-pulse-red {
-  0%   { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0.4); }
-  70%  { box-shadow: 0 0 0 6px oklch(from var(--red) l c h / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0); }
-}
-@keyframes badge-pulse-amber {
-  0%   { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0.4); }
-  70%  { box-shadow: 0 0 0 6px oklch(from var(--amber) l c h / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0); }
-}
-
 /* Pin badge border — replace hardcoded RGBA */
 .pin-badge {
   border-color: oklch(from var(--yellow) l c h / 0.3) !important;
@@ -7097,24 +7092,24 @@ label[for="watch-auto-reload"] {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--red);
   display: inline-block;
   transition: background 0.3s, box-shadow 0.3s;
 }
 @keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 oklch(68% 0.14 140 / 0.7); }
-  70% { box-shadow: 0 0 0 6px oklch(68% 0.14 140 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(68% 0.14 140 / 0); }
+  0% { box-shadow: 0 0 0 0 oklch(from var(--green) l c h / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(from var(--green) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--green) l c h / 0); }
 }
 @keyframes pulse-amber {
-  0% { box-shadow: 0 0 0 0 oklch(67% 0.16 55 / 0.7); }
-  70% { box-shadow: 0 0 0 6px oklch(67% 0.16 55 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(67% 0.16 55 / 0); }
+  0% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(from var(--amber) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--amber) l c h / 0); }
 }
 @keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 oklch(62% 0.18 25 / 0.7); }
-  70% { box-shadow: 0 0 0 6px oklch(62% 0.18 25 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(62% 0.18 25 / 0); }
+  0% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0.7); }
+  70% { box-shadow: 0 0 0 6px oklch(from var(--red) l c h / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(from var(--red) l c h / 0); }
 }
 
 /* Interactive Collapsible Headers (clean chevrons) */
@@ -24339,22 +24334,22 @@ FOCUS_MODE.init();
           <div class="emp-guide-step" role="listitem">
             <div class="emp-step-num" aria-hidden="true">1</div>
             <div class="emp-step-body">
-              <strong>Configure rules</strong>
-              <span>Open <b>Settings → Rules</b> (Alt+8) and paste a regex rule matching your log format, or import a <code>.json</code> config.</span>
+              <strong>Load a log or demo</strong>
+              <span>Drop a <code>.log</code>/<code>.gz</code> file, click <b>Select Log File</b>, or try the instant <b>Demo Log</b>.</span>
             </div>
           </div>
           <div class="emp-guide-step" role="listitem">
             <div class="emp-step-num" aria-hidden="true">2</div>
             <div class="emp-step-body">
-              <strong>Load a log file</strong>
-              <span>Drag &amp; drop a <code>.log</code> or <code>.gz</code> file here, use <b>Select Log File</b>, or try the built-in <b>Demo Log</b> to explore features.</span>
+              <strong>Explore &amp; analyse</strong>
+              <span>Switch between <b>Split</b> (⌥1), <b>Timeline</b> (⌥2), and <b>Tree</b> (⌥3). Press <b>⌘K</b> for Command Palette.</span>
             </div>
           </div>
           <div class="emp-guide-step" role="listitem">
             <div class="emp-step-num" aria-hidden="true">3</div>
             <div class="emp-step-body">
-              <strong>Explore &amp; analyse</strong>
-              <span>Use <b>Split</b> (⌥1), <b>Timeline</b> (⌥2), <b>Tree</b> (⌥3), <b>Traces</b> (⌥4) views. Press <b>F</b> for Focus Mode, <b>⌘K</b> for Command Palette.</span>
+              <strong>Fine-tune rules (optional)</strong>
+              <span>Auto-detect handles standard formats. Open <b>Settings → Rules</b> (Alt+8) for custom regex definitions.</span>
             </div>
           </div>
         </div>
@@ -27560,7 +27555,7 @@ UI.svm(S.viewMode);
           if (dot) { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 8px var(--green)'; dot.style.animation = 'pulse-green 2s infinite'; }
           if (txt) txt.textContent = 'SYS_STATUS // LOG_LOADED';
         } else {
-          if (dot) { dot.style.background = '#ef4444'; dot.style.boxShadow = 'none'; dot.style.animation = 'none'; }
+          if (dot) { dot.style.background = 'var(--red)'; dot.style.boxShadow = 'none'; dot.style.animation = 'none'; }
           if (txt) txt.textContent = 'SYS_STATUS // IDLE';
         }
       }
@@ -28205,6 +28200,9 @@ Adding New Features:
 ==============================================================================
 */
 </script>
+<!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js?token=ca990d6f-21be-4be0-88a8-7f26295500d9"></script>
+<!-- impeccable-live-end -->
 </body>
 </html>
 
