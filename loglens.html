@@ -896,8 +896,9 @@ html,body{
 
 /* Synchronized row hover highlight */
 .g-row.split-row-hover,
-.tree-row.split-row-hover {
-  background: color-mix(in srgb, var(--amber) 9%, var(--bg-1)) !important;
+.tree-row.split-row-hover,
+.swim-lane.split-row-hover {
+  background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
 }
 
 /* Ensure Timeline Navigator is strictly disabled in Split View */
@@ -1344,23 +1345,62 @@ select.inp{cursor:pointer}
 .g-rows{overflow-x:auto;overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
 .g-rows:focus{outline:none;}
 .g-row{
-  display:flex;flex-direction:row;align-items:center;
-  border-bottom:1px solid var(--bdr-d);height:32px;min-height:32px;max-height:32px;
-  transition:background .1s ease;
-  min-width:100%;box-sizing:border-box;
+  display:flex !important;flex-direction:row !important;align-items:center !important;
+  border-bottom:1px solid var(--bdr-d) !important;
+  border-left:3px solid var(--thr-col, transparent) !important;
+  height:32px !important;min-height:32px !important;max-height:32px !important;
+  background:var(--thr-bg, var(--bg-0)) !important;
+  transition:background .12s ease, border-left-color .15s ease !important;
+  min-width:100% !important;box-sizing:border-box !important;
+  position:relative !important;
 }
-.g-row:last-child{border-bottom:none}
-.g-row:hover{background:var(--glass)}
-.g-row.g-selected{background:var(--amber-d);outline:1px solid var(--amber-g);outline-offset:-1px;}
+.g-row.g-thr-group-row{
+  background:var(--thr-bg, var(--bg-1)) !important;
+  border-left:4px solid var(--thr-col, var(--blue)) !important;
+  border-top:1px solid var(--thr-bdr, var(--bdr)) !important;
+  border-bottom:1px solid var(--thr-bdr, var(--bdr)) !important;
+  font-weight:600 !important;
+}
+.g-row:not([data-thread]):nth-child(even){
+  background:color-mix(in srgb, var(--bg-1) 45%, var(--bg-0)) !important;
+}
+.g-row:hover{
+  background:color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
+}
+.g-row:hover::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--amber);z-index:3;
+}
+.g-thr-group-row:hover{
+  background:color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-2))) !important;
+}
+.g-row.g-selected{
+  background:color-mix(in srgb, var(--amber) 16%, var(--thr-bg, var(--bg-1))) !important;
+  outline:1px solid var(--amber) !important;outline-offset:-1px;
+}
 .g-lbl{
   padding:4px 9px;border-right:1px solid var(--bdr-d);
   display:flex;align-items:center;gap:5px;overflow:hidden;
   flex:0 0 250px;width:250px;height:100%;box-sizing:border-box;
-  position:sticky;left:0;z-index:2;background:var(--bg-0);
+  position:sticky;left:0;z-index:2;
+  background:var(--thr-bg, var(--bg-0)) !important;
+  transition:background .12s ease !important;
+}
+.g-row.g-thr-group-row .g-lbl{
+  background:var(--thr-bg, var(--bg-1)) !important;
+}
+.g-row:not([data-thread]):nth-child(even) .g-lbl{
+  background:color-mix(in srgb, var(--bg-1) 45%, var(--bg-0)) !important;
+}
+.g-row:hover .g-lbl,
+.g-row.split-row-hover .g-lbl{
+  background:color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
+}
+.g-row.g-selected .g-lbl{
+  background:color-mix(in srgb, var(--amber) 16%, var(--thr-bg, var(--bg-1))) !important;
 }
 .g-li{font-size: 12px;flex-shrink:0}
 .g-lt{font-size: 12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.g-trk{position:relative;background:var(--bg-0);flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);height:100%;}
+.g-trk{position:relative;background:transparent !important;flex:0 0 calc(100% * var(--g-zoom, 1));width:calc(100% * var(--g-zoom, 1));min-width:calc(100% - 250px);height:100%;}
 .g-gl{position:absolute;top:0;bottom:0;width:1px;background:var(--bdr-d);pointer-events:none;opacity:.6}
 .g-bar{
   position:absolute;top:5px;bottom:5px;
@@ -5131,21 +5171,31 @@ body.focus-mode #res {
   box-shadow: none !important;
 }
 
-/* Gantt timeline row left amber accent on hover */
+/* Gantt timeline row left accent */
 .g-row {
-  border-left: 1px solid transparent;
-  transition: border-left-color 0.15s var(--ease-spring);
-}
-.g-row:hover {
-  border-left-color: var(--amber) !important;
+  border-left: 3px solid var(--thr-col, transparent) !important;
+  transition: background 0.12s ease, border-left-color 0.15s ease !important;
 }
 
 /* Swimlane mode horizontal row header */
 .swim-lane {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, border-left-color 0.15s ease;
+  background: var(--thr-bg, var(--bg-0)) !important;
+  border-left: 3px solid var(--thr-col, transparent) !important;
+  position: relative !important;
 }
-.swim-lane:hover {
-  background: var(--bg-2) !important;
+.swim-lane:hover,
+.swim-lane.split-row-hover {
+  background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
+}
+.swim-lane:hover::before,
+.swim-lane.split-row-hover::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--amber);
+  z-index: 3;
 }
 .swim-lane-hdr {
   writing-mode: horizontal-tb !important;
@@ -5731,10 +5781,9 @@ textarea.inp { line-height: 1.55 !important; }
   box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
 
-/* Gantt selected row: neutral outline instead of left-border accent */
+/* Gantt selected row: amber highlight outline blended with thread background */
 .g-row.g-selected {
-  background: var(--amber-d) !important;
-  border-left: none !important;
+  background: color-mix(in srgb, var(--amber) 16%, var(--thr-bg, var(--bg-1))) !important;
   outline: 1px solid var(--amber) !important;
   outline-offset: -1px !important;
 }
@@ -11611,15 +11660,20 @@ const GR={
     const minorTicks=MINOR.map(p=>`<div class="g-al-minor" style="left:${p}%;"></div>`).join('');
     const ax=PCT.map(p=>`<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(rd*p/100))}</div></div>`).join('')+minorTicks;
     const rh=rows.map(({n,d,sp,wp,sfp}, idx)=>{
-      let col = scol(n.visualStyle?.accentColor||'var(--blue)');
+      const thr = n.thread || (n.parent && n.parent.thread) || '';
+      const tCol = typeof TR !== 'undefined' ? TR.getThreadColor(thr) : { col: 'transparent', bg: 'transparent', bdr: 'transparent' };
+      const isThrGrp = !!n.isThreadGroup;
+
+      let col = isThrGrp ? tCol.col : scol(n.visualStyle?.accentColor||'var(--blue)');
       if (n._isSlaBreach) col = 'var(--red)';
       else if (n._isOutlier) col = 'var(--amber)';
       else if (n._isCriticalPath) col = 'var(--purple)';
 
-      const ico=esc(n.visualStyle?.icon||'•');
-      const ind=6+d*10,dur=n.behavior!=='inline'&&n.duration!=null?fmtMs(n.duration):'';
-      const il=n.behavior==='inline';
-      const grids=PCT.map(p=>`<div class="g-gl" style="left:${p}%;"></div>`).join('');
+      const ico = isThrGrp ? '☵' : esc(n.visualStyle?.icon||'•');
+      const ind = isThrGrp ? 8 : (6+d*10);
+      const dur = n.behavior!=='inline'&&n.duration!=null?fmtMs(n.duration):'';
+      const il = n.behavior==='inline';
+      const grids = PCT.map(p=>`<div class="g-gl" style="left:${p}%;"></div>`).join('');
       
       let barCls = 'g-bar';
       if (n._isOutlier) barCls += ' g-outlier';
@@ -11641,11 +11695,21 @@ const GR={
           <span class="g-bl">${n._isSlaBreach ? '⚠ ' : ''}${esc(dur)}</span>
           ${sfp>0&&sfp<98?`<div class="g-self" style="width:${sfp.toFixed(1)}%;"></div>`:''}
         </div>`:'';
-      return`<div class="g-row" data-idx="${idx}">
-        <div class="g-lbl" style="padding-left:${ind}px;">
-          <span class="g-li" style="color:${col};">${ico}</span>
-          <span class="g-lt">${esc(n.elementName||n.ruleName)}</span>
-        </div>
+
+      const rowCls = isThrGrp ? 'g-row g-thr-group-row' : 'g-row';
+      const lblHtml = isThrGrp
+        ? `<div class="g-lbl" style="padding-left:8px; font-weight:700;">
+            <span class="g-li" style="color:${tCol.col}; font-size:11px;">☵</span>
+            <span class="g-lt" style="color:${tCol.col}; font-family:var(--mono); font-weight:700;">${esc(thr)}</span>
+            <span class="tree-thr-badge" style="background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr}; margin-left:auto; font-size:10px;">THREAD</span>
+          </div>`
+        : `<div class="g-lbl" style="padding-left:${ind}px;">
+            <span class="g-li" style="color:${col};">${ico}</span>
+            <span class="g-lt">${esc(n.elementName||n.ruleName)}</span>
+          </div>`;
+
+      return`<div class="${rowCls}" data-idx="${idx}" data-thread="${esc(thr)}" style="--thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};">
+        ${lblHtml}
         <div class="g-trk">${grids}${bar}</div>
       </div>`;
     }).join('');
@@ -12509,10 +12573,14 @@ const TR={
       }
     }
 
-    if (S.viewMode === 'split' && this._activeTree && typeof GR !== 'undefined') {
+    if (S.viewMode === 'split' && this._activeTree) {
       const lp = document.querySelector('.res-split .sp-pane:first-child');
       if (lp) {
-        GR.render(this._activeTree, lp);
+        if (S.swimlaneMode && typeof SWIMLANE !== 'undefined') {
+          SWIMLANE.init(lp);
+        } else if (typeof GR !== 'undefined') {
+          GR.render(this._activeTree, lp);
+        }
         if (typeof UI !== 'undefined' && UI._setupSplitSync) {
           UI._setupSplitSync(lp, this._container ? this._container.closest('.sp-pane') : null);
         }
@@ -13230,7 +13298,12 @@ const UI={
       }
       
       w.append(l,h,rp);r.appendChild(w);
-      GR.render(tree,l);TR.render(tree,rp);
+      if (S.swimlaneMode && typeof SWIMLANE !== 'undefined') {
+        SWIMLANE.init(l);
+      } else {
+        GR.render(tree,l);
+      }
+      TR.render(tree,rp);
       this._res(h,l,rp);
       this._setupSplitSync(l, rp);
     } else if(vm==='gantt'){
@@ -13392,7 +13465,7 @@ const UI={
       rp = document.querySelector('.res-split .sp-pane:last-child');
       if (!l || !rp) return;
     }
-    const gRows = l.querySelector('.g-rows');
+    const gRows = l.querySelector('.g-rows') || l.querySelector('#swim-lanes-rows');
     const treeScroll = rp.querySelector('#tree-vscroll');
     if (!gRows || !treeScroll) return;
 
@@ -13432,8 +13505,13 @@ const UI={
     // Delegated bidirectional row hover
     const splitWrap = l.parentElement;
     const onHover = (e) => {
-      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx]');
+      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx], .swim-lane[data-thread]');
       if (!row) return;
+      if (row.classList.contains('swim-lane')) {
+        const thr = row.dataset.thread;
+        if (thr) treeScroll.querySelectorAll(`.tree-row[data-thread="${thr}"]`).forEach(r => r.classList.add('split-row-hover'));
+        return;
+      }
       const idx = row.dataset.idx;
       if (idx == null) return;
       const isGantt = row.classList.contains('g-row');
@@ -13441,10 +13519,22 @@ const UI={
         ? treeScroll.querySelector(`.tree-row[data-idx="${idx}"]`)
         : gRows.querySelector(`.g-row[data-idx="${idx}"]`);
       if (partner) partner.classList.add('split-row-hover');
+      if (!isGantt) {
+        const thr = row.dataset.thread;
+        if (thr) {
+          const swimPartner = gRows.querySelector(`.swim-lane[data-thread="${thr}"]`);
+          if (swimPartner) swimPartner.classList.add('split-row-hover');
+        }
+      }
     };
     const onUnhover = (e) => {
-      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx]');
+      const row = e.target.closest('.g-row[data-idx], .tree-row[data-idx], .swim-lane[data-thread]');
       if (!row) return;
+      if (row.classList.contains('swim-lane')) {
+        const thr = row.dataset.thread;
+        if (thr) treeScroll.querySelectorAll(`.tree-row[data-thread="${thr}"]`).forEach(r => r.classList.remove('split-row-hover'));
+        return;
+      }
       const idx = row.dataset.idx;
       if (idx == null) return;
       const isGantt = row.classList.contains('g-row');
@@ -13452,6 +13542,13 @@ const UI={
         ? treeScroll.querySelector(`.tree-row[data-idx="${idx}"]`)
         : gRows.querySelector(`.g-row[data-idx="${idx}"]`);
       if (partner) partner.classList.remove('split-row-hover');
+      if (!isGantt) {
+        const thr = row.dataset.thread;
+        if (thr) {
+          const swimPartner = gRows.querySelector(`.swim-lane[data-thread="${thr}"]`);
+          if (swimPartner) swimPartner.classList.remove('split-row-hover');
+        }
+      }
     };
 
     if (splitWrap) {
@@ -25613,7 +25710,16 @@ SWIMLANE.init = function(el) {
     }
   } else {
     // Group by thread
-    swimlanes = threads.map(thr => ({ id: thr, name: thr, color: '#f0883e', events: [] }));
+    swimlanes = threads.map(thr => {
+      const tCol = typeof TR !== 'undefined' ? TR.getThreadColor(thr) : null;
+      return {
+        id: thr,
+        name: thr,
+        color: tCol ? tCol.col : '#f0883e',
+        tCol: tCol,
+        events: []
+      };
+    });
     // Draggable order
     if (SWIM.order.length > 0) {
       swimlanes.sort((a, b) => SWIM.order.indexOf(a.id) - SWIM.order.indexOf(b.id));
@@ -25660,12 +25766,17 @@ SWIMLANE.init = function(el) {
       return `<div class="swim-bar" data-node-id="${n.id}" style="position:absolute; top:calc(50% - 9px); ${style} cursor:pointer;" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
     }).join('');
     
-    const bg = idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)';
+    const tCol = lane.tCol || (!SWIM.groupByRule && typeof TR !== 'undefined' ? TR.getThreadColor(lane.id) : null);
+    const bg = tCol ? tCol.bg : (idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)');
+    const bdrLeft = tCol ? `3px solid ${tCol.col}` : '3px solid transparent';
+    const hdrBg = 'transparent';
+    const hdrTitleColor = tCol ? tCol.col : 'inherit';
+    const badgeStyle = tCol ? `background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr};` : '';
     
-    return `<div class="swim-lane" data-id="${esc(lane.id)}" draggable="true" style="display:grid; grid-template-columns:180px 1fr; border-bottom:1px solid var(--bdr-d); background:${bg}; align-items:center; height:${SWIM.laneH}px;">
-      <div class="swim-lane-hdr" style="font-weight:bold; font-size: 12px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr); display:flex; align-items:center; justify-content:space-between; gap:6px;">
-        <span class="lane-title trunc" style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${esc(lane.name)}">${esc(lane.name)}</span>
-        <span class="badge b-gray" style="font-size: 12px; font-weight:700; flex-shrink:0;">${lane.events.length}</span>
+    return `<div class="swim-lane" data-id="${esc(lane.id)}" data-thread="${esc(lane.id)}" draggable="true" style="display:grid; grid-template-columns:180px 1fr; border-bottom:1px solid var(--bdr-d); border-left:${bdrLeft}; background:${bg}; --thr-col:${tCol?tCol.col:'transparent'}; --thr-bg:${tCol?tCol.bg:bg}; --thr-bdr:${tCol?tCol.bdr:'transparent'}; align-items:center; height:${SWIM.laneH}px;">
+      <div class="swim-lane-hdr" style="font-weight:bold; font-size: 12px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr); display:flex; align-items:center; justify-content:space-between; gap:6px; background:${hdrBg}; height:100%;">
+        <span class="lane-title trunc" style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:${hdrTitleColor};" title="${esc(lane.name)}">${esc(lane.name)}</span>
+        <span class="badge b-gray" style="font-size: 11px; font-weight:700; flex-shrink:0; ${badgeStyle}">${lane.events.length}</span>
       </div>
       <div style="position:relative; height:100%; width:calc(100% * var(--g-zoom, 1)); min-width:100%;">
         ${barsHtml}

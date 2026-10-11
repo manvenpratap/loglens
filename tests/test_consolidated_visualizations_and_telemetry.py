@@ -776,3 +776,63 @@ async def test_execution_tree_thread_grouping_and_telemetry(page_with_data):
         assert border_left == 'solid'
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_split_view_row_background_colors_synchronized(page_with_data):
+    """In Split view, Waterfall (.g-row) and Swimlane (.swim-lane) row backgrounds match Tree (.tree-row)."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('split')")
+    await page.wait_for_timeout(200)
+
+    # 1. Verify Waterfall and Tree in Split View have synchronized row backgrounds
+    sync_check = await page.evaluate("""() => {
+        const gRows = document.querySelectorAll('.res-split .sp-pane:first-child .g-row');
+        const treeRows = document.querySelectorAll('.res-split .sp-pane:last-child .tree-row');
+        if (!gRows.length || !treeRows.length) return { ok: false, reason: 'missing rows' };
+        
+        let matchCount = 0;
+        for (let i = 0; i < Math.min(gRows.length, treeRows.length); i++) {
+            const gr = gRows[i];
+            const tr = treeRows[i];
+            const grBg = window.getComputedStyle(gr).backgroundColor;
+            const trBg = window.getComputedStyle(tr).backgroundColor;
+            const grLbl = gr.querySelector('.g-lbl');
+            const grLblBg = grLbl ? window.getComputedStyle(grLbl).backgroundColor : null;
+            
+            if (grBg === trBg && (!grLbl || grLblBg === trBg)) {
+                matchCount++;
+            }
+        }
+        return { ok: true, matchCount, total: Math.min(gRows.length, treeRows.length) };
+    }""")
+    assert sync_check['ok'] is True
+    assert sync_check['matchCount'] == sync_check['total']
+    assert sync_check['total'] > 0
+
+    # 2. Verify Swimlane in Split View has thread-tinted background matching thread palette
+    await page.evaluate("""() => {
+        S.swimlaneMode = true;
+        UI.rv();
+    }""")
+    await page.wait_for_timeout(200)
+
+    swim_check = await page.evaluate("""() => {
+        const lanes = document.querySelectorAll('.res-split .sp-pane:first-child .swim-lane');
+        if (!lanes.length) return { ok: false, reason: 'missing swimlanes' };
+        let validCount = 0;
+        lanes.forEach(lane => {
+            const thr = lane.dataset.thread;
+            if (thr && typeof TR !== 'undefined') {
+                const tCol = TR.getThreadColor(thr);
+                const bg = window.getComputedStyle(lane).backgroundColor;
+                if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') validCount++;
+            }
+        });
+        return { ok: true, validCount, total: lanes.length };
+    }""")
+    assert swim_check['ok'] is True
+    assert swim_check['validCount'] == swim_check['total']
+    assert swim_check['total'] > 0
+
+    assert_no_critical_errors(page)

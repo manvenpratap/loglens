@@ -3,6 +3,23 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Split View Waterfall and Swimlane Row Background Colors Synchronized with Execution Tree (v6.9.130 — COMPLETED)**:
+  - **Waterfall Pane Row Color Parity**:
+    - In `GR.render`, rows now resolve their thread via `n.thread || (n.parent && n.parent.thread) || ''` and compute `tCol` via `TR.getThreadColor(thr)`.
+    - Injected inline CSS variables `--thr-col`, `--thr-bg`, `--thr-bdr` and `data-thread` onto `.g-row` elements.
+    - Updated CSS so `.g-row` and `.g-lbl` use `var(--thr-bg)` and `.g-trk` has a transparent background, ensuring the subtle thread color tint spans the complete width of every waterfall row without white/opaque gaps.
+    - Hover and selected states in Waterfall blend amber highlight cleanly over `--thr-bg` (`color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1)))`), mirroring `.tree-row` hover styles.
+  - **Swimlane Pane Thread Color Parity**:
+    - In `SWIMLANE.init`, thread-grouped swimlanes now compute `tCol` via `TR.getThreadColor(thr)` and apply `tCol.bg` as the lane background and `3px solid ${tCol.col}` as the left border accent.
+    - Set `.swim-lane-hdr` background to transparent so the thread background tint flows uniformly across both the header and track cells.
+    - Applied badge styles with matching thread color, background, and border.
+  - **Split View Interaction & Synchronization**:
+    - Updated `TR.updateLayout` and `UI.rv` to correctly support Swimlane rendering in the split view left pane when `S.swimlaneMode` is active.
+    - Enhanced `_setupSplitSync` to sync scrolling and bidirectional hover highlights between `.swim-lane` / `.g-row` and `.tree-row`.
+  - **Automated Regression Coverage**:
+    - Added `test_split_view_row_background_colors_synchronized` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - All 96 tests passing in the full test suite.
+
 - **Execution Tree Minimap Pixel-Perfect Row Alignment & Header Integration (v6.9.129 — COMPLETED)**:
   - **Native MAP Column Header Integration in `#tree-hdr`**:
     - Replaced the floating `div#ll-minimap-label` (which had been inserted into `#tree-scroll-wrap` taking up 29px of row area and offsetting every row on the minimap by an entire row) with a dedicated column header `<span class="tree-th-map" id="tree-th-map">MAP</span>` inside `#tree-hdr`.
