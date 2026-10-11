@@ -2,6 +2,31 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Comprehensive In-App Documentation & User Manual (v6.9.141 — COMPLETED)**:
+  - **7 Specialized In-App Documentation Tabs**:
+    - **Guide & Architecture (`#hlp-guide`)**: Details the zero-dependency browser execution model, Web Worker sandboxed parsing, privacy guarantees, thread-local call stack engine (push, pop, inline, swap, popAll), hotspot percentage badges (25% → 50% → 80%+), distributed tracing correlation, SLA thresholds, pinned spans workspace, 6-step workflow, and sample log downloader.
+    - **Screen & Field Reference (`#hlp-fields`)**: Exhaustive, structured reference tables explaining every single field, control, button, and indicator across 8 functional zones:
+      1. Global Top Header & Toolbar (Upload, Stream URL, Search, Thread selector, Level pills, Trace pill, SLA breach counter, Anomaly badge, Theme toggle, Focus mode, Export dialog, Settings, Help).
+      2. Primary View Switcher Tabs (Split, Timeline, Tree, Traces, Stats, Graph, 3D, LQL Query, Diff).
+      3. Waterfall & Timeline Canvas Controls (Critical path toggle, Zoom slider, Fit to window, Reset zoom, Zoom multiplier readout, Time axis headers, Timeline bars).
+      4. Execution Tree Toolbar & Columns (Expand all, Collapse all, Tree critical check, Timestamp, Duration, Thread, Level, Element/Rule, Payload, Floating action bar).
+      5. Trace Explorer Dashboard (Total Traces card, Traced Events card, P95 Latency card, SLA Breaches card, Quick filter chips, Trace ID & slowest operation callout, Spans count, Threads list, Proportional latency bar, Action buttons).
+      6. Rule Editor Modal Form Fields (Rule name, Stack behavior, Preset, Keywords, Match mode, Capture mode, Custom regex, Token builder, 12 Capture Group fields, SLA threshold, Accent color).
+      7. Event Inspector Drawer (Header, Rule badge, Severity, Thread swimlane, Duration & SLA, Start/End timestamps, Telemetry metadata, Hierarchy links, Raw log line, Payload viewer, Pin event).
+      8. Settings & Preferences 4 Pillars (Global timestamp regex, IDB cache, Web Worker, Monospace font, Tree guides, Rounded bars, High contrast, Global SLA, Degradation warning, Outlier factor, Breached span pulse, Unparsed lines analyzer).
+    - **Views & Visualizers (`#hlp-views`)**: In-depth operational guides for all 9 platform views: Split View, Waterfall Timeline, Execution Tree, Trace Explorer, Stats Dashboard, Dependency Graph, 3D Telemetry Landscape, LQL Console, and Log Diff.
+    - **Rules & Stack Engine (`#hlp-rules`)**: Complete mechanics of the 5 stack behaviors with ASCII thread diagrams, top-to-bottom rule evaluation priority, pipe-delimited column auto-splitting, unparsed lines rule synthesis, and undo/redo history.
+    - **Capture Groups (`#hlp-capture`)**: Specification table for all 12 telemetry mappings with real-world production regex templates (Log4j 2, Spring Boot, Correlation ID tracing, and Pipe-delimited).
+    - **LQL Query Cookbook (`#hlp-lql`)**: Formal query grammar, queryable fields, comparison/string operators, aggregate functions, and 8 click-to-run interactive query recipes.
+    - **Shortcuts & Gestures (`#hlp-shortcuts`)**: Complete cheatsheet covering Global shortcuts, View hotkeys (`Alt+1`–`Alt+0`), Thread navigation (`Alt+[` / `Alt+]`), Tree navigation (`J`/`K`/`E`/`C`/`P`), Timeline gestures, and Query shortcuts.
+  - **Interactive Documentation Search Filter (`#hlp-filter`)**:
+    - Live search input dynamically filtering cards, table rows, and recipes in real time across the active documentation panel.
+  - **Extended Contextual Help Tips (`HTIP.TIPS`)**:
+    - Expanded in-app tip popovers for `duration`, `service`, `statusCode`, `spanId`, `critical_path`, `unparsed`, and `lql`.
+  - **Automated Regression Verification**:
+    - Added `test_comprehensive_in_app_help_and_documentation_system` to `tests/test_consolidated_navigation_and_shell.py`.
+    - Full regression test suite passed: **109/109 tests (100% pass rate in 101s)**.
+
 - **Split View Timeline Toolbar Controls & Synchronized Zoom (v6.9.140 — COMPLETED)**:
   - **Toolbar Controls Wiring & Visibility**:
     - Wired Critical Path toggle (`#gantt-crit-chk`), Zoom slider (`#gantt-zoom-slider`), Fit window button (`#btn-zoom-fit`), and Reset button (`#btn-zoom-reset`) in Split view mode (`S.viewMode === 'split'`).

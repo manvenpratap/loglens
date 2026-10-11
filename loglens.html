@@ -7812,7 +7812,8 @@ label[for="watch-auto-reload"] {
 
 /* Internal tab bar — Apple macOS segmented control */
 .hlp-tabs {
-  display: inline-flex !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
   background: var(--bg-1) !important;
   border: 1px solid var(--bdr) !important;
   border-radius: var(--rounded-md) !important;
@@ -7821,9 +7822,10 @@ label[for="watch-auto-reload"] {
   margin-bottom: 14px !important;
   flex-shrink: 0 !important;
   width: fit-content !important;
+  max-width: 100% !important;
 }
 .hlp-tab {
-  padding: 5px 14px !important;
+  padding: 6px 14px !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   color: var(--t3) !important;
@@ -7834,6 +7836,9 @@ label[for="watch-auto-reload"] {
   transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
   flex-shrink: 0 !important;
   font-family: var(--ui) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 .hlp-tab:hover { color: var(--t1) !important; }
 .hlp-tab.active {
@@ -7848,16 +7853,119 @@ label[for="watch-auto-reload"] {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Help sections */
+/* Help search bar */
+.hlp-search-wrap {
+  position: relative;
+  margin-bottom: 14px;
+  width: 100%;
+  max-width: 600px;
+}
+.hlp-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 8px 12px 8px 34px;
+  font-size: 13px;
+  color: var(--t0);
+  outline: none;
+  font-family: var(--ui);
+  transition: border-color .15s, box-shadow .15s;
+}
+.hlp-search-input:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-d);
+}
+.hlp-search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--t4);
+  pointer-events: none;
+  width: 14px;
+  height: 14px;
+}
+
+/* Help sections & cards */
 .hlp-sec {
   display: none !important;
   flex-direction: column !important;
-  gap: 2px !important;
+  gap: 12px !important;
   overflow-y: auto !important;
   flex: 1 !important;
   min-height: 0 !important;
+  padding-right: 4px;
 }
 .hlp-sec.active { display: flex !important; }
+
+.hlp-card {
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+.hlp-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t0);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--display);
+  letter-spacing: .2px;
+}
+.hlp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.hlp-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.hlp-step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--amber-d);
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.hlp-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--rounded-sm);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+.hlp-badge-pill.pill-blue { background: rgba(56, 139, 253, 0.15); color: var(--blue); border: 1px solid rgba(56, 139, 253, 0.3); }
+.hlp-badge-pill.pill-green { background: rgba(63, 185, 80, 0.15); color: var(--green); border: 1px solid rgba(63, 185, 80, 0.3); }
+.hlp-badge-pill.pill-amber { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+.hlp-badge-pill.pill-purple { background: rgba(168, 85, 247, 0.15); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.3); }
+.hlp-badge-pill.pill-red { background: rgba(244, 63, 94, 0.15); color: var(--red); border: 1px solid rgba(244, 63, 94, 0.3); }
+.hlp-badge-pill.pill-cyan { background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+.hlp-badge-pill.pill-yellow { background: rgba(234, 179, 8, 0.15); color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.3); }
 
 /* Help section sub-headers */
 .hlp-sh {
@@ -7867,7 +7975,7 @@ label[for="watch-auto-reload"] {
   letter-spacing: 0.06em !important;
   color: var(--t4) !important;
   font-family: var(--display) !important;
-  margin: 12px 0 6px 0 !important;
+  margin: 14px 0 8px 0 !important;
   padding-bottom: 4px !important;
   border-bottom: 1px solid var(--bdr-d) !important;
 }
@@ -8758,7 +8866,7 @@ label[for="watch-auto-reload"] {
 /* Help table styles for full screen readability */
 #res > .sp .hlp-table {
   width: 100% !important;
-  max-width: 900px !important;
+  max-width: 1200px !important;
 }
 /* Dashboard grid & card layouts */
 .dashboard-grid {
@@ -9438,258 +9546,784 @@ label[for="watch-auto-reload"] {
     <!-- HELP -->
     <div class="sp" id="p-hlp">
 
-      <!-- Internal tab bar -->
-      <div class="hlp-tabs" role="tablist" aria-label="Help topics">
-        <button class="hlp-tab active" data-hlp="guide" role="tab" aria-selected="true">Guide</button>
-        <button class="hlp-tab" data-hlp="lql" role="tab" aria-selected="false">LQL</button>
-        <button class="hlp-tab" data-hlp="capture" role="tab" aria-selected="false">Captures</button>
-        <button class="hlp-tab" data-hlp="shortcuts" role="tab" aria-selected="false">Shortcuts</button>
+      <!-- Header & Quick Search -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--t0);font-family:var(--display);display:flex;align-items:center;gap:8px;">
+            <span>📖</span> LogLens In-App Documentation &amp; User Manual
+            <span class="hlp-badge-pill pill-amber" style="font-size:11px;">v6.9</span>
+          </div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px;">Complete reference for platform architecture, screen controls, visualizers, parsing rules, telemetry captures, and LQL query language.</div>
+        </div>
+        
+        <div class="hlp-search-wrap" style="margin-bottom:0;max-width:340px;">
+          <svg class="hlp-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" class="hlp-search-input" id="hlp-filter" placeholder="Search documentation, fields, shortcuts..." aria-label="Search help documentation">
+        </div>
       </div>
 
-      <!-- ── GUIDE ── -->
+      <!-- Internal tab bar -->
+      <div class="hlp-tabs" role="tablist" aria-label="Help topics">
+        <button class="hlp-tab active" data-hlp="guide" role="tab" aria-selected="true">📘 Guide &amp; Architecture</button>
+        <button class="hlp-tab" data-hlp="fields" role="tab" aria-selected="false">🖥️ Screen &amp; Field Reference</button>
+        <button class="hlp-tab" data-hlp="views" role="tab" aria-selected="false">📊 Views &amp; Visualizers</button>
+        <button class="hlp-tab" data-hlp="rules" role="tab" aria-selected="false">⚙️ Rules &amp; Stack Engine</button>
+        <button class="hlp-tab" data-hlp="capture" role="tab" aria-selected="false">🎯 Capture Groups</button>
+        <button class="hlp-tab" data-hlp="lql" role="tab" aria-selected="false">🔍 LQL Query Cookbook</button>
+        <button class="hlp-tab" data-hlp="shortcuts" role="tab" aria-selected="false">⌨️ Shortcuts &amp; Gestures</button>
+      </div>
+
+      <!-- ════════════════════════════════ 1. GUIDE & ARCHITECTURE ════════════════════════════════ -->
       <div class="hlp-sec active" id="hlp-guide" role="tabpanel">
 
-        <div class="hlp-sh">How it works</div>
-        <div style="font-size: 12px;color:var(--t2);line-height:1.65;">
-          LogLens parses log files using <strong style="color:var(--t1)">regex rules</strong> you define.
-          Each rule matches one type of log line and determines how it appears in the Gantt and Tree views.
-        </div>
-
-        <div class="hlp-sh">Stack behaviors</div>
-        <div class="hlp-beh">
-          <div class="hlp-beh-row">
-            <span class="hlp-beh-badge badge b-blue">push</span>
-            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Opens a timed block.</strong> The event goes on the stack; its duration starts here. Pair it with a <code style="font-family:var(--mono);font-size: 12px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--green)">pop</code> rule that has the same <code style="font-family:var(--mono);font-size: 12px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--amber)">elementName</code>.</div>
-          </div>
-          <div class="hlp-beh-row">
-            <span class="hlp-beh-badge badge b-green">pop</span>
-            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Closes the last open block</strong> on the same thread and calculates its duration.</div>
-          </div>
-          <div class="hlp-beh-row">
-            <span class="hlp-beh-badge badge b-pur">inline</span>
-            <div class="hlp-beh-desc"><strong style="color:var(--t1)">Point-in-time event.</strong> Appears as a leaf node in the tree (no duration). Use for warnings, errors, and log statements.</div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🛡️</span> Zero-Dependency &amp; Client-Side Privacy Model</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            LogLens is an offline-capable, high-performance log analyzer and distributed execution reconstructor that runs <strong style="color:var(--t0)">100% inside your browser</strong>.
+            All log parsing, regex tokenization, tree synthesis, duration calculations, and telemetry graphing happen locally inside an isolated <strong style="color:var(--t1)">Web Worker</strong> thread.
+            Zero bytes of log text, payloads, or metadata ever leave your computer or touch an external server. It is safe for SOC-2, HIPAA, PCI-DSS, and proprietary production data.
+            Parsed datasets can optionally be persisted to your browser's private local <strong style="color:var(--t1)">IndexedDB</strong> cache for instantaneous reloading.
           </div>
         </div>
 
-        <div class="hlp-sh">Hotspot badges</div>
-        <div style="font-size: 12px;color:var(--t2);line-height:1.6;">
-          Tree nodes show <span class="hb hr-">↑↑80%</span> badges: the percentage of the parent event's duration consumed by this child. Badge color escalates: <span style="color:var(--amber)">25%+</span> → <span style="color:var(--red)">50%+</span> → <span style="color:var(--red);font-weight:700">80%</span> reveals the true bottleneck.
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🧠</span> The Core Concept: Stack-Based Execution Reconstruction</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Modern distributed services output flat, sequential streams of text lines. Understanding synchronous method calls, asynchronous worker executions, HTTP round-trips, and database transactions requires reconstructing the <em>depth, duration, and parent-child hierarchy</em> of each event.
+            <br><br>
+            LogLens accomplishes this using a deterministic <strong style="color:var(--t0)">Thread-Local Call Stack Engine</strong>:
+          </div>
+          <div class="hlp-grid" style="margin-top:10px;">
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:10px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span class="hlp-badge-pill pill-blue">push</span>
+                <strong style="color:var(--t0);font-size:12px;">Opens a Timed Span</strong>
+              </div>
+              <div style="font-size:11px;color:var(--t3);line-height:1.5;">When an entry line matches a <code>push</code> rule, LogLens pushes a new span frame onto that thread's call stack, records the start timestamp, and marks any previous frame as its parent.</div>
+            </div>
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:10px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span class="hlp-badge-pill pill-green">pop</span>
+                <strong style="color:var(--t0);font-size:12px;">Closes the Active Span</strong>
+              </div>
+              <div style="font-size:11px;color:var(--t3);line-height:1.5;">When an exit line matches a <code>pop</code> rule, LogLens pops the top frame from the thread's stack, records the end timestamp, and computes the exact duration: <code style="color:var(--green)">duration = end - start</code>.</div>
+            </div>
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:10px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span class="hlp-badge-pill pill-purple">inline</span>
+                <strong style="color:var(--t0);font-size:12px;">Point-in-Time Event</strong>
+              </div>
+              <div style="font-size:11px;color:var(--t3);line-height:1.5;">For checkpoints, errors, warnings, or debug statements that do not have separate start/end markers. Appears as a leaf node under the currently active span frame without altering stack depth.</div>
+            </div>
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:10px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span class="hlp-badge-pill pill-amber">swap</span>
+                <strong style="color:var(--t0);font-size:12px;">Atomic Transition</strong>
+              </div>
+              <div style="font-size:11px;color:var(--t3);line-height:1.5;">Closes the currently active span frame on the thread and immediately opens a new sibling span at the exact same depth level. Ideal for pipeline stages (e.g. <code>VALIDATE → PROCESS → PERSIST</code>).</div>
+            </div>
+          </div>
         </div>
 
-        <div class="hlp-sh">Trace ID correlation</div>
-        <div style="font-size: 12px;color:var(--t2);line-height:1.6;">
-          Map a capture group to <code style="font-family:var(--mono);font-size: 12px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--red)">correlationId</code> and any distributed trace ID becomes a clickable badge (click to filter) all views to just that trace across threads.
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔥</span> Hotspot Badges &amp; Bottleneck Identification</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Every node in the Execution Tree displays a relative percentage badge (e.g. <span class="hb hr-" style="font-size:11px;">↑↑80%</span>) indicating the proportion of its parent span's total elapsed duration consumed by that single operation.
+            Badge color dynamically escalates to highlight true production bottlenecks:
+            <br>
+            • <strong style="color:var(--amber)">25%+ (Yellow/Amber)</strong>: Moderate duration consumer.<br>
+            • <strong style="color:var(--red)">50%+ (Orange/Red)</strong>: Dominant execution contributor within the parent call.<br>
+            • <strong style="color:var(--red);font-weight:700">80%+ (Vibrant Red)</strong>: Severe bottleneck; indicates where optimization or indexing will produce maximum latency gains.
+          </div>
         </div>
 
-        <div class="hlp-sh">SLA breaches</div>
-        <div style="font-size: 12px;color:var(--t2);line-height:1.6;">
-          Set a <strong>SLA Threshold (ms)</strong> on any <code style="font-family:var(--mono);font-size: 12px;background:var(--bg-3);padding:1px 4px;border-radius:var(--rounded-sm);color:var(--amber)">push</code> rule. When its closed block exceeds the limit, the counter in the header bar increments and the node is flagged red in the Gantt.
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔗</span> Distributed Tracing &amp; Trace ID Correlation</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            By mapping regex capture groups to <code style="font-family:var(--mono);color:var(--red)">correlationId</code> or <code style="font-family:var(--mono);color:var(--purple)">spanId</code>, LogLens links disparate log events across worker threads, async task pools, and microservices into a cohesive distributed trace.
+            Clicking any trace badge in the Tree, Timeline, or Trace Explorer instantly isolates the active workspace to that single transaction lifecycle across all views.
+          </div>
         </div>
 
-        <div class="hlp-sh">Pins</div>
-        <div style="font-size: 12px;color:var(--t2);line-height:1.6;">
-          Right-click any tree node (or press <span class="kbd">P</span>) to pin it. Pinned events are always visible regardless of the active thread filter.
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⏱️</span> SLA Guardrails &amp; Statistical Outlier Detection</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            • <strong style="color:var(--t0)">SLA Thresholds</strong>: Set on individual rules or configured as a global fallback. Spans exceeding the threshold are highlighted in red on timeline bars and tree rows, incrementing the global SLA breach counter.<br>
+            • <strong style="color:var(--amber)">Near-SLA Warnings</strong>: Spans operating at 80%+ (configurable) of their SLA limit receive amber warning flags before an actual breach occurs.<br>
+            • <strong style="color:var(--cyan)">Statistical Outliers</strong>: Automatically computes mean and standard deviation across identical operations to tag anomalous latency spikes that deviate significantly from baseline performance.
+          </div>
         </div>
-        <div style="color:var(--t3);font-size: 12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">
-          <span style="display:inline-flex;vertical-align:middle;margin-right:3px"><svg viewBox="0 0 24 24" width="10" height="10"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Pins <span id="pin-count">0</span>
-        </div>
-        <div id="pin-list" style="font-size: 12px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet. Right-click a tree node or press P.</div>
 
-        <button class="btn btn-p mt2" id="btn-dl-log" style="margin-top:4px">
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📌</span> Investigation Workspace &amp; Pinned Spans</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            During complex root-cause triage, right-click any tree row or press <span class="kbd">P</span> to pin it. Pinned events are permanently held in the Pinned Events drawer and remain visible regardless of active thread selectors, text searches, or severity filters.
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr-d);">
+            <div style="color:var(--t3);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
+              Pinned Spans: <span id="pin-count" style="color:var(--amber)">0</span>
+            </div>
+            <div id="pin-list" style="font-size:12px;color:var(--t4);display:flex;flex-direction:column;gap:4px;">No pins yet. Press P on any tree row to pin.</div>
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🚀</span> End-to-End Workflow Walkthrough</div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">1</div>
+            <div><strong style="color:var(--t0)">Ingest Log Data</strong>: Drag-and-drop your log file onto the drop zone, browse from disk, connect to a live WebSocket streaming URL, or load the built-in sample demo.</div>
+          </div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">2</div>
+            <div><strong style="color:var(--t0)">Configure Rules &amp; Presets</strong>: Select a preset (Log4j, Spring Boot, JSON, Pipe-delimited) or open Settings (<span class="kbd">Alt+8</span>) to configure custom regexes, keywords, and stack behaviors.</div>
+          </div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">3</div>
+            <div><strong style="color:var(--t0)">Explore Telemetry Views</strong>: Navigate across Split View (<span class="kbd">Alt+1</span>), Timeline (<span class="kbd">Alt+2</span>), Tree (<span class="kbd">Alt+3</span>), or Traces (<span class="kbd">Alt+4</span>) to observe thread concurrency and execution duration.</div>
+          </div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">4</div>
+            <div><strong style="color:var(--t0)">Identify Bottlenecks &amp; Anomalies</strong>: Toggle Critical Path (<span class="kbd">Alt+C</span>) to isolate the execution chain, filter to SLA breaches, and inspect hotspot badges.</div>
+          </div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">5</div>
+            <div><strong style="color:var(--t0)">Query &amp; Isolate via LQL</strong>: Run SQL-like queries to aggregate duration averages, filter error payloads, and isolate specific customer sessions.</div>
+          </div>
+          <div class="hlp-step">
+            <div class="hlp-step-num">6</div>
+            <div><strong style="color:var(--t0)">Export Reports &amp; Visuals</strong>: Press <span class="kbd">⌘⇧E</span> to export standalone HTML interactive diagnostic reports, high-resolution SVG/PNG diagrams, or raw CSV datasets.</div>
+          </div>
+        </div>
+
+        <button class="btn btn-p mt2" id="btn-dl-log" style="width:fit-content;">
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-          Download Sample Log
+          Download Sample Log File
         </button>
       </div>
 
-      <!-- ── LQL REFERENCE ── -->
+      <!-- ════════════════════════════════ 2. SCREEN & FIELD REFERENCE ════════════════════════════════ -->
+      <div class="hlp-sec" id="hlp-fields" role="tabpanel">
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🎛️</span> Global Top Header &amp; Toolbar</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:8px;">Controls, filters, and indicators located on the persistent top navigation bar:</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Control / Field</th><th style="width:100px;">Location</th><th>Purpose &amp; Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>Drop Zone / Upload</code></td><td>Header Left</td><td>Accepts <code>.log</code>, <code>.txt</code>, <code>.json</code>, <code>.csv</code>, and <code>.xml</code> files via drag-and-drop or file picker. Dispatches parsing to Web Worker.</td></tr>
+              <tr><td><code>Live Stream URL</code></td><td>Header Left</td><td>WebSocket endpoint input (<code>ws://</code> or <code>wss://</code>). Connects to live server telemetry and appends incoming log events in real-time.</td></tr>
+              <tr><td><code>Global Search (/)</code></td><td>Header Center</td><td>Full-text and regex search bar. Filters events across element names, payloads, thread IDs, and raw log lines; highlights matches in real time.</td></tr>
+              <tr><td><code>Thread Selector</code></td><td>Header Center</td><td>Dropdown listing all detected thread swimlanes (e.g. <code>main</code>, <code>http-nio-8080-exec-1</code>). Selecting a thread isolates the canvas to that lane.</td></tr>
+              <tr><td><code>Level Pills</code></td><td>Header Center</td><td>Multi-select pills (<code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>, <code>TRACE</code>). Toggling isolates events matching the selected severity levels.</td></tr>
+              <tr><td><code>Active Trace Pill</code></td><td>Header Center</td><td>Displays currently filtered distributed trace ID with an active clear button (<code>✕</code>) to return to global multi-thread view.</td></tr>
+              <tr><td><code>SLA Breach Badge</code></td><td>Header Center</td><td>Counter displaying total SLA violations. Clicking immediately filters active views to display only breached events.</td></tr>
+              <tr><td><code>Anomaly Badge</code></td><td>Header Center</td><td>Counter displaying statistical outlier events whose duration exceeded the baseline multiplier.</td></tr>
+              <tr><td><code>Theme Toggle (Alt+T)</code></td><td>Header Right</td><td>Toggles between Dark, Light, and Ivory visual appearance palettes.</td></tr>
+              <tr><td><code>Focus Mode (F)</code></td><td>Header Right</td><td>Maximizes visualization canvas by collapsing all sidebars, toolbars, and extraneous UI elements.</td></tr>
+              <tr><td><code>Export Menu (⌘⇧E)</code></td><td>Header Right</td><td>Opens export modal for generating SVG diagrams, PNG screenshots, standalone HTML reports, JSON data, and CSV tables.</td></tr>
+              <tr><td><code>Settings (Alt+8)</code></td><td>Header Right</td><td>Opens the comprehensive Settings &amp; Rules configuration panel.</td></tr>
+              <tr><td><code>Help (Alt+0)</code></td><td>Header Right</td><td>Opens this in-app documentation and user manual.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📑</span> Primary View Switcher Tabs (Two-Tier Segmented Tabs)</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:140px;">View Tab</th><th style="width:80px;">Shortcut</th><th>Description &amp; Key Features</th></tr></thead>
+            <tbody>
+              <tr><td><code>Split</code></td><td><code>Alt+1</code></td><td>Side-by-side synchronized Execution Tree + Gantt Waterfall. Resizable divider, simultaneous sideways horizontal scrolling, and unified tree row navigation.</td></tr>
+              <tr><td><code>Timeline</code></td><td><code>Alt+2</code></td><td>Full-canvas interactive Gantt chart. Thread swimlanes, sub-millisecond timeline axis, zoom controls, pan navigation, and critical path highlighting.</td></tr>
+              <tr><td><code>Tree</code></td><td><code>Alt+3</code></td><td>Hierarchical execution call tree. Hotspot consumption percentage badges, keyboard navigation (J/K), multi-row range selection, and rule generator.</td></tr>
+              <tr><td><code>Traces</code></td><td><code>Alt+4</code></td><td>Distributed Trace Explorer. KPI summary cards (Total Traces, Traced Events, P95 Latency, SLA Breaches), quick filter chips, duration bars, and direct view jumping.</td></tr>
+              <tr><td><code>Stats</code></td><td><code>Alt+5</code></td><td>Telemetry dashboard with duration distribution histograms, slow transaction leaderboards, error frequency breakdowns, and thread concurrency loads.</td></tr>
+              <tr><td><code>Graph</code></td><td><code>Alt+6</code></td><td>Interactive D3 / 2D node-link topology graph visualizing service calls, dependency transitions, and execution flow.</td></tr>
+              <tr><td><code>3D</code></td><td><code>Alt+7</code></td><td>Immersive WebGL Three.js 3D telemetry landscape. Event height mapping, thread lanes, temporal depth, and orbit controls.</td></tr>
+              <tr><td><code>LQL Query</code></td><td>—</td><td>LogLens Query Language interactive console with SQL syntax, auto-completion, click-to-run presets, and tabular results.</td></tr>
+              <tr><td><code>Diff</code></td><td>—</td><td>Side-by-side regression comparator. Compares two log datasets to detect execution latency drift, missing stages, and newly introduced error events.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⏳</span> Waterfall &amp; Timeline Canvas Controls</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Control / Field</th><th style="width:100px;">Element ID</th><th>Behavior &amp; Technical Specifications</th></tr></thead>
+            <tbody>
+              <tr><td><code>Critical Path</code></td><td><code>#gantt-crit-chk</code></td><td>Checkable toggle. Calculates the longest dependency sequence; highlights critical bars in bold amber/red and dims non-critical parallel bars.</td></tr>
+              <tr><td><code>Zoom Slider</code></td><td><code>#gantt-zoom-slider</code></td><td>Continuous scale slider from <code>0.2×</code> to <code>8.0×</code>. Updates <code>--g-zoom</code> CSS variable across all canvas rows, tick marks, and swimlane tracks.</td></tr>
+              <tr><td><code>Fit to Window</code></td><td><code>#btn-zoom-fit</code></td><td>Calculates total time span versus container client width and auto-scales zoom so the entire log timeline fits within the visible viewport.</td></tr>
+              <tr><td><code>Reset Zoom</code></td><td><code>#btn-zoom-reset</code></td><td>Resets zoom factor to <code>1.0×</code> and aligns horizontal scroll to time zero (the start of the dataset).</td></tr>
+              <tr><td><code>Zoom Multiplier</code></td><td><code>#gantt-zoom-val</code></td><td>Real-time numerical readout of current timeline magnification (e.g. <code>×1.0</code>, <code>×2.5</code>).</td></tr>
+              <tr><td><code>Timeline Header</code></td><td><code>.g-hdr, .g-ax</code></td><td>Sticky time axis with dynamic millisecond tick marks (<code>.g-at</code>) and vertical grid alignment guidelines (<code>.g-al</code>).</td></tr>
+              <tr><td><code>Timeline Bar</code></td><td><code>.g-bar</code></td><td>Colored execution block representing a span. Positioned via CSS left percentage; width proportional to elapsed duration. Click to inspect.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🌲</span> Execution Tree Toolbar &amp; Columns</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Column / Control</th><th style="width:100px;">Element ID</th><th>Details &amp; Data Format</th></tr></thead>
+            <tbody>
+              <tr><td><code>Expand All (E)</code></td><td><code>#btn-expand-all</code></td><td>Recursively expands all branches across the execution tree.</td></tr>
+              <tr><td><code>Collapse All (C)</code></td><td><code>#btn-collapse-all</code></td><td>Collapses all child nodes back to top-level root frames.</td></tr>
+              <tr><td><code>Tree Critical Check</code></td><td><code>#tree-crit-chk</code></td><td>Toggles critical path highlighting in the tree view; dims non-critical rows.</td></tr>
+              <tr><td><code>Timestamp</code></td><td><code>.tree-th-ts</code></td><td>Start timestamp of the event formatted as <code>HH:mm:ss.SSS</code> or ISO-8601 date.</td></tr>
+              <tr><td><code>Duration</code></td><td><code>.tree-th-dur</code></td><td>Elapsed time in milliseconds with relative hotspot percentage badge (e.g. <code>245ms ↑↑65%</code>).</td></tr>
+              <tr><td><code>Thread</code></td><td><code>.tree-th-th</code></td><td>Worker thread or execution swimlane identifier. Styled with assigned thread color pill.</td></tr>
+              <tr><td><code>Level</code></td><td><code>.tree-th-lv</code></td><td>Log severity level (<code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>).</td></tr>
+              <tr><td><code>Element / Rule</code></td><td><code>.tree-th-el</code></td><td>Indented tree column showing node expander chevron, transaction label, and matching rule name badge.</td></tr>
+              <tr><td><code>Payload</code></td><td><code>.tree-th-py</code></td><td>Captured contextual metadata (SQL statements, request URLs, HTTP request/response bodies).</td></tr>
+              <tr><td><code>Floating Action Bar</code></td><td><code>#tree-selection-bar</code></td><td>Appears when multiple tree rows are selected (via Shift/Ctrl). Displays selection count and <code>➕ Create Rule</code> button.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📊</span> Trace Explorer Fields &amp; Controls</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Element / Field</th><th style="width:100px;">Element ID</th><th>Purpose &amp; Interaction</th></tr></thead>
+            <tbody>
+              <tr><td><code>Total Traces Card</code></td><td>Card 1</td><td>Total count of unique trace / correlation IDs found in dataset. Click to reset active trace filters.</td></tr>
+              <tr><td><code>Traced Events Card</code></td><td>Card 2</td><td>Total count of individual spans tagged with a trace identifier.</td></tr>
+              <tr><td><code>P95 Latency Card</code></td><td>Card 3</td><td>Calculated 95th percentile execution latency across all traces, with maximum recorded duration subtitle.</td></tr>
+              <tr><td><code>SLA Breaches Card</code></td><td>Card 4</td><td>Total count of traces exceeding configured SLA limits with percentage breach rate. Click to filter to breached traces.</td></tr>
+              <tr><td><code>Filter Chips</code></td><td>Toolbar</td><td>Quick toggle pills: <code>All</code>, <code>⚠ SLA Breaches</code>, <code>⑂ Multi-Thread</code>, <code>✔ Healthy</code>.</td></tr>
+              <tr><td><code>Trace ID Column</code></td><td>Table Col 1</td><td>Hex/string trace identifier with subtitle callout highlighting slowest operation: <code>↳ &lt;elementName&gt; (&lt;duration&gt;)</code>.</td></tr>
+              <tr><td><code>Spans Column</code></td><td>Table Col 2</td><td>Total number of synchronous and asynchronous spans belonging to the trace.</td></tr>
+              <tr><td><code>Threads Column</code></td><td>Table Col 3</td><td>Color-coded thread pills showing all worker swimlanes traversed by this trace.</td></tr>
+              <tr><td><code>Duration Column</code></td><td>Table Col 4</td><td>Formatted total elapsed trace latency with proportional visual distribution bar (<code>.trace-bar-fill</code>).</td></tr>
+              <tr><td><code>Action Buttons</code></td><td>Table Col 5</td><td><code>Timeline</code>: jumps to Waterfall filtered to trace; <code>Tree</code>: jumps to Tree view; <code>Filter</code>: isolates trace in-place.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📝</span> Rule Editor Modal Form Fields (#mm)</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Field Name</th><th style="width:100px;">Input ID</th><th>Validation &amp; Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>Rule Name</code></td><td><code>#e-name</code></td><td>Unique human-readable name for this rule (e.g. <code>HTTP Inbound Request</code>, <code>DB Query Execute</code>).</td></tr>
+              <tr><td><code>Stack Behavior</code></td><td><code>#e-beh</code></td><td>Stack behavior: <code>push</code> (start span), <code>pop</code> (end span), <code>inline</code> (point event), <code>swap</code> (transition), <code>popAll</code> (clear stack).</td></tr>
+              <tr><td><code>Log Format Preset</code></td><td><code>#wf-sel</code></td><td>Preset dropdown: Java Standard (Log4j/Logback), Spring Boot, Log4j2 Time-only, JSON Structured, Pipe/CSV delimited.</td></tr>
+              <tr><td><code>Keywords / Markers</code></td><td><code>#kw-inp</code></td><td>Exact string literals required to trigger this rule. Supports match modes: <code>Any keyword (OR)</code> or <code>All keywords (AND)</code>.</td></tr>
+              <tr><td><code>Post-Keyword Capture</code></td><td>Radio</td><td>Extraction strategy: <code>Next word → elementName</code>, <code>Rest of line → elementName</code>, or <code>Nothing (just detect)</code>.</td></tr>
+              <tr><td><code>Custom Regex Toggle</code></td><td>Checkbox</td><td>When checked, overrides the guided wizard and activates full custom regular expression editing.</td></tr>
+              <tr><td><code>Regex Pattern</code></td><td><code>#rg-inp</code></td><td>Regular expression containing capture groups for telemetry fields (e.g. <code>^(\d{4}-...)\s+\[(\w+)\]...</code>).</td></tr>
+              <tr><td><code>Token Builder</code></td><td>Palette</td><td>Clickable tokens to auto-insert regex building blocks: Timestamp, Thread, Level, Class, Message, Delimiters.</td></tr>
+              <tr><td><code>Group → timestamp</code></td><td><code>#cm-ts</code></td><td>Capture group index (e.g. <code>1</code>) extracting start time. Parsed as ISO-8601 or epoch milliseconds.</td></tr>
+              <tr><td><code>Group → thread</code></td><td><code>#cm-th</code></td><td>Capture group index extracting thread/worker ID. Determines Gantt swimlane assignment.</td></tr>
+              <tr><td><code>Group → elementName</code></td><td><code>#cm-el</code></td><td>Capture group index extracting human-readable transaction name (URL path, method name, SQL operation).</td></tr>
+              <tr><td><code>Group → payload</code></td><td><code>#cm-py</code></td><td>Capture group index extracting contextual payload data (SQL text, HTTP request/response, parameters).</td></tr>
+              <tr><td><code>Group → correlationId</code></td><td><code>#cm-co</code></td><td>Capture group index extracting distributed trace identifier for cross-thread correlation.</td></tr>
+              <tr><td><code>Group → duration</code></td><td><code>#cm-du</code></td><td>Capture group index extracting inline duration string (e.g. <code>150ms</code>, <code>2.3s</code>).</td></tr>
+              <tr><td><code>Group → service</code></td><td><code>#cm-sv</code></td><td>Capture group index extracting microservice / component name (e.g. <code>billing-svc</code>, <code>auth</code>).</td></tr>
+              <tr><td><code>Group → statusCode</code></td><td><code>#cm-sc</code></td><td>Capture group index extracting HTTP or operational status code (e.g. <code>200</code>, <code>404</code>, <code>500</code>).</td></tr>
+              <tr><td><code>Group → spanId</code></td><td><code>#cm-sp</code></td><td>Capture group index extracting unique span identifier.</td></tr>
+              <tr><td><code>SLA Threshold (ms)</code></td><td><code>#e-sla</code></td><td>Target maximum duration limit in milliseconds. Durations exceeding this trigger red breach alerts and increment SLA counters.</td></tr>
+              <tr><td><code>Accent Color</code></td><td><code>#e-col</code></td><td>Hex color code or swatch. Styles the corresponding timeline bars and tree badges for this rule.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔍</span> Event Inspector Drawer (#inspector)</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:160px;">Section / Field</th><th style="width:100px;">Location</th><th>Information Provided</th></tr></thead>
+            <tbody>
+              <tr><td><code>Element Header</code></td><td>Drawer Top</td><td>Primary captured transaction name with copy button and close drawer action (<code>Esc</code>).</td></tr>
+              <tr><td><code>Rule Badge</code></td><td>Meta Row</td><td>Name of the specific parse rule that matched this event. Click to open Rule Editor.</td></tr>
+              <tr><td><code>Severity Level</code></td><td>Meta Row</td><td>Log level pill (<code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>).</td></tr>
+              <tr><td><code>Thread Swimlane</code></td><td>Meta Row</td><td>Worker thread identifier on which this execution occurred.</td></tr>
+              <tr><td><code>Duration &amp; SLA</code></td><td>Timing Card</td><td>Formatted duration with SLA status badge (<code>✔ WITHIN SLA</code>, <code>⚠ NEAR SLA</code>, or <code>🚨 SLA BREACH</code>).</td></tr>
+              <tr><td><code>Start &amp; End Time</code></td><td>Timing Card</td><td>Absolute millisecond timestamps for span start and span termination.</td></tr>
+              <tr><td><code>Telemetry Metadata</code></td><td>Details Card</td><td>Captured Status Code (HTTP), Microservice Name, Distributed Trace ID, and Span ID.</td></tr>
+              <tr><td><code>Hierarchy Links</code></td><td>Stack Card</td><td>Stack Nesting Depth level, with clickable hyperlinks to jump directly to the <strong>Parent Span</strong> or <strong>Child Spans</strong>.</td></tr>
+              <tr><td><code>Raw Log Line</code></td><td>Log Card</td><td>Exact unformatted original log text line from the file, with one-click copy to clipboard.</td></tr>
+              <tr><td><code>Payload Inspector</code></td><td>Payload Card</td><td>Formatted contextual detail viewer. Automatically formats and syntax-highlights JSON objects and SQL queries.</td></tr>
+              <tr><td><code>Pin Event Button</code></td><td>Drawer Bottom</td><td>Pins the current span so it remains visible across all navigation filters and views.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⚙️</span> Settings &amp; Preferences Configuration (#p-cfg)</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:180px;">Setting Name</th><th style="width:120px;">Element ID</th><th>Default &amp; Operational Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>Global Timestamp Regex</code></td><td><code>#ts-rx</code></td><td>Default ISO/log pattern. Fallback timestamp extractor used when a rule lacks its own timestamp capture group.</td></tr>
+              <tr><td><code>IndexedDB Cache</code></td><td>Checkbox</td><td>Enabled. Caches parsed log trees locally so large files load instantly on subsequent visits without re-parsing.</td></tr>
+              <tr><td><code>Web Worker Processing</code></td><td>Checkbox</td><td>Enabled. Offloads log tokenization to a dedicated background worker to keep the UI thread completely fluid.</td></tr>
+              <tr><td><code>Monospace Font Engine</code></td><td><code>#pref-mono-font</code></td><td>System Default. Switches <code>--mono</code> font across timestamps, traces, and code viewers to JetBrains Mono, Fira Code, SF Mono, or Consolas.</td></tr>
+              <tr><td><code>Tree Spine Guides</code></td><td><code>#pref-tree-guides</code></td><td>Enabled. Displays continuous vertical connector lines connecting parent and child branches in the execution tree.</td></tr>
+              <tr><td><code>Rounded Gantt Bars</code></td><td><code>#pref-gantt-rounded</code></td><td>Enabled. Toggles between sleek modern capsule bars and crisp industrial rectangular timeline bars.</td></tr>
+              <tr><td><code>High Contrast Mode</code></td><td><code>#pref-high-contrast</code></td><td>Disabled. Elevates visual border demarcations and contrast ratios for accessibility and outdoor screens.</td></tr>
+              <tr><td><code>Global SLA Threshold</code></td><td><code>#pref-global-sla</code></td><td><code>1000ms</code>. Fallback duration SLA threshold applied to any <code>push</code> rule that does not specify an explicit limit.</td></tr>
+              <tr><td><code>Degradation Warning</code></td><td><code>#pref-sla-warn</code></td><td><code>80%</code>. Percentage of SLA threshold at which spans display amber warning alerts before breaching.</td></tr>
+              <tr><td><code>Outlier Anomaly Multiplier</code></td><td><code>#pref-outlier-mult</code></td><td><code>3.0×</code>. Statistical multiplier over mean duration required to classify an execution as an anomaly.</td></tr>
+              <tr><td><code>Breached Span Pulse</code></td><td><code>#pref-sla-pulse</code></td><td>Enabled. Displays a rhythmic glowing pulse animation on breached timeline bars and tree badges.</td></tr>
+              <tr><td><code>Unparsed Lines Card</code></td><td><code>#unparsed-card</code></td><td>Telemetry diagnostic card showing count of unmatched lines with one-click automatic rule synthesizer.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════ 3. VIEWS & VISUALIZERS ════════════════════════════════ -->
+      <div class="hlp-sec" id="hlp-views" role="tabpanel">
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⚖️</span> 1. Split View (Synchronized Tree + Waterfall Timeline)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            The primary diagnostic powerhouse of LogLens. Combines the hierarchical depth of the Execution Tree with the temporal accuracy of the Gantt Waterfall timeline in a dual-pane layout separated by a draggable splitter (<code>#sp-hdl</code>).
+            <br><br>
+            <strong>Key Capabilities:</strong><br>
+            • <strong style="color:var(--t0)">Synchronized Vertical Alignment</strong>: Scrolling either pane scrolls both simultaneously, ensuring you never lose context between call hierarchy and execution timing.<br>
+            • <strong style="color:var(--t0)">Simultaneous Sideways Advancement</strong>: As you scroll down the tree into later execution phases, the timeline pane smoothly glides rightward to keep the active span centered in view.<br>
+            • <strong style="color:var(--t0)">Responsive Column Reveal</strong>: At narrow split widths (50/50), non-critical tree columns gracefully conceal; dragging the splitter rightwards dynamically reveals Timestamp, Duration, Thread, Level, and Payload columns.<br>
+            • <strong style="color:var(--t0)">Unified Toolbar Controls</strong>: Critical Path toggle, Zoom Slider, Fit Window, and Reset Zoom controls function seamlessly across both panes.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⏳</span> 2. Timeline / Waterfall View (Full-Canvas Gantt Chart)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Dedicated time-series execution canvas displaying every thread as a horizontal swimlane.
+            <br><br>
+            <strong>Navigation &amp; Controls:</strong><br>
+            • <strong style="color:var(--t0)">Mouse Wheel Zoom</strong>: Scroll up/down with mouse wheel over timeline to zoom time resolution in and out.<br>
+            • <strong style="color:var(--t0)">Click-and-Drag Pan</strong>: Click and drag anywhere on the timeline background to pan smoothly across time.<br>
+            • <strong style="color:var(--t0)">Critical Path Analysis</strong>: Check <code>Critical</code> in the toolbar to isolate the critical execution sequence that determined the overall request turnaround time. Non-critical parallel spans are dimmed.<br>
+            • <strong style="color:var(--t0)">Click to Inspect</strong>: Clicking any Gantt bar highlights its node across all views and opens the Event Inspector drawer.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🌲</span> 3. Execution Tree View (Call Tree Hierarchy)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Displays log execution as an indented hierarchical tree, exactly mirroring call stack frames in an IDE profiler.
+            <br><br>
+            <strong>Key Features:</strong><br>
+            • <strong style="color:var(--t0)">Hotspot Badges</strong>: Identifies child operations consuming disproportionate shares of parent execution time (25% → 50% → 80%+).<br>
+            • <strong style="color:var(--t0)">Multi-Row Range Selection</strong>: Click to select, <span class="kbd">Shift</span>+click to select a contiguous block of rows, or <span class="kbd">Ctrl</span>/<span class="kbd">Cmd</span>+click to toggle individual rows.<br>
+            • <strong style="color:var(--t0)">Floating Action Bar</strong>: When multiple rows are selected, a floating pill appears at the bottom allowing you to click <code>➕ Create Rule for Selected</code> to instantly synthesize a matching pattern.<br>
+            • <strong style="color:var(--t0)">Keyboard Navigation</strong>: Press <span class="kbd">J</span> for next row, <span class="kbd">K</span> for previous row, <span class="kbd">E</span> to expand all, <span class="kbd">C</span> to collapse all, and <span class="kbd">P</span> to pin.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔍</span> 4. Trace Explorer (Distributed Trace Analysis)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            High-density telemetry dashboard grouping all events by their distributed trace identifier (<code>correlationId</code>).
+            <br><br>
+            <strong>Key Features:</strong><br>
+            • <strong style="color:var(--t0)">4 KPI Summary Cards</strong>: Total Traces, Traced Events, P95 Latency (with max duration), and SLA Breaches (with breach percentage rate).<br>
+            • <strong style="color:var(--t0)">Quick Filter Chips</strong>: Filter between <code>All</code>, <code>⚠ SLA Breaches</code>, <code>⑂ Multi-Thread</code>, and <code>✔ Healthy</code> with one click.<br>
+            • <strong style="color:var(--t0)">Interactive Column Sorting</strong>: Click headers to sort by Trace ID, Spans count, Threads count, or Duration (slowest traces first by default).<br>
+            • <strong style="color:var(--t0)">Slowest Operation Subtitle</strong>: Directly highlights the bottleneck span under each trace ID (e.g. <code>↳ POST /api/checkout (1.82s)</code>).<br>
+            • <strong style="color:var(--t0)">Direct View Jumping</strong>: One-click jump buttons to open the trace inside Waterfall or Tree views with the active trace filter pre-applied.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📈</span> 5. Stats Dashboard (Aggregated Telemetry &amp; Histograms)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Macro-level performance telemetry view providing executive statistics:
+            <br><br>
+            • <strong style="color:var(--t0)">Duration Histograms</strong>: Visual distribution of event execution latencies bucketed into logarithmic intervals.<br>
+            • <strong style="color:var(--t0)">Slowest Operations Leaderboard</strong>: Ranked table of the top 10 most time-consuming operations in the log dataset.<br>
+            • <strong style="color:var(--t0)">Thread Load Concurrency</strong>: Distribution of operations across worker swimlanes to spot uneven thread pooling or thread starvation.<br>
+            • <strong style="color:var(--t0)">Severity Breakdown</strong>: Pie/bar charts displaying ratio of INFO, WARN, ERROR, and DEBUG messages.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🕸️</span> 6. Dependency &amp; Flow Graph (D3 Topological Network)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Lazy-loads a D3.js 2D directed graph representing state transitions, service-to-service calls, and execution workflow dependencies. Nodes represent individual operations or microservices; edges represent sequential invocation order with latency weights.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🪐</span> 7. 3D Telemetry Landscape (WebGL Three.js)</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            An interactive 3D WebGL scene rendering your log file as an explorable topography.
+            <br><br>
+            • <strong style="color:var(--t0)">X-Axis</strong>: Continuous chronological timeline.<br>
+            • <strong style="color:var(--t0)">Z-Axis</strong>: Individual thread swimlanes mapped as parallel physical corridors.<br>
+            • <strong style="color:var(--t0)">Y-Axis (Elevation)</strong>: Execution duration — slow bottlenecks rise like skyscrapers, giving instant visual clarity on anomalous latency spikes.<br>
+            • <strong style="color:var(--t0)">Controls</strong>: Click and drag to orbit camera; right-click drag to pan; mouse wheel to zoom in and out.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>💻</span> 8. LogLens Query Language (LQL) Console</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            SQL-like analytics console for querying, slicing, and exporting your parsed log data. Filter by duration, group by microservice, find outlier anomalies, and compute aggregate averages with familiar SQL syntax.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔄</span> 9. Log Diff / Regression View</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Load two separate log files (e.g. <em>Release v1.2</em> vs <em>Release v1.3</em>) side by side to perform automated regression analysis. Automatically detects latency regressions, step duration increases, missing execution phases, and newly introduced error events.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════ 4. RULES & STACK ENGINE ════════════════════════════════ -->
+      <div class="hlp-sec" id="hlp-rules" role="tabpanel">
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📐</span> The 5 Stack Behaviors in Detail</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            The core engine uses a stack per thread. When a log line matches a rule, its behavior dictates how the thread stack changes:
+          </div>
+
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px;">
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="hlp-badge-pill pill-blue">push</span>
+                  <strong style="color:var(--t0);font-size:13px;">Block Start — push</strong>
+                </div>
+                <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Stack: [A] → [A, B]</span>
+              </div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">
+                Pushes a new span frame onto the active thread stack. Records the start timestamp and assigns the top of the stack as its parent.
+                <br><em>Use Cases:</em> <code>HTTP Request Inbound</code>, <code>Method Entry</code>, <code>Database Transaction Begin</code>, <code>Job Start</code>.
+              </div>
+            </div>
+
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="hlp-badge-pill pill-green">pop</span>
+                  <strong style="color:var(--t0);font-size:13px;">Block End — pop</strong>
+                </div>
+                <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Stack: [A, B] → [A]</span>
+              </div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">
+                Pops the active span frame from the thread stack. Sets the end timestamp and calculates elapsed duration: <code style="color:var(--green)">duration = end - start</code>.
+                <br><em>Use Cases:</em> <code>HTTP Response Completed</code>, <code>Method Exit</code>, <code>Transaction Commit</code>, <code>Job Finished</code>.
+              </div>
+            </div>
+
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="hlp-badge-pill pill-purple">inline</span>
+                  <strong style="color:var(--t0);font-size:13px;">Point-in-Time Event — inline</strong>
+                </div>
+                <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Stack: [A] → [A]</span>
+              </div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">
+                Creates a standalone zero-duration point event attached as a child under the currently active stack frame. Does not modify stack depth.
+                <br><em>Use Cases:</em> <code>Exception Stack Traces</code>, <code>Warning Logs</code>, <code>Cache Hit/Miss Checkpoints</code>.
+              </div>
+            </div>
+
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="hlp-badge-pill pill-amber">swap</span>
+                  <strong style="color:var(--t0);font-size:13px;">Phase Transition — swap</strong>
+                </div>
+                <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Stack: [A, Phase1] → [A, Phase2]</span>
+              </div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">
+                Atomically pops the active span frame (calculating its duration) and immediately pushes a new span frame at the exact same depth level.
+                <br><em>Use Cases:</em> State machines and sequential pipelines (e.g. <code>RECEIVE → VALIDATE → EXECUTE → ACKNOWLEDGE</code>).
+              </div>
+            </div>
+
+            <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="hlp-badge-pill pill-red">popAll</span>
+                  <strong style="color:var(--t0);font-size:13px;">Reset Stack — popAll</strong>
+                </div>
+                <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Stack: [A, B, C] → []</span>
+              </div>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">
+                Pops and closes all currently open frames on the thread stack, calculating their durations up to this timestamp, and resets depth to root.
+                <br><em>Use Cases:</em> <code>Thread Pool Reclaim</code>, <code>Fatal Error Shutdown</code>, <code>Session Timeout Cleanup</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔝</span> Rule Evaluation Priority &amp; Ordering</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Rules are evaluated in strict <strong style="color:var(--t0)">Top-to-Bottom First-Match-Wins</strong> order.
+            For each log line, LogLens tests rules sequentially starting from Rule 1. The first rule whose regex and keyword conditions match claims the log line, and evaluation for that line terminates.
+            <br><br>
+            <strong style="color:var(--amber)">Best Practice:</strong> Always place specific or narrow rules (e.g. <code>HTTP 500 Error Handler</code>) near the top of the list, and broad catch-all rules (e.g. <code>Generic Spring Service</code>) near the bottom.
+            You can drag and drop rules in the Settings list to re-order them at any time.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🧩</span> Auto Pipe-Delimited Splitter</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            For structured logs where columns are separated by pipe characters (<code>|</code>) or commas (<code>,</code>):
+            <br>
+            1. Paste a sample log line into the Rule Wizard.<br>
+            2. Click <strong style="color:var(--t0)">Auto-Split Delimited Columns</strong>.<br>
+            3. LogLens parses every column into discrete, indexed capture groups and auto-populates the mapping table for instant configuration.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔎</span> The Unparsed Lines Analyzer &amp; Auto-Synthesizer</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            Located in Settings under <strong style="color:var(--t0)">Unparsed Lines Analyzer</strong> (<code>#unparsed-card</code>).
+            Scans your parsed dataset for any log lines that failed to match any configured rule.
+            Clicking any unparsed cluster allows you to click <strong style="color:var(--amber)">Generate Rule from Unparsed</strong> to automatically synthesize an optimal regular expression and add it to your rules list with one click.
+          </div>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>↩️</span> Undo &amp; Redo Engine</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            LogLens maintains a continuous undo/redo history stack for all rule additions, edits, deletions, and re-orderings:
+            <br>
+            • <span class="kbd">⌘Z</span> / <span class="kbd">Ctrl+Z</span>: Undo last rule change or restore deleted rule.<br>
+            • <span class="kbd">⌘Y</span> / <span class="kbd">Ctrl+Y</span>: Redo last undone rule modification.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════ 5. CAPTURE GROUPS ════════════════════════════════ -->
+      <div class="hlp-sec" id="hlp-capture" role="tabpanel">
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🎯</span> Reserved Capture Group Mappings</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            In the Rule Editor, map regex capture groups (1, 2, 3…) to these reserved field names. LogLens extracts and indexes only the fields you map:
+          </div>
+          <table class="hlp-table" style="margin-top:10px;">
+            <thead><tr><th style="width:140px;">Field Name</th><th style="width:110px;">Data Type</th><th style="width:130px;">UI Destination</th><th>Purpose &amp; Extraction Details</th></tr></thead>
+            <tbody>
+              <tr><td><code>timestamp</code></td><td>ISO / Epoch ms</td><td>Timeline Axis</td><td>Event start time. Drives the Gantt x-axis and duration calculations. Falls back to global timestamp regex if unmapped.</td></tr>
+              <tr><td><code>thread</code></td><td>String</td><td>Swimlanes</td><td>Worker thread or execution pool identifier. Groups events into distinct swimlanes. Default: <code>default</code>.</td></tr>
+              <tr><td><code>elementName</code></td><td>String</td><td>Tree &amp; Gantt Bars</td><td>Primary human-readable label (e.g. <code>GET /api/v1/orders</code>, <code>UserAuthService.verify</code>). Used to pair push/pop blocks.</td></tr>
+              <tr><td><code>payload</code></td><td>String / JSON</td><td>Inspector &amp; Tree</td><td>Contextual free-text detail (SQL queries, payload bodies, error messages, JSON strings). Searchable via <code>/</code>.</td></tr>
+              <tr><td><code>correlationId</code></td><td>Hex / UUID</td><td>Traces View</td><td>Distributed trace identifier. Links asynchronous spans across threads; clicking filters active workspace to this trace.</td></tr>
+              <tr><td><code>duration</code></td><td>Number (ms/s)</td><td>Duration Col</td><td>Inline duration string directly from the log line (e.g. <code>250ms</code>, <code>1.4s</code>). Enables timing on single-line events.</td></tr>
+              <tr><td><code>service</code></td><td>String</td><td>Inspector &amp; Graph</td><td>Microservice name (e.g. <code>order-service</code>, <code>payment-gateway</code>). Powers dependency mapping in Graph view.</td></tr>
+              <tr><td><code>statusCode</code></td><td>Number / String</td><td>Inspector &amp; Pills</td><td>HTTP status code (<code>200</code>, <code>404</code>, <code>500</code>) or internal application return code.</td></tr>
+              <tr><td><code>spanId</code></td><td>Hex / UUID</td><td>Inspector &amp; Traces</td><td>OpenTelemetry / Jaeger unique span identifier for granular distributed tracing.</td></tr>
+              <tr><td><code>level</code></td><td>String</td><td>Severity Badges</td><td>Severity level: <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>, <code>TRACE</code>.</td></tr>
+              <tr><td><code>className</code></td><td>String</td><td>Tree &amp; Inspector</td><td>Java/C# class package name (e.g. <code>com.app.service.BillingService</code>).</td></tr>
+              <tr><td><code>methodName</code></td><td>String</td><td>Tree &amp; Inspector</td><td>Class method or function name (e.g. <code>executePaymentTransaction</code>).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📐</span> Production Regex Templates</div>
+          
+          <div class="hlp-sh" style="margin-top:4px;">1. Standard Log4j / Logback Pattern</div>
+          <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:8px 10px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--t2);">
+            <span style="color:var(--t4);">Pattern:</span> ^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+\[(\S+)\]\s+(INFO|WARN|ERROR)\s+(\S+)\s+-\s+(.+)$<br>
+            <span style="color:var(--t4);">Mappings:</span> Group 1 → <code>timestamp</code> | Group 2 → <code>thread</code> | Group 3 → <code>level</code> | Group 4 → <code>className</code> | Group 5 → <code>elementName</code>
+          </div>
+
+          <div class="hlp-sh">2. Spring Boot Default Console Format</div>
+          <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:8px 10px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--t2);">
+            <span style="color:var(--t4);">Pattern:</span> ^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z?)\s+\w+\s+\d+\s+---\s+\[(\S+)\]\s+\S+\s+:\s+(.+)$<br>
+            <span style="color:var(--t4);">Mappings:</span> Group 1 → <code>timestamp</code> | Group 2 → <code>thread</code> | Group 3 → <code>elementName</code>
+          </div>
+
+          <div class="hlp-sh">3. Distributed Tracing with Correlation ID &amp; Inline Duration</div>
+          <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:8px 10px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--t2);">
+            <span style="color:var(--t4);">Pattern:</span> ^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+\[trace:([a-f0-9]+)\]\s+\[(\S+)\]\s+HTTP-REQ\s+(\S+)\s+status=(\d+)\s+duration=([\d\.]+(?:ms|s))$<br>
+            <span style="color:var(--t4);">Mappings:</span> Group 1 → <code>timestamp</code> | Group 2 → <code>correlationId</code> | Group 3 → <code>thread</code> | Group 4 → <code>elementName</code> | Group 5 → <code>statusCode</code> | Group 6 → <code>duration</code>
+          </div>
+
+          <div class="hlp-sh">4. Pipe-Delimited High-Throughput Log</div>
+          <div style="background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--rounded-sm);padding:8px 10px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--t2);">
+            <span style="color:var(--t4);">Pattern:</span> ^([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)(?:\|(.*))?$<br>
+            <span style="color:var(--t4);">Mappings:</span> Group 1 → <code>timestamp</code> | Group 2 → <code>thread</code> | Group 3 → <code>level</code> | Group 4 → <code>service</code> | Group 5 → <code>elementName</code> | Group 6 → <code>payload</code>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════ 6. LQL QUERY COOKBOOK ════════════════════════════════ -->
       <div class="hlp-sec" id="hlp-lql" role="tabpanel">
 
-        <div class="hlp-sh">Syntax</div>
-        <div class="lql-ex" style="cursor:default;pointer-events:none;" aria-hidden="true">
-          <span class="lql-kw">SELECT</span> field1, field2 <span class="lql-kw">FROM</span> events<br>
-          &nbsp;&nbsp;[<span class="lql-kw">WHERE</span> condition [<span class="lql-kw">AND</span>/<span class="lql-kw">OR</span> condition]]<br>
-          &nbsp;&nbsp;[<span class="lql-kw">GROUP BY</span> field]<br>
-          &nbsp;&nbsp;[<span class="lql-kw">ORDER BY</span> field <span class="lql-kw">DESC</span>]<br>
-          &nbsp;&nbsp;[<span class="lql-kw">LIMIT</span> <span class="lql-val">n</span>]
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🔍</span> LQL (LogLens Query Language) Syntax Reference</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.65;">
+            LQL provides a SQL-like grammar tailored for investigating hierarchical log telemetry.
+          </div>
+          <div class="lql-ex" style="cursor:default;pointer-events:none;margin-top:8px;" aria-hidden="true">
+            <span class="lql-kw">SELECT</span> [field1, field2 | * | COUNT(*) | AVG(duration) | MIN(duration) | MAX(duration)]<br>
+            <span class="lql-kw">FROM</span> events<br>
+            &nbsp;&nbsp;[<span class="lql-kw">WHERE</span> condition [<span class="lql-kw">AND</span> | <span class="lql-kw">OR</span> condition]]<br>
+            &nbsp;&nbsp;[<span class="lql-kw">GROUP BY</span> field]<br>
+            &nbsp;&nbsp;[<span class="lql-kw">ORDER BY</span> field [<span class="lql-kw">ASC</span> | <span class="lql-kw">DESC</span>]]<br>
+            &nbsp;&nbsp;[<span class="lql-kw">LIMIT</span> <span class="lql-val">n</span>]
+          </div>
         </div>
 
-        <div class="hlp-sh">Queryable fields</div>
-        <table class="hlp-table">
-          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>elementName</code></td><td>string</td><td>Captured identifier (e.g. method or URL)</td></tr>
-            <tr><td><code>ruleName</code></td><td>string</td><td>The rule that matched this event</td></tr>
-            <tr><td><code>thread</code></td><td>string</td><td>Thread ID from capture group</td></tr>
-            <tr><td><code>duration</code></td><td>number (ms)</td><td>Elapsed time for push/pop pairs</td></tr>
-            <tr><td><code>timestamp</code></td><td>number (ms)</td><td>Parsed start timestamp</td></tr>
-            <tr><td><code>payload</code></td><td>string</td><td>Free-text capture from log line</td></tr>
-            <tr><td><code>correlationId</code></td><td>string</td><td>Distributed trace ID</td></tr>
-            <tr><td><code>level</code></td><td>string</td><td>Log level (e.g. INFO, ERROR, WARN)</td></tr>
-            <tr><td><code>behavior</code></td><td>push/pop/inline</td><td>Stack behavior of the rule</td></tr>
-            <tr><td><code>sla_breach</code></td><td>boolean</td><td>Duration exceeded SLA threshold</td></tr>
-            <tr><td><code>anomaly</code></td><td>boolean</td><td>Statistical outlier detection flag</td></tr>
-            <tr><td><code>pinned</code></td><td>boolean</td><td>Manually pinned in tree view</td></tr>
-            <tr><td><code>rawLine</code></td><td>string</td><td>Original log line (first 260 chars)</td></tr>
-          </tbody>
-        </table>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📊</span> Queryable Fields</div>
+          <table class="hlp-table">
+            <thead><tr><th style="width:140px;">Field</th><th style="width:110px;">Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>elementName</code></td><td>string</td><td>Captured transaction or operation name (e.g. <code>POST /checkout</code>).</td></tr>
+              <tr><td><code>ruleName</code></td><td>string</td><td>Name of the matching rule.</td></tr>
+              <tr><td><code>thread</code></td><td>string</td><td>Worker thread or swimlane identifier.</td></tr>
+              <tr><td><code>duration</code></td><td>number (ms)</td><td>Elapsed duration in milliseconds.</td></tr>
+              <tr><td><code>timestamp</code></td><td>number (ms)</td><td>Start timestamp in epoch milliseconds.</td></tr>
+              <tr><td><code>payload</code></td><td>string</td><td>Captured free-text context, SQL query, or payload.</td></tr>
+              <tr><td><code>correlationId</code></td><td>string</td><td>Distributed trace identifier.</td></tr>
+              <tr><td><code>level</code></td><td>string</td><td>Severity level (<code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>DEBUG</code>).</td></tr>
+              <tr><td><code>service</code></td><td>string</td><td>Captured microservice name.</td></tr>
+              <tr><td><code>statusCode</code></td><td>number/string</td><td>Captured HTTP status code (e.g. <code>500</code>).</td></tr>
+              <tr><td><code>behavior</code></td><td>string</td><td>Stack behavior (<code>push</code>, <code>pop</code>, <code>inline</code>, <code>swap</code>, <code>popAll</code>).</td></tr>
+              <tr><td><code>sla_breach</code></td><td>boolean</td><td>Boolean flag indicating if duration exceeded SLA threshold.</td></tr>
+              <tr><td><code>anomaly</code></td><td>boolean</td><td>Boolean flag indicating if duration was a statistical outlier.</td></tr>
+              <tr><td><code>pinned</code></td><td>boolean</td><td>Boolean flag indicating if event is pinned in workspace.</td></tr>
+              <tr><td><code>rawLine</code></td><td>string</td><td>Original log line text.</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-        <div class="hlp-sh">WHERE operators</div>
-        <table class="hlp-table">
-          <thead><tr><th>Operator</th><th>Example</th></tr></thead>
-          <tbody>
-            <tr><td><code>=</code></td><td><code>thread = "main"</code></td></tr>
-            <tr><td><code>!=</code></td><td><code>behavior != "inline"</code></td></tr>
-            <tr><td><code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code></td><td><code>duration &gt; 500</code></td></tr>
-            <tr><td><code>CONTAINS</code></td><td><code>elementName CONTAINS "user"</code></td></tr>
-            <tr><td><code>STARTS_WITH</code></td><td><code>thread STARTS_WITH "http"</code></td></tr>
-            <tr><td><code>ENDS_WITH</code></td><td><code>ruleName ENDS_WITH "Error"</code></td></tr>
-          </tbody>
-        </table>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⚡</span> Production Query Recipes (Click Any Query to Run)</div>
 
-        <div class="hlp-sh">Example queries (click to run)</div>
-        <div class="lql-ex" data-lql="SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10">
-          <span class="lql-kw">SELECT</span> elementName, duration, thread<br>
-          <span class="lql-kw">FROM</span> events <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC LIMIT</span> <span class="lql-val">10</span>
-          <br><span class="lql-cm">-- top 10 slowest events</span>
+          <div class="lql-ex" data-lql="SELECT elementName, duration, thread FROM events ORDER BY duration DESC LIMIT 10">
+            <span class="lql-kw">SELECT</span> elementName, duration, thread<br>
+            <span class="lql-kw">FROM</span> events <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC LIMIT</span> <span class="lql-val">10</span>
+            <br><span class="lql-cm">-- 1. Top 10 slowest operations in dataset</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT * FROM events WHERE sla_breach = true ORDER BY duration DESC">
+            <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> sla_breach = <span class="lql-val">true</span> <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC</span>
+            <br><span class="lql-cm">-- 2. All SLA violations ranked by severity</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT elementName, duration, correlationId FROM events WHERE anomaly = true ORDER BY duration DESC">
+            <span class="lql-kw">SELECT</span> elementName, duration, correlationId <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> anomaly = <span class="lql-val">true</span> <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC</span>
+            <br><span class="lql-cm">-- 3. Statistical outlier spikes deviating from mean</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT thread, COUNT(*), AVG(duration) FROM events WHERE behavior = &quot;push&quot; GROUP BY thread ORDER BY COUNT DESC">
+            <span class="lql-kw">SELECT</span> thread, <span class="lql-kw">COUNT</span>(*), <span class="lql-kw">AVG</span>(duration) <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> behavior = <span class="lql-val">"push"</span> <span class="lql-kw">GROUP BY</span> thread <span class="lql-kw">ORDER BY COUNT DESC</span>
+            <br><span class="lql-cm">-- 4. Workload distribution and average latency per worker thread</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT elementName, COUNT(*), AVG(duration), MAX(duration) FROM events WHERE behavior = &quot;push&quot; GROUP BY elementName ORDER BY AVG DESC LIMIT 15">
+            <span class="lql-kw">SELECT</span> elementName, <span class="lql-kw">COUNT</span>(*), <span class="lql-kw">AVG</span>(duration), <span class="lql-kw">MAX</span>(duration)<br>
+            <span class="lql-kw">FROM</span> events <span class="lql-kw">WHERE</span> behavior = <span class="lql-val">"push"</span> <span class="lql-kw">GROUP BY</span> elementName <span class="lql-kw">ORDER BY AVG DESC LIMIT</span> <span class="lql-val">15</span>
+            <br><span class="lql-cm">-- 5. Average and maximum execution time grouped by endpoint</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT * FROM events WHERE level = &quot;ERROR&quot; OR statusCode >= 500 ORDER BY timestamp ASC">
+            <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> level = <span class="lql-val">"ERROR"</span> <span class="lql-kw">OR</span> statusCode &gt;= <span class="lql-val">500</span> <span class="lql-kw">ORDER BY</span> timestamp <span class="lql-kw">ASC</span>
+            <br><span class="lql-cm">-- 6. Chronological audit of all application and server errors</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT * FROM events WHERE payload CONTAINS &quot;Exception&quot; OR payload CONTAINS &quot;Timeout&quot;">
+            <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> payload <span class="lql-kw">CONTAINS</span> <span class="lql-val">"Exception"</span> <span class="lql-kw">OR</span> payload <span class="lql-kw">CONTAINS</span> <span class="lql-val">"Timeout"</span>
+            <br><span class="lql-cm">-- 7. Search payload context for fatal timeouts and exceptions</span>
+          </div>
+
+          <div class="lql-ex" data-lql="SELECT elementName, duration, thread FROM events WHERE correlationId != &quot;&quot; ORDER BY duration DESC">
+            <span class="lql-kw">SELECT</span> elementName, duration, thread <span class="lql-kw">FROM</span> events<br>
+            <span class="lql-kw">WHERE</span> correlationId != <span class="lql-val">""</span> <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC</span>
+            <br><span class="lql-cm">-- 8. All spans instrumented with distributed tracing</span>
+          </div>
         </div>
-        <div class="lql-ex" data-lql="SELECT * FROM events WHERE sla_breach = true ORDER BY duration DESC">
-          <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
-          <span class="lql-kw">WHERE</span> sla_breach = <span class="lql-val">true</span> <span class="lql-kw">ORDER BY</span> duration <span class="lql-kw">DESC</span>
-          <br><span class="lql-cm">-- all SLA breaches, worst first</span>
-        </div>
-        <div class="lql-ex" data-lql="SELECT thread, COUNT(*) FROM events GROUP BY thread ORDER BY COUNT DESC">
-          <span class="lql-kw">SELECT</span> thread, <span class="lql-kw">COUNT</span>(*) <span class="lql-kw">FROM</span> events<br>
-          <span class="lql-kw">GROUP BY</span> thread <span class="lql-kw">ORDER BY COUNT DESC</span>
-          <br><span class="lql-cm">-- event count per thread</span>
-        </div>
-        <div class="lql-ex" data-lql="SELECT elementName, duration FROM events WHERE duration > 100 AND behavior = &quot;push&quot; ORDER BY duration DESC">
-          <span class="lql-kw">SELECT</span> elementName, duration <span class="lql-kw">FROM</span> events<br>
-          <span class="lql-kw">WHERE</span> duration &gt; <span class="lql-val">100</span> <span class="lql-kw">AND</span> behavior = <span class="lql-val">"push"</span>
-          <br><span class="lql-cm">-- timed events over 100ms</span>
-        </div>
-        <div class="lql-ex" data-lql="SELECT * FROM events WHERE anomaly = true">
-          <span class="lql-kw">SELECT</span> * <span class="lql-kw">FROM</span> events<br>
-          <span class="lql-kw">WHERE</span> anomaly = <span class="lql-val">true</span>
-          <br><span class="lql-cm">-- statistical outliers only</span>
-        </div>
+
       </div>
 
-      <!-- ── CAPTURE GROUPS ── -->
-      <div class="hlp-sec" id="hlp-capture" role="tabpanel">
-        <div style="font-size: 12px;color:var(--t2);line-height:1.6;margin-bottom:4px;">
-          In the rule editor, map regex capture groups (1, 2, 3…) to these reserved field names. Only the fields you map are extracted.
-        </div>
-
-        <div class="hlp-sh">Reserved field names</div>
-        <div>
-          <div class="cg-field">
-            <span class="cg-name" style="background:rgba(88,166,255,.12);color:#58a6ff;">timestamp</span>
-            <div class="cg-body">
-              <div class="cg-role">Event start time</div>
-              <div class="cg-detail">Parsed as ISO 8601 or epoch ms. Drives the Gantt x-axis and duration math. Falls back to the global timestamp regex if absent.</div>
-            </div>
-          </div>
-          <div class="cg-field">
-            <span class="cg-name" style="background:rgba(63,185,80,.12);color:#3fb950;">thread</span>
-            <div class="cg-body">
-              <div class="cg-role">Thread / worker identifier</div>
-              <div class="cg-detail">Groups events into swimlanes. Without it, all events land in a single <em>default</em> thread.</div>
-            </div>
-          </div>
-          <div class="cg-field">
-            <span class="cg-name" style="background:rgba(255,149,0,.12);color:var(--amber);">elementName</span>
-            <div class="cg-body">
-              <div class="cg-role">Event label (the "what")</div>
-              <div class="cg-detail">The human-readable name shown in the tree and Gantt bars. For HTTP rules: capture the URL. For method rules: the method name.</div>
-            </div>
-          </div>
-          <div class="cg-field">
-            <span class="cg-name" style="background:var(--purple-g);color:var(--purple);">payload</span>
-            <div class="cg-body">
-              <div class="cg-role">Free-text detail</div>
-              <div class="cg-detail">Shown in the tree tooltip and searchable. Use for SQL query text, HTTP body size, error messages, or any extra context.</div>
-            </div>
-          </div>
-          <div class="cg-field">
-            <span class="cg-name" style="background:rgba(248,81,73,.12);color:#f85149;">correlationId</span>
-            <div class="cg-body">
-              <div class="cg-role">Distributed trace ID</div>
-              <div class="cg-detail">Enables cross-thread filtering. Any value here becomes a clickable badge (click it to isolate) that trace across all threads and views.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hlp-sh">Example rule (Advanced mode)</div>
-        <div style="background:var(--bg-1);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size: 12px;line-height:1.8;color:var(--t3);">
-          <span style="color:var(--amber)">Pattern:</span><br>
-          <span style="color:var(--t1)">^(<span style="color:var(--blue)">\d{4}-...\d{3}</span>)\s+\w+\s+[<span style="color:var(--green)">(\S+)</span>].*HTTP-REQ\s+(<span style="color:var(--amber)">\S+</span>)(?:\s+(<span style="color:var(--purple)">.+</span>))?$</span><br>
-          <br>
-          <span style="color:var(--amber)">Mappings:</span><br>
-          group 1 → <span style="color:var(--blue)">timestamp</span><br>
-          group 2 → <span style="color:var(--green)">thread</span><br>
-          group 3 → <span style="color:var(--amber)">elementName</span><br>
-          group 4 → <span style="color:var(--purple)">payload</span>
-        </div>
-      </div>
-
-      <!-- ── SHORTCUTS ── -->
+      <!-- ════════════════════════════════ 7. SHORTCUTS & GESTURES ════════════════════════════════ -->
       <div class="hlp-sec" id="hlp-shortcuts" role="tabpanel">
 
-        <div class="hlp-sh">Global</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span><span class="kbd">Ctrl+K</span></div><div class="kb-desc">Open command palette</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">T</span></div><div class="kb-desc">Toggle dark / light theme</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">F</span></div><div class="kb-desc">Toggle Focus Mode (maximize workspace)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close modal / sheet / inspector / search</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Focus event search bar</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘⇧E</span><span class="kbd">Ctrl+Shift+E</span></div><div class="kb-desc">Open export menu</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Z</span><span class="kbd">Ctrl+Z</span></div><div class="kb-desc">Undo rule change / restore deleted rule</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Y</span><span class="kbd">Ctrl+Y</span></div><div class="kb-desc">Redo rule change</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⌨️</span> Global Application Shortcuts</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span><span class="kbd">Ctrl+K</span></div><div class="kb-desc">Open Command Palette (quick search across commands and views)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+T</span></div><div class="kb-desc">Toggle Theme (Dark ↔ Light ↔ Ivory)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">F</span></div><div class="kb-desc">Toggle Focus Mode (maximize canvas space)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close active modal, Inspector drawer, or clear search filter</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Focus Global Search input</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘⇧E</span><span class="kbd">Ctrl+Shift+E</span></div><div class="kb-desc">Open Export Dialog (SVG, PNG, HTML report, JSON, CSV)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Z</span><span class="kbd">Ctrl+Z</span></div><div class="kb-desc">Undo rule change / restore deleted rule</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Y</span><span class="kbd">Ctrl+Y</span></div><div class="kb-desc">Redo rule change</div></div>
+          </div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Views</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+1</span><span class="kbd">1</span></div><div class="kb-desc">Split view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+2</span><span class="kbd">2</span></div><div class="kb-desc">Timeline view (Waterfall)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+3</span><span class="kbd">3</span></div><div class="kb-desc">Tree view (Execution tree)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+4</span><span class="kbd">4</span></div><div class="kb-desc">Traces view (Trace explorer)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+5</span><span class="kbd">5</span></div><div class="kb-desc">Stats dashboard</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+6</span><span class="kbd">6</span></div><div class="kb-desc">Graph visualization</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+8</span><span class="kbd">8</span></div><div class="kb-desc">Settings &amp; rules</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+0</span><span class="kbd">0</span></div><div class="kb-desc">Help &amp; documentation</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>📑</span> View Navigation Hotkeys</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+1</span><span class="kbd">1</span></div><div class="kb-desc">Split view (Tree + Timeline)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+2</span><span class="kbd">2</span></div><div class="kb-desc">Timeline view (Waterfall Gantt)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+3</span><span class="kbd">3</span></div><div class="kb-desc">Tree view (Execution tree)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+4</span><span class="kbd">4</span></div><div class="kb-desc">Traces view (Trace explorer)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+5</span><span class="kbd">5</span></div><div class="kb-desc">Switch to Stats Dashboard</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+6</span><span class="kbd">6</span></div><div class="kb-desc">Switch to Graph View (Dependency Network)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+7</span><span class="kbd">7</span></div><div class="kb-desc">Switch to 3D Telemetry Landscape</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+8</span><span class="kbd">8</span></div><div class="kb-desc">Open Settings &amp; Rules Configuration</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+0</span><span class="kbd">0</span></div><div class="kb-desc">Open Help &amp; Documentation</div></div>
+          </div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Thread navigation</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+[</span><span class="kbd">[</span></div><div class="kb-desc">Previous thread (or All Threads)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+]</span><span class="kbd">]</span></div><div class="kb-desc">Next thread (or All Threads)</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🧵</span> Thread Swimlane Navigation</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+[</span><span class="kbd">[</span></div><div class="kb-desc">Switch to Previous Thread Swimlane (or All Threads)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+]</span><span class="kbd">]</span></div><div class="kb-desc">Switch to Next Thread Swimlane (or All Threads)</div></div>
+          </div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Tree navigation</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">J</span></div><div class="kb-desc">Next tree node</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">K</span></div><div class="kb-desc">Previous tree node</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Home</span><span class="kbd">End</span></div><div class="kb-desc">Jump to first / last node</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">PgUp</span><span class="kbd">PgDn</span></div><div class="kb-desc">Jump 10 nodes up / down</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Search tree by name</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">P</span></div><div class="kb-desc">Pin focused node</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">E</span></div><div class="kb-desc">Expand all nodes</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">C</span></div><div class="kb-desc">Collapse all nodes</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>🌲</span> Execution Tree Navigation &amp; Selection</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">J</span></div><div class="kb-desc">Move focus to Next tree row</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">K</span></div><div class="kb-desc">Move focus to Previous tree row</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Home</span><span class="kbd">End</span></div><div class="kb-desc">Jump directly to First / Last node in tree</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">PgUp</span><span class="kbd">PgDn</span></div><div class="kb-desc">Page up / Page down 10 tree nodes</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">E</span></div><div class="kb-desc">Expand all branches in tree</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">C</span></div><div class="kb-desc">Collapse all branches in tree</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">P</span></div><div class="kb-desc">Pin / unpin focused tree row</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Shift+Click</span></div><div class="kb-desc">Select contiguous multi-row range in tree</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Ctrl+Click</span></div><div class="kb-desc">Toggle individual row in multi-selection</div></div>
+          </div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Waterfall &amp; Gantt canvas</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Scroll</span></div><div class="kb-desc">Zoom timeline / scroll rows</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Drag</span></div><div class="kb-desc">Pan timeline horizontally</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Click bar</span></div><div class="kb-desc">Jump to node in tree &amp; inspector</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">↑</span><span class="kbd">↓</span></div><div class="kb-desc">Scroll timeline rows (when focused)</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>⏳</span> Waterfall Canvas Gestures &amp; Mouse Controls</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Mouse Wheel</span></div><div class="kb-desc">Zoom timeline scale in / out smoothly</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Click + Drag</span></div><div class="kb-desc">Pan timeline horizontally across time</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Click Bar</span></div><div class="kb-desc">Highlight node across Tree and open Event Inspector</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">Double-Click</span></div><div class="kb-desc">Add annotation note to span</div></div>
+          </div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Query &amp; Settings</div>
-        <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Enter</span><span class="kbd">Ctrl+Enter</span></div><div class="kb-desc">Run LogLens query (LQL)</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘D</span><span class="kbd">Ctrl+D</span></div><div class="kb-desc">Duplicate hovered rule (Settings)</div></div>
+        <div class="hlp-card">
+          <div class="hlp-card-title"><span>💻</span> Query Console &amp; Settings Shortcuts</div>
+          <div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Enter</span><span class="kbd">Ctrl+Enter</span></div><div class="kb-desc">Execute active LQL Query</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘D</span><span class="kbd">Ctrl+D</span></div><div class="kb-desc">Duplicate hovered parse rule in Settings</div></div>
+          </div>
         </div>
+
       </div>
 
     </div><!-- /p-hlp -->
@@ -30888,8 +31522,38 @@ UI.chooseAndParseLog = function() {
       tab.setAttribute('aria-selected', 'true');
       const panel = document.getElementById('hlp-' + target);
       if (panel) panel.classList.add('active');
+
+      // Re-apply filter if present
+      const filterInp = document.getElementById('hlp-filter');
+      if (filterInp && filterInp.value.trim()) {
+        filterInp.dispatchEvent(new Event('input'));
+      }
     });
   });
+
+  /* ── Interactive documentation search filter ── */
+  const filterInput = document.getElementById('hlp-filter');
+  if (filterInput) {
+    filterInput.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      const activeSec = document.querySelector('.hlp-sec.active');
+      if (!activeSec) return;
+      
+      const searchableEls = activeSec.querySelectorAll('.hlp-card, .hlp-table tr, .kb-row, .hlp-step, .lql-ex');
+      if (!q) {
+        searchableEls.forEach(el => el.style.display = '');
+        return;
+      }
+      searchableEls.forEach(el => {
+        if (el.tagName === 'TR' && el.querySelector('th')) {
+          el.style.display = '';
+          return;
+        }
+        const text = el.textContent.toLowerCase();
+        el.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+  }
 
   /* ── LQL example click-to-run ──
      Clicking a .lql-ex block navigates to the Query view and
@@ -30913,7 +31577,6 @@ UI.chooseAndParseLog = function() {
         const runBtn = document.getElementById('btn-lql-run');
         if (runBtn) runBtn.click();
       }, 80);
-      // Switch to Help tab to close it
       toast('Running LQL query…', 'info');
     };
     ex.addEventListener('click', run);
@@ -30992,6 +31655,41 @@ const HTIP = (() => {
         • When enabled, the auto-generated regex is overridden, and you can edit the regular expression directly.<br><br>
         • You must map your regex's capture group numbers (1, 2, 3...) to target LogLens fields like <code>timestamp</code>, <code>thread</code>, and <code>elementName</code>.<br><br>
         • Use the <strong>Pattern Token Builder</strong> to quickly insert common patterns like timestamp regexes, thread groups, levels, or JSON property matchers.`
+    },
+    duration: {
+      title: 'Inline Duration Capture',
+      body: `Extracts execution duration strings directly embedded in log lines (e.g. <code>250ms</code>, <code>1.4s</code>, <code>800µs</code>).<br><br>
+        Enables accurate execution timing on single-line logs or <code>inline</code> events without requiring a separate <code>pop</code> rule pairing.`
+    },
+    service: {
+      title: 'Microservice Identifier',
+      body: `Extracts the origin microservice or component name (e.g. <code>auth-gateway</code>, <code>order-svc</code>).<br><br>
+        Displayed in the Event Inspector and powers cross-service dependency mapping in the Graph and Traces visualizers.`
+    },
+    statusCode: {
+      title: 'Status Code Capture',
+      body: `Captures HTTP status codes (e.g. <code>200</code>, <code>404</code>, <code>500</code>) or internal return codes.<br><br>
+        Color-coded in the Inspector and fully queryable in LQL (e.g. <code>WHERE statusCode &gt;= 500</code>).`
+    },
+    spanId: {
+      title: 'Span Identifier',
+      body: `Captures unique distributed tracing span IDs (OpenTelemetry, Jaeger, W3C Trace Context).<br><br>
+        Links hierarchical parent-child spans across asynchronous thread boundaries and message queues.`
+    },
+    critical_path: {
+      title: 'Critical Path Analysis',
+      body: `Calculates and isolates the sequential chain of dependent spans that dictated the total turnaround duration of the request.<br><br>
+        Critical spans are highlighted in bold amber/red; non-critical parallel spans are dimmed.`
+    },
+    unparsed: {
+      title: 'Unparsed Lines Analyzer',
+      body: `Identifies log lines that failed to match any configured parse rule.<br><br>
+        Helps surface unhandled exception traces, unrecognized third-party log formats, and lets you generate matching rules with one click.`
+    },
+    lql: {
+      title: 'LogLens Query Language (LQL)',
+      body: `SQL-like querying for parsed log telemetry.<br><br>
+        Supports <code>SELECT</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>ORDER BY</code>, <code>LIMIT</code>, and aggregates like <code>COUNT(*)</code> and <code>AVG(duration)</code>.`
     }
   };
 
@@ -31045,7 +31743,7 @@ const HTIP = (() => {
     if (e.key === 'Escape') hide();
   });
 
-  return { show, hide };
+  return { show, hide, TIPS };
 })();
 
 /* ================================================================

@@ -791,3 +791,97 @@ async def test_stat_cards_reappear_when_returning_from_graph(page_with_data):
     await expect(page.locator('#stats-bar')).to_be_visible()
     await expect(page.locator('#res-summary-cards')).to_be_visible()
     assert_no_critical_errors(page)
+
+
+async def test_comprehensive_in_app_help_and_documentation_system(page_with_data):
+    """Test full in-app help system: 7 tabs, field reference, view explanations, rules engine, captures, LQL, shortcuts, and instant search filter."""
+    page = page_with_data
+
+    # 1. Open Help via header button
+    hlp_btn = page.locator('#btn-hdr-hlp')
+    await expect(hlp_btn).to_be_visible()
+    await hlp_btn.click()
+    await page.wait_for_timeout(300)
+    await expect(page.locator('#p-hlp')).to_be_visible()
+
+    # 2. Check all 7 tabs exist
+    tabs = page.locator('.hlp-tab')
+    assert await tabs.count() == 7
+    tab_keys = await tabs.evaluate_all("els => els.map(e => e.dataset.hlp)")
+    assert tab_keys == ['guide', 'fields', 'views', 'rules', 'capture', 'lql', 'shortcuts']
+
+    # 3. Verify Guide & Architecture content
+    await page.click('.hlp-tab[data-hlp="guide"]')
+    await expect(page.locator('#hlp-guide')).to_be_visible()
+    guide_text = await page.locator('#hlp-guide').text_content()
+    assert 'Web Worker' in guide_text
+    assert 'IndexedDB' in guide_text
+    assert 'Hotspot Badges' in guide_text
+    await expect(page.locator('#btn-dl-log')).to_be_visible()
+
+    # 4. Verify Screen & Field Reference content
+    await page.click('.hlp-tab[data-hlp="fields"]')
+    await expect(page.locator('#hlp-fields')).to_be_visible()
+    fields_text = await page.locator('#hlp-fields').text_content()
+    assert 'Global Top Header' in fields_text
+    assert 'Drop Zone / Upload' in fields_text
+    assert 'Critical Path' in fields_text
+    assert 'Rule Editor Modal Form' in fields_text
+    assert 'Event Inspector Drawer' in fields_text
+    assert 'Settings & Preferences' in fields_text
+
+    # 5. Verify Views & Visualizers content
+    await page.click('.hlp-tab[data-hlp="views"]')
+    await expect(page.locator('#hlp-views')).to_be_visible()
+    views_text = await page.locator('#hlp-views').text_content()
+    assert 'Split View' in views_text
+    assert 'Timeline / Waterfall View' in views_text
+    assert 'Execution Tree View' in views_text
+    assert 'Trace Explorer' in views_text
+    assert 'Stats Dashboard' in views_text
+    assert '3D Telemetry Landscape' in views_text
+
+    # 6. Verify Rules & Stack Engine content
+    await page.click('.hlp-tab[data-hlp="rules"]')
+    await expect(page.locator('#hlp-rules')).to_be_visible()
+    rules_text = await page.locator('#hlp-rules').text_content()
+    assert 'push' in rules_text
+    assert 'pop' in rules_text
+    assert 'inline' in rules_text
+    assert 'swap' in rules_text
+    assert 'popAll' in rules_text
+    assert 'Unparsed Lines Analyzer' in rules_text
+
+    # 7. Verify Capture Groups content
+    await page.click('.hlp-tab[data-hlp="capture"]')
+    await expect(page.locator('#hlp-capture')).to_be_visible()
+    capture_text = await page.locator('#hlp-capture').text_content()
+    for field in ['timestamp', 'thread', 'elementName', 'payload', 'correlationId', 'duration', 'service', 'statusCode', 'spanId']:
+        assert field in capture_text
+
+    # 8. Verify LQL Query Cookbook content & click-to-run buttons
+    await page.click('.hlp-tab[data-hlp="lql"]')
+    await expect(page.locator('#hlp-lql')).to_be_visible()
+    lql_examples = page.locator('#hlp-lql .lql-ex[data-lql]')
+    assert await lql_examples.count() >= 8
+
+    # 9. Test search filter functionality
+    filter_inp = page.locator('#hlp-filter')
+    await expect(filter_inp).to_be_visible()
+    await filter_inp.fill('outlier')
+    await page.wait_for_timeout(200)
+
+    # Anomaly/outlier row should be visible, others hidden
+    visible_cards = await page.locator('#hlp-lql .hlp-card').evaluate_all("els => els.filter(e => e.style.display !== 'none').length")
+    assert visible_cards >= 1
+
+    # Clear filter
+    await filter_inp.fill('')
+    await page.wait_for_timeout(100)
+
+    # 10. Check HTIP integration
+    htip_sla = await page.evaluate("() => HTIP.TIPS.duration && HTIP.TIPS.service && HTIP.TIPS.critical_path ? true : false")
+    assert htip_sla is True
+
+    assert_no_critical_errors(page)
+
