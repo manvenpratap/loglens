@@ -13,7 +13,7 @@ from conftest import assert_no_critical_errors
 
 @pytest.mark.asyncio
 async def test_core_forensic_pills_and_hotkeys(page_with_data):
-    """Core forensic views group must contain Split, Timeline, Tree, Traces with ⌥1..⌥4 hotkeys."""
+    """Core forensic views group must contain Split, Timeline, Tree, Traces without option symbol badges."""
     page = page_with_data
 
     core_group = page.locator('.vt-core-group')
@@ -22,22 +22,31 @@ async def test_core_forensic_pills_and_hotkeys(page_with_data):
     # Split
     split_pill = page.locator('.vt-core-group .vt[data-v="split"]')
     await expect(split_pill).to_be_visible()
-    await expect(split_pill.locator('.vt-hotkey')).to_have_text('⌥1')
+    tip = (await split_pill.get_attribute('data-tip')) or (await split_pill.get_attribute('title')) or ''
+    assert 'Alt+1' in tip or '1' in tip
 
     # Timeline (gantt)
     timeline_pill = page.locator('.vt-core-group .vt[data-v="gantt"]')
     await expect(timeline_pill).to_be_visible()
-    await expect(timeline_pill.locator('.vt-hotkey')).to_have_text('⌥2')
+    tip = (await timeline_pill.get_attribute('data-tip')) or (await timeline_pill.get_attribute('title')) or ''
+    assert 'Alt+2' in tip or '2' in tip
 
     # Tree
     tree_pill = page.locator('.vt-core-group .vt[data-v="tree"]')
     await expect(tree_pill).to_be_visible()
-    await expect(tree_pill.locator('.vt-hotkey')).to_have_text('⌥3')
+    tip = (await tree_pill.get_attribute('data-tip')) or (await tree_pill.get_attribute('title')) or ''
+    assert 'Alt+3' in tip or '3' in tip
 
     # Traces
     traces_pill = page.locator('.vt-core-group .vt[data-v="trace"]')
     await expect(traces_pill).to_be_visible()
-    await expect(traces_pill.locator('.vt-hotkey')).to_have_text('⌥4')
+    tip = (await traces_pill.get_attribute('data-tip')) or (await traces_pill.get_attribute('title')) or ''
+    assert 'Alt+4' in tip or '4' in tip
+
+    # Ensure no option symbol badges are rendered in top bar navigation
+    hotkeys = page.locator('.vt-core-group .vt-hotkey')
+    count = await hotkeys.count()
+    assert count == 0, f'Expected 0 .vt-hotkey elements on top bar, found {count}'
 
     assert_no_critical_errors(page)
 
@@ -137,7 +146,7 @@ async def test_macos_toolbar_utility_icons(page_with_data):
 
 @pytest.mark.asyncio
 async def test_keyboard_shortcuts_alt_1_to_4(page_with_data):
-    """Alt+1..4 keyboard shortcuts must cleanly switch between core forensic views."""
+    """Cross-platform keyboard shortcuts must cleanly switch views via Alt+keys, direct number keys, and Mac Option keys."""
     page = page_with_data
 
     # Alt+1 -> Split
@@ -163,5 +172,55 @@ async def test_keyboard_shortcuts_alt_1_to_4(page_with_data):
     await page.wait_for_timeout(200)
     mode = await page.evaluate("() => S.viewMode")
     assert mode == 'trace', f'Expected trace mode on Alt+4, got {mode}'
+
+    # Direct number keys (when not in an input)
+    await page.keyboard.press('1')
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'split'
+
+    await page.keyboard.press('2')
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'gantt'
+
+    await page.keyboard.press('3')
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'tree'
+
+    await page.keyboard.press('4')
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'trace'
+
+    # Mac Option key simulation (Option+1 emits '¡', Option+2 emits '™')
+    await page.evaluate("""() => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: '¡', code: 'Digit1', altKey: true, bubbles: true }));
+    }""")
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'split'
+
+    await page.evaluate("""() => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: '™', code: 'Digit2', altKey: true, bubbles: true }));
+    }""")
+    await page.wait_for_timeout(200)
+    assert await page.evaluate("() => S.viewMode") == 'gantt'
+
+    # Verify Help & Documentation contains shortcuts section
+    hlp_btn = page.locator('#btn-hdr-hlp')
+    await hlp_btn.click()
+    await page.wait_for_timeout(300)
+
+    # Click shortcuts tab in Help
+    shortcuts_tab = page.locator('.hlp-tab[data-hlp="shortcuts"]')
+    await expect(shortcuts_tab).to_be_visible()
+    await shortcuts_tab.click()
+    await page.wait_for_timeout(200)
+
+    hlp_shortcuts = page.locator('#hlp-shortcuts')
+    await expect(hlp_shortcuts).to_be_visible()
+    content = await hlp_shortcuts.text_content()
+    assert 'Split view' in content
+    assert 'Timeline view' in content
+    assert 'Tree view' in content
+    assert 'Traces view' in content
+    assert 'Focus Mode' in content or 'focus mode' in content.lower()
 
     assert_no_critical_errors(page)

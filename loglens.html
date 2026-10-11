@@ -5628,34 +5628,6 @@ label[for="watch-auto-reload"] {
   gap: 2px !important;
 }
 
-/* Visual Hotkey Indicators (⌥1..⌥4) */
-.vt-hotkey {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-family: var(--mono) !important;
-  font-size: 9.5px !important;
-  font-weight: 600 !important;
-  line-height: 1 !important;
-  padding: 2px 4px !important;
-  border-radius: var(--rounded-sm) !important;
-  background: var(--bg-3) !important;
-  color: var(--t4) !important;
-  margin-left: 6px !important;
-  border: 1px solid var(--bdr) !important;
-  transition: all 0.16s ease !important;
-  user-select: none !important;
-  pointer-events: none !important;
-}
-.vt:hover .vt-hotkey {
-  color: var(--t2) !important;
-  border-color: var(--bdr-m, var(--bdr)) !important;
-}
-.vt.active .vt-hotkey {
-  background: var(--amber-g) !important;
-  color: var(--amber) !important;
-  border-color: color-mix(in srgb, var(--amber) 30%, transparent) !important;
-}
 
 /* Analysis Dropdown */
 .analysis-dropdown {
@@ -7151,25 +7123,21 @@ label[for="watch-auto-reload"] {
   <div class="vtabs" id="vtabs">
     <!-- Tier 1: Core Forensic Views -->
     <div class="vt-core-group" role="tablist" aria-label="Core Forensic Views">
-      <div class="vt active" data-v="split" role="tab" tabindex="0" title="Split Panel View">
+      <div class="vt active" data-v="split" role="tab" tabindex="0" title="Split Panel View (Alt+1 / 1)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span>
         <span>Split</span>
-        <span class="vt-hotkey" aria-hidden="true">⌥1</span>
       </div>
-      <div class="vt" data-v="gantt" role="tab" tabindex="0" title="Interactive Gantt Timeline View">
+      <div class="vt" data-v="gantt" role="tab" tabindex="0" title="Interactive Gantt Timeline View (Alt+2 / 2)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
         <span>Timeline</span>
-        <span class="vt-hotkey" aria-hidden="true">⌥2</span>
       </div>
-      <div class="vt" data-v="tree" role="tab" tabindex="0" title="Execution Tree View">
+      <div class="vt" data-v="tree" role="tab" tabindex="0" title="Execution Tree View (Alt+3 / 3)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <span>Tree</span>
-        <span class="vt-hotkey" aria-hidden="true">⌥3</span>
       </div>
-      <div class="vt" data-v="trace" role="tab" tabindex="0" title="Trace Explorer View">
+      <div class="vt" data-v="trace" role="tab" tabindex="0" title="Trace Explorer View (Alt+4 / 4)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
         <span>Traces</span>
-        <span class="vt-hotkey" aria-hidden="true">⌥4</span>
       </div>
     </div>
 
@@ -7949,42 +7917,58 @@ label[for="watch-auto-reload"] {
 
         <div class="hlp-sh">Global</div>
         <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span></div><div class="kb-desc">Open command palette</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span><span class="kbd">Ctrl+K</span></div><div class="kb-desc">Open command palette</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">T</span></div><div class="kb-desc">Toggle dark / light theme</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close modal / sheet / menu</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">F</span></div><div class="kb-desc">Toggle Focus Mode (maximize workspace)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close modal / sheet / inspector / search</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Focus event search bar</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘⇧E</span><span class="kbd">Ctrl+Shift+E</span></div><div class="kb-desc">Open export menu</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Z</span><span class="kbd">Ctrl+Z</span></div><div class="kb-desc">Undo rule change / restore deleted rule</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Y</span><span class="kbd">Ctrl+Y</span></div><div class="kb-desc">Redo rule change</div></div>
         </div>
 
         <div class="hlp-sh" style="margin-top:8px">Views</div>
         <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥1</span></div><div class="kb-desc">Split view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥2</span></div><div class="kb-desc">Timeline view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥3</span></div><div class="kb-desc">Tree view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌥4</span></div><div class="kb-desc">Traces view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">5</span></div><div class="kb-desc">Stats view</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">6</span></div><div class="kb-desc">Graph view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+1</span><span class="kbd">1</span></div><div class="kb-desc">Split view</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+2</span><span class="kbd">2</span></div><div class="kb-desc">Timeline view (Waterfall)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+3</span><span class="kbd">3</span></div><div class="kb-desc">Tree view (Execution tree)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+4</span><span class="kbd">4</span></div><div class="kb-desc">Traces view (Trace explorer)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+5</span><span class="kbd">5</span></div><div class="kb-desc">Stats dashboard</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+6</span><span class="kbd">6</span></div><div class="kb-desc">Graph visualization</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+8</span><span class="kbd">8</span></div><div class="kb-desc">Settings &amp; rules</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+0</span><span class="kbd">0</span></div><div class="kb-desc">Help &amp; documentation</div></div>
         </div>
 
         <div class="hlp-sh" style="margin-top:8px">Thread navigation</div>
         <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">[</span></div><div class="kb-desc">Previous thread</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt</span><span class="kbd">]</span></div><div class="kb-desc">Next thread</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+[</span><span class="kbd">[</span></div><div class="kb-desc">Previous thread (or All Threads)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+]</span><span class="kbd">]</span></div><div class="kb-desc">Next thread (or All Threads)</div></div>
         </div>
 
         <div class="hlp-sh" style="margin-top:8px">Tree navigation</div>
         <div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">J</span></div><div class="kb-desc">Next tree node</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">K</span></div><div class="kb-desc">Previous tree node</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Home</span><span class="kbd">End</span></div><div class="kb-desc">Jump to first / last node</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">PgUp</span><span class="kbd">PgDn</span></div><div class="kb-desc">Jump 10 nodes up / down</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">/</span></div><div class="kb-desc">Search tree by name</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">P</span></div><div class="kb-desc">Pin focused node</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">E</span></div><div class="kb-desc">Expand all nodes</div></div>
           <div class="kb-row"><div class="kb-keys"><span class="kbd">C</span></div><div class="kb-desc">Collapse all nodes</div></div>
         </div>
 
-        <div class="hlp-sh" style="margin-top:8px">Gantt canvas</div>
+        <div class="hlp-sh" style="margin-top:8px">Waterfall &amp; Gantt canvas</div>
         <div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Scroll</span></div><div class="kb-desc">Zoom in / out</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Drag</span></div><div class="kb-desc">Pan timeline</div></div>
-          <div class="kb-row"><div class="kb-keys"><span class="kbd">Click bar</span></div><div class="kb-desc">Jump to node in tree</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Scroll</span></div><div class="kb-desc">Zoom timeline / scroll rows</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Drag</span></div><div class="kb-desc">Pan timeline horizontally</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">Click bar</span></div><div class="kb-desc">Jump to node in tree &amp; inspector</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">↑</span><span class="kbd">↓</span></div><div class="kb-desc">Scroll timeline rows (when focused)</div></div>
+        </div>
+
+        <div class="hlp-sh" style="margin-top:8px">Query &amp; Settings</div>
+        <div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘Enter</span><span class="kbd">Ctrl+Enter</span></div><div class="kb-desc">Run LogLens query (LQL)</div></div>
+          <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘D</span><span class="kbd">Ctrl+D</span></div><div class="kb-desc">Duplicate hovered rule (Settings)</div></div>
         </div>
       </div>
 
@@ -16974,39 +16958,75 @@ $('ctx-menu').addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   const tag=document.activeElement?.tagName;
   const inInput=tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
+  const noModal=(!$('mm')||$('mm').classList.contains('hidden'))&&
+                (!$('ann-modal')||$('ann-modal').classList.contains('hidden'))&&
+                (!$('cmd-palette')||$('cmd-palette').classList.contains('hidden'));
+
   if(e.key==='Escape'){
-    UI.closeM();UI.closeAnn();$('sh-ov').classList.add('hidden');CTX.hide();
-    $('exp-menu').classList.remove('open');
+    UI.closeM();UI.closeAnn();$('sh-ov')?.classList.add('hidden');CTX.hide();
+    $('exp-menu')?.classList.remove('open');
     const ad=$('analysis-dropdown');if(ad)ad.classList.remove('open');
     return;
   }
-  if(e.altKey){
-    if(e.key==='t'||e.key==='T'){e.preventDefault();Theme.toggle();}
-    if(e.key==='1'){e.preventDefault();UI.svm('split');}
-    if(e.key==='2'){e.preventDefault();UI.svm('gantt');}
-    if(e.key==='3'){e.preventDefault();UI.svm('tree');}
-    if(e.key==='4'||e.key==='7'){e.preventDefault();UI.svm('trace');}
-    if(e.key==='5'){e.preventDefault();UI.svm('stats');}
-    if(e.key==='6'){e.preventDefault();UI.svm('graph');}
-    if(e.key==='8'||e.key==='9'){e.preventDefault();UI.svm('cfg');}
-    if(e.key==='0'){e.preventDefault();UI.svm('hlp');}
-    if((e.key==='['||e.key===']')&&S.threads.length>1){
+
+  // Cross-platform key matching (handles Mac Option key Unicode characters & e.code)
+  const isDigit1 = e.code === 'Digit1' || e.key === '1' || e.key === '¡';
+  const isDigit2 = e.code === 'Digit2' || e.key === '2' || e.key === '™';
+  const isDigit3 = e.code === 'Digit3' || e.key === '3' || e.key === '£';
+  const isDigit4 = e.code === 'Digit4' || e.key === '4' || e.key === '¢';
+  const isDigit5 = e.code === 'Digit5' || e.key === '5' || e.key === '∞';
+  const isDigit6 = e.code === 'Digit6' || e.key === '6' || e.key === '§';
+  const isDigit7 = e.code === 'Digit7' || e.key === '7' || e.key === '¶';
+  const isDigit8 = e.code === 'Digit8' || e.key === '8' || e.key === '•';
+  const isDigit9 = e.code === 'Digit9' || e.key === '9' || e.key === 'ª';
+  const isDigit0 = e.code === 'Digit0' || e.key === '0' || e.key === 'º';
+  const isBracketL = e.code === 'BracketLeft' || e.key === '[' || e.key === '“';
+  const isBracketR = e.code === 'BracketRight' || e.key === ']' || e.key === '‘';
+  const isKeyT = e.code === 'KeyT' || e.key === 't' || e.key === 'T' || e.key === '†';
+
+  // Alt/Option + key shortcuts
+  if(e.altKey && !e.ctrlKey && !e.metaKey){
+    if(isKeyT){e.preventDefault();Theme.toggle();}
+    else if(isDigit1){e.preventDefault();UI.svm('split');}
+    else if(isDigit2){e.preventDefault();UI.svm('gantt');}
+    else if(isDigit3){e.preventDefault();UI.svm('tree');}
+    else if(isDigit4||isDigit7){e.preventDefault();UI.svm('trace');}
+    else if(isDigit5){e.preventDefault();UI.svm('stats');}
+    else if(isDigit6){e.preventDefault();UI.svm('graph');}
+    else if(isDigit8||isDigit9){e.preventDefault();UI.svm('cfg');}
+    else if(isDigit0){e.preventDefault();UI.svm('hlp');}
+    else if((isBracketL||isBracketR)&&S.threads.length>1){
       e.preventDefault();
       const allThrs = ['all', ...S.threads];
       const c = allThrs.indexOf(S.activeThr);
-      const nextIdx = e.key==='[' ? (c - 1 + allThrs.length) % allThrs.length : (c + 1) % allThrs.length;
+      const nextIdx = isBracketL ? (c - 1 + allThrs.length) % allThrs.length : (c + 1) % allThrs.length;
       UI.sw(allThrs[nextIdx]);
     }
+    return;
   }
-  // Tree keyboard nav — only when no modal is open and not in an input
-  if(!inInput&&$('mm').classList.contains('hidden')){
-    if(e.key==='j'){e.preventDefault();KBN.move(1);}
-    if(e.key==='k'){e.preventDefault();KBN.move(-1);}
-    if(e.key==='/'){
+
+  // Direct single-key shortcuts when not typing in an input and no modal is open
+  if(!inInput && noModal && !e.ctrlKey && !e.metaKey && !e.altKey){
+    if(isDigit1){e.preventDefault();UI.svm('split');}
+    else if(isDigit2){e.preventDefault();UI.svm('gantt');}
+    else if(isDigit3){e.preventDefault();UI.svm('tree');}
+    else if(isDigit4||isDigit7){e.preventDefault();UI.svm('trace');}
+    else if(isDigit5){e.preventDefault();UI.svm('stats');}
+    else if(isDigit6){e.preventDefault();UI.svm('graph');}
+    else if(isDigit8||isDigit9){e.preventDefault();UI.svm('cfg');}
+    else if(isDigit0){e.preventDefault();UI.svm('hlp');}
+    else if((isBracketL||isBracketR)&&S.threads.length>1){
       e.preventDefault();
-      const q=prompt('Search tree (name or rule):');if(q)KBN.search(q);
+      const allThrs = ['all', ...S.threads];
+      const c = allThrs.indexOf(S.activeThr);
+      const nextIdx = isBracketL ? (c - 1 + allThrs.length) % allThrs.length : (c + 1) % allThrs.length;
+      UI.sw(allThrs[nextIdx]);
     }
-    if(e.key==='p')KBN.pinFocused();
+    else if(e.key==='j'){e.preventDefault();KBN.move(1);}
+    else if(e.key==='k'){e.preventDefault();KBN.move(-1);}
+    else if(e.key==='e'||e.key==='E'){if(S.viewMode==='tree'||S.viewMode==='split'){e.preventDefault();TR.expandAll();}}
+    else if(e.key==='c'||e.key==='C'){if(S.viewMode==='tree'||S.viewMode==='split'){e.preventDefault();TR.collapseAll();}}
+    else if(e.key==='p'||e.key==='P'){KBN.pinFocused();}
   }
 });
 

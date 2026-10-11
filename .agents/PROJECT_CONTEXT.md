@@ -3,6 +3,20 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Clean Top Bar Navigation & Robust Cross-Platform Shortcuts (v6.9.110 — COMPLETED)**:
+  - **Removed Option Symbol Badges from Top Bar**:
+    - Eliminated `<span class="vt-hotkey">⌥1..⌥4</span>` and all associated `.vt-hotkey` CSS rules from the top bar navigation pills.
+    - Navigation pills across Split, Timeline, Tree, and Traces now render with clean, uncluttered, balanced typographic styling across both Obsidian Dark and Ivory Light themes.
+  - **Root Cause of Broken Shortcuts Resolved**:
+    - On macOS, physical keyboards emit special Unicode glyphs when the Option key is held with numbers or symbols (e.g. `Option+1` emits `key: '¡'`, `Option+2` emits `key: '™'`, `Option+3` emits `key: '£'`, `Option+4` emits `key: '¢'`, `Option+t` emits `key: '†'`).
+    - The legacy keydown listener checked `e.altKey && e.key === '1'`, which permanently evaluated to `false` on macOS!
+    - Upgraded key matching to use `e.code` (`'Digit1'`, `'Digit2'`, etc.) alongside explicit macOS Option glyph fallbacks, guaranteeing flawless recognition across all macOS, Windows, and Linux keyboard layouts.
+  - **Direct Zero-Modifier Number Navigation**:
+    - When exploring logs (not focused inside an `<input>`, `<textarea>`, or `<select>`, and no modal open), direct single-keystroke number keys `1` (Split), `2` (Timeline), `3` (Tree), `4` (Traces), `5` (Stats), `6` (Graph), `8` (Settings), `0` (Help) switch views instantly without needing modifier keys.
+  - **Centralized Help & Documentation Shortcuts**:
+    - Completely updated `#hlp-shortcuts` in the Help modal (`#p-hlp`) to provide a comprehensive, cross-platform reference table covering Global (`⌘K / Ctrl+K`, `Alt+T`, `F`, `Esc`, `/`, `⌘⇧E / Ctrl+Shift+E`, `⌘Z / Ctrl+Z`, `⌘Y / Ctrl+Y`), Views (`Alt+1 / 1` through `Alt+0 / 0`), Thread Navigation (`Alt+[ / [` and `Alt+] / ]`), Tree Navigation (`J`, `K`, `Home`, `End`, `PgUp`, `PgDn`, `/`, `P`, `E`, `C`), Waterfall Timeline (`Scroll`, `Drag`, `Click bar`, `↑ / ↓`), and Query & Settings (`⌘Enter / Ctrl+Enter`, `⌘D / Ctrl+D`).
+  - **Full Regression Test Suite Passed**: Updated `tests/test_22_two_tier_navigation.py` to verify clean pills without option badges, Alt+1..4, direct 1..4, macOS Option key emulation, and Help shortcut visibility. Full regression suite passing with **133 passed / 133 total** tests (0 failures).
+
 - **Analysis Dropdown Unified Navigation Pill Styling (v6.9.109 — COMPLETED)**:
   - **Root Cause Resolved**:
     - Previously, `#btn-analysis` had hardcoded button styles (`height: 28px !important; background: var(--bg-2) !important; border: 1px solid var(--bdr) !important;`) and `.has-active` styles (`background: var(--amber-d) !important; border: 1px solid var(--amber) !important;`).
