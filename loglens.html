@@ -5182,12 +5182,43 @@ body.focus-mode #res {
   transition: background 0.12s ease, border-left-color 0.15s ease !important;
 }
 
-/* Swimlane mode horizontal row header */
+/* ================================================================
+   §CSS-SWIM ADVANCED SWIMLANE STUDIO STYLES
+   ================================================================ */
+:root {
+  --swim-hdr-w: 230px;
+}
+@container pane (max-width: 760px) {
+  .swim-lane, .g-hdr.swim-hdr-grid {
+    grid-template-columns: 180px 1fr !important;
+  }
+  .swim-lane-hdr {
+    padding: 3px 6px !important;
+  }
+  .swim-kpi-pill.kpi-dur,
+  .swim-kpi-pill.kpi-depth {
+    display: none !important;
+  }
+}
+@container pane (max-width: 520px) {
+  .swim-lane, .g-hdr.swim-hdr-grid {
+    grid-template-columns: 130px 1fr !important;
+  }
+  .swim-lane-meta {
+    display: none !important;
+  }
+}
+
 .swim-lane {
-  transition: background-color 0.15s ease, border-left-color 0.15s ease;
+  transition: background-color 0.15s ease, border-left-color 0.15s ease, min-height 0.15s ease;
   background: var(--thr-bg, var(--bg-0)) !important;
   border-left: 3px solid var(--thr-col, transparent) !important;
   position: relative !important;
+  display: grid !important;
+  grid-template-columns: var(--swim-hdr-w, 230px) 1fr;
+  border-bottom: 1px solid var(--bdr-d) !important;
+  align-items: stretch;
+  box-sizing: border-box;
 }
 .swim-lane:hover,
 .swim-lane.split-row-hover {
@@ -5200,29 +5231,349 @@ body.focus-mode #res {
   left: 0; top: 0; bottom: 0;
   width: 2px;
   background: var(--amber);
-  z-index: 3;
+  z-index: 5;
 }
+
+.swim-lane.swim-lane-collapsed {
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  opacity: 0.85;
+}
+
 .swim-lane-hdr {
   writing-mode: horizontal-tb !important;
-  font-family: var(--mono);
+  font-family: var(--ui);
   font-size: 12px !important;
-  font-weight: 600;
   color: var(--t1) !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 6px;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px;
   border-right: 1px solid var(--bdr) !important;
   cursor: grab;
-  padding: 0 10px !important;
+  padding: 4px 10px !important;
   user-select: none;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: none !important;
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: var(--thr-bg, var(--bg-0)) !important;
+  transition: background 0.12s ease;
+  height: 100%;
+  box-sizing: border-box;
 }
 .swim-lane-hdr:active {
   cursor: grabbing;
+}
+.swim-lane:hover .swim-lane-hdr,
+.swim-lane.split-row-hover .swim-lane-hdr {
+  background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
+}
+
+.swim-hdr-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+}
+.swim-drag-grip {
+  color: var(--t4);
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.45;
+  transition: opacity 0.15s, color 0.15s;
+  cursor: grab;
+  flex-shrink: 0;
+}
+.swim-lane-hdr:hover .swim-drag-grip {
+  opacity: 1;
+  color: var(--amber);
+}
+.swim-collapse-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--t3);
+  font-size: 9px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+.swim-collapse-btn:hover {
+  color: var(--t1);
+  background: var(--glass);
+}
+.swim-collapse-btn.collapsed {
+  transform: rotate(-90deg);
+}
+
+.swim-lane-title {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.swim-lane-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  padding-left: 19px;
+}
+
+.swim-kpi-pill {
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: var(--rounded-xs, 3px);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.swim-kpi-pill.kpi-spans {
+  background: var(--glass);
+  color: var(--t2);
+  border: 1px solid var(--bdr-d);
+}
+.swim-kpi-pill.kpi-dur {
+  background: color-mix(in srgb, var(--blue) 12%, transparent);
+  color: var(--blue);
+  border: 1px solid color-mix(in srgb, var(--blue) 25%, transparent);
+}
+.swim-kpi-pill.kpi-error {
+  background: color-mix(in srgb, var(--red) 16%, transparent);
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
+  font-weight: 700;
+}
+.swim-kpi-pill.kpi-sla {
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent);
+}
+.swim-kpi-pill.kpi-depth {
+  background: color-mix(in srgb, var(--purple) 12%, transparent);
+  color: var(--purple);
+  border: 1px solid color-mix(in srgb, var(--purple) 25%, transparent);
+}
+
+.swim-track-wrap {
+  position: relative;
+  height: 100%;
+  width: calc(100% * var(--g-zoom, 1));
+  min-width: 100%;
+}
+
+/* Swimlane Bars */
+.swim-bar {
+  position: absolute;
+  border-radius: var(--rounded-xs, 4px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+  /* Tactile depth & glass shine */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  z-index: 2;
+}
+.swim-bar:hover {
+  filter: brightness(1.15) saturate(1.1);
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 8px rgba(0, 0, 0, 0.3);
+  z-index: 6;
+}
+.swim-bar.swim-bar-selected {
+  outline: 2px solid var(--amber) !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 10px rgba(240, 136, 62, 0.5) !important;
+  z-index: 7;
+}
+
+.swim-bar.bar-error {
+  border-top: 2px solid var(--red) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 6px color-mix(in srgb, var(--red) 40%, transparent);
+}
+.swim-bar.bar-warn {
+  border-top: 2px solid var(--amber) !important;
+}
+.swim-bar.bar-sla {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 6px color-mix(in srgb, var(--amber) 40%, transparent);
+}
+.swim-bar.bar-critical {
+  border: 1px solid var(--purple) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 8px color-mix(in srgb, var(--purple) 50%, transparent);
+}
+
+.swim-bar.bar-dim {
+  opacity: 0.18 !important;
+  filter: grayscale(0.6);
+}
+.swim-bar.bar-highlight {
+  opacity: 1 !important;
+  filter: brightness(1.2);
+  outline: 1.5px solid var(--amber);
+}
+
+.swim-bar-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bar-t, #ffffff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+[data-theme="light"] .swim-bar-label,
+[data-theme="ivory"] .swim-bar-label {
+  color: rgba(0, 0, 0, 0.88);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.swim-self-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.22);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+
+.swim-milestone {
+  position: absolute;
+  width: 8px;
+  height: 16px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  z-index: 3;
+}
+.swim-milestone:hover {
+  transform: scale(1.35);
+  filter: brightness(1.3);
+  z-index: 6;
+}
+
+/* Synchronized Crosshair Guideline */
+.swim-crosshair-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--amber);
+  border-left: 1px dashed var(--amber);
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+  opacity: 0.85;
+}
+.swim-crosshair-pill {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  background: var(--bg-3);
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--rounded-full);
+  box-shadow: var(--shd);
+  pointer-events: none;
+  z-index: 12;
+  white-space: nowrap;
+  display: none;
+}
+
+/* Floating Hover Card */
+#swim-hover-card {
+  position: fixed;
+  z-index: 1000;
+  background: var(--bg-1);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rounded-md);
+  padding: 10px 14px;
+  box-shadow: var(--shd-lg);
+  font-family: var(--ui);
+  display: none;
+  width: 290px;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.swim-card-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--bdr-d);
+  padding-bottom: 6px;
+}
+.swim-card-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--t1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.swim-card-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.swim-card-k {
+  color: var(--t3);
+  font-weight: 500;
+}
+.swim-card-v {
+  color: var(--t1);
+  font-family: var(--mono);
+  font-weight: 600;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.swim-card-footer {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--bdr-d);
+  font-size: 10px;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* Gantt bar container query */
@@ -25685,37 +26036,103 @@ const GANTT_ZOOM_PAN = {
 /* ================================================================
    §JS-SWIM swimlane HTML refinements
    ================================================================ */
-// Enhanced HTML swimlane renderer supporting Group-by-rule
+// Enhanced HTML swimlane renderer supporting Group-by-rule, Log Level, Interval Stacking, and Telemetry
 const SWIM = {
   order: [],
-  groupByRule: false,
-  laneH: 36
+  groupBy: 'thread', // 'thread' | 'rule' | 'level'
+  get groupByRule() { return this.groupBy === 'rule'; },
+  set groupByRule(v) { this.groupBy = v ? 'rule' : 'thread'; },
+  laneH: 42,
+  layoutMode: 'stack', // 'stack' | 'compact'
+  filterText: '',
+  errorsOnly: false,
+  collapsedLanes: new Set(),
+  selectedNodeId: null
 };
 
-// Redefine SWIMLANE.init to render stack HTML Swimlanes instead of basic Canvas
+// Redefine SWIMLANE.init to render advanced Swimlane Studio
 SWIMLANE.init = function(el) {
-  const trees = S.trees;
-  const threads = S.threads;
-  
-  let swimlanes = [];
-  if (SWIM.groupByRule) {
-    // Group all events by rule type
-    const rules = S.cfg?.elementRules || [];
-    swimlanes = rules.map(r => ({ id: r.id, name: r.name, color: r.visualStyle?.accentColor || 'var(--blue)', events: [] }));
-    
-    for (const tree of Object.values(trees)) {
-      const traverse = (nodes) => {
-        for (const n of nodes) {
-          const lane = swimlanes.find(l => l.id === n.ruleId);
-          if (lane) lane.events.push(n);
-          if (n.events && n.events.length) traverse(n.events);
-        }
-      };
-      traverse(tree);
+  const trees = S.trees || {};
+  const threads = S.threads || [];
+
+  // Traverse all nodes into a flat collection and id map
+  const allNodes = [];
+  const nodeMap = new Map();
+  const traverseAll = (nodes) => {
+    for (const n of nodes) {
+      allNodes.push(n);
+      if (n.id != null) nodeMap.set(String(n.id), n);
+      if (n.events && n.events.length) traverseAll(n.events);
     }
+  };
+  for (const tree of Object.values(trees)) {
+    traverseAll(tree);
+  }
+
+  // Calculate global min and max timestamp
+  let globalMin = Infinity, globalMax = -Infinity;
+  allNodes.forEach(e => {
+    if (e.timestamp != null) {
+      globalMin = Math.min(globalMin, e.timestamp);
+      const end = e.timestamp + ((e.behavior !== 'inline' && e.duration > 0) ? e.duration : 0);
+      globalMax = Math.max(globalMax, end);
+    }
+  });
+  if (globalMin === Infinity) { globalMin = 0; globalMax = 1; }
+  const globalDur = Math.max(1, globalMax - globalMin);
+
+  // Group swimlanes according to SWIM.groupBy
+  let swimlanes = [];
+  if (SWIM.groupBy === 'rule') {
+    const rules = S.cfg?.elementRules || [];
+    const ruleMap = new Map();
+    rules.forEach(r => {
+      ruleMap.set(r.id, {
+        id: r.id,
+        name: r.name || r.id,
+        color: r.visualStyle?.accentColor || 'var(--blue)',
+        events: []
+      });
+    });
+    const unassigned = { id: '__unassigned__', name: 'Other / Default', color: 'var(--gray)', events: [] };
+
+    allNodes.forEach(n => {
+      const lane = ruleMap.get(n.ruleId);
+      if (lane) lane.events.push(n);
+      else unassigned.events.push(n);
+    });
+
+    swimlanes = Array.from(ruleMap.values()).filter(l => l.events.length > 0);
+    if (unassigned.events.length > 0) swimlanes.push(unassigned);
+  } else if (SWIM.groupBy === 'level') {
+    const levelDefs = [
+      { id: 'ERROR', name: 'Error / Fatal', color: 'var(--red)', events: [] },
+      { id: 'WARN', name: 'Warning', color: 'var(--amber)', events: [] },
+      { id: 'INFO', name: 'Info', color: 'var(--blue)', events: [] },
+      { id: 'DEBUG', name: 'Debug / Trace', color: 'var(--purple)', events: [] },
+      { id: 'OTHER', name: 'Other', color: 'var(--gray)', events: [] }
+    ];
+    const levelMap = new Map(levelDefs.map(d => [d.id, d]));
+
+    allNodes.forEach(n => {
+      const lvl = (n.level || '').toUpperCase();
+      if (lvl === 'ERROR' || lvl === 'FATAL' || lvl === 'CRITICAL' || n.hasError) {
+        levelMap.get('ERROR').events.push(n);
+      } else if (lvl === 'WARN' || lvl === 'WARNING') {
+        levelMap.get('WARN').events.push(n);
+      } else if (lvl === 'INFO') {
+        levelMap.get('INFO').events.push(n);
+      } else if (lvl === 'DEBUG' || lvl === 'TRACE') {
+        levelMap.get('DEBUG').events.push(n);
+      } else {
+        levelMap.get('OTHER').events.push(n);
+      }
+    });
+    swimlanes = levelDefs.filter(d => d.events.length > 0);
   } else {
-    // Group by thread
-    swimlanes = threads.map(thr => {
+    // Default: Group by Thread
+    const threadList = threads.length > 0 ? threads : Object.keys(trees);
+    swimlanes = threadList.map(thr => {
       const tCol = typeof TR !== 'undefined' ? TR.getThreadColor(thr) : null;
       return {
         id: thr,
@@ -25725,121 +26142,382 @@ SWIMLANE.init = function(el) {
         events: []
       };
     });
-    // Draggable order
+
     if (SWIM.order.length > 0) {
-      swimlanes.sort((a, b) => SWIM.order.indexOf(a.id) - SWIM.order.indexOf(b.id));
+      swimlanes.sort((a, b) => {
+        const idxA = SWIM.order.indexOf(a.id);
+        const idxB = SWIM.order.indexOf(b.id);
+        if (idxA === -1 && idxB === -1) return 0;
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+      });
     }
+
     swimlanes.forEach(lane => {
-      const traverse = (nodes) => {
+      const traverseThread = (nodes) => {
         for (const n of nodes) {
           lane.events.push(n);
-          if (n.events && n.events.length) traverse(n.events);
+          if (n.events && n.events.length) traverseThread(n.events);
         }
       };
-      traverse(trees[lane.id] || []);
+      traverseThread(trees[lane.id] || []);
     });
   }
-  
-  // Find global min and max timestamp
-  let globalMin = Infinity, globalMax = -Infinity;
-  swimlanes.forEach(l => {
-    l.events.forEach(e => {
-      if (e.timestamp != null) {
-        globalMin = Math.min(globalMin, e.timestamp);
-        globalMax = Math.max(globalMax, e.timestamp);
+
+  // Axis ticks
+  const PCT = [0, 20, 40, 60, 80, 100];
+  const ax = PCT.map(p => `<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(globalDur * p / 100))}</div></div>`).join('');
+
+  // Search filter query
+  const filterQuery = (SWIM.filterText || '').trim().toLowerCase();
+
+  // Generate lane rows HTML
+  const lanesHtml = swimlanes.map((lane, idx) => {
+    const isCollapsed = SWIM.collapsedLanes.has(lane.id);
+
+    // Sort lane events chronologically
+    lane.events.sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0));
+
+    // Telemetry and greedy interval scheduling
+    let totalDur = 0, errorCount = 0, slaBreachCount = 0;
+    const tierEndTimes = [];
+
+    lane.events.forEach(e => {
+      const dur = (e.behavior !== 'inline' && e.duration > 0) ? e.duration : 0;
+      if (dur > 0) totalDur += dur;
+      const isErr = (e.level === 'ERROR' || e.level === 'FATAL' || e.hasError || e.isError || (e.badge && e.badge.includes('ERR')));
+      if (isErr) errorCount++;
+      const isSla = Boolean(e.isSlaBreach || e.slaStatus === 'breach' || (e.duration && e.slaLimit && e.duration > e.slaLimit));
+      if (isSla) slaBreachCount++;
+
+      if (SWIM.layoutMode === 'stack' && !isCollapsed) {
+        const start = e.timestamp != null ? e.timestamp : globalMin;
+        const end = start + dur;
+        let allocatedTier = -1;
+        for (let t = 0; t < tierEndTimes.length; t++) {
+          if (tierEndTimes[t] <= start) {
+            allocatedTier = t;
+            tierEndTimes[t] = end;
+            break;
+          }
+        }
+        if (allocatedTier === -1) {
+          allocatedTier = tierEndTimes.length;
+          tierEndTimes.push(end);
+        }
+        e._swimTier = allocatedTier;
+      } else {
+        e._swimTier = 0;
       }
     });
-  });
-  if (globalMin === Infinity) { globalMin = 0; globalMax = 1; }
-  const globalDur = globalMax - globalMin || 1;
-  
-  // Axis ticks
-  const PCT = [0, 25, 50, 75, 100];
-  const ax = PCT.map(p => `<div class="g-at" style="left:${p}%;"><div class="g-al"></div><div class="g-am">${esc(fmtMs(globalDur * p / 100))}</div></div>`).join('');
-  
-  const lanesHtml = swimlanes.map((lane, idx) => {
+
+    const maxTiers = Math.max(1, tierEndTimes.length || 1);
+    let actualLaneH = SWIM.laneH;
+    let barH = 18;
+    if (isCollapsed) {
+      actualLaneH = 28;
+      barH = 6;
+    } else if (SWIM.layoutMode === 'stack') {
+      const tierH = Math.max(16, Math.min(22, Math.floor(SWIM.laneH * 0.52)));
+      actualLaneH = Math.max(SWIM.laneH, maxTiers * (tierH + 4) + 14);
+      barH = tierH;
+    } else {
+      barH = Math.max(14, Math.min(24, SWIM.laneH - 14));
+    }
+
+    // Generate event bars HTML
     const barsHtml = lane.events.map(n => {
+      const isInline = n.behavior === 'inline' || !n.duration;
       const col = scol(n.visualStyle?.accentColor || lane.color);
       const sp = n.timestamp != null ? Math.max(0, (n.timestamp - globalMin) / globalDur * 100) : 0;
-      const wp = n.behavior !== 'inline' && n.duration > 0 ? Math.max(0.4, n.duration / globalDur * 100) : 0.4;
-      const dur = n.behavior !== 'inline' && n.duration != null ? fmtMs(n.duration) : '';
-      
-      const style = n.behavior === 'inline'
-        ? `left:calc(${sp.toFixed(2)}% - 1px); width:3px; background:${col}; height:100%;`
-        : `left:${sp.toFixed(2)}%; width:${wp.toFixed(2)}%; background:${col}; opacity:0.8; height:18px; border-radius:var(--rounded-sm);`;
-      
-      return `<div class="swim-bar" data-node-id="${n.id}" style="position:absolute; top:calc(50% - 9px); ${style} cursor:pointer;" title="${esc(n.elementName || n.ruleName)}: ${dur}"></div>`;
+      const wp = !isInline && n.duration > 0 ? Math.max(0.4, n.duration / globalDur * 100) : 0.4;
+      const durStr = !isInline && n.duration != null ? fmtMs(n.duration) : '';
+      const isErr = (n.level === 'ERROR' || n.level === 'FATAL' || n.hasError || n.isError || (n.badge && n.badge.includes('ERR')));
+      const isWarn = (n.level === 'WARN' || n.level === 'WARNING');
+      const isSla = Boolean(n.isSlaBreach || n.slaStatus === 'breach' || (n.duration && n.slaLimit && n.duration > n.slaLimit));
+      const isCrit = Boolean(n.isCritical || (S.criticalPathOn && n.onCriticalPath));
+      const isSelected = String(n.id) === String(SWIM.selectedNodeId);
+
+      let isDim = false;
+      let isHighlight = false;
+      if (SWIM.errorsOnly && !isErr) isDim = true;
+      if (filterQuery) {
+        const textToMatch = `${n.elementName || ''} ${n.name || ''} ${n.ruleName || ''} ${n.message || ''} ${n.id || ''}`.toLowerCase();
+        if (textToMatch.includes(filterQuery)) {
+          isHighlight = true;
+        } else {
+          isDim = true;
+        }
+      }
+
+      const tier = n._swimTier || 0;
+      let topStyle = '';
+      if (isCollapsed) {
+        topStyle = 'top:11px; height:6px;';
+      } else if (SWIM.layoutMode === 'stack') {
+        const topPx = 7 + tier * (barH + 4);
+        topStyle = `top:${topPx}px; height:${barH}px;`;
+      } else {
+        topStyle = `top:calc(50% - ${Math.round(barH / 2)}px); height:${barH}px;`;
+      }
+
+      const extraClasses = [
+        isErr ? 'bar-error' : '',
+        isWarn ? 'bar-warn' : '',
+        isSla ? 'bar-sla' : '',
+        isCrit ? 'bar-critical' : '',
+        isSelected ? 'swim-bar-selected' : '',
+        isDim ? 'bar-dim' : '',
+        isHighlight ? 'bar-highlight' : ''
+      ].filter(Boolean).join(' ');
+
+      const labelText = esc(n.elementName || n.name || n.ruleName || 'Span');
+
+      if (isInline) {
+        return `<div class="swim-milestone ${extraClasses}" data-node-id="${esc(n.id)}" style="left:calc(${sp.toFixed(3)}% - 4px); ${topStyle} background:${col};" title="${labelText}"></div>`;
+      }
+
+      let selfBarHtml = '';
+      if (n.selfTime != null && n.duration > 0 && n.selfTime < n.duration) {
+        const selfPct = Math.min(100, Math.max(0, (n.selfTime / n.duration) * 100));
+        selfBarHtml = `<div class="swim-self-bar" style="width:${selfPct.toFixed(1)}%;"></div>`;
+      }
+
+      const barLabelHtml = `<span class="swim-bar-label">${labelText}</span>`;
+
+      return `<div class="swim-bar ${extraClasses}" data-node-id="${esc(n.id)}" style="left:${sp.toFixed(3)}%; width:${wp.toFixed(3)}%; background:${col}; ${topStyle}" title="${labelText}: ${durStr}">
+        ${selfBarHtml}
+        ${barLabelHtml}
+      </div>`;
     }).join('');
-    
-    const tCol = lane.tCol || (!SWIM.groupByRule && typeof TR !== 'undefined' ? TR.getThreadColor(lane.id) : null);
+
+    const tCol = lane.tCol || (SWIM.groupBy === 'thread' && typeof TR !== 'undefined' ? TR.getThreadColor(lane.id) : null);
     const bg = tCol ? tCol.bg : (idx % 2 === 0 ? 'var(--bg-0)' : 'var(--bg-1)');
-    const bdrLeft = tCol ? `3px solid ${tCol.col}` : '3px solid transparent';
-    const hdrBg = 'transparent';
-    const hdrTitleColor = tCol ? tCol.col : 'inherit';
-    const badgeStyle = tCol ? `background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr};` : '';
-    
-    return `<div class="swim-lane" data-id="${esc(lane.id)}" data-thread="${esc(lane.id)}" draggable="true" style="display:grid; grid-template-columns:180px 1fr; border-bottom:1px solid var(--bdr-d); border-left:${bdrLeft}; background:${bg}; --thr-col:${tCol?tCol.col:'transparent'}; --thr-bg:${tCol?tCol.bg:bg}; --thr-bdr:${tCol?tCol.bdr:'transparent'}; align-items:center; height:${SWIM.laneH}px;">
-      <div class="swim-lane-hdr" style="font-weight:bold; font-size: 12px; padding:0 8px; cursor:grab; border-right:1px solid var(--bdr); display:flex; align-items:center; justify-content:space-between; gap:6px; background:${hdrBg}; height:100%;">
-        <span class="lane-title trunc" style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:${hdrTitleColor};" title="${esc(lane.name)}">${esc(lane.name)}</span>
-        <span class="badge b-gray" style="font-size: 11px; font-weight:700; flex-shrink:0; ${badgeStyle}">${lane.events.length}</span>
+    const bdrLeft = tCol ? `3px solid ${tCol.col}` : `3px solid ${lane.color || 'transparent'}`;
+    const hdrTitleColor = tCol ? tCol.col : (lane.color || 'inherit');
+
+    // KPI pills for header
+    const kpiPills = [];
+    kpiPills.push(`<span class="swim-kpi-pill kpi-spans" title="${lane.events.length} Spans">${lane.events.length}</span>`);
+    if (maxTiers > 1 && !isCollapsed) {
+      kpiPills.push(`<span class="swim-kpi-pill kpi-depth" title="Max ${maxTiers} concurrent tiers">⑂ ${maxTiers}x</span>`);
+    }
+    if (totalDur > 0) {
+      kpiPills.push(`<span class="swim-kpi-pill kpi-dur" title="Sum of durations: ${fmtMs(totalDur)}">${fmtMs(totalDur)}</span>`);
+    }
+    if (errorCount > 0) {
+      kpiPills.push(`<span class="swim-kpi-pill kpi-error" title="${errorCount} Errors">⚠ ${errorCount}</span>`);
+    }
+    if (slaBreachCount > 0) {
+      kpiPills.push(`<span class="swim-kpi-pill kpi-sla" title="${slaBreachCount} SLA breaches">⏱ ${slaBreachCount}</span>`);
+    }
+
+    const collapsedClass = isCollapsed ? 'swim-lane-collapsed' : '';
+    const chevronClass = isCollapsed ? 'collapsed' : '';
+
+    return `<div class="swim-lane ${collapsedClass}" data-id="${esc(lane.id)}" data-thread="${esc(lane.id)}" draggable="${SWIM.groupBy === 'thread' ? 'true' : 'false'}" style="height:${actualLaneH}px; min-height:${actualLaneH}px; border-left:${bdrLeft}; background:${bg}; --thr-col:${tCol?tCol.col:lane.color}; --thr-bg:${tCol?tCol.bg:bg}; --thr-bdr:${tCol?tCol.bdr:'transparent'};">
+      <div class="swim-lane-hdr" style="height:100%;">
+        <div class="swim-hdr-top">
+          ${SWIM.groupBy === 'thread' ? '<span class="swim-drag-grip" title="Drag to reorder lane">⋮⋮</span>' : ''}
+          <button class="swim-collapse-btn ${chevronClass}" data-lane-id="${esc(lane.id)}" title="${isCollapsed ? 'Expand lane' : 'Collapse lane'}">▾</button>
+          <span class="swim-lane-title" style="color:${hdrTitleColor};" title="${esc(lane.name)}">${esc(lane.name)}</span>
+        </div>
+        <div class="swim-lane-meta">
+          ${kpiPills.join('')}
+        </div>
       </div>
-      <div style="position:relative; height:100%; width:calc(100% * var(--g-zoom, 1)); min-width:100%;">
+      <div class="swim-track-wrap">
         ${barsHtml}
       </div>
     </div>`;
   }).join('');
-  
+
   el.innerHTML = `
     <div class="gw" style="display:flex; flex-direction:column; height:100%;">
       <div class="pt g-toolbar" style="display:flex; align-items:center; gap:6px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); min-height:38px; height:38px; box-sizing:border-box; white-space:nowrap; overflow:hidden;">
-        <span style="font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>⧇</span> Swimlane</span>
-        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="flex-shrink:0;">Waterfall</button>
+        <span style="font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:5px; flex-shrink:0;">
+          <span style="color:var(--amber);">⧇</span> Swimlane Studio
+        </span>
+        <button class="btn btn-g btn-xs" id="btn-swim-toggle" style="flex-shrink:0; font-weight:600;" title="Switch to Waterfall Timeline view">⇄ Waterfall</button>
+        
         <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
-        <label style="font-size: 12px; display:flex; align-items:center; gap:4px; cursor:pointer; user-select:none; flex-shrink:0;">
-          <input type="checkbox" id="chk-swim-groupby" ${SWIM.groupByRule ? 'checked' : ''}> Group by Rule
+        <span style="font-size:11px; font-weight:600; color:var(--t3); text-transform:uppercase; letter-spacing:0.5px; flex-shrink:0;">Group:</span>
+        <div class="btn-group" style="display:inline-flex; border-radius:var(--rounded-xs); overflow:hidden; border:1px solid var(--bdr); flex-shrink:0;">
+          <button class="btn btn-xs ${SWIM.groupBy === 'thread' ? 'btn-p' : 'btn-g'}" id="btn-swim-grp-thread" style="padding:2px 7px; font-size:11px; border-radius:0;">Thread</button>
+          <button class="btn btn-xs ${SWIM.groupBy === 'rule' ? 'btn-p' : 'btn-g'}" id="btn-swim-grp-rule" style="padding:2px 7px; font-size:11px; border-radius:0; border-left:1px solid var(--bdr);">Rule</button>
+          <button class="btn btn-xs ${SWIM.groupBy === 'level' ? 'btn-p' : 'btn-g'}" id="btn-swim-grp-level" style="padding:2px 7px; font-size:11px; border-radius:0; border-left:1px solid var(--bdr);">Level</button>
+        </div>
+        <input type="checkbox" id="chk-swim-groupby" style="display:none;" ${SWIM.groupByRule ? 'checked' : ''}>
+
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <div class="btn-group" style="display:inline-flex; border-radius:var(--rounded-xs); overflow:hidden; border:1px solid var(--bdr); flex-shrink:0;">
+          <button class="btn btn-xs ${SWIM.layoutMode === 'stack' ? 'btn-p' : 'btn-g'}" id="btn-swim-mode-stack" title="Stack overlapping concurrent spans into tiers" style="padding:2px 7px; font-size:11px; border-radius:0;">⑂ Stacked</button>
+          <button class="btn btn-xs ${SWIM.layoutMode === 'compact' ? 'btn-p' : 'btn-g'}" id="btn-swim-mode-compact" title="Compact single-row alignment" style="padding:2px 7px; font-size:11px; border-radius:0; border-left:1px solid var(--bdr);">⚌ Compact</button>
+        </div>
+
+        <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
+        <div style="position:relative; display:inline-flex; align-items:center; flex-shrink:0;">
+          <input type="text" id="swim-search-inp" placeholder="Filter spans..." value="${esc(SWIM.filterText)}" style="width:115px; height:22px; padding:0 18px 0 6px; font-size:11px; font-family:var(--ui); background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--rounded-xs); color:var(--t1);" />
+          <span id="btn-swim-clear-search" style="position:absolute; right:5px; font-size:10px; cursor:pointer; color:var(--t3); display:${SWIM.filterText ? 'inline-block' : 'none'};" title="Clear search">✕</span>
+        </div>
+
+        <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none; color:${SWIM.errorsOnly ? 'var(--red)' : 'var(--t2)'}; font-weight:${SWIM.errorsOnly ? '700' : '500'}; flex-shrink:0;">
+          <input type="checkbox" id="chk-swim-errors" ${SWIM.errorsOnly ? 'checked' : ''} style="accent-color:var(--red);"> ⚠ Errors Only
         </label>
+
         <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
-        <span style="font-size: 12px; color:var(--t2); flex-shrink:0;">Height:</span>
-        <input type="range" id="slider-swim-h" min="24" max="60" step="4" value="${SWIM.laneH}" style="width:58px; accent-color:var(--amber); flex-shrink:0;">
-        <span style="font-size: 12px; font-family:var(--mono); color:var(--amber); font-weight:bold; flex-shrink:0;">${SWIM.laneH}px</span>
+        <span style="font-size:11px; color:var(--t3); flex-shrink:0;">Height:</span>
+        <input type="range" id="slider-swim-h" min="26" max="72" step="2" value="${SWIM.laneH}" style="width:52px; accent-color:var(--amber); flex-shrink:0;">
+        <span style="font-size:11px; font-family:var(--mono); color:var(--amber); font-weight:bold; flex-shrink:0;">${SWIM.laneH}px</span>
 
         <div style="flex:1; min-width:8px;"></div>
 
-        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size: 12px; user-select:none; flex-shrink:0;">
+        <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; user-select:none; flex-shrink:0;">
           <input type="checkbox" id="gantt-crit-chk" ${S.criticalPathOn ? 'checked' : ''}>
           ✦ Critical
         </label>
         <div style="border-left:1px solid var(--bdr); height:14px; margin:0 2px; flex-shrink:0;"></div>
-        <span style="display:inline-flex; align-items:center; gap:3px; font-size: 12px; color:var(--t2); flex-shrink:0;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Zoom:</span>
-        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:68px; accent-color:var(--amber); flex-shrink:0;">
-        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:26px; font-size: 12px; flex-shrink:0;">×${(S.ganttZoom || 1).toFixed(1)}</span>
+        <span style="display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--t3); flex-shrink:0;"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Zoom:</span>
+        <input type="range" id="gantt-zoom-slider" min="0.5" max="8" step="0.1" value="${S.ganttZoom || 1}" style="width:64px; accent-color:var(--amber); flex-shrink:0;">
+        <span id="gantt-zoom-val" style="font-family:var(--mono); color:var(--amber); font-weight:bold; min-width:24px; font-size:11px; flex-shrink:0;">×${(S.ganttZoom || 1).toFixed(1)}</span>
         <button class="btn btn-xs btn-g" id="btn-zoom-fit" style="flex-shrink:0;">Fit</button>
         <button class="btn btn-xs btn-g" id="btn-zoom-reset" style="flex-shrink:0;">Reset</button>
       </div>
-      <div class="g-hdr" style="grid-template-columns:180px 1fr;"><div class="g-ch">Thread / Rule</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
-      <div style="flex:1; overflow-y:auto; overflow-x:hidden;" id="swim-lanes-rows">
+
+      <div class="g-hdr swim-hdr-grid" style="grid-template-columns:var(--swim-hdr-w, 230px) 1fr;">
+        <div class="g-ch" style="display:flex; align-items:center; justify-content:space-between; padding:0 8px;">
+          <span>${SWIM.groupBy === 'thread' ? 'Threads (' + swimlanes.length + ')' : SWIM.groupBy === 'rule' ? 'Rules (' + swimlanes.length + ')' : 'Severity Levels (' + swimlanes.length + ')'}</span>
+          <span style="font-size:10px; color:var(--t3); font-weight:normal;">${allNodes.length} spans</span>
+        </div>
+        <div class="g-ch" style="position:relative; overflow:hidden;">
+          <div class="g-ax">${ax}</div>
+        </div>
+      </div>
+
+      <div style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative;" id="swim-lanes-rows">
         ${lanesHtml}
+        <div class="swim-crosshair-line" id="swim-crosshair-line"></div>
+        <div class="swim-crosshair-pill" id="swim-crosshair-pill">+0ms</div>
+      </div>
+    </div>
+
+    <div id="swim-hover-card">
+      <div class="swim-card-hdr">
+        <span class="swim-card-title" id="swim-card-title">Span Title</span>
+        <span class="badge b-blue" id="swim-card-badge" style="font-size:10px;">INFO</span>
+      </div>
+      <div class="swim-card-grid" id="swim-card-grid">
+        <span class="swim-card-k">Duration:</span>
+        <span class="swim-card-v" id="swim-card-dur">-</span>
+        <span class="swim-card-k">Self Time:</span>
+        <span class="swim-card-v" id="swim-card-self">-</span>
+        <span class="swim-card-k">Start Time:</span>
+        <span class="swim-card-v" id="swim-card-time">-</span>
+        <span class="swim-card-k">Thread/Lane:</span>
+        <span class="swim-card-v" id="swim-card-lane">-</span>
+        <span class="swim-card-k">Rule Type:</span>
+        <span class="swim-card-v" id="swim-card-rule">-</span>
+      </div>
+      <div class="swim-card-footer">
+        <span>Click to open in Inspector</span>
+        <span id="swim-card-sla" style="font-family:var(--mono);"></span>
       </div>
     </div>
   `;
-  
-  // Wire group-by rule checkbox
-  el.querySelector('#chk-swim-groupby').addEventListener('change', e => {
-    SWIM.groupByRule = e.target.checked;
-    UI.rv();
-  });
-  
+
+  // Wire Group By buttons
+  const btnGrpThr = el.querySelector('#btn-swim-grp-thread');
+  if (btnGrpThr) btnGrpThr.addEventListener('click', () => { SWIM.groupBy = 'thread'; SWIMLANE.init(el); });
+  const btnGrpRule = el.querySelector('#btn-swim-grp-rule');
+  if (btnGrpRule) btnGrpRule.addEventListener('click', () => { SWIM.groupBy = 'rule'; SWIMLANE.init(el); });
+  const btnGrpLvl = el.querySelector('#btn-swim-grp-level');
+  if (btnGrpLvl) btnGrpLvl.addEventListener('click', () => { SWIM.groupBy = 'level'; SWIMLANE.init(el); });
+
+  // Wire Layout Mode buttons
+  const btnModeStack = el.querySelector('#btn-swim-mode-stack');
+  if (btnModeStack) btnModeStack.addEventListener('click', () => { SWIM.layoutMode = 'stack'; SWIMLANE.init(el); });
+  const btnModeCompact = el.querySelector('#btn-swim-mode-compact');
+  if (btnModeCompact) btnModeCompact.addEventListener('click', () => { SWIM.layoutMode = 'compact'; SWIMLANE.init(el); });
+
+  // Wire live search filter
+  const searchInp = el.querySelector('#swim-search-inp');
+  if (searchInp) {
+    searchInp.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      SWIM.filterText = e.target.value;
+      const clearBtn = el.querySelector('#btn-swim-clear-search');
+      if (clearBtn) clearBtn.style.display = q ? 'inline-block' : 'none';
+
+      el.querySelectorAll('.swim-bar, .swim-milestone').forEach(bar => {
+        const nodeId = bar.dataset.nodeId;
+        const n = nodeMap.get(nodeId);
+        if (!n) return;
+        const textToMatch = `${n.elementName || ''} ${n.name || ''} ${n.ruleName || ''} ${n.message || ''} ${n.id || ''}`.toLowerCase();
+        const matches = !q || textToMatch.includes(q);
+        if (q && matches) {
+          bar.classList.add('bar-highlight');
+          bar.classList.remove('bar-dim');
+        } else if (q && !matches) {
+          bar.classList.remove('bar-highlight');
+          bar.classList.add('bar-dim');
+        } else {
+          bar.classList.remove('bar-highlight');
+          if (SWIM.errorsOnly) {
+            const isErr = (n.level === 'ERROR' || n.level === 'FATAL' || n.hasError || n.isError || (n.badge && n.badge.includes('ERR')));
+            if (!isErr) bar.classList.add('bar-dim');
+            else bar.classList.remove('bar-dim');
+          } else {
+            bar.classList.remove('bar-dim');
+          }
+        }
+      });
+    });
+  }
+  const clearBtn = el.querySelector('#btn-swim-clear-search');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      SWIM.filterText = '';
+      SWIMLANE.init(el);
+    });
+  }
+
+  // Wire Errors-only checkbox
+  const chkErrors = el.querySelector('#chk-swim-errors');
+  if (chkErrors) {
+    chkErrors.addEventListener('change', e => {
+      SWIM.errorsOnly = e.target.checked;
+      SWIMLANE.init(el);
+    });
+  }
+
   // Wire lane height slider
-  el.querySelector('#slider-swim-h').addEventListener('input', e => {
-    SWIM.laneH = parseInt(e.target.value, 10);
-    UI.rv();
+  const sliderH = el.querySelector('#slider-swim-h');
+  if (sliderH) {
+    sliderH.addEventListener('input', e => {
+      SWIM.laneH = parseInt(e.target.value, 10);
+      SWIMLANE.init(el);
+    });
+  }
+
+  // Wire lane collapse/expand buttons
+  el.querySelectorAll('.swim-collapse-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const laneId = btn.dataset.laneId;
+      if (SWIM.collapsedLanes.has(laneId)) {
+        SWIM.collapsedLanes.delete(laneId);
+      } else {
+        SWIM.collapsedLanes.add(laneId);
+      }
+      SWIMLANE.init(el);
+    });
   });
-  
-  // Draggable drag-reorder lanes
-  if (!SWIM.groupByRule) {
+
+  // Draggable drag-reorder lanes (Thread grouping mode)
+  if (SWIM.groupBy === 'thread') {
     const rowsCont = el.querySelector('#swim-lanes-rows');
     let draggedLane = null;
-    
     rowsCont.querySelectorAll('.swim-lane').forEach(lane => {
       lane.addEventListener('dragstart', () => { draggedLane = lane; lane.style.opacity = '0.5'; });
       lane.addEventListener('dragend', () => { lane.style.opacity = '1'; });
@@ -25849,48 +26527,173 @@ SWIMLANE.init = function(el) {
           const lanes = [...rowsCont.querySelectorAll('.swim-lane')];
           const fromIdx = lanes.indexOf(draggedLane);
           const toIdx = lanes.indexOf(lane);
-          
           const order = lanes.map(l => l.dataset.id);
           order.splice(fromIdx, 1);
           order.splice(toIdx, 0, draggedLane.dataset.id);
           SWIM.order = order;
-          UI.rv();
+          SWIMLANE.init(el);
         }
       });
     });
   }
 
-  // Wire click to select event and show in Inspector
+  // Wire Synchronized Crosshair Guideline
   const swimRows = el.querySelector('#swim-lanes-rows');
+  const crossLine = el.querySelector('#swim-crosshair-line');
+  const crossPill = el.querySelector('#swim-crosshair-pill');
+  if (swimRows && crossLine && crossPill) {
+    swimRows.addEventListener('mousemove', e => {
+      const trackWrap = e.target.closest('.swim-track-wrap');
+      if (!trackWrap) {
+        crossLine.style.display = 'none';
+        crossPill.style.display = 'none';
+        return;
+      }
+      const rect = trackWrap.getBoundingClientRect();
+      const relX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(100, (relX / rect.width) * 100));
+      const currOffset = (pct / 100) * globalDur;
+
+      const rowsRect = swimRows.getBoundingClientRect();
+      const lineX = e.clientX - rowsRect.left + swimRows.scrollLeft;
+
+      crossLine.style.left = `${lineX}px`;
+      crossLine.style.display = 'block';
+
+      crossPill.style.left = `${lineX}px`;
+      crossPill.style.display = 'block';
+      crossPill.textContent = `+${fmtMs(currOffset)}`;
+    });
+
+    swimRows.addEventListener('mouseleave', () => {
+      crossLine.style.display = 'none';
+      crossPill.style.display = 'none';
+    });
+  }
+
+  // Wire Floating Inspector Hover Card
+  const hoverCard = el.querySelector('#swim-hover-card');
+  if (swimRows && hoverCard) {
+    const cardTitle = el.querySelector('#swim-card-title');
+    const cardBadge = el.querySelector('#swim-card-badge');
+    const cardDur = el.querySelector('#swim-card-dur');
+    const cardSelf = el.querySelector('#swim-card-self');
+    const cardTime = el.querySelector('#swim-card-time');
+    const cardLane = el.querySelector('#swim-card-lane');
+    const cardRule = el.querySelector('#swim-card-rule');
+    const cardSla = el.querySelector('#swim-card-sla');
+
+    const updateCardPos = (e) => {
+      const cardW = 290, cardH = 170;
+      let left = e.clientX + 14;
+      let top = e.clientY + 14;
+      if (left + cardW > window.innerWidth - 10) left = e.clientX - cardW - 14;
+      if (top + cardH > window.innerHeight - 10) top = e.clientY - cardH - 14;
+      hoverCard.style.left = `${Math.max(10, left)}px`;
+      hoverCard.style.top = `${Math.max(10, top)}px`;
+    };
+
+    swimRows.addEventListener('mouseover', e => {
+      const bar = e.target.closest('.swim-bar, .swim-milestone');
+      if (!bar || !bar.dataset.nodeId) return;
+      const node = nodeMap.get(bar.dataset.nodeId);
+      if (!node) return;
+
+      if (cardTitle) cardTitle.textContent = node.elementName || node.name || node.ruleName || 'Span';
+      if (cardBadge) {
+        const lvl = (node.level || 'INFO').toUpperCase();
+        cardBadge.textContent = lvl;
+        cardBadge.className = `badge ${lvl === 'ERROR' || lvl === 'FATAL' ? 'b-red' : lvl === 'WARN' ? 'b-yellow' : 'b-blue'}`;
+      }
+      if (cardDur) cardDur.textContent = node.duration != null && node.duration > 0 ? fmtMs(node.duration) : (node.behavior === 'inline' ? 'Point Milestone' : '-');
+      if (cardSelf) cardSelf.textContent = node.selfTime != null ? fmtMs(node.selfTime) : '-';
+      if (cardTime) cardTime.textContent = node.timestamp != null ? `+${fmtMs(node.timestamp - globalMin)}` : '-';
+      if (cardLane) cardLane.textContent = node.thread || '-';
+      if (cardRule) cardRule.textContent = node.ruleName || node.ruleId || '-';
+      if (cardSla) {
+        cardSla.textContent = node.isSlaBreach ? '⚠ SLA BREACH' : (node.slaLimit ? `SLA: < ${fmtMs(node.slaLimit)}` : '');
+        cardSla.style.color = node.isSlaBreach ? 'var(--red)' : 'var(--amber)';
+      }
+
+      hoverCard.style.display = 'block';
+      updateCardPos(e);
+    });
+
+    swimRows.addEventListener('mouseout', e => {
+      const bar = e.target.closest('.swim-bar, .swim-milestone');
+      if (bar) hoverCard.style.display = 'none';
+    });
+
+    swimRows.addEventListener('mousemove', e => {
+      if (hoverCard.style.display === 'block') {
+        updateCardPos(e);
+      }
+    });
+  }
+
+  // Wire click to select event and open Inspector
   if (swimRows) {
     swimRows.addEventListener('click', e => {
-      const bar = e.target.closest('.swim-bar');
+      const bar = e.target.closest('.swim-bar, .swim-milestone');
       if (bar && bar.dataset.nodeId) {
-        const findNodeById = (id) => {
-          if (!S.trees) return null;
-          let found = null;
-          const traverse = (nodes) => {
-            if (found) return;
-            for (const n of nodes) {
-              if (n.id === id) { found = n; return; }
-              if (n.events && n.events.length) traverse(n.events);
-            }
-          };
-          for (const tree of Object.values(S.trees)) {
-            traverse(tree);
-            if (found) return found;
+        const node = nodeMap.get(bar.dataset.nodeId);
+        if (node) {
+          SWIM.selectedNodeId = node.id;
+          swimRows.querySelectorAll('.swim-bar-selected').forEach(b => b.classList.remove('swim-bar-selected'));
+          bar.classList.add('swim-bar-selected');
+          if (typeof INSPECTOR !== 'undefined') {
+            INSPECTOR.open(node);
           }
-          return null;
-        };
-        const node = findNodeById(bar.dataset.nodeId);
-        if (node && typeof INSPECTOR !== 'undefined') {
-          INSPECTOR.open(node);
         }
       }
     });
   }
 
-  // ── Mount Timeline Navigator mini-map below Swimlane (Timeline view only)
+  // Wire Zoom Controls
+  const zoomSlider = el.querySelector('#gantt-zoom-slider');
+  if (zoomSlider) {
+    zoomSlider.addEventListener('input', e => {
+      S.ganttZoom = parseFloat(e.target.value);
+      const zoomVal = el.querySelector('#gantt-zoom-val');
+      if (zoomVal) zoomVal.textContent = `×${S.ganttZoom.toFixed(1)}`;
+      el.querySelectorAll('.swim-track-wrap').forEach(tw => {
+        tw.style.width = `calc(100% * ${S.ganttZoom})`;
+      });
+    });
+  }
+  const btnFit = el.querySelector('#btn-zoom-fit');
+  if (btnFit) {
+    btnFit.addEventListener('click', () => {
+      S.ganttZoom = 1;
+      const zoomVal = el.querySelector('#gantt-zoom-val');
+      if (zoomVal) zoomVal.textContent = '×1.0';
+      if (zoomSlider) zoomSlider.value = 1;
+      el.querySelectorAll('.swim-track-wrap').forEach(tw => {
+        tw.style.width = '100%';
+      });
+    });
+  }
+  const btnReset = el.querySelector('#btn-zoom-reset');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      S.ganttZoom = 1;
+      const zoomVal = el.querySelector('#gantt-zoom-val');
+      if (zoomVal) zoomVal.textContent = '×1.0';
+      if (zoomSlider) zoomSlider.value = 1;
+      el.querySelectorAll('.swim-track-wrap').forEach(tw => {
+        tw.style.width = '100%';
+      });
+    });
+  }
+  const critChk = el.querySelector('#gantt-crit-chk');
+  if (critChk) {
+    critChk.addEventListener('change', e => {
+      S.criticalPathOn = e.target.checked;
+      SWIMLANE.init(el);
+    });
+  }
+
+  // Mount Timeline Navigator mini-map below Swimlane (Timeline view only)
   if (typeof TIMELINE_NAV !== 'undefined') {
     const gw = el.querySelector('.gw');
     const swimRows = el.querySelector('#swim-lanes-rows');

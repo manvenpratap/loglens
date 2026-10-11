@@ -3,6 +3,35 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Advanced Swimlane Studio with Concurrency Stacking, Telemetry, and Multi-Grouping (v6.9.132 — COMPLETED)**:
+  - **Interval-Scheduling Concurrency Stacking**:
+    - Greedy interval-scheduling tier allocation algorithm for concurrent async spans within lanes. Overlapping child spans and parallel worker executions now render in discrete vertical tiers (`_swimTier`), preventing span masking or bar overlap.
+    - Dynamic lane height automatically expands based on concurrency tier depth (`maxTiers`), while compact mode (`⚌ Compact`) preserves minimal single-line alignment.
+  - **Lane Header Telemetry & KPI Pills**:
+    - Added high-density telemetry pills directly into lane headers:
+      - Total span count (`.swim-kpi-pill.kpi-spans`)
+      - Concurrency depth indicator (`.swim-kpi-pill.kpi-depth`, e.g. `⑂ 3x`, `⑂ 9x`)
+      - Aggregated execution duration (`.swim-kpi-pill.kpi-dur`)
+      - Error count pill (`.swim-kpi-pill.kpi-error`, `⚠ N`)
+      - SLA breach counter (`.swim-kpi-pill.kpi-sla`, `⏱ N`)
+    - Collapse/expand toggle chevron (`.swim-collapse-btn`) with smooth transition and collapsed mini-state.
+    - Drag grip (`⋮⋮`) for reordering lanes in Thread mode.
+  - **Multi-Mode Grouping**:
+    - **Thread Grouping**: lanes correspond to threads with thread-tinted background and left border accents, maintaining 100% color sync with Execution Tree.
+    - **Rule Grouping**: lanes grouped by configured Element Rules (`S.cfg.elementRules`) with rule accent colors and fallback generic bucket.
+    - **Severity Level Grouping**: lanes categorized by `Error / Fatal`, `Warning`, `Info`, `Debug / Trace`, and `Other`, giving instant visibility into error density over time.
+  - **Dynamic Interactive Crosshair Guideline**:
+    - Real-time time crosshair tracking on mousemove across the timeline track (`#swim-crosshair-line`).
+    - Floating time offset pill (`#swim-crosshair-pill`) displaying relative timestamp (`+X.XXms`).
+  - **Tactile Glassmorphic Hover Inspector Card**:
+    - Floating `#swim-hover-card` near cursor displaying span name, log level badge, duration, self-time breakdown, relative start time, thread/lane, rule type, and SLA status.
+  - **Live Search Filtering & Errors-Only Toggle**:
+    - Real-time search filter input (`#swim-search-inp`) with fast 60 FPS live dimming/highlighting of bars without DOM teardown.
+    - Errors-only toggle (`#chk-swim-errors`) highlighting problem spans and dimming healthy spans.
+  - **Automated Regression Verification**:
+    - Added `test_advanced_swimlane_studio_telemetry_stacking_and_controls` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - 97/97 regression tests passing across all test modules (100% pass rate).
+
 - **Light Theme Row Background Banding Resolution (v6.9.131 — COMPLETED)**:
   - **Root Cause & Selector Fix**:
     - Identified that `[data-theme=light] .tree-row:nth-child(even)` and `[data-theme=ivory] .tree-row:nth-child(even)` at line 2925 were unconditionally overriding `background: color-mix(in srgb, var(--bg-2) 35%, var(--bg-0)) !important;` on every alternating row in Execution Tree.

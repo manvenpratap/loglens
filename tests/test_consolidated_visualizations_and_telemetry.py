@@ -864,3 +864,120 @@ async def test_split_view_row_background_colors_synchronized(page_with_data):
     await page.evaluate("() => document.documentElement.setAttribute('data-theme', 'dark')")
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_advanced_swimlane_studio_telemetry_stacking_and_controls(page_with_data):
+    """Verify Swimlane Studio advanced features: concurrency interval stacking, KPI telemetry, grouping, crosshair, and hover card."""
+    page = page_with_data
+
+    # 1. Switch to Gantt view in Swimlane mode
+    await page.evaluate("""() => {
+        S.swimlaneMode = true;
+        UI.svm('gantt');
+        UI.rv();
+    }""")
+    await page.wait_for_timeout(250)
+
+    # 2. Check UI elements & controls exist
+    controls = await page.evaluate("""() => {
+        return {
+            lanesCount: document.querySelectorAll('.swim-lane').length,
+            hasToggleBtn: Boolean(document.getElementById('btn-swim-toggle')),
+            hasGrpThread: Boolean(document.getElementById('btn-swim-grp-thread')),
+            hasGrpRule: Boolean(document.getElementById('btn-swim-grp-rule')),
+            hasGrpLevel: Boolean(document.getElementById('btn-swim-grp-level')),
+            hasStackBtn: Boolean(document.getElementById('btn-swim-mode-stack')),
+            hasCompactBtn: Boolean(document.getElementById('btn-swim-mode-compact')),
+            hasSearchInp: Boolean(document.getElementById('swim-search-inp')),
+            hasErrorsChk: Boolean(document.getElementById('chk-swim-errors')),
+            hasCrosshair: Boolean(document.getElementById('swim-crosshair-line')),
+            hasHoverCard: Boolean(document.getElementById('swim-hover-card')),
+            kpiSpansCount: document.querySelectorAll('.swim-kpi-pill.kpi-spans').length
+        };
+    }""")
+    assert controls['lanesCount'] > 0
+    assert controls['hasToggleBtn'] is True
+    assert controls['hasGrpThread'] is True
+    assert controls['hasGrpRule'] is True
+    assert controls['hasGrpLevel'] is True
+    assert controls['hasStackBtn'] is True
+    assert controls['hasCompactBtn'] is True
+    assert controls['hasSearchInp'] is True
+    assert controls['hasErrorsChk'] is True
+    assert controls['hasCrosshair'] is True
+    assert controls['hasHoverCard'] is True
+    assert controls['kpiSpansCount'] == controls['lanesCount']
+
+    # 3. Test Grouping modes
+    # Test Rule Grouping
+    await page.click('#btn-swim-grp-rule')
+    await page.wait_for_timeout(200)
+    rule_group_check = await page.evaluate("() => ({ groupBy: SWIM.groupBy, lanes: document.querySelectorAll('.swim-lane').length })")
+    assert rule_group_check['groupBy'] == 'rule'
+    assert rule_group_check['lanes'] > 0
+
+    # Test Level Grouping
+    await page.click('#btn-swim-grp-level')
+    await page.wait_for_timeout(200)
+    level_group_check = await page.evaluate("() => ({ groupBy: SWIM.groupBy, lanes: document.querySelectorAll('.swim-lane').length })")
+    assert level_group_check['groupBy'] == 'level'
+    assert level_group_check['lanes'] > 0
+
+    # Switch back to Thread Grouping
+    await page.click('#btn-swim-grp-thread')
+    await page.wait_for_timeout(200)
+    thread_group_check = await page.evaluate("() => ({ groupBy: SWIM.groupBy, lanes: document.querySelectorAll('.swim-lane').length })")
+    assert thread_group_check['groupBy'] == 'thread'
+
+    # 4. Test Stacking vs Compact layout
+    await page.click('#btn-swim-mode-compact')
+    await page.wait_for_timeout(150)
+    compact_mode = await page.evaluate("() => SWIM.layoutMode")
+    assert compact_mode == 'compact'
+
+    await page.click('#btn-swim-mode-stack')
+    await page.wait_for_timeout(150)
+    stack_mode = await page.evaluate("() => SWIM.layoutMode")
+    assert stack_mode == 'stack'
+
+    # 5. Test search filter dimming
+    filter_check = await page.evaluate("""() => {
+        const inp = document.getElementById('swim-search-inp');
+        inp.value = 'nonexistentqueryxyz';
+        inp.dispatchEvent(new Event('input'));
+        const totalBars = document.querySelectorAll('.swim-bar').length;
+        const dimBars = document.querySelectorAll('.swim-bar.bar-dim').length;
+        
+        // Reset filter
+        inp.value = '';
+        inp.dispatchEvent(new Event('input'));
+        const dimAfterReset = document.querySelectorAll('.swim-bar.bar-dim').length;
+        return { totalBars, dimBars, dimAfterReset };
+    }""")
+    assert filter_check['dimBars'] == filter_check['totalBars']
+    assert filter_check['dimAfterReset'] == 0
+
+    # 6. Test Hover Card on mouseover of a bar
+    hover_check = await page.evaluate("""() => {
+        const bar = document.querySelector('.swim-bar');
+        if (!bar) return { ok: false };
+        const rows = document.getElementById('swim-lanes-rows');
+        const ev = new MouseEvent('mouseover', { bubbles: true, clientX: 200, clientY: 200 });
+        bar.dispatchEvent(ev);
+        const card = document.getElementById('swim-hover-card');
+        const isShown = card && card.style.display === 'block';
+        const title = document.getElementById('swim-card-title')?.textContent;
+        return { ok: true, isShown, title };
+    }""")
+    assert hover_check['ok'] is True
+    assert hover_check['isShown'] is True
+    assert len(hover_check['title']) > 0
+
+    # Reset swimlane mode for following tests
+    await page.evaluate("""() => {
+        S.swimlaneMode = false;
+        UI.rv();
+    }""")
+    assert_no_critical_errors(page)
+
