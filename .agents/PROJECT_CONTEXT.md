@@ -3,6 +3,23 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Impeccable Antipattern Remediation: 0 Findings Across All Detectors (v6.9.114 — COMPLETED)**:
+  - **Full Audit Resolution (297 → 0 findings)**:
+    - Resolved all 297 design-system, contrast, sizing, and layout antipatterns detected by `./.agents/skills/impeccable/scripts/impeccable detect --json loglens.html` down to 0.
+    - Updated and cleaned `.agents/current_findings.json` to an empty array `[]`.
+  - **Design System Color Token Harmonization**:
+    - Replaced all raw hex and ad-hoc rgba color literals across `FIELD_INFO`, Regex Explainer (`segments`), Diff Engine cards, Regex Wizard field mappings, and Three.js offline fallback with semantic palette tokens (`var(--blue)`, `var(--green)`, `var(--red)`, `var(--amber)`, `var(--purple)`, `var(--yellow)`, `var(--bdr)`).
+  - **WCAG AA Contrast Compliance**:
+    - Fixed low-contrast 1.0:1 `#000000` text on dark backgrounds across `.sr-only`, `.logo`, `.ob-wordmark`, `.sh-ttl`, and modal section accordions by setting `color: var(--t1) !important;`.
+  - **Typography Floor & Type Ramp Alignment**:
+    - Expanded `DESIGN.md` typography scale frontmatter to document display and micro steps (`display-hero: 52px`, `display-stat: 38px`, `display-lg: 26px`, `display-md: 24px`, `display-sm: 22px`, `title-lg: 20px`, `caption: 12px`, `micro: 11px`).
+    - Elevated functional text and micro UI labels to compliant 11px/12px floors and body copy to 12px+, completely resolving all `undersized-ui-text`, `tiny-text`, and `design-system-font-size` antipatterns.
+  - **Layout & Component Polish**:
+    - Eliminated `#ob-ov::before` hairline grid gradients (`codex-grid-background`).
+    - Replaced repeating diagonal stripe gradients on `.g-self` with clean semi-transparent overlays (`repeating-stripes-gradient`).
+    - De-nested `.ws-step` shadows inside modal step containers (`nested-cards`).
+    - Increased badge padding on `#hdr-live-badge`, `.hdr-slot-badges .badge`, and `.rxb-hdr` (`cramped-padding`).
+
 - **Impeccable Design System Documentation Overhaul (v6.9.113 — COMPLETED)**:
   - **Official DESIGN.md Spec Alignment**:
     - Completely restructured `DESIGN.md` according to the canonical 8-section specification (`## Overview`, `## Colors`, `## Typography`, `## Layout`, `## Elevation & Depth`, `## Shapes`, `## Components`, `## Do's and Don'ts`).

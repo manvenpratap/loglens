@@ -19,19 +19,99 @@ colors:
   text-dark-muted: "#8b949e"
   text-light: "#18181b"
   text-light-muted: "#52525b"
+  amber-hi: "oklch(72% 0.17 55)"
+  red-hi: "oklch(50% 0.20 25)"
+  red-deep: "oklch(46% 0.20 25)"
+  blue-focus: "rgba(79,158,255,.4)"
+  blue-hover: "oklch(46% 0.18 250)"
+  amber-glow: "rgba(255,149,0,.2)"
+  red-glow: "rgba(255,69,58,.28)"
+  yellow-glow: "rgba(255,214,10,.25)"
+  green-glow: "rgba(48,209,88,.08)"
+  danger-soft: "rgba(255,87,87,.12)"
+  success-soft: "rgba(64,196,128,.12)"
+  amber-hover: "oklch(56% 0.19 55)"
+  danger-hover: "oklch(48% 0.16 25)"
+  amber-bdr-light: "rgba(192,98,10,.18)"
+  danger-bdr-light: "rgba(180,60,40,.08)"
+  bg-light-hover: "oklch(91% 0.025 55)"
+  flame-soft: "oklch(60% 0.21 35 / 0.14)"
+  drop-border: "oklch(32% 0.022 240)"
+  text-idle: "rgb(211, 204, 200)"
+  text-muted-1: "rgb(166, 156, 150)"
+  text-muted-2: "rgb(140, 132, 127)"
+  t1: "oklch(93% 0.01 55)"
+  t2: "oklch(76% 0.012 55)"
+  t3: "oklch(60% 0.012 55)"
+  t4: "oklch(45% 0.01 55)"
+  blue: "oklch(62% 0.18 250)"
+  cyan: "oklch(70% 0.14 210)"
+  amber: "oklch(67% 0.16 55)"
+  purple-token: "oklch(62% 0.22 310)"
+  red: "oklch(55% 0.22 25)"
+  green: "oklch(62% 0.19 140)"
+  yellow: "oklch(75% 0.18 85)"
 typography:
+  display-hero:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "52px"
+    fontWeight: 800
+    lineHeight: 1.1
+    letterSpacing: "-0.03em"
+  display-stat:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "38px"
+    fontWeight: 700
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
+  display-lg:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "26px"
+    fontWeight: 700
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
+  display-md:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "24px"
+    fontWeight: 700
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
+  display-sm:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "22px"
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
+  title-lg:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "20px"
+    fontWeight: 600
+    lineHeight: 1.3
+    letterSpacing: "-0.01em"
   display:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
     fontSize: "18px"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.02em"
+  body-lg:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "normal"
   headline:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', Inter, Geist, system-ui, sans-serif"
     fontSize: "15px"
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: "-0.01em"
+  body-md:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "normal"
   title:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
     fontSize: "13px"
@@ -46,7 +126,7 @@ typography:
     letterSpacing: "normal"
   label:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', Inter, Geist, system-ui, sans-serif"
-    fontSize: "10.5px"
+    fontSize: "11px"
     fontWeight: 600
     lineHeight: 1.2
     letterSpacing: "0.04em"
@@ -60,8 +140,9 @@ rounded:
   xs: "2px"
   sm: "4px"
   md: "6px"
-  lg: "10px"
-  xl: "14px"
+  lg: "8px"
+  xl: "10px"
+  2xl: "14px"
   full: "9999px"
 spacing:
   xxs: "2px"
