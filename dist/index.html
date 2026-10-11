@@ -4816,12 +4816,44 @@ body.focus-mode #res {
 
 /* Make tree-vscroll leave room for minimap */
 .has-minimap > #tree-vscroll,
-.has-minimap > .vscroll-container { margin-right: 56px; }
-.tw:has(.has-minimap) #tree-hdr,
-.tw:has(.has-minimap) #tree-filter-bar,
-#tree-hdr.has-minimap-pad,
-#tree-filter-bar.has-minimap-pad {
-  margin-right: 56px !important;
+.has-minimap > .vscroll-container { margin-right: 56px !important; }
+.tree-th-map {
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 56px !important;
+  height: 100% !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: var(--display) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: var(--t3) !important;
+  border-left: 1px solid var(--bdr) !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  text-transform: uppercase !important;
+  background: var(--bg-1) !important;
+}
+.tree-filter-map {
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 56px !important;
+  height: 100% !important;
+  display: none;
+  border-left: 1px solid var(--bdr) !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  background: var(--bg-1) !important;
+}
+.tw:has(.has-minimap) .tree-th-map,
+#tree-hdr.has-minimap-pad .tree-th-map {
+  display: inline-flex !important;
+}
+.tw:has(.has-minimap) .tree-filter-map,
+#tree-filter-bar.has-minimap-pad .tree-filter-map {
+  display: block !important;
 }
 
 /* --- 3. Interactive Time Scrubber Guide --- */
@@ -12121,6 +12153,9 @@ const TR={
 
                 <span class="tree-col-resizer" data-col="ts" role="separator" aria-orientation="vertical" title="Drag to resize Timestamp, double-click to reset"></span>
               </span>
+              <span class="tree-th-map" id="tree-th-map" role="columnheader" data-col="map">
+                <span>MAP</span>
+              </span>
             </div>
           </div>
         </div>
@@ -12158,6 +12193,7 @@ const TR={
                   <button class="tree-filter-clear-btn" data-clear="ts" title="Clear filter" style="display:${this._colFilters.ts ? 'block' : 'none'};">✕</button>
                 </div>
               </div>
+              <div class="tree-filter-map" id="tree-filter-map"></div>
             </div>
           </div>
         </div>
@@ -27490,13 +27526,9 @@ const OVERDRIVE = (() => {
       this._wrap = document.createElement('div');
       this._wrap.id = 'll-minimap-wrap';
 
-      const label = document.createElement('div');
-      label.id = 'll-minimap-label';
-      label.textContent = 'MAP';
-
       const canvasContainer = document.createElement('div');
       canvasContainer.id = 'll-minimap-container';
-      canvasContainer.style.cssText = 'flex:1; position:relative; width:100%; min-height:0;';
+      canvasContainer.style.cssText = 'flex:1; position:relative; width:100%; height:100%; min-height:0;';
 
       this._canvas = document.createElement('canvas');
       this._canvas.id = 'll-minimap';
@@ -27506,7 +27538,7 @@ const OVERDRIVE = (() => {
       this._thumb.id = 'll-minimap-thumb';
 
       canvasContainer.append(this._canvas, this._thumb);
-      this._wrap.append(label, canvasContainer);
+      this._wrap.append(canvasContainer);
       parent.appendChild(this._wrap);
 
       this._ctx = this._canvas.getContext('2d');
@@ -27543,15 +27575,23 @@ const OVERDRIVE = (() => {
 
         const total = this._nodes.length;
         if (total > 0 && this._tooltip) {
-          const ratio = Math.max(0, Math.min(1, y / rect.height));
-          const idx = Math.floor(ratio * total);
-          const n = this._nodes[Math.min(total - 1, idx)];
+          const rowHeight = this._rowHeight || 32;
+          const isScrollable = (total * rowHeight) > rect.height;
+          let idx;
+          if (isScrollable) {
+            const ratio = Math.max(0, Math.min(1, y / rect.height));
+            idx = Math.floor(ratio * total);
+          } else {
+            idx = Math.floor(y / rowHeight);
+          }
+          idx = Math.max(0, Math.min(total - 1, idx));
+          const n = this._nodes[idx];
           if (n) {
             let info = `<strong>${esc(n.elementName || n.ruleName)}</strong>`;
             if (n.duration != null) info += ` (${fmtMs(n.duration)})`;
-            if (n._isSlaBreach) info += ` <span style="color:#f85149;margin-left:4px;font-weight:bold;">[SLA BREACH]</span>`;
-            else if (n._isOutlier) info += ` <span style="color:#f0883e;margin-left:4px;font-weight:bold;">[OUTLIER]</span>`;
-            else if (n._isCriticalPath) info += ` <span style="color:#bc8cff;margin-left:4px;font-weight:bold;">[CRITICAL]</span>`;
+            if (n._isSlaBreach) info += ` <span style="color:var(--red,#f85149);margin-left:4px;font-weight:bold;">[SLA BREACH]</span>`;
+            else if (n._isOutlier) info += ` <span style="color:var(--amber,#f0883e);margin-left:4px;font-weight:bold;">[OUTLIER]</span>`;
+            else if (n._isCriticalPath) info += ` <span style="color:var(--purple,#bc8cff);margin-left:4px;font-weight:bold;">[CRITICAL]</span>`;
             if (n.payload) {
               const snippet = n.payload.length > 40 ? n.payload.slice(0, 40) + '...' : n.payload;
               info += `<br><span style="color:var(--t3);font-size: 12px;">${esc(snippet)}</span>`;
@@ -27561,7 +27601,7 @@ const OVERDRIVE = (() => {
             this._tooltip.style.left = (rect.left - 12) + 'px';
             this._tooltip.style.top = e.clientY + 'px';
             this._tooltip.style.transform = 'translate(-100%, -50%) scale(1)';
-            const borderCol = n._isSlaBreach ? '#f85149' : n._isOutlier ? '#f0883e' : n._isCriticalPath ? '#bc8cff' : '#4f9eff';
+            const borderCol = n._isSlaBreach ? 'var(--red,#f85149)' : n._isOutlier ? 'var(--amber,#f0883e)' : n._isCriticalPath ? 'var(--purple,#bc8cff)' : 'var(--blue,#4f9eff)';
             this._tooltip.style.borderLeftColor = borderCol;
           }
         }
@@ -27586,6 +27626,17 @@ const OVERDRIVE = (() => {
 
     _jumpTo(e) {
       const rect = this._canvas.getBoundingClientRect();
+      const rowHeight = this._rowHeight || 32;
+      const total = this._nodes.length;
+      const isScrollable = (total * rowHeight) > rect.height;
+      if (!isScrollable) {
+        const idx = Math.floor((e.clientY - rect.top) / rowHeight);
+        if (idx >= 0 && idx < total) {
+          const target = idx * rowHeight;
+          this._springTo(target);
+        }
+        return;
+      }
       const ratio = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
       const target = ratio * (this._container.scrollHeight - this._container.clientHeight);
       this._springTo(target);
@@ -27633,29 +27684,58 @@ const OVERDRIVE = (() => {
       this._ctx.clearRect(0, 0, W, H);
 
       // Dark bg
-      this._ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-0').trim() || '#0e1117';
+      const bg0 = getComputedStyle(document.documentElement).getPropertyValue('--bg-0').trim() || '#0e1117';
+      const bdrD = getComputedStyle(document.documentElement).getPropertyValue('--bdr-d').trim() || 'rgba(255,255,255,0.06)';
+      this._ctx.fillStyle = bg0;
       this._ctx.fillRect(0, 0, W, H);
 
-      const rowH = Math.max(1, H / total);
+      const rowHeight = this._rowHeight || 32;
+      const isScrollable = (total * rowHeight) > H;
+      const rowH = isScrollable ? Math.max(1, H / total) : rowHeight;
 
       nodes.forEach((n, i) => {
         const y = i * rowH;
-        let color;
-        if (n._isSlaBreach) color = '#f85149';
-        else if (n._isOutlier) color = '#f0883e';
-        else if (n._isCriticalPath) color = '#bc8cff';
-        else {
-          const col = n.visualStyle?.accentColor;
-          color = getCSSColor(col && col !== 'var(--blue)' ? col : '#4f9eff');
+
+        // Draw thread background tint across row if part of a thread
+        const thr = n.thread || (n.parent && n.parent.thread);
+        if (thr && typeof TR !== 'undefined' && TR.getThreadColor) {
+          const tCol = TR.getThreadColor(thr);
+          if (tCol && tCol.bg) {
+            this._ctx.fillStyle = tCol.bg;
+            this._ctx.fillRect(0, y, W, rowH);
+          }
         }
-        const alpha = n.duration ? Math.min(1, 0.3 + (n.duration / 5000) * 0.7) : 0.25;
+
+        let color;
+        if (n._isSlaBreach) color = 'var(--red, #f85149)';
+        else if (n._isOutlier) color = 'var(--amber, #f0883e)';
+        else if (n._isCriticalPath) color = 'var(--purple, #bc8cff)';
+        else if (n.isThreadGroup) {
+          const tCol = typeof TR !== 'undefined' ? TR.getThreadColor(n.thread) : null;
+          color = tCol ? tCol.col : 'var(--blue)';
+        } else {
+          const col = n.visualStyle?.accentColor;
+          color = col && col !== 'var(--blue)' ? col : (thr && typeof TR !== 'undefined' ? TR.getThreadColor(thr).col : 'var(--blue)');
+        }
+        color = getCSSColor(color);
+
+        const alpha = n.duration ? Math.min(1, 0.4 + (n.duration / 5000) * 0.6) : 0.35;
         this._ctx.globalAlpha = alpha;
         this._ctx.fillStyle = color;
         const widthFactor = (n._isSlaBreach || n._isOutlier) ? 1.2 : 1.0;
-        const rectW = Math.min(W, (W - n.depth * 3) * widthFactor);
-        this._ctx.fillRect(n.depth * 3, y, rectW, Math.max(1, rowH));
+        const depth = n.depth || 0;
+        const rectW = Math.min(W - 8, (W - 12 - depth * 3) * widthFactor);
+        const barH = Math.max(1, Math.min(rowH, rowH - (rowH >= 12 ? 4 : 0)));
+        const barY = rowH >= 12 ? y + (rowH - barH) / 2 : y;
+        this._ctx.fillRect(6 + depth * 3, barY, Math.max(3, rectW), barH);
+        this._ctx.globalAlpha = 1;
+
+        // Subtle row bottom divider line matching tree row border-bottom
+        if (rowH >= 14) {
+          this._ctx.fillStyle = bdrD;
+          this._ctx.fillRect(0, Math.floor(y + rowH) - 1, W, 1);
+        }
       });
-      this._ctx.globalAlpha = 1;
 
       // Draw hover line helper
       if (this._hoverY != null) {
@@ -27675,13 +27755,13 @@ const OVERDRIVE = (() => {
       const scrollTop = this._container.scrollTop;
       const scrollH = this._container.scrollHeight;
       const viewH = this._container.clientHeight;
-      if (scrollH <= viewH) { this._thumb.style.display = 'none'; return; }
+      if (scrollH <= viewH + 2) { this._thumb.style.display = 'none'; return; }
       const canvasH = this._canvas.height;
-      const thumbTop = (scrollTop / scrollH) * canvasH;
-      const thumbH = Math.max(8, (viewH / scrollH) * canvasH);
+      const thumbTop = Math.max(0, Math.min(canvasH - 8, (scrollTop / scrollH) * canvasH));
+      const thumbH = Math.max(12, (viewH / scrollH) * canvasH);
       this._thumb.style.top = thumbTop + 'px';
       this._thumb.style.height = thumbH + 'px';
-      this._thumb.style.display = '';
+      this._thumb.style.display = 'block';
     },
 
     refresh(visibleNodes, totalHeight) {

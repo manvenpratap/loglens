@@ -3,6 +3,16 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Minimap Pixel-Perfect Row Alignment & Header Integration (v6.9.129 — COMPLETED)**:
+  - **Native MAP Column Header Integration in `#tree-hdr`**:
+    - Replaced the floating `div#ll-minimap-label` (which had been inserted into `#tree-scroll-wrap` taking up 29px of row area and offsetting every row on the minimap by an entire row) with a dedicated column header `<span class="tree-th-map" id="tree-th-map">MAP</span>` inside `#tree-hdr`.
+    - Added corresponding spacer `<div class="tree-filter-map" id="tree-filter-map"></div>` inside `.tree-filter-telemetry` for alignment when the filter bar is toggled open.
+    - Removed `margin-right: 56px` notch from `#tree-hdr`, providing a clean, complete header bar from edge to edge.
+  - **Pixel-Perfect Canvas and Row Synchronization**:
+    - Aligned `#ll-minimap` canvas top directly to Y=0 of the scroll wrap, matching the exact top position of row 0 in `#tree-vscroll`.
+    - In non-overflowing tree views, renders rows at exact 1-to-1 height (`rowH = this._rowHeight = 32px`) with matching thread background color tints, span bars, and bottom border lines (`border-bottom: 1px solid var(--bdr-d)`), achieving 100% horizontal row alignment.
+    - For overflowing views, accurately calculates proportional scroll thumb framing and hover index mappings.
+
 - **Extended 24-Color Thread Palette & Zero Duplicate Collision Avoidance (v6.9.128 — COMPLETED)**:
   - **24 Curated Distinct Thread Colors**:
     - Expanded `TR.THREAD_PALETTE` from 6 basic colors to 24 hand-calibrated, high-contrast OKLCH hues spanning the entire color wheel (Sky Blue, Royal Purple, Emerald Green, Warm Amber, Bright Cyan, Coral Red, Vivid Magenta, Chartreuse Lime, Electric Indigo, Sunflower Gold, Deep Teal, Orchid, Cobalt, Tangerine, Mint, Plum, Cerulean, Peridot, Peach, Lavender, Turquoise, Ruby, Apricot, Sapphire).
