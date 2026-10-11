@@ -1299,6 +1299,16 @@ loglens.html
 - [x] File System Access API directory watcher with auto-reload polling
 - [x] Rule versioning changelog and side-by-side Config Diff viewer
 - [x] JIRA issue creation webhook and fallback ticket link generator
+- [x] Dynamic Trace ID dropdown (`#trace-dropdown`) in action bar with live search, span counts, SLA tags, and 1-click clear
+- [x] Execution Tree thread grouping (`.tree-thr-group-row`), thread color banners, row border color-coding, and indicator dots
+- [x] Execution Tree resizable columns via CSS custom properties with double-click reset and `localStorage` persistence
+- [x] Execution Tree inline `{ } Payload` button with anchored popover dialog, auto-detected JSON formatting, and copy action
+- [x] Execution Tree inline column filter bar (`#tree-filter-bar`) for multi-column filtering
+- [x] Execution Tree critical path toggle (`✦ Critical`) with dimmed non-critical rows and hover legibility restore
+- [x] Timeline Navigator mini-map (`TIMELINE_NAV`) with viewport pan, zoom presets (`0.5×` to `8×`, `Fit`), and isolated Timeline view mounting
+- [x] Split View 32px lockstep row alignment, loop-safe scroll synchronization, and container query responsive column adaptation
+- [x] 290px widened Analysis dropdown menu with 32x32px rounded icon badges
+- [x] 95 automated regression tests in consolidated test suites (`tests/test_consolidated_*.py`) with zero regressions
 
 ---
 
@@ -1405,7 +1415,11 @@ loglens.html
 
 | File | Purpose |
 |------|---------|
-| `loglens.html` | The entire application (CSS + HTML + JS, ~2000 lines) |
+| `loglens.html` | The entire application (CSS + HTML + JS, ~30,000 lines, 1.18 MB) |
+| `dist/index.html` | Production distribution artifact (auto-built via `ship.sh`) |
+| `ship.sh` | Canonical build, commit, and upstream push pipeline |
+| `run_tests.sh` | Canonical regression test runner (95 automated tests) |
+| `tests/` | Playwright regression test suite across 5 consolidated suites |
 | `loglens-roadmap.html` | Product roadmap reference (do not modify) |
 | `.agents/AGENTS.md` | Agent behavioral rules for this project |
 | `.agents/PROJECT_CONTEXT.md` | This file — always read first |
@@ -1438,5 +1452,5 @@ Graphify is attached to this project and should be used for:
 
 ---
 
-*Last Updated: 2026-10-10*  
-*Updated By: Antigravity (Stats View Header Bar Fix v6.9.97)*
+*Last Updated: 2026-10-11*  
+*Updated By: Antigravity (Dynamic Trace Dropdown & Thread-Grouped Tree View v6.9.126)*

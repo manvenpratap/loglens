@@ -13,13 +13,14 @@ LogLens transforms raw log files into interactive execution timelines, call tree
 | **Ingestion** | Local file select, drag-and-drop, multi-file sessions, `.gz` decompression, real-time log streaming |
 | **Configuration** | JSON config, Log4j/Logback XML import, versioned config with changelog and diff |
 | **Rule Authoring** | Guided wizard, advanced regex builder, token palette, live preview, community rule packs |
-| **Parsing** | Multi-threaded log parsing, thread discovery scan, trace ID filtering, abort support |
-| **Views** | Split, Timeline/Gantt, Execution Tree, Stats, Graph, 3D View, Query, Diff |
+| **Parsing** | Multi-threaded log parsing, thread discovery scan, dynamic Trace ID dropdown, abort support |
+| **Views** | Split (synchronized auto-scroll), Timeline (Gantt/Swimlane + Navigator), Execution Tree (thread-grouped, resizable columns, inline filters, critical path), Traces, Stats, Graph, 3D View, Query, Diff |
+| **Telemetry & Tree** | Thread group headers, thread color coding, resizable columns with persistence, inline `{ } Payload` popovers, critical path dimming, inline column filters |
 | **Annotations** | Per-node markdown notes with live preview |
 | **Pins** | Bookmark important events, view them in the sidebar |
 | **Exports** | CSV, JSON, SVG, PNG, interactive HTML report, `.lls` session file |
 | **Integrations** | JIRA ticket creation, Git sync, cloud datasources, directory watcher, plugin sandbox |
-| **Accessibility** | Full keyboard navigation, theme toggle (dark/light), command palette |
+| **Accessibility & QA** | Full keyboard navigation, themes (Obsidian dark / Ivory light), command palette, 95-test Playwright regression suite |
 
 ---
 
@@ -44,7 +45,7 @@ For detailed architectural walk-throughs and Mermaid specifications, see [**`PRO
 3. **Add rules** — click **+ Add Rule** to define patterns using the Guided Wizard or Advanced Regex Builder.
 4. **Select a log file** — click **Select** (or drag and drop a `.log`, `.txt`, `.out`, or `.gz` file onto the page).
 5. **Parse** — click the **Parse** button and watch progress in real time.
-6. **Explore** — switch between **Split**, **Timeline**, **Tree**, **Stats**, **Graph**, and **3D View** tabs.
+6. **Explore** — switch between **Split**, **Timeline**, **Tree**, **Traces**, and **Analysis** views.
 
 No installation. No server. No data leaves your machine.
 
@@ -88,19 +89,20 @@ A session file saves the full parse result — config, trees, pins, annotations,
 ## 🖥️ Interface Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  Header: Logo | File badge | Status badge | Exports | Theme toggle  │
-├──────────────┬──────────────────────────────────────────────────────┤
-│              │  Controls: File select | Thread | Parse | Abort      │
-│   Sidebar    ├──────────────────────────────────────────────────────┤
-│              │  View tabs: Split | Timeline | Tree | Stats | Graph  │
-│  ┌─────────┐ │              | 3D | Query | Diff                     │
-│  │ Config  │ ├──────────────────────────────────────────────────────┤
-│  │Settings │ │                                                      │
-│  │ Log4j   │ │              Main Result Area                        │
-│  │  Help   │ │   (empty state → parse results per active view)      │
-│  └─────────┘ │                                                      │
-└──────────────┴──────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│ Header: Logo | File badge | Status badge | 2-Tier Nav (Split, Timeline, Tree, Traces)  │
+│         | Analysis ▾ (Stats, Graph, 3D, Diff, Query) | Exports | Theme (Dark/Light)     │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ Action Bar: [● Active: Thread ▾] [● Trace: All Traces ▾] [Filter events] | Critical   │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                        │
+│                                Main Forensic Result Area                               │
+│  - Split: 32px lockstep row alignment, loop-safe scroll sync, container query layout   │
+│  - Timeline: Interactive Gantt / Swimlane with zoom presets and Timeline Navigator     │
+│  - Tree: Thread-grouped call hierarchy, resizable columns, inline filters, popovers    │
+│  - Traces: Distributed correlation ID explorer with duration, spans & SLA breach status│
+│                                                                                        │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -108,19 +110,34 @@ A session file saves the full parse result — config, trees, pins, annotations,
 ## 📊 Analysis Views
 
 ### Split View
-Side-by-side layout showing the Timeline (Gantt) and Tree simultaneously with a draggable divider.
+Side-by-side layout showing the Timeline (Gantt) and Execution Tree simultaneously with a draggable divider:
+- **Pixel-Perfect Row Lockstep**: Synchronized 32px row heights ensuring event `i` on the left matches event `i` on the right.
+- **Loop-Safe Scroll Sync**: Dual-pane bidirectional vertical scrolling powered by loop-guarded `requestAnimationFrame`.
+- **Responsive Container Queries**: Auto-adapts telemetry columns based on pane width—essential columns in 50/50 split, progressively revealing Self, Timestamp, and details as panes widen.
+- **Double-Click Reset**: Double-clicking the splitter handle (`#sp-hdl`) instantly resets the split to 50/50.
 
-### Timeline (Gantt)
-Horizontal bar chart of all parsed events per thread, plotted on a shared time axis. Bars are color-coded by rule, and SLA violations are highlighted. Click any bar to focus the event in the Tree.
+### Timeline (Gantt & Swimlane)
+Horizontal execution timeline of all parsed events plotted on a shared time axis:
+- **Waterfall & Swimlane Modes**: Switch between global waterfall cascade or thread-isolated parallel lanes.
+- **Timeline Navigator**: Interactive mini-map strip displaying activity density, errors, SLA breaches, and duration intensity, with click-to-pan viewport window and zoom presets (`0.5×`, `1×`, `2×`, `4×`, `8×`, `Fit`).
+- **Critical Path Highlighting**: Toggle `✦ Critical` to immediately emphasize the critical execution chain.
+- **Interactive Inspection**: Click any bar to reveal details or highlight the matching node across the splitter in Tree view.
 
 ### Execution Tree
-Hierarchical call tree of push/pop blocks and inline events. Supports:
-- Expand / collapse all
-- Keyboard navigation (`↑` `↓` `j` `k`, `/` to search, `P` to pin)
-- Context menu (right-click) for copy, pin, annotate, focus in Timeline, create JIRA ticket
-- Hotspot badges showing percentage of parent block time consumed
-- Inline duration labels
-- Annotation and pin indicators
+High-performance virtualized call tree engineered for deep execution hierarchies (50k+ nodes):
+- **Thread Grouping & Color Identity**: Events are cleanly grouped under thread headers (`[☵ worker-1] [THREAD] [7 SPANS]`), with distinct color coding applied to group banners, row left borders (`border-left: 3px solid <thread_color>`), and thread indicator dots.
+- **Interactive Resizable Columns**: All 5 telemetry columns (`Operation & Hierarchy`, `SLA`, `Duration`, `Self`, `Timestamp`) feature draggable column resizer handles, double-click reset, and `localStorage` persistence with 0% DOM thrashing via CSS custom properties.
+- **Inline Column Filters (`⑂ Filter`)**: Dedicated filter inputs aligned under each column header for instant multi-criteria filtering (operation substring, SLA status, min duration, min self time, timestamp).
+- **Critical Path Dimming**: Toggle `✦ Critical` in the toolbar to highlight critical path nodes and grey out non-critical rows with hover legibility restore.
+- **Inline `{ } Payload` Popovers**: Single-line inline payload button revealing a floating monospace balloon with auto-detected JSON formatting, copy-to-clipboard, and direct jump to Event Inspector.
+- **Depth Filters & Minimap**: Quick toolbar buttons (`D1`, `D2`, `D3`, `All`) to collapse/expand to specific call depths, plus optional on-demand tree minimap.
+
+### Traces View
+Distributed transaction explorer indexing all unique `correlationId` values across threads:
+- Summary KPI metrics for total traces, traced events, and SLA breach rate.
+- Trace table displaying span counts, thread distribution, total duration, and SLA breach status.
+- Direct 1-click filter button updating the global active trace.
+- Paired with the top Action Bar **Dynamic Trace ID Dropdown** (`#trace-dropdown`) for live searchable filtering across all views.
 
 ### Stats
 Dashboard cards showing:
@@ -351,9 +368,40 @@ loglens.html
     └── 24-app-init.js       Final app initialization
 ```
 
+## 🧪 Automated Regression Testing & Quality Gates
+
+LogLens maintains a comprehensive, consolidated Playwright-based regression test suite in `tests/` guaranteeing zero regressions across all core features:
+
+- `test_consolidated_navigation_and_shell.py` — 2-tier navigation, hotkeys, split synchronization, responsive container queries, theme switching.
+- `test_consolidated_parser_and_ingestion.py` — Web Worker parser, multi-thread discovery, `.gz` decompression, stream tailing.
+- `test_consolidated_rules_and_regex.py` — Rule authoring, keyword wizard, token palette, capture group combiner, rule test suite.
+- `test_consolidated_settings_and_accessibility.py` — 4-pillar settings dashboard, keyboard navigation, a11y focus states.
+- `test_consolidated_visualizations_and_telemetry.py` — Execution tree, virtualized column resizing, thread grouping, dynamic trace dropdown, timeline navigator, payload popovers.
+
+```bash
+# Run a specific module test suite
+./run_tests.sh tests/test_consolidated_visualizations_and_telemetry.py
+
+# Run the full regression test suite (95 tests)
+./run_tests.sh
+```
+
+### 🚀 Automated Build & Ship Pipeline
+The project maintains a zero-drift distribution pipeline:
+
+```bash
+./ship.sh "Description of changes"
+```
+
+The ship script automatically:
+1. Synchronizes and builds the production distribution artifact (`dist/index.html` from `loglens.html`).
+2. Stages modified code, tests, and context files.
+3. Commits with the descriptive message provided.
+4. Pushes upstream directly to `origin/main`.
+
 ---
 
-## 🧪 Rule Test Suite
+## 🔬 Rule Test Suite
 
 Open the **Rule Test Suite** from the Config panel to validate all your rules at once:
 
