@@ -3,6 +3,18 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Telemetry Column Rigid Alignment & Zero-Duration Fallbacks (v6.9.120 — COMPLETED)**:
+  - **Zero-Duration Fallback Placeholders**:
+    - Resolved the column misalignment bug where log events without duration (e.g. `Cache Op`, point-in-time entries) omitted SLA sparkbar and duration elements, causing `.tree-telemetry-col` to shrink by ~128px and pushing `.tree-status-group` (`{ } Payload`) rightward into the SLA and Duration columns.
+    - Added dedicated placeholder classes: `.tree-sparkbar-none`, `.tree-metric-dur-none`, and `.tree-metric-ts-none` matching the exact CSS variable column widths (`--tree-spark-w`, `--tree-dur-w`, `--tree-ts-w`).
+  - **Locked Telemetry Strip Flex Basis**:
+    - Bound `.tree-telemetry-col` and `.tree-hdr-telemetry` width and flex basis strictly to `calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;`.
+    - Guarantees 100% horizontal column lockstep between column headers and all virtualized tree rows, regardless of whether events have durations, sparkbars, self times, or timestamps.
+  - **Full Regression Verification & Visual Audit**:
+    - Verified all 88 regression tests pass in 83.59s.
+    - Verified 0 impeccable design findings (`[]`).
+    - Captured high-resolution browser screenshot confirming line 3 and all zero-duration rows maintain perfect vertical lockstep.
+
 - **Execution Tree Interactive Payload Button & Popover Architecture (v6.9.119 — COMPLETED)**:
   - **Removed Payload Column from Table Grid**:
     - De-cluttered the Execution Tree table grid by removing the static, truncated "Payload Preview" column from the header (`.tree-hdr-payload`) and virtualized rows (`.tree-payload-col`).

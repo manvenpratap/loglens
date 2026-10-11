@@ -2077,9 +2077,9 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   position: relative !important;
 }
 .tree-hdr-telemetry {
-  flex: 0 0 auto !important;
-  width: auto !important;
-  min-width: 0 !important;
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2492,9 +2492,9 @@ body.tree-col-resizing {
 
 /* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
 .tree-telemetry-col {
-  flex: 0 0 auto !important;
-  width: auto !important;
-  min-width: 0 !important;
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2517,6 +2517,12 @@ body.tree-col-resizing {
   align-items: center !important;
   flex-shrink: 0 !important;
 }
+.tree-sparkbar-none {
+  display: inline-block !important;
+  width: var(--tree-spark-w, 44px) !important;
+  min-width: var(--tree-spark-w, 44px) !important;
+  flex-shrink: 0 !important;
+}
 .tree-sparkbar-fill {
   height: 100% !important;
   border-radius: var(--rounded-xs, 2px) !important;
@@ -2537,6 +2543,12 @@ body.tree-col-resizing {
   padding-right: 4px !important;
   flex-shrink: 0 !important;
   box-sizing: border-box !important;
+}
+.tree-metric-dur-none {
+  display: inline-block !important;
+  width: var(--tree-dur-w, 68px) !important;
+  min-width: var(--tree-dur-w, 68px) !important;
+  flex-shrink: 0 !important;
 }
 .tree-metric-dur.breach {
   color: var(--red) !important;
@@ -2595,6 +2607,12 @@ body.tree-col-resizing {
   white-space: nowrap !important;
   flex-shrink: 0 !important;
   box-sizing: border-box !important;
+}
+.tree-metric-ts-none {
+  display: inline-block !important;
+  width: var(--tree-ts-w, 84px) !important;
+  min-width: var(--tree-ts-w, 84px) !important;
+  flex-shrink: 0 !important;
 }
 
 /* Light / Ivory theme specific contrast polish */
@@ -11734,16 +11752,16 @@ const TR={
     const sparkbarHtml = n.duration != null ? `
       <div class="tree-sparkbar" title="Duration: ${fmtMs(durVal)} (${pct}% of max)">
         <div class="tree-sparkbar-fill ${barColorClass}" style="width:${pct}%;"></div>
-      </div>` : '';
+      </div>` : `<span class="tree-sparkbar-none"></span>`;
       
-    const durHtml = dur ? `<span class="tree-metric-dur tdr ${n._isSlaBreach ? 'breach' : ''}" style="color:${n._isSlaBreach ? 'var(--red)' : col};">${esc(dur)}</span>` : '';
+    const durHtml = dur ? `<span class="tree-metric-dur tdr ${n._isSlaBreach ? 'breach' : ''}" style="color:${n._isSlaBreach ? 'var(--red)' : col};">${esc(dur)}</span>` : `<span class="tree-metric-dur-none"></span>`;
     const selfHtml = (n._sm != null && n.duration != null && n._sm !== n.duration) 
       ? `<span class="tree-metric-self" title="Self execution time">self ${esc(fmtMs(n._sm))}</span>` 
       : `<span class="tree-metric-self-none"></span>`;
     const thrHtml = (n.thread && S.threads && S.threads.length > 1) 
       ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` 
       : `<span class="tree-thread-none"></span>`;
-    const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : '';
+    const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : `<span class="tree-metric-ts-none"></span>`;
 
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
 
