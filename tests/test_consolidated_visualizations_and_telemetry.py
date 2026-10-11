@@ -489,11 +489,11 @@ async def test_execution_tree_column_resizing(page_with_data):
     tree_hdr = page.locator('#tree-hdr')
     await expect(tree_hdr).to_be_visible()
 
-    # All 6 resizers exist (spine, spark, dur, self, thread, ts)
+    # 5 resizers exist (spine, spark, dur, self, ts)
     resizers = tree_hdr.locator('.tree-col-resizer')
-    assert await resizers.count() == 6
+    assert await resizers.count() == 5
 
-    col_keys = ['spine', 'spark', 'dur', 'self', 'thread', 'ts']
+    col_keys = ['spine', 'spark', 'dur', 'self', 'ts']
     for key in col_keys:
         resizer = tree_hdr.locator(f'.tree-col-resizer[data-col="{key}"]')
         await expect(resizer).to_be_visible()
@@ -693,5 +693,83 @@ async def test_execution_tree_critical_path_toggle_and_dimming(page_with_data):
     assert await page.evaluate("() => S.criticalPathOn") is False
     assert await page.locator('.tree-row.tree-critical').count() == 0
     assert await page.locator('.tree-row.tree-dim').count() == 0
+
+    assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_dynamic_trace_dropdown_interaction(page_with_data):
+    """Dynamic Trace ID dropdown mounts in action bar, opens searchable menu, filters, and clears."""
+    page = page_with_data
+
+    # Ensure traces exist or inject mock traces to test full dropdown lifecycle
+    trace_dropdown = page.locator('#trace-dropdown')
+    has_traces = await page.evaluate("() => { return !!(document.getElementById('trace-dropdown') && document.getElementById('trace-dropdown').style.display !== 'none'); }")
+    if not has_traces:
+        # Populate synthetic traces in S.trees to test dropdown
+        await page.evaluate("""() => {
+            if (!S.trees || !S.trees.length) S.trees = [{ id: '1', ruleName: 'Root', thread: 'worker-1', correlationId: 'TR-1001', duration: 150 }];
+            else S.trees[0].correlationId = 'TR-1001';
+            UI.renderTraceDropdown(S.trees);
+        }""")
+        await page.wait_for_timeout(100)
+
+    await expect(trace_dropdown).to_be_visible()
+    btn = page.locator('#trace-dropdown-btn')
+    await expect(btn).to_be_visible()
+    await expect(btn).to_contain_text('Trace')
+    await expect(page.locator('#trace-active-label')).to_contain_text('All Traces')
+
+    # Open dropdown menu
+    await btn.click()
+    await page.wait_for_timeout(100)
+    menu = page.locator('#trace-dropdown-menu')
+    await expect(menu).to_be_visible()
+
+    # Search filter within menu
+    search_input = menu.locator('#trace-search-inp')
+    await expect(search_input).to_be_visible()
+    await search_input.fill('TX')
+    await page.wait_for_timeout(100)
+
+    # Click first available matching visible item
+    items = menu.locator('li[data-trace]:not([data-trace="all"])')
+    count = await items.count()
+    assert count >= 1
+
+    target_item = items.first
+    target_tid = await target_item.evaluate("el => el.dataset.trace")
+    assert target_tid
+    await target_item.click()
+    await page.wait_for_timeout(100)
+    assert await page.evaluate("() => S.activeTraceId") == target_tid
+    assert await page.locator('#trace-clear-btn').is_visible()
+
+    # Clear trace filter via clear button
+    await page.locator('#trace-clear-btn').click()
+    await page.wait_for_timeout(100)
+    assert not (await page.evaluate("() => S.activeTraceId"))
+
+    assert_no_critical_errors(page)
+
+@pytest.mark.asyncio
+async def test_execution_tree_thread_grouping_and_telemetry(page_with_data):
+    """Execution Tree groups by thread and aligns telemetry columns cleanly."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('tree')")
+    await page.wait_for_timeout(150)
+
+    # Telemetry column headers
+    assert await page.locator('.tree-th-spark').is_visible()
+    assert await page.locator('.tree-th-dur').is_visible()
+    assert await page.locator('.tree-th-self').is_visible()
+    assert await page.locator('.tree-th-ts').is_visible()
+    assert await page.locator('.tree-th-thread').count() == 0
+
+    # Ensure tree rows are styled with thread left border
+    rows = page.locator('.tree-row')
+    if await rows.count() > 0:
+        first_row = rows.first
+        border_left = await first_row.evaluate("el => window.getComputedStyle(el).borderLeftStyle")
+        assert border_left == 'solid'
 
     assert_no_critical_errors(page)

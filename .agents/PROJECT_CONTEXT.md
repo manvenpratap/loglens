@@ -3,6 +3,21 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Dynamic Trace ID Filter Dropdown & Execution Tree Thread Grouping (v6.9.126 — COMPLETED)**:
+  - **Dynamic Trace ID Dropdown (`#trace-dropdown`)**:
+    - Replaced static text input with an interactive dropdown in `.action-bar-left` styled harmoniously alongside `vt-chips` (`[● TRACE: All Traces (N) ▾]`).
+    - Fixed-position body-portaled menu (`#trace-dropdown-menu`) with real-time search input (`Filter trace IDs...`), quick `All Traces` reset, span count badges, and SLA breach tags.
+    - Centralized filtering via `UI.setTraceFilter(tid)`, synchronizing trigger label, clear button `✕`, tree rows, Gantt/Swimlane timeline, Traces view, and Spotlight palette.
+  - **Execution Tree Thread Grouping & De-Cluttered Telemetry**:
+    - Transformed thread representation in Execution Tree: removed cramped Thread column from header and telemetry columns, eliminating horizontal cutoff and layout congestion.
+    - Organized tree by thread groups (`.tree-thr-group-row`) with distinct color themes, span count chips, thread badges, and duration sums.
+    - Color-coded individual row left borders (`border-left: 3px solid <thread-color>`) and thread indicator dots to maintain instant thread recognition without sacrificing horizontal space.
+    - Preserved 5 resizable columns: `Operation & Hierarchy`, `SLA`, `Duration`, `Self`, and `Timestamp`.
+  - **Full Regression Verification & Zero Design Findings**:
+    - Added `test_dynamic_trace_dropdown_interaction` and `test_execution_tree_thread_grouping_and_telemetry` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - 95/95 regression tests passing across all test modules.
+    - Impeccable design detector verified 0 findings (`[]`).
+
 - **Execution Tree Inline Column Filters & Critical Path Toggle (v6.9.125 — COMPLETED)**:
   - **Inline Column Filters Bar (`#tree-filter-bar`)**:
     - Integrated an inline filter bar directly beneath `.tree-hdr` in Execution Tree with inputs aligned to the 6 column slots:

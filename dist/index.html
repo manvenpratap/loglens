@@ -71,7 +71,6 @@
   --tree-spark-w: 44px;
   --tree-dur-w: 68px;
   --tree-self-w: 78px;
-  --tree-thread-w: 68px;
   --tree-ts-w: 84px;
 }
 /* ============================================================
@@ -837,21 +836,11 @@ html,body{
   min-width: auto !important;
 }
 
-/* Responsive revelation when dragged / Default width fit (50/50 split <= 840px) */
-@container pane (max-width: 980px) {
+@container pane (max-width: 860px) {
   .tree-th-ts,
   .tree-filter-ts,
   .tree-metric-ts,
   .tree-metric-ts-none {
-    display: none !important;
-  }
-}
-
-@container pane (max-width: 860px) {
-  .tree-th-thread,
-  .tree-filter-thread,
-  .tree-thread-pill,
-  .tree-thread-none {
     display: none !important;
   }
 }
@@ -2166,7 +2155,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 32px) !important;
   padding-right: 14px !important;
   height: 100% !important;
   box-sizing: border-box !important;
@@ -2184,9 +2173,9 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   position: relative !important;
 }
 .tree-hdr-telemetry {
-  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2215,13 +2204,6 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 .tree-th-self {
   width: var(--tree-self-w, 78px) !important;
   min-width: var(--tree-self-w, 78px) !important;
-  text-align: center !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-.tree-th-thread {
-  width: var(--tree-thread-w, 68px) !important;
-  min-width: var(--tree-thread-w, 68px) !important;
   text-align: center !important;
   flex-shrink: 0 !important;
   position: relative !important;
@@ -2289,7 +2271,7 @@ body.tree-col-resizing {
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 32px) !important;
   padding-right: 14px !important;
   height: 100% !important;
   box-sizing: border-box !important;
@@ -2304,9 +2286,9 @@ body.tree-col-resizing {
   box-sizing: border-box !important;
 }
 .tree-filter-telemetry {
-  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2333,13 +2315,6 @@ body.tree-col-resizing {
 .tree-filter-self {
   width: var(--tree-self-w, 78px) !important;
   min-width: var(--tree-self-w, 78px) !important;
-  flex-shrink: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-}
-.tree-filter-thread {
-  width: var(--tree-thread-w, 68px) !important;
-  min-width: var(--tree-thread-w, 68px) !important;
   flex-shrink: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2456,19 +2431,46 @@ body.tree-col-resizing {
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 32px) !important;
   box-sizing: border-box !important;
   padding-right: 14px !important;
   border-bottom: 1px solid var(--bdr-d) !important;
+  border-left: 3px solid var(--thr-col, transparent) !important;
   font-family: var(--ui) !important;
   font-size: 12px !important;
   background: var(--bg-0) !important;
-  transition: background 0.12s ease !important;
+  transition: background 0.12s ease, border-left-color 0.15s ease !important;
   cursor: pointer !important;
   user-select: none !important;
   position: relative !important;
   white-space: nowrap !important;
   overflow: hidden !important;
+}
+.tree-thr-dot {
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  margin-right: 6px !important;
+  flex-shrink: 0 !important;
+}
+.tree-thr-group-row {
+  background: linear-gradient(90deg, var(--thr-bg, color-mix(in srgb, var(--blue) 12%, transparent)) 0%, var(--bg-1) 160px, var(--bg-1) 100%) !important;
+  border-left: 4px solid var(--thr-col, var(--blue)) !important;
+  border-top: 1px solid var(--thr-bdr, var(--bdr)) !important;
+  border-bottom: 1px solid var(--thr-bdr, var(--bdr)) !important;
+  font-weight: 600 !important;
+}
+.tree-thr-group-row:hover {
+  background: linear-gradient(90deg, var(--thr-bg, color-mix(in srgb, var(--blue) 20%, transparent)) 0%, var(--bg-2) 160px, var(--bg-2) 100%) !important;
+}
+.tree-thr-badge {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  padding: 1px 6px !important;
+  border-radius: var(--rounded-xs, 2px) !important;
 }
 .tree-row:nth-child(even) {
   background: color-mix(in srgb, var(--bg-1) 45%, var(--bg-0)) !important;
@@ -2779,9 +2781,9 @@ body.tree-col-resizing {
 
 /* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
 .tree-telemetry-col {
-  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
-  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 36px) !important;
+  flex: 0 0 calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
+  min-width: calc(var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 28px) !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2858,29 +2860,6 @@ body.tree-col-resizing {
   display: inline-block !important;
   width: var(--tree-self-w, 78px) !important;
   min-width: var(--tree-self-w, 78px) !important;
-  flex-shrink: 0 !important;
-}
-.tree-thread-pill {
-  font-size: 11px !important;
-  color: var(--t3) !important;
-  background: var(--bg-1) !important;
-  border: 1px solid var(--bdr) !important;
-  border-radius: var(--rounded-xs, 2px) !important;
-  padding: 1px 4px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.02em !important;
-  white-space: nowrap !important;
-  width: var(--tree-thread-w, 68px) !important;
-  min-width: var(--tree-thread-w, 68px) !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  flex-shrink: 0 !important;
-}
-.tree-thread-none {
-  display: inline-block !important;
-  width: var(--tree-thread-w, 68px) !important;
-  min-width: var(--tree-thread-w, 68px) !important;
   flex-shrink: 0 !important;
 }
 .tree-metric-ts {
@@ -11671,6 +11650,71 @@ const TR={
   _colFilters: { op: '', sla: 'all', dur: '', self: '', thread: 'all', ts: '' },
   _showFilterBar: false,
   
+  THREAD_PALETTE: [
+    { id: 'sky',    col: 'var(--blue)',   bg: 'color-mix(in srgb, var(--blue) 12%, transparent)',   bdr: 'color-mix(in srgb, var(--blue) 35%, transparent)' },
+    { id: 'purple', col: 'var(--purple)', bg: 'color-mix(in srgb, var(--purple) 12%, transparent)', bdr: 'color-mix(in srgb, var(--purple) 35%, transparent)' },
+    { id: 'green',  col: 'var(--green)',  bg: 'color-mix(in srgb, var(--green) 12%, transparent)',  bdr: 'color-mix(in srgb, var(--green) 35%, transparent)' },
+    { id: 'amber',  col: 'var(--amber)',  bg: 'color-mix(in srgb, var(--amber) 12%, transparent)',  bdr: 'color-mix(in srgb, var(--amber) 35%, transparent)' },
+    { id: 'cyan',   col: 'var(--cyan)',   bg: 'color-mix(in srgb, var(--cyan) 12%, transparent)',   bdr: 'color-mix(in srgb, var(--cyan) 35%, transparent)' },
+    { id: 'red',    col: 'var(--red)',    bg: 'color-mix(in srgb, var(--red) 12%, transparent)',    bdr: 'color-mix(in srgb, var(--red) 35%, transparent)' }
+  ],
+
+  getThreadColor(thread) {
+    if (!thread) return this.THREAD_PALETTE[0];
+    const list = S.threads || [];
+    const idx = list.indexOf(thread);
+    if (idx >= 0) return this.THREAD_PALETTE[idx % this.THREAD_PALETTE.length];
+    let h = 0;
+    for (let i = 0; i < thread.length; i++) h = (h * 31 + thread.charCodeAt(i)) >>> 0;
+    return this.THREAD_PALETTE[h % this.THREAD_PALETTE.length];
+  },
+
+  groupTreeByThread(tree) {
+    if (!tree || !tree.length) return tree;
+    const hasMultiple = (S.threads && S.threads.length > 1) || (new Set(tree.map(n => n.thread || 'default')).size > 1);
+    if (!hasMultiple) return tree;
+
+    const map = new Map();
+    (S.threads || []).forEach(t => map.set(t, []));
+    for (const n of tree) {
+      const t = n.thread || 'default';
+      if (!map.has(t)) map.set(t, []);
+      map.get(t).push(n);
+    }
+
+    const grouped = [];
+    for (const [thr, nodes] of map.entries()) {
+      if (!nodes.length) continue;
+      let minTs = Infinity, maxEnd = -Infinity, count = 0;
+      const countFn = (items) => {
+        for (const item of items) {
+          count++;
+          if (item.timestamp != null) minTs = Math.min(minTs, item.timestamp);
+          const end = item.endTimestamp != null ? item.endTimestamp : (item.timestamp != null && item.duration != null ? item.timestamp + item.duration : (item.timestamp || 0));
+          maxEnd = Math.max(maxEnd, end);
+          if (item.events && item.events.length) countFn(item.events);
+        }
+      };
+      countFn(nodes);
+      const dur = (maxEnd > minTs && minTs !== Infinity) ? (maxEnd - minTs) : (nodes[0]?.duration || 0);
+
+      grouped.push({
+        id: '__thr_' + thr,
+        isThreadGroup: true,
+        thread: thr,
+        ruleName: thr,
+        elementName: 'Thread',
+        expanded: true,
+        hasChildren: true,
+        depth: 0,
+        duration: dur,
+        timestamp: minTs !== Infinity ? minTs : (nodes[0]?.timestamp || 0),
+        totalNodes: count,
+        events: nodes
+      });
+    }
+    return grouped;
+  },
   hasActiveFilters() {
     const f = this._colFilters;
     return !!(
@@ -11696,6 +11740,7 @@ const TR={
   },
 
   matchesFilters(n) {
+    if (n.isThreadGroup) return false;
     const f = this._colFilters;
     if (f.op && f.op.trim()) {
       const q = f.op.trim().toLowerCase();
@@ -11841,11 +11886,12 @@ const TR={
       n.parent = parent;
       n.hasChildren = n.events && n.events.length > 0;
       if (n.expanded === undefined) {
-        n.expanded = depth < 1;
+        n.expanded = n.isThreadGroup ? true : depth < 1;
       }
       flatList.push(n);
       if (n.events && n.events.length > 0) {
-        this.flatten(n.events, depth + 1, n, flatList);
+        const nextDepth = n.isThreadGroup ? 0 : (depth + 1);
+        this.flatten(n.events, nextDepth, n, flatList);
       }
     }
     return flatList;
@@ -11936,7 +11982,9 @@ const TR={
   },
 
   render(tree,el){
-    this._activeTree = tree;
+    this._rawTree = tree;
+    const processedTree = this.groupTreeByThread(tree);
+    this._activeTree = processedTree;
     el.style.overflow = 'hidden';
     el.style.padding = '0';
     el.style.display = 'flex';
@@ -11969,19 +12017,18 @@ const TR={
       }
     }
     
-    this.flatten(tree, 0, null, []);
+    this.flatten(processedTree, 0, null, []);
     this.updateVisible();
     
     const thrLabel = S.activeThr === 'all' ? 'All Threads' : (S.activeThr || '');
     const thrSuffix = thrLabel ? ` · ${thrLabel}` : '';
-    const threads = S.threads || [];
-    const threadsOptions = threads.map(t => `<option value="${esc(t)}"${this._colFilters.thread === t ? ' selected' : ''}>${esc(t)}</option>`).join('');
+    const totalRoots = processedTree.reduce((acc, n) => acc + (n.isThreadGroup ? (n.events?.length || 0) : 1), 0);
 
     el.innerHTML = `
       <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
         <div class="pt tree-toolbar" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui); white-space:nowrap; overflow:hidden;">
           <span style="display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>┠</span> Execution Tree</span>
-          <span class="badge b-gray mla" id="tree-badge-count" style="font-size: 12px; flex-shrink:0;">${tree.length} root node${tree.length!==1?'s':''}${thrSuffix}</span>
+          <span class="badge b-gray mla" id="tree-badge-count" style="font-size: 12px; flex-shrink:0;">${totalRoots} root node${totalRoots!==1?'s':''}${thrSuffix}</span>
           <div class="tree-depth-group" style="display:inline-flex; align-items:center; margin-left:8px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--rounded-sm); padding:1px; flex-shrink:0;">
             <button class="tree-depth-btn" data-depth="1" title="Show Level 1 (Roots only)">D1</button>
             <button class="tree-depth-btn" data-depth="2" title="Show Level 2">D2</button>
@@ -12031,13 +12078,6 @@ const TR={
                 </button>
                 <span class="tree-col-resizer" data-col="self" role="separator" aria-orientation="vertical" title="Drag to resize Self, double-click to reset"></span>
               </span>
-              <span class="tree-th-thread" role="columnheader" data-col="thread">
-                <span>Thread</span>
-                <button class="tree-col-filter-btn${this._colFilters.thread !== 'all' ? ' active' : ''}" data-col="thread" title="Filter Thread" aria-label="Filter Thread">
-                  <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 2 11 2 7 7 7 11 5 11 5 7 1 2"/></svg>
-                </button>
-                <span class="tree-col-resizer" data-col="thread" role="separator" aria-orientation="vertical" title="Drag to resize Thread, double-click to reset"></span>
-              </span>
               <span class="tree-th-ts" role="columnheader" data-col="ts">
                 <span>Timestamp</span>
                 <button class="tree-col-filter-btn${this._colFilters.ts ? ' active' : ''}" data-col="ts" title="Filter Timestamp" aria-label="Filter Timestamp">
@@ -12075,12 +12115,6 @@ const TR={
                   <input type="text" class="tree-filter-inp" id="tree-col-filter-self" value="${esc(this._colFilters.self)}" placeholder="&gt; ms" title="Filter min self duration in ms" aria-label="Filter Self">
                   <button class="tree-filter-clear-btn" data-clear="self" title="Clear filter" style="display:${this._colFilters.self ? 'block' : 'none'};">✕</button>
                 </div>
-              </div>
-              <div class="tree-filter-thread">
-                <select class="tree-filter-select" id="tree-col-filter-thread" title="Filter by thread" aria-label="Filter Thread">
-                  <option value="all"${this._colFilters.thread === 'all' ? ' selected' : ''}>All</option>
-                  ${threadsOptions}
-                </select>
               </div>
               <div class="tree-filter-ts">
                 <div class="tree-filter-inp-wrap">
@@ -12213,16 +12247,15 @@ const TR={
       });
     };
     bindSel('#tree-col-filter-sla', 'sla');
-    bindSel('#tree-col-filter-thread', 'thread');
 
     el.querySelectorAll('.tree-filter-clear-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const col = btn.dataset.clear;
-        this._colFilters[col] = (col === 'sla' || col === 'thread') ? 'all' : '';
+        this._colFilters[col] = (col === 'sla') ? 'all' : '';
         const target = el.querySelector(`#tree-col-filter-${col}`);
         if (target) {
-          target.value = (col === 'sla' || col === 'thread') ? 'all' : '';
+          target.value = (col === 'sla') ? 'all' : '';
           target.focus();
         }
         this.applyColumnFilters();
@@ -12235,7 +12268,6 @@ const TR={
     spark: { var: '--tree-spark-w', default: 44, min: 32, max: 140, unit: 'px', name: 'SLA' },
     dur: { var: '--tree-dur-w', default: 68, min: 48, max: 180, unit: 'px', name: 'Duration' },
     self: { var: '--tree-self-w', default: 78, min: 50, max: 180, unit: 'px', name: 'Self' },
-    thread: { var: '--tree-thread-w', default: 68, min: 48, max: 180, unit: 'px', name: 'Thread' },
     ts: { var: '--tree-ts-w', default: 84, min: 60, max: 200, unit: 'px', name: 'Timestamp' }
   },
 
@@ -12350,7 +12382,11 @@ const TR={
   collapseToDepth(targetDepth) {
     const setDepth = (nodes) => {
       for (const n of (nodes || [])) {
-        n.expanded = (n.depth < targetDepth - 1);
+        if (n.isThreadGroup) {
+          n.expanded = true;
+        } else {
+          n.expanded = (n.depth < targetDepth - 1);
+        }
         if (n.events && n.events.length > 0) setDepth(n.events);
       }
     };
@@ -12431,6 +12467,37 @@ const TR={
   },
 
   renderRow(n, idx) {
+    if (!n) return '';
+    if (n.isThreadGroup) {
+      const tCol = this.getThreadColor(n.thread);
+      const chev = `<button class="tchev ${n.expanded ? 'expanded' : ''}" style="margin-left:8px;" aria-label="${n.expanded ? 'Collapse Thread' : 'Expand Thread'}">▼</button>`;
+      const totalSpansBadge = `<span class="badge b-gray" style="font-size:11px; margin-left:6px;">${n.totalNodes || n.events?.length || 0} spans</span>`;
+      const thrTag = `<span class="tree-thr-badge" style="background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr}; margin-left:8px;">THREAD</span>`;
+      const durVal = n.duration != null ? fmtMs(n.duration) : '';
+      const durHtml = durVal ? `<span class="tree-metric-dur tdr" style="color:${tCol.col}; font-weight:700;">${esc(durVal)}</span>` : `<span class="tree-metric-dur-none"></span>`;
+      const tsVal = n.timestamp != null ? new Date(n.timestamp).toISOString().slice(11, 23) : '';
+      const tsHtml = tsVal ? `<span class="tree-metric-ts">${esc(tsVal)}</span>` : `<span class="tree-metric-ts-none"></span>`;
+
+      return `
+        <div class="tree-row tree-thr-group-row" data-idx="${idx}" data-thread="${esc(n.thread)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${n.expanded ? 'true' : 'false'}">
+          <div class="tree-spine">
+            ${chev}
+            <div class="tico" style="background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr}; font-size:11px;">☵</div>
+            <span class="tnm" style="color:${tCol.col}; font-weight:700; font-family:var(--mono);">${esc(n.thread)}</span>
+            ${thrTag}
+            ${totalSpansBadge}
+          </div>
+          <div class="tree-telemetry-col">
+            <span class="tree-sparkbar-none"></span>
+            ${durHtml}
+            <span class="tree-metric-self-none"></span>
+            ${tsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    const tCol = this.getThreadColor(n.thread);
     const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
     const ico = esc(n.visualStyle?.icon || '•');
     const kids = n.hasChildren;
@@ -12495,12 +12562,16 @@ const TR={
       ? `<button class="tchev ${n.expanded ? 'expanded' : ''}" style="margin-left:${chevMargin}px;" aria-label="${n.expanded ? 'Collapse' : 'Expand'}">▼</button>` 
       : `<span class="tchev-leaf" style="margin-left:${chevMargin}px;"></span>`;
 
+    const thrDot = (n.thread && S.threads && S.threads.length > 1) 
+      ? `<span class="tree-thr-dot" style="background:${tCol.col};" title="Thread: ${esc(n.thread)}"></span>` 
+      : '';
+
     // Zone 2: Payload Preview Chip (strictly single-line)
     const payBtn = n.payload 
       ? `<button class="tree-payload-btn" data-a="tree-payload" data-idx="${idx}" title="Click to reveal payload" aria-label="Reveal payload for ${esc(n.ruleName)}"><span class="tree-payload-btn-icon">{ }</span><span>Payload</span></button>` 
       : '';
 
-    // Zone 2: Telemetry Strip (Sparkbar, Duration, Self Time, Thread, Timestamp)
+    // Zone 2: Telemetry Strip (Sparkbar, Duration, Self Time, Timestamp)
     const maxDur = this._maxDuration || 1;
     const durVal = n.duration != null ? n.duration : 0;
     const pct = Math.min(100, Math.max(3, Math.round((durVal / maxDur) * 100)));
@@ -12514,9 +12585,6 @@ const TR={
     const selfHtml = (n._sm != null && n.duration != null && n._sm !== n.duration) 
       ? `<span class="tree-metric-self" title="Self execution time">self ${esc(fmtMs(n._sm))}</span>` 
       : `<span class="tree-metric-self-none"></span>`;
-    const thrHtml = (n.thread && S.threads && S.threads.length > 1) 
-      ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` 
-      : `<span class="tree-thread-none"></span>`;
     const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : `<span class="tree-metric-ts-none"></span>`;
 
     const isCrit = !!n._isCriticalPath;
@@ -12524,10 +12592,11 @@ const TR={
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
 
     return `
-      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px; border-left:3px solid ${tCol.col} !important;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
         <div class="tree-spine">
           ${guideLines}
           ${chev}
+          ${thrDot}
           <div class="tico" style="background:${bg}; color:${col};">${ico}</div>
           <span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>
           ${elB}
@@ -12540,7 +12609,6 @@ const TR={
           ${sparkbarHtml}
           ${durHtml}
           ${selfHtml}
-          ${thrHtml}
           ${tsHtml}
         </div>
       </div>
@@ -12553,6 +12621,14 @@ const TR={
     const idx = parseInt(row.dataset.idx, 10);
     const n = this._visibleNodes[idx];
     if (!n) return;
+    
+    if (n.isThreadGroup) {
+      n.expanded = !n.expanded;
+      this.updateVisible();
+      this.updateLayout();
+      e.stopPropagation();
+      return;
+    }
     
     if (e.target.closest('.tchev')) {
       n.expanded = !n.expanded;

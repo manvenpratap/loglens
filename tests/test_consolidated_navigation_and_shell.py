@@ -170,10 +170,10 @@ async def test_split_view_responsive_column_reveal(page_with_data):
 
     ts_hdr = page.locator('.tree-th-ts')
     self_hdr = page.locator('.tree-th-self')
-    thread_hdr = page.locator('.tree-th-thread')
+    dur_hdr = page.locator('.tree-th-dur')
     assert await ts_hdr.is_visible()
     assert await self_hdr.is_visible()
-    assert await thread_hdr.is_visible()
+    assert await dur_hdr.is_visible()
 
     # Double click to reset to 50%
     await hdl.dblclick()
