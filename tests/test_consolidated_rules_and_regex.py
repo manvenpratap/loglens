@@ -1507,3 +1507,51 @@ async def test_context_menu_combine_action(page_with_data):
     await expect(cm_ts).to_have_value("1, 2")
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_rule_creator_pipe_delimited_auto_split(blank_page):
+    """Pipe-separated sample log lines are automatically detected, split by pipe, and semantically mapped."""
+    page = blank_page
+    await page.evaluate("() => { const ob = document.getElementById('ob-ov'); if (ob) ob.style.display = 'none'; }")
+    await page.evaluate("() => UI.openM(null)")
+
+    # 1. Fill 6-column pipe-separated sample log line
+    test_line = "2024-01-15 12:34:56.789|INFO|main|OrderService|TX-BEGIN|Order created successfully"
+    e_tl = page.locator('#e-tl')
+    await e_tl.fill(test_line)
+    await page.wait_for_timeout(300)
+
+    # 2. Check format badge
+    badge = page.locator('#preview-format-badge')
+    await expect(badge).to_contain_text("Pipe-Delimited (6 cols)")
+
+    # 3. Check generated regex
+    e_rx = page.locator('#e-rx')
+    rx_val = await e_rx.input_value()
+    assert rx_val == r"^([^|]+)\|([^|]+)\|([^|]+)\|([^|]+)\|([^|]+)\|(.*)"
+
+    # 4. Check capture mappings
+    assert await page.locator('#cm-ts').input_value() == "1"
+    assert await page.locator('#cm-lv').input_value() == "2"
+    assert await page.locator('#cm-th').input_value() == "3"
+    assert await page.locator('#cm-cl').input_value() == "4"
+    assert await page.locator('#cm-co').input_value() == "5"
+    assert await page.locator('#cm-py').input_value() == "6"
+
+    # 5. Check RG autoSplitPipes helper
+    await page.evaluate("() => RG.autoSplitPipes(document.getElementById('e-tl').value)")
+    sel_count = await page.evaluate("() => RG.selections.length")
+    assert sel_count == 6
+
+    # 6. Test second pipe-separated line with 4 columns
+    test_line_4 = "14:23:45.123|worker-2|WARN|Disk storage threshold exceeded"
+    await e_tl.fill(test_line_4)
+    await page.wait_for_timeout(300)
+
+    await expect(badge).to_contain_text("Pipe-Delimited (4 cols)")
+    rx_val_4 = await e_rx.input_value()
+    assert rx_val_4 == r"^([^|]+)\|([^|]+)\|([^|]+)\|(.*)"
+
+    assert_no_critical_errors(page)
+

@@ -15,12 +15,12 @@ tests/
 ├── requirements.txt                                 # Python dependencies (playwright, pytest, pytest-asyncio)
 ├── test_consolidated_navigation_and_shell.py        # 24 tests: Navigation, onboarding, 2-tier tabs, split sync, simultaneous sideways advancement, responsive containers
 ├── test_consolidated_parser_and_ingestion.py        # 14 tests: Web Worker parser, multiline stack traces, Log4j XML, unparsed analyzer
-├── test_consolidated_rules_and_regex.py             # 30 tests: Rule wizard, regex builder, token palette, group combiner, undo/redo
+├── test_consolidated_rules_and_regex.py             # 31 tests: Rule wizard, regex builder, token palette, group combiner, undo/redo, pipe-delimited auto-splitting
 ├── test_consolidated_settings_and_accessibility.py  # 7 tests: 4-pillar settings, a11y skip links, focus mode, AI insights
 └── test_consolidated_visualizations_and_telemetry.py# 25 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio, enhanced trace explorer
 ```
 
-**Total: 100 automated regression tests** with 100% pass rate.
+**Total: 101 automated regression tests** with 100% pass rate.
 
 ---
 

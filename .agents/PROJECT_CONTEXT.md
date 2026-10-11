@@ -2,6 +2,26 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Automatic Pipe-Delimited Log Splitting for Rule Creator (v6.9.136 — COMPLETED)**:
+  - **Dynamic Multi-Column Pipe-Delimited Auto-Split**:
+    - Added `WIZ.buildPipeSplit(line, kws)` to dynamically inspect sample log lines containing pipe characters (`|`) and automatically generate regex patterns (`^([^|]+)\|([^|]+)\|...`) without requiring manual token marking.
+    - **Intelligent Semantic Role Recognition**:
+      - `timestamp`: detects ISO dates (`YYYY-MM-DD`, `YYYY/MM/DD`), time expressions (`HH:MM:SS.mmm`), and custom timestamp formats supported by `pts()`.
+      - `level`: matches standard severity levels (`TRACE`, `DEBUG`, `INFO`, `NOTICE`, `WARN`, `WARNING`, `ERROR`, `SEVERE`, `FATAL`, `CRITICAL`).
+      - `correlationId`: detects UUIDs, distributed trace IDs, or transaction prefixes (`tx-`, `req-`, `span-`, `corr-`).
+      - `thread`: matches bracketed threads (`[main]`, `[worker-1]`), active loaded threads (`S.threads`), or standard thread pool names.
+      - `className`: matches package-qualified class paths or standard architectural suffixes (`Service`, `Controller`, `Manager`, `Client`, `Handler`, `Dao`).
+      - `elementName` & `payload`: unassigned columns are logically distributed to operation name and message payload.
+    - Automatically populates capture group indices into `#cm-ts`, `#cm-lv`, `#cm-th`, `#cm-cl`, `#cm-co`, and `#cm-py`.
+    - Updates `#preview-format-badge` to `Format: Pipe-Delimited (N cols)` with green styling.
+  - **Interactive Regex Builder Integration (`RG.autoSplitPipes`)**:
+    - Added `RG.autoSplitPipes(line)` to programmatically compute character boundaries, tokens, and semantic field labels for interactive visualization.
+  - **Auto-Detection on Modal Open & Input**:
+    - If a pipe-separated log is loaded in LogLens, opening the Add Rule modal automatically pre-fills a sample line and performs pipe splitting immediately.
+    - The sample line input listener dynamically re-evaluates column counts and regenerates capture mappings as lines are pasted or edited.
+  - **Automated Regression Verification**:
+    - Added `test_rule_creator_pipe_delimited_auto_split` to `tests/test_consolidated_rules_and_regex.py`.
+    - Full regression test suite now passes 101/101 tests (100% pass rate).
 
 - **Enhanced Distributed Trace Explorer (v6.9.135 — COMPLETED)**:
   - **4 KPI Telemetry Cards**:

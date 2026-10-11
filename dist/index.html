@@ -11281,14 +11281,18 @@ const RXB={
           $('wf-sel').value = 'auto';
           WIZ.ex();
           WIZ.gen();
-        } else if ($('wf-sel').value === 'auto') {
+        } else {
           const detected = WIZ.autoDetectFormat($('e-tl').value);
           if (detected) {
             $('wf-sel').value = detected;
             WIZ.ex();
             WIZ.gen();
+          } else if ($('wf-sel').value === 'csv') {
+            WIZ.gen();
           }
         }
+      } else if ($('wf-sel').value === 'csv') {
+        WIZ.gen();
       }
       this.update();
     });
@@ -11334,7 +11338,11 @@ const RXB={
       custom: 'Custom Regex'
     };
     if (badge) {
-      if (fid === 'auto' && line.trim()) {
+      if ((fid === 'csv' || line.includes('|')) && line.split('|').length >= 2) {
+        const numCols = line.split('|').length;
+        badge.textContent = `Format: Pipe-Delimited (${numCols} cols)`;
+        badge.className = 'badge b-green';
+      } else if (fid === 'auto' && line.trim()) {
         badge.textContent = 'Format: Custom Pattern';
         badge.className = 'badge b-amber';
       } else {
@@ -11597,6 +11605,66 @@ const WIZ={
     }
     return null;
   },
+  buildPipeSplit(line, kws) {
+    if (!line || !line.includes('|')) return null;
+    const parts = line.split('|');
+    if (parts.length < 2) return null;
+
+    const colCount = parts.length;
+    const cm = {};
+    let tsPattern = '([^|]+)';
+    let tsIdx = -1, lvlIdx = -1, thrIdx = -1, corrIdx = -1, elIdx = -1, payIdx = -1;
+
+    // 1. Semantic recognition pass
+    parts.forEach((rawPart, i) => {
+      const p = rawPart.trim();
+      const colNum = String(i + 1);
+
+      if (tsIdx === -1 && (/\d{4}[-/.]\d{2}[-/.]\d{2}/.test(p) || /\d{2}:\d{2}:\d{2}/.test(p) || (typeof pts === 'function' && pts(p) !== null))) {
+        tsIdx = i; cm[colNum] = 'timestamp'; return;
+      }
+      if (lvlIdx === -1 && /^(TRACE|DEBUG|INFO|NOTICE|WARN|WARNING|ERROR|SEVERE|FATAL|CRITICAL)$/i.test(p)) {
+        lvlIdx = i; cm[colNum] = 'level'; return;
+      }
+      if (corrIdx === -1 && (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(p) || /^(?:tx|txn|req|trace|span|corr)[-_]?[a-zA-Z0-9]+/i.test(p))) {
+        corrIdx = i; cm[colNum] = 'correlationId'; return;
+      }
+      if (thrIdx === -1 && ((p.startsWith('[') && p.endsWith(']')) || (S.threads && S.threads.includes(p)) || /^(main|worker|pool|task|exec|nio|thread)[-_0-9]*/i.test(p))) {
+        thrIdx = i; cm[colNum] = 'thread'; return;
+      }
+      if (elIdx === -1 && (/\b[a-zA-Z_][a-zA-Z0-9_$]*(?:\.[a-zA-Z_][a-zA-Z0-9_$]+)+\b/.test(p) || /(Service|Controller|Manager|Client|Handler|Impl|Dao)$/.test(p))) {
+        elIdx = i; cm[colNum] = 'className'; return;
+      }
+    });
+
+    // 2. Assign unassigned columns to complete the schema
+    parts.forEach((rawPart, i) => {
+      const colNum = String(i + 1);
+      if (cm[colNum]) return;
+      if (i === colCount - 1 && payIdx === -1) {
+        payIdx = i; cm[colNum] = 'payload'; return;
+      }
+      if (elIdx === -1) {
+        elIdx = i; cm[colNum] = 'elementName'; return;
+      }
+      if (thrIdx === -1) {
+        thrIdx = i; cm[colNum] = 'thread'; return;
+      }
+      if (corrIdx === -1) {
+        corrIdx = i; cm[colNum] = 'correlationId';
+      } else {
+        cm[colNum] = 'payload';
+      }
+    });
+
+    let rx = '^' + parts.map((_, i) => (i === colCount - 1) ? '(.*)' : '([^|]+)').join('\\|');
+    if (kws && kws.length > 0) {
+      const esc2 = kws.map(k => escRx(k));
+      rx = '^' + parts.map((_, i) => (i === colCount - 1) ? `(.*?(?:${esc2.join('|')}).*)` : '([^|]+)').join('\\|');
+    }
+
+    return { rx, cm, ts: tsPattern, colCount };
+  },
   ex(){
     const f=WIZ_FMTS[$('wf-sel').value]||WIZ_FMTS.java_std;
     $('wf-ex').textContent=f.ex?`Example:\n${f.ex}`:'';
@@ -11616,6 +11684,33 @@ const WIZ={
   },
   gen(){
     const fid=$('wf-sel').value;
+    const sampleLine = $('e-tl')?.value || '';
+    if ((fid === 'csv' || fid === 'auto') && sampleLine.includes('|')) {
+      const pipeSplit = this.buildPipeSplit(sampleLine, S.wizKw);
+      if (pipeSplit) {
+        if (fid === 'auto') {
+          $('wf-sel').value = 'csv';
+        }
+        S._wizRx = pipeSplit.rx;
+        S._wizCm = pipeSplit.cm;
+        S._wizTs = pipeSplit.ts;
+        if (!$('e-use-custom-rx').checked) {
+          $('e-rx').value = pipeSplit.rx;
+          ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>$(id).value='');
+          const fg = f => Object.entries(pipeSplit.cm).filter(([,v]) => v === f).map(([k]) => parseInt(k, 10)).filter(n => !isNaN(n)).sort((a, b) => a - b).join(', ');
+          $('cm-ts').value = fg('timestamp');
+          $('cm-th').value = fg('thread');
+          $('cm-el').value = fg('elementName');
+          $('cm-py').value = fg('payload');
+          $('cm-co').value = fg('correlationId');
+          $('cm-lv').value = fg('level');
+          $('cm-cl').value = fg('className');
+          $('cm-me').value = fg('methodName');
+        }
+        RXB.update();
+        return;
+      }
+    }
     if (fid === 'auto') {
       S._wizRx = '^'; S._wizCm = {}; S._wizTs = '';
       if (!$('e-use-custom-rx').checked) {
@@ -14575,7 +14670,20 @@ const UI={
 
     // Reset inputs
     S.wizKw=[];$('kw-chips').innerHTML='';$('kw-inp').value='';
-    $('e-tl').value='';$('rx-pre').innerHTML='<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
+    let defaultSample = '';
+    if (isN && S.trees) {
+      for (const nodes of Object.values(S.trees)) {
+        for (const n of nodes) {
+          if (n.rawLine && n.rawLine.length > 5 && n.rawLine.includes('|')) {
+            defaultSample = n.rawLine.replace(/…$/, '');
+            break;
+          }
+        }
+        if (defaultSample) break;
+      }
+    }
+    $('e-tl').value=defaultSample;
+    $('rx-pre').innerHTML=defaultSample?'':'<span class="rx-em">Type a sample line above to see live match highlighting.</span>';
     if (typeof RG !== 'undefined') {
       RG.onLineInput();
     }
@@ -16320,6 +16428,72 @@ const RG = {
     });
     $('btn-rg-combine')?.addEventListener('click', () => this.combineSelected());
     $('btn-rg-combine-all')?.addEventListener('click', () => this.combineAll());
+  },
+
+  autoSplitPipes(line) {
+    if (!line || !line.includes('|')) return false;
+    const parts = line.split('|');
+    if (parts.length < 2) return false;
+
+    const colCount = parts.length;
+    const roles = {};
+    let tsIdx = -1, lvlIdx = -1, thrIdx = -1, corrIdx = -1, elIdx = -1, payIdx = -1;
+
+    parts.forEach((rawPart, i) => {
+      const p = rawPart.trim();
+      if (tsIdx === -1 && (/\d{4}[-/.]\d{2}[-/.]\d{2}/.test(p) || /\d{2}:\d{2}:\d{2}/.test(p) || (typeof pts === 'function' && pts(p) !== null))) {
+        tsIdx = i; roles[i] = { field: 'timestamp', label: 'Timestamp', color: '#3b82f6' }; return;
+      }
+      if (lvlIdx === -1 && /^(TRACE|DEBUG|INFO|NOTICE|WARN|WARNING|ERROR|SEVERE|FATAL|CRITICAL)$/i.test(p)) {
+        lvlIdx = i; roles[i] = { field: 'level', label: 'Level', color: '#ef4444' }; return;
+      }
+      if (corrIdx === -1 && (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(p) || /^(?:tx|txn|req|trace|span|corr)[-_]?[a-zA-Z0-9]+/i.test(p))) {
+        corrIdx = i; roles[i] = { field: 'correlationId', label: 'CorrelationId', color: '#8b5cf6' }; return;
+      }
+      if (thrIdx === -1 && ((p.startsWith('[') && p.endsWith(']')) || (S.threads && S.threads.includes(p)) || /^(main|worker|pool|task|exec|nio|thread)[-_0-9]*/i.test(p))) {
+        thrIdx = i; roles[i] = { field: 'thread', label: 'Thread', color: '#06b6d4' }; return;
+      }
+      if (elIdx === -1 && (/\b[a-zA-Z_][a-zA-Z0-9_$]*(?:\.[a-zA-Z_][a-zA-Z0-9_$]+)+\b/.test(p) || /(Service|Controller|Manager|Client|Handler|Impl|Dao)$/.test(p))) {
+        elIdx = i; roles[i] = { field: 'className', label: 'ClassName', color: '#10b981' }; return;
+      }
+    });
+
+    parts.forEach((rawPart, i) => {
+      if (roles[i]) return;
+      if (i === colCount - 1 && payIdx === -1) {
+        payIdx = i; roles[i] = { field: 'payload', label: 'Payload', color: '#ec4899' }; return;
+      }
+      if (elIdx === -1) {
+        elIdx = i; roles[i] = { field: 'elementName', label: 'ElementName', color: '#eab308' }; return;
+      }
+      if (thrIdx === -1) {
+        thrIdx = i; roles[i] = { field: 'thread', label: 'Thread', color: '#06b6d4' }; return;
+      }
+      if (corrIdx === -1) {
+        corrIdx = i; roles[i] = { field: 'correlationId', label: 'CorrelationId', color: '#8b5cf6' };
+      } else {
+        roles[i] = { field: 'payload', label: 'Payload', color: '#ec4899' };
+      }
+    });
+
+    let curPos = 0;
+    this.selections = [];
+    parts.forEach((part, i) => {
+      const start = curPos;
+      const end = start + part.length;
+      curPos = end + 1;
+      const r = roles[i] || { field: 'payload', label: 'Payload', color: '#ec4899' };
+      const pattern = (i === colCount - 1) ? '.*' : '[^|]+';
+      this.selections.push({
+        start, end,
+        pattern,
+        label: `${r.label} (Col ${i + 1})`,
+        color: r.color,
+        targetField: r.field
+      });
+    });
+
+    return true;
   },
 
   onLineInput() {
