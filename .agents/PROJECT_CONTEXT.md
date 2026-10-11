@@ -3,6 +3,19 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Analysis Dropdown Spacing, Typography & Icon Badging Polish (v6.9.121 — COMPLETED)**:
+  - **Expanded Menu Dimensions & Generous Runway**:
+    - Expanded `.analysis-menu` width from 220px to 290px (`width: 290px !important; min-width: 290px !important;`), giving descriptions ("Distributions, outliers & KPIs", "LQL interactive search terminal", "Side-by-side run comparison") ample horizontal breathing room with zero text truncation or awkward wrapping.
+    - Adjusted menu padding to `6px !important;` and gap to `3px !important;` with `border-radius: var(--rounded-lg, 8px) !important;` and multi-layered backdrop shadow.
+  - **Icon Badging & Touch-Target Ergonomics**:
+    - Transformed plain icons into 32x32 rounded icon badges (`.analysis-item .ico`) with subtle background tint, clear border, and amber hover glow.
+    - Upgraded item padding to `8px 12px !important;` with `gap: 12px !important;` and `border-radius: var(--rounded-md, 6px) !important;`.
+    - Enhanced button padding to `0 12px !important;` with 13px display typography.
+  - **Full Regression Verification & Visual Audit**:
+    - All 88/88 regression tests passed in 86.22s.
+    - Verified 0 impeccable design findings (`[]`).
+    - Captured browser screenshot in Ivory theme confirming spacious, un-cramped menu layout with clear typography hierarchy.
+
 - **Execution Tree Telemetry Column Rigid Alignment & Zero-Duration Fallbacks (v6.9.120 — COMPLETED)**:
   - **Zero-Duration Fallback Placeholders**:
     - Resolved the column misalignment bug where log events without duration (e.g. `Cache Op`, point-in-time entries) omitted SLA sparkbar and duration elements, causing `.tree-telemetry-col` to shrink by ~128px and pushing `.tree-status-group` (`{ } Payload`) rightward into the SLA and Duration columns.
