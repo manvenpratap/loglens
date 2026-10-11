@@ -7,7 +7,7 @@ All tests run against the local single-file HTML app using **Playwright + pytest
 
 ## 📁 Test Suite Structure
 
-The test suite is organized into 5 consolidated test modules for fast, session-scoped browser execution:
+The test suite is organized into consolidated test modules for fast, session-scoped browser execution:
 
 ```
 tests/
@@ -17,10 +17,11 @@ tests/
 ├── test_consolidated_parser_and_ingestion.py        # 14 tests: Web Worker parser, multiline stack traces, Log4j XML, unparsed analyzer
 ├── test_consolidated_rules_and_regex.py             # 31 tests: Rule wizard, regex builder, token palette, group combiner, undo/redo, pipe-delimited auto-splitting
 ├── test_consolidated_settings_and_accessibility.py  # 7 tests: 4-pillar settings, a11y skip links, focus mode, AI insights
-└── test_consolidated_visualizations_and_telemetry.py# 26 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio, enhanced trace explorer, tree multi-selection & rule creation
+├── test_consolidated_visualizations_and_telemetry.py# 26 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio, enhanced trace explorer, tree multi-selection & rule creation
+└── test_stress_and_performance.py                   # 3 tests: Trace Explorer memoized sorting performance, virtual scrolling DOM node ceiling, and 2.5k synthetic dataset ingestion throughput
 ```
 
-**Total: 102 automated regression tests** with 100% pass rate.
+**Total: 105 automated regression tests** with 100% pass rate.
 
 ---
 
@@ -86,7 +87,8 @@ Injects 20 `main` thread events (every 5th marked as `ERROR`) and 10 `worker` th
 | `test_consolidated_rules_and_regex.py` | • Unified rule creation wizard & preset templates<br>• Token palette (timestamp, UUID, thread, duration tokens)<br>• Interactive regex builder tracks & visual segments<br>• Multi-capture group combiner (`#rg-combine-bar`)<br>• Regex undo/redo history buffer<br>• Auto-detect log format & file retention<br>• Custom log pattern setup journey & 100% parse verification | **30** |
 | `test_consolidated_settings_and_accessibility.py` | • 4-Pillar settings dashboard (Rules, Sources, Storage, Prefs)<br>• Keyboard navigation (`J`, `K`, numbers `1`–`4`, shortcuts)<br>• Accessibility skip links & ARIA treeitem / tab roles<br>• Focus Mode (`F` hotkey) and uncluttered workspace<br>• AI Insights engine & anomaly summary cards | **7** |
 | `test_consolidated_visualizations_and_telemetry.py` | • Event Inspector drawer lifecycle, metadata & auto-close<br>• **Enhanced Trace Explorer**: 4 KPI cards (P95 Latency), quick filter chips (SLA, Multi-Thread, Healthy), interactive column header sorting, latency distribution bars, slowest operation callouts, and direct Timeline/Tree view jumps<br>• **Dynamic Trace ID Filter Dropdown** mounting, search & clearing<br>• Execution Tree 3-zone architecture & depth filtering (`D1..D3`, `All`)<br>• Execution Tree **CSS custom properties virtualized column resizing**<br>• Execution Tree **inline column filter bar (`#tree-filter-bar`)**<br>• Execution Tree **critical path toggle (`✦ Critical`) & dimming**<br>• Execution Tree **thread grouping (`.tree-thr-group-row`) & color coding**<br>• **Execution Tree multi-row selection (Shift/Ctrl), floating action pill (`#tree-selection-bar`), context menu rule generator, and modal pre-population**<br>• **Split View row background color & border sync with Tree**<br>• **Timeline & Split View full scrollable width row background coverage** (preventing color clipping when scrolled right)<br>• **Advanced Swimlane Studio**: interval-scheduling concurrency stacking, KPI headers, crosshair guideline, hover card, search filtering, and multi-mode grouping<br>• Interactive inline `{ } Payload` button & anchored popover dialog<br>• Timeline Navigator mini-map (`TIMELINE_NAV`) view isolation & zoom<br>• Waterfall timeline bounded scrolling & header synchronization | **26** |
-| **Total** | **Comprehensive End-to-End Regression Test Suite** | **102** |
+| `test_stress_and_performance.py` | • **Trace Explorer memoized sorting performance** (`< 25ms` benchmark over 20 repeated operations)<br>• **Execution Tree virtual scrolling DOM node ceiling** (`<= 55` nodes maintained during rapid scrolling)<br>• **Synthetic dataset ingestion throughput** (2,500 operations ingested and rendered in `< 800ms`) | **3** |
+| **Total** | **Comprehensive End-to-End Regression Test Suite** | **105** |
 
 ---
 

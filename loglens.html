@@ -13218,8 +13218,10 @@ const TR={
       const tsVal = n.timestamp != null ? new Date(n.timestamp).toISOString().slice(11, 23) : '';
       const tsHtml = tsVal ? `<span class="tree-metric-ts">${esc(tsVal)}</span>` : `<span class="tree-metric-ts-none"></span>`;
 
+      const selClass = (this._selectedIndices && this._selectedIndices.has(idx)) ? ' tree-row-selected' : '';
+
       return `
-        <div class="tree-row tree-thr-group-row" data-idx="${idx}" data-thread="${esc(n.thread)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${n.expanded ? 'true' : 'false'}">
+        <div class="tree-row tree-thr-group-row${selClass}" data-idx="${idx}" data-thread="${esc(n.thread)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${n.expanded ? 'true' : 'false'}">
           <div class="tree-spine">
             ${chev}
             <div class="tico" style="background:${tCol.bg}; color:${tCol.col}; border:1px solid ${tCol.bdr}; font-size:11px;">☵</div>
@@ -13365,9 +13367,20 @@ const TR={
     if (!n) return;
     
     if (n.isThreadGroup) {
-      n.expanded = !n.expanded;
-      this.updateVisible();
-      this.updateLayout();
+      if (e.target.closest('.tchev')) {
+        n.expanded = !n.expanded;
+        this.updateVisible();
+        this.updateLayout();
+        e.stopPropagation();
+        return;
+      }
+      KBN._idx = idx;
+      this.selectRow(idx, e);
+      if (this._content) {
+        this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
+      }
+      row.classList.add('kb-focus');
+      if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(n);
       e.stopPropagation();
       return;
     }
@@ -13404,6 +13417,20 @@ const TR={
     
     if (e.detail === 2) {
       UI.openAnn(n);
+    }
+
+    // Plugin onNodeClick dispatch
+    if (typeof PLUG !== 'undefined' && PLUG.hooks?.onNodeClick?.length) {
+      const ctx = {
+        trees: S.trees,
+        threads: S.threads,
+        stats: S.stats,
+        rules: S.cfg?.elementRules,
+        toast: (msg, type) => toast(msg, type)
+      };
+      PLUG.hooks.onNodeClick.forEach(h => {
+        try { h(ctx, n); } catch(err) { console.error(err); }
+      });
     }
   },
 
@@ -13584,6 +13611,7 @@ const TR={
   },
 
   clearSelection() {
+    if (!this._selectedIndices || (this._selectedIndices.size === 0 && this._lastSelectedIdx === null)) return;
     this._selectedIndices.clear();
     this._lastSelectedIdx = null;
     this.updateSelectionUI();
@@ -13608,10 +13636,14 @@ const TR={
 
   updateSelectionUI() {
     if (this._content) {
-      this._content.querySelectorAll('.tree-row').forEach(r => {
+      const rows = this._content.children;
+      for (let k = 0; k < rows.length; k++) {
+        const r = rows[k];
         const i = parseInt(r.dataset.idx, 10);
-        r.classList.toggle('tree-row-selected', this._selectedIndices.has(i));
-      });
+        if (!isNaN(i)) {
+          r.classList.toggle('tree-row-selected', this._selectedIndices.has(i));
+        }
+      }
     }
 
     const count = this._selectedIndices.size;
@@ -23765,8 +23797,18 @@ const TRACE_EXPLORER = (function() {
   let _statusFilter = 'all';
   let _sortBy = 'duration';
   let _sortDir = 'desc';
+  let _cachedTreesRef = null;
+  let _cachedTraces = null;
+
+  function invalidate() {
+    _cachedTreesRef = null;
+    _cachedTraces = null;
+  }
 
   function scanTraces() {
+    if (_cachedTreesRef === S.trees && _cachedTraces !== null) {
+      return _cachedTraces;
+    }
     const traces = {};
     
     function traverse(node, threadName) {
@@ -23817,13 +23859,15 @@ const TRACE_EXPLORER = (function() {
       }
     }
 
-    return Object.values(traces).map(t => {
+    _cachedTraces = Object.values(traces).map(t => {
       return {
         ...t,
         duration: t.endTimestamp - t.startTimestamp,
         threads: Array.from(t.threads)
       };
     });
+    _cachedTreesRef = S.trees;
+    return _cachedTraces;
   }
 
   function setSort(col) {
@@ -24038,7 +24082,7 @@ const TRACE_EXPLORER = (function() {
     if (_container) render(_container);
   }
 
-  return { render, selectTrace, clearFilter, scanTraces, setSort, setStatusFilter, viewIn };
+  return { render, selectTrace, clearFilter, scanTraces, setSort, setStatusFilter, viewIn, invalidate };
 })();
 
 // Update BCB after parse completes
@@ -24050,6 +24094,7 @@ UI.render = function(trees, threads, stats) {
   S.highlightRules = null;
   S.timeFilterRange = null;
   S.activeTraceId = null;
+  if (typeof TRACE_EXPLORER !== 'undefined') TRACE_EXPLORER.invalidate();
 
   _uiRenderBCB(trees, threads, stats);
   BCB.render();
@@ -28457,32 +28502,6 @@ CTX.show = function(e, node) {
   });
 };
 
-// Patch TR.handleClick to call plugin onNodeClick hook
-const _origTrClick = TR.handleClick.bind(TR);
-TR.handleClick = function(e) {
-  _origTrClick(e);
-  
-  const row = e.target.closest('.tree-row');
-  if (!row) return;
-  const idx = parseInt(row.dataset.idx, 10);
-  const n = this._visibleNodes[idx];
-  if (!n) return;
-  
-  const allEvents = [];
-  const ctx = {
-    trees: S.trees,
-    threads: S.threads,
-    stats: S.stats,
-    rules: S.cfg?.elementRules,
-    allEvents,
-    toast: (msg, type) => toast(msg, type)
-  };
-  
-  PLUG.hooks.onNodeClick.forEach(h => {
-    try { h(ctx, n); } catch(err) { console.error(err); }
-  });
-};
-
 /* ================================================================
    §JS-SHARE DEEP LINK STATE ENCODING
    ================================================================ */
@@ -29433,46 +29452,6 @@ const OVERDRIVE = (() => {
     }
   };
 })();
-
-// Wire into tree click: open detail overlay on non-chevron click
-const _origTrHandleClick = TR.handleClick.bind(TR);
-TR.handleClick = function(e) {
-  const payBtn = e.target.closest('[data-a="tree-payload"]');
-  if (payBtn) {
-    _origTrHandleClick(e);
-    return;
-  }
-  const traceBadge = e.target.closest('[data-a="trace-click"]');
-  if (traceBadge) {
-    _origTrHandleClick(e);
-    return;
-  }
-  const row = e.target.closest('.tree-row');
-  // Chevron still expands/collapses, everything else opens the detail panel
-  if (row && !e.target.classList.contains('tchev')) {
-    const idx = parseInt(row.dataset.idx, 10);
-    const n = this._visibleNodes[idx];
-    if (n) {
-      if (typeof INSPECTOR !== 'undefined') INSPECTOR.open(n);
-      // OVERDRIVE detail modal bypassed to keep Event Inspector persistent and non-blocking
-      // OVERDRIVE.OD.open(n);
-      this.selectRow(idx, e);
-      // Also keep the kb-focus highlight
-      this._content.querySelectorAll('.tree-row').forEach(r => r.classList.remove('kb-focus'));
-      row.classList.add('kb-focus');
-      if (e.detail === 2) {
-        UI.openAnn(n);
-      }
-    }
-    return; // swallow — chevron expand handled below
-  }
-  if (!row && !e.target.closest('.tchev, .pt, button, input, [data-a]')) {
-    if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) {
-      INSPECTOR.close();
-    }
-  }
-  _origTrHandleClick(e);
-};
 
 // Patch TR.updateLayout to also refresh minimap
 const _origTrUpdateLayout = TR.updateLayout.bind(TR);
