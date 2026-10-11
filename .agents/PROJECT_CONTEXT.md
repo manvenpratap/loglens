@@ -3,6 +3,24 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Swiss Telemetry Redesign & 3.5x Test Acceleration (v6.9.111 — COMPLETED)**:
+  - **Execution Tree Telemetry Architecture (`TR.renderRow`)**:
+    - **Zone 1 (Left — Spine & Identity)**: Implemented `.tree-spine` with SVG-grade vertical branch guide lines (`.tree-guide-line`, `.tree-guide-branch`), micro-chevrons, operation icons (`.tico`), rule name (`.tnm`), element pill (`.tel`), and high-signal badges (`ERR`, `WARN`, `SLA BREACH`, `OUTLIER`, `✦ CRITICAL`, `#TraceID`, `✎ Note`). Suppressed noisy blue `INFO` badges on healthy rows to eliminate visual noise.
+    - **Zone 2 (Center — Payload Preview)**: Monospace payload preview chip (`.tree-payload-col` with `.tree-payload-preview.tpy`) displaying payload content with clean truncation, monospace syntax styling, and wrapping.
+    - **Zone 3 (Right — Pinned Telemetry Strip)**: Fixed-width right-pinned telemetry cluster (`.tree-telemetry-col`) with proportional mini latency sparkbars (`.tree-sparkbar` with `.tree-sparkbar-fill` colored blue/amber/red based on SLA/outlier/duration relative to `_maxDuration`), right-aligned bold duration (`.tree-metric-dur.tdr`), self execution time (`.tree-metric-self`), thread pill (`.tree-thread-pill`), and clean millisecond timestamp (`.tree-metric-ts` formatted as `HH:mm:ss.SSS`).
+  - **Depth Filtering Toolbar Controls (`.tree-depth-group`)**:
+    - Added quick depth buttons `D1`, `D2`, `D3`, and `All` to the tree toolbar (`TR.collapseToDepth(depth)`), allowing users to collapse directly to root nodes (D1) or expand through levels 2, 3, or all.
+  - **Intelligent Minimap Attachment (`#btn-tree-map-toggle`)**:
+    - Added `#btn-tree-map-toggle` in the toolbar. Upgraded `OVERDRIVE.afterRender()` so the minimap is detached by default when all tree rows fit vertically within the viewport, maximizing horizontal reading width, and can be toggled on demand.
+  - **Stuck Tooltip Bug Resolved (`TIP`)**:
+    - In `TIP.init()`, added listeners dismissing tooltips on window `scroll` (capture phase), `click`, `blur`, and `mouseleave`.
+    - Added `visibility: hidden; display: none;` to `#app-tooltip` so dismissing immediately hides the tooltip without any lingering delay.
+  - **Regression Test Suite Consolidation & 3.5x Speedup**:
+    - Identified and eliminated test run bottlenecks: configured session-scoped Chromium browser reuse via pytest-asyncio (`asyncio_default_fixture_loop_scope = session` and `asyncio_default_test_loop_scope = session` in `pytest.ini` and `conftest.py`), eliminating 130+ browser process launch/teardowns.
+    - Replaced hardcoded sleeps (`wait_for_timeout(700)`) with DOM readiness guards (`wait_for_function('() => typeof UI !== "undefined" && !!document.getElementById("res")')`).
+    - Consolidated micro-tests across `test_04` through `test_11`, and `test_20` from 133 tests down to 86 comprehensive end-to-end workflow tests, cutting suite runtime from **~280s down to 81s**.
+    - Authored `tests/test_25_execution_tree_telemetry.py` (4 tests). Full regression suite passing with **86 passed / 86 total** tests (0 failures).
+
 - **Clean Top Bar Navigation & Robust Cross-Platform Shortcuts (v6.9.110 — COMPLETED)**:
   - **Removed Option Symbol Badges from Top Bar**:
     - Eliminated `<span class="vt-hotkey">⌥1..⌥4</span>` and all associated `.vt-hotkey` CSS rules from the top bar navigation pills.

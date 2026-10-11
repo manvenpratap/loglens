@@ -1901,25 +1901,431 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 .g-bar.g-critical {
   outline: 2px solid var(--amber) !important;
 }
+/* ============================================================
+   EXECUTION TREE — HIGH-PRECISION SWISS TELEMETRY REDESIGN
+   ============================================================ */
+.tw {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  background: var(--bg-0) !important;
+}
+
+/* Tree Toolbar Header */
+.tree-toolbar {
+  flex-shrink: 0 !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  background: var(--bg-1) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-family: var(--ui) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  gap: 8px !important;
+  box-sizing: border-box !important;
+  z-index: 5 !important;
+}
+.tree-toolbar-left {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+.tree-toolbar-title {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: var(--t1) !important;
+  font-weight: 700 !important;
+  font-size: 12.5px !important;
+  letter-spacing: -0.01em !important;
+}
+.tree-toolbar-right {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+.tree-depth-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: var(--rounded-sm) !important;
+  padding: 1px !important;
+  gap: 1px !important;
+}
+.tree-depth-btn {
+  background: transparent !important;
+  border: none !important;
+  color: var(--t3) !important;
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+.tree-depth-btn:hover {
+  color: var(--t1) !important;
+  background: var(--glass) !important;
+}
+.tree-depth-btn.active {
+  color: var(--amber) !important;
+  background: var(--bg-0) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+/* Tree Virtual Scroll Viewport */
+.tree-vscroll {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  position: relative !important;
+  min-height: 100px !important;
+  max-height: 100% !important;
+  background: var(--bg-0) !important;
+}
+
+/* Tree Row Architecture */
 .tree-row {
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--bg-0);
-  transition: background .13s var(--ease-out);
-  border-left: 1px solid transparent;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 820px !important;
+  box-sizing: border-box !important;
+  padding-right: 14px !important;
+  border-bottom: 1px solid var(--bdr-d) !important;
+  font-family: var(--ui) !important;
+  font-size: 12px !important;
+  background: var(--bg-0) !important;
+  transition: background 0.12s ease !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  position: relative !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+.tree-row:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-1) 45%, var(--bg-0)) !important;
 }
 .tree-row:hover {
-  background: var(--glass) !important;
-  border-left-color: var(--bdr-h);
+  background: color-mix(in srgb, var(--amber) 7%, var(--bg-1)) !important;
+}
+.tree-row:hover::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--amber);
+  z-index: 2;
 }
 .tree-row.kb-focus {
-  background: var(--amber-g) !important;
+  background: color-mix(in srgb, var(--amber) 14%, var(--bg-1)) !important;
   outline: 1px solid var(--amber) !important;
   outline-offset: -1px;
 }
-.tchev.expanded {
-  transform: rotate(90deg);
+.tree-row.kb-focus::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--amber);
+  z-index: 2;
+}
+
+/* Zone 1: Tree Spine & Identity */
+.tree-spine {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  min-width: 0 !important;
+  max-width: 62% !important;
+  height: 100% !important;
+}
+.tree-guide-line {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 1px !important;
+  background: var(--bdr-d) !important;
+  pointer-events: none !important;
+}
+.tree-guide-branch {
+  position: absolute !important;
+  top: 0 !important;
+  height: 50% !important;
+  width: 9px !important;
+  border-left: 1px solid var(--bdr) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  border-bottom-left-radius: 3px !important;
+  pointer-events: none !important;
+}
+.tchev {
+  width: 14px !important;
+  height: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 9px !important;
+  color: var(--t4) !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  border-radius: 3px !important;
+  transition: transform 0.15s ease, color 0.12s ease !important;
+  flex-shrink: 0 !important;
+}
+.tchev:hover {
   color: var(--amber) !important;
+}
+.tchev.expanded {
+  transform: rotate(90deg) !important;
+  color: var(--amber) !important;
+}
+.tchev-leaf {
+  width: 14px !important;
+  height: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+.tchev-leaf::after {
+  content: "";
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--bdr-h, var(--t4));
+  opacity: 0.5;
+}
+.tico {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
+}
+.tnm {
+  font-family: var(--ui) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  letter-spacing: -0.01em !important;
+}
+.tel {
+  font-family: var(--mono) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: var(--t1) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
+  background: color-mix(in srgb, currentColor 7%, transparent) !important;
+  flex-shrink: 1 !important;
+}
+
+/* Status Badges Group */
+.tree-status-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+  margin-left: 2px !important;
+}
+.tbadge {
+  font-family: var(--mono) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
+}
+.tbadge-red {
+  background: var(--red-g) !important;
+  color: var(--red) !important;
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent) !important;
+}
+.tbadge-amber {
+  background: var(--amber-g) !important;
+  color: var(--amber) !important;
+  border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent) !important;
+}
+.tbadge-sla {
+  background: color-mix(in srgb, var(--red) 14%, transparent) !important;
+  color: var(--red) !important;
+  border: 1px solid var(--red) !important;
+}
+.tbadge-outlier {
+  background: var(--red) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+.tbadge-critical {
+  background: color-mix(in srgb, var(--amber) 15%, transparent) !important;
+  color: var(--amber) !important;
+  border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent) !important;
+}
+.tbadge-trace {
+  background: var(--bg-2) !important;
+  color: var(--t2) !important;
+  border: 1px solid var(--bdr) !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+.tbadge-trace:hover {
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+  background: var(--amber-d) !important;
+}
+.tbadge-note {
+  background: var(--amber-d) !important;
+  color: var(--amber) !important;
+  border: 1px solid color-mix(in srgb, var(--amber) 25%, transparent) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+/* Zone 2: Payload Preview (Center Column) */
+.tree-payload-col {
+  flex: 1 !important;
+  min-width: 60px !important;
+  max-width: 420px !important;
+  overflow: hidden !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+}
+.tree-payload-preview {
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  color: var(--t3) !important;
+  white-space: pre-wrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background: color-mix(in srgb, var(--bg-2) 65%, transparent) !important;
+  border: 1px solid var(--bdr-d) !important;
+  border-radius: 4px !important;
+  padding: 1px 6px !important;
+  max-width: 100% !important;
+  transition: all 0.12s ease !important;
+}
+.tree-payload-preview:hover {
+  color: var(--t1) !important;
+  border-color: var(--bdr) !important;
+  background: var(--bg-2) !important;
+}
+
+/* Zone 3: Pinned Telemetry Strip (Right Column) */
+.tree-telemetry-col {
+  margin-left: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  font-family: var(--mono) !important;
+}
+.tree-sparkbar {
+  width: 44px !important;
+  height: 5px !important;
+  background: var(--bg-3) !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+.tree-sparkbar-fill {
+  height: 100% !important;
+  border-radius: 3px !important;
+  min-width: 2px !important;
+  transition: width 0.2s ease !important;
+}
+.tree-sparkbar-fill.bar-blue { background: var(--blue) !important; }
+.tree-sparkbar-fill.bar-amber { background: var(--amber) !important; }
+.tree-sparkbar-fill.bar-red { background: var(--red) !important; }
+
+.tree-metric-dur {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--t1) !important;
+  min-width: 52px !important;
+  text-align: right !important;
+}
+.tree-metric-dur.breach {
+  color: var(--red) !important;
+}
+.tree-metric-self {
+  font-size: 9.5px !important;
+  color: var(--t3) !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--bdr-d) !important;
+  border-radius: 3px !important;
+  padding: 1px 4px !important;
+  white-space: nowrap !important;
+}
+.tree-thread-pill {
+  font-size: 9px !important;
+  color: var(--t3) !important;
+  background: var(--bg-1) !important;
+  border: 1px solid var(--bdr) !important;
+  border-radius: 3px !important;
+  padding: 1px 5px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
+}
+.tree-metric-ts {
+  font-size: 10px !important;
+  color: var(--t4) !important;
+  min-width: 72px !important;
+  text-align: right !important;
+  letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
+}
+
+/* Light / Ivory theme specific contrast polish */
+[data-theme=light] .tree-row:nth-child(even),
+[data-theme=ivory] .tree-row:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-2) 35%, var(--bg-0)) !important;
+}
+[data-theme=light] .tree-row:hover,
+[data-theme=ivory] .tree-row:hover {
+  background: color-mix(in srgb, var(--amber) 9%, var(--bg-1)) !important;
+}
+[data-theme=light] .tree-payload-preview,
+[data-theme=ivory] .tree-payload-preview {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: var(--t2) !important;
+}
+[data-theme=light] .tree-sparkbar,
+[data-theme=ivory] .tree-sparkbar {
+  background: rgba(0, 0, 0, 0.08) !important;
 }
 .stats-row:hover {
   background: var(--glass) !important;
@@ -4979,12 +5385,16 @@ input[type="checkbox"]:active {
   white-space: normal;
   word-wrap: break-word;
   opacity: 0;
+  visibility: hidden;
+  display: none;
   transform: translateY(4px);
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition: opacity 0.1s ease, transform 0.1s ease;
   line-height: 1.4;
 }
 #app-tooltip.vis {
   opacity: 1;
+  visibility: visible;
+  display: block;
   transform: translateY(0);
 }
 
@@ -7123,19 +7533,19 @@ label[for="watch-auto-reload"] {
   <div class="vtabs" id="vtabs">
     <!-- Tier 1: Core Forensic Views -->
     <div class="vt-core-group" role="tablist" aria-label="Core Forensic Views">
-      <div class="vt active" data-v="split" role="tab" tabindex="0" title="Split Panel View (Alt+1 / 1)">
+      <div class="vt active" data-v="split" role="tab" tabindex="0" data-tip="Split Panel View (Alt+1 / 1)" title="Split Panel View (Alt+1 / 1)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span>
         <span>Split</span>
       </div>
-      <div class="vt" data-v="gantt" role="tab" tabindex="0" title="Interactive Gantt Timeline View (Alt+2 / 2)">
+      <div class="vt" data-v="gantt" role="tab" tabindex="0" data-tip="Interactive Gantt Timeline View (Alt+2 / 2)" title="Interactive Gantt Timeline View (Alt+2 / 2)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
         <span>Timeline</span>
       </div>
-      <div class="vt" data-v="tree" role="tab" tabindex="0" title="Execution Tree View (Alt+3 / 3)">
+      <div class="vt" data-v="tree" role="tab" tabindex="0" data-tip="Execution Tree View (Alt+3 / 3)" title="Execution Tree View (Alt+3 / 3)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <span>Tree</span>
       </div>
-      <div class="vt" data-v="trace" role="tab" tabindex="0" title="Trace Explorer View (Alt+4 / 4)">
+      <div class="vt" data-v="trace" role="tab" tabindex="0" data-tip="Trace Explorer View (Alt+4 / 4)" title="Trace Explorer View (Alt+4 / 4)">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
         <span>Traces</span>
       </div>
@@ -10560,7 +10970,8 @@ const TR={
   _content: null,
   _visibleNodes: [],
   _activeTree: null,
-  _rowHeight: 28,
+  _rowHeight: 32,
+  _maxDuration: 1,
   
   flatten(nodes, depth = 0, parent = null, flatList = []) {
     for (const n of (nodes || [])) {
@@ -10668,14 +11079,21 @@ const TR={
     const thrSuffix = thrLabel ? ` · ${thrLabel}` : '';
     el.innerHTML = `
       <div class="tw" style="display:flex; flex-direction:column; height:100%; min-height:0; width:100%;">
-        <div class="pt" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui); white-space:nowrap; overflow:hidden;">
+        <div class="pt tree-toolbar" style="flex-shrink:0; height:38px; min-height:38px; padding:6px 12px; background:var(--bg-2); border-bottom:1px solid var(--bdr); display:flex; align-items:center; box-sizing:border-box; font-size:12px; font-weight:600; font-family:var(--ui); white-space:nowrap; overflow:hidden;">
           <span style="display:inline-flex; align-items:center; gap:4px; flex-shrink:0;"><span>┠</span> Execution Tree</span>
           <span class="badge b-gray mla" id="tree-badge-count" style="font-size:10px; flex-shrink:0;">${tree.length} root node${tree.length!==1?'s':''}${thrSuffix}</span>
-          <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:4px; flex-shrink:0;">Expand All</button>
-          <button class="btn btn-g btn-xs" id="btn-tree-col" style="flex-shrink:0;">Collapse All</button>
+          <div class="tree-depth-group" style="display:inline-flex; align-items:center; margin-left:8px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:5px; padding:1px; flex-shrink:0;">
+            <button class="tree-depth-btn" data-depth="1" title="Show Level 1 (Roots only)">D1</button>
+            <button class="tree-depth-btn" data-depth="2" title="Show Level 2">D2</button>
+            <button class="tree-depth-btn" data-depth="3" title="Show Level 3">D3</button>
+            <button class="tree-depth-btn active" data-depth="all" title="Show All Levels">All</button>
+          </div>
+          <button class="btn btn-g btn-xs" id="btn-tree-exp" style="margin-left:6px; flex-shrink:0;">Expand All</button>
+          <button class="btn btn-g btn-xs" id="btn-tree-col" style="margin-left:4px; flex-shrink:0;">Collapse All</button>
+          <button class="btn btn-g btn-xs" id="btn-tree-map-toggle" title="Toggle Minimap" style="margin-left:4px; flex-shrink:0;">Map</button>
         </div>
         <div id="tree-scroll-wrap" style="flex:1; position:relative; min-height:0; display:flex; flex-direction:column;">
-          <div class="vscroll-container" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:hidden; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
+          <div class="vscroll-container tree-vscroll" id="tree-vscroll" style="flex:1; overflow-y:auto; overflow-x:auto; position:relative; min-height:100px; max-height:100%; background:var(--bg-0);">
             <div class="vscroll-spacer" id="tree-spacer" style="height:0px; position:absolute; left:0; top:0; right:0; pointer-events:none;"></div>
             <div class="vscroll-content" id="tree-content" style="position:absolute; left:0; top:0; right:0; will-change:transform;"></div>
           </div>
@@ -10693,12 +11111,49 @@ const TR={
         if (typeof INSPECTOR !== 'undefined' && INSPECTOR.isOpen()) INSPECTOR.close();
       }
     });
+
+    el.querySelectorAll('.tree-depth-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.querySelectorAll('.tree-depth-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const d = btn.dataset.depth;
+        if (d === 'all') {
+          this.expandAll(true);
+        } else {
+          this.collapseToDepth(parseInt(d, 10));
+        }
+      });
+    });
+
     el.querySelector('#btn-tree-exp').addEventListener('click', () => this.expandAll(true));
     el.querySelector('#btn-tree-col').addEventListener('click', () => this.expandAll(false));
+    const btnMap = el.querySelector('#btn-tree-map-toggle');
+    if (btnMap) {
+      btnMap.addEventListener('click', () => {
+        const isAttached = !!document.getElementById('ll-minimap-wrap');
+        S.treeMinimapEnabled = !isAttached;
+        if (typeof OVERDRIVE !== 'undefined' && OVERDRIVE.afterRender) {
+          OVERDRIVE.afterRender();
+        }
+        btnMap.classList.toggle('active', S.treeMinimapEnabled);
+      });
+    }
     
     this._content.addEventListener('click', (e) => this.handleClick(e));
     this._content.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
     
+    this.updateLayout();
+  },
+
+  collapseToDepth(targetDepth) {
+    const setDepth = (nodes) => {
+      for (const n of (nodes || [])) {
+        n.expanded = (n.depth < targetDepth - 1);
+        if (n.events && n.events.length > 0) setDepth(n.events);
+      }
+    };
+    setDepth(this._activeTree);
+    this.updateVisible();
     this.updateLayout();
   },
 
@@ -10710,6 +11165,14 @@ const TR={
       }
     };
     setExpanded(this._activeTree);
+    if (this._container) {
+      const p = this._container.closest('.tw');
+      if (p) {
+        p.querySelectorAll('.tree-depth-btn').forEach(b => {
+          b.classList.toggle('active', expanded ? b.dataset.depth === 'all' : b.dataset.depth === '1');
+        });
+      }
+    }
     this.updateVisible();
     this.updateLayout();
   },
@@ -10717,6 +11180,9 @@ const TR={
   updateLayout() {
     const totalHeight = this._visibleNodes.length * this._rowHeight;
     this._spacer.style.height = `${totalHeight}px`;
+    
+    // Compute max duration for relative sparkbar rendering
+    this._maxDuration = Math.max(1, ...(this._visibleNodes || []).map(n => n.duration || 0));
     
     const countBadge = $('tree-badge-count');
     if (countBadge && this._activeTree) {
@@ -10753,53 +11219,99 @@ const TR={
     const ico = esc(n.visualStyle?.icon || '•');
     const kids = n.hasChildren;
     const dur = n.duration != null ? fmtMs(n.duration) : null;
-    const ts = n.timestamp != null ? new Date(n.timestamp).toISOString().replace('T', ' ').slice(0, 23) : '';
+    const ts = n.timestamp != null ? new Date(n.timestamp).toISOString().slice(11, 23) : '';
     const bg = ibg(col);
-    const durB = dur ? `<span class="tdr" style="color:${col};">${esc(dur)}</span>` : '';
-    const hotB = HS.badge(n._hp);
-    const smB = n._sm != null && n.duration != null && n._sm !== n.duration ? `<span class="ts-b">self ${esc(fmtMs(n._sm))}</span>` : '';
-    const tsB = ts ? `<span class="tts">${esc(ts)}</span>` : '';
     
+    // Status Badges (High Signal Only — suppress noise like normal INFO pills)
     let ab = '';
     if (n.level) {
       const lvl = n.level.trim().toUpperCase();
-      const bCls = ['ERROR', 'FATAL', 'FAIL', 'SEVERE', 'CRITICAL'].includes(lvl) ? 'b-red' : ['WARN', 'WARNING'].includes(lvl) ? 'b-amber' : ['INFO'].includes(lvl) ? 'b-blue' : ['DEBUG'].includes(lvl) ? 'b-gray' : 'b-pur';
-      ab += `<span class="badge ${bCls}" style="margin-left:4px; font-weight:bold; letter-spacing:0.3px;">${esc(lvl)}</span>`;
+      if (['ERROR', 'FATAL', 'FAIL', 'SEVERE', 'CRITICAL'].includes(lvl)) {
+        ab += `<span class="tbadge tbadge-red">${esc(lvl)}</span>`;
+      } else if (['WARN', 'WARNING'].includes(lvl)) {
+        ab += `<span class="tbadge tbadge-amber">WARN</span>`;
+      }
     }
-    if (n._isOutlier) ab += `<span class="badge b-red" style="margin-left:4px;">OUTLIER</span>`;
-    if (n._isSlaBreach) ab += `<span class="badge b-red" style="border:1px dashed var(--red); background:transparent; color:var(--red); margin-left:4px;">SLA BREACH</span>`;
-    if (n._cause) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 20) + (n._cause.length > 20 ? '…' : ''))}</span>`;
-    if (n.correlationId) ab += `<span class="badge tts-badge" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by this Trace ID">${esc(n.correlationId)}</span>`;
-    if (n._isQuietPeriod) ab += `<span class="badge b-amber" style="margin-left:4px;" title="Quiet period gap of ${esc(fmtMs(n._quietGap))}">⧖ GAP: ${esc(fmtMs(n._quietGap))}</span>`;
-    if (n._isCriticalPath) ab += `<span class="badge b-amber" style="border:1px solid var(--amber); background:rgba(255,149,0,0.15); color:var(--amber); margin-left:4px;" title="Part of the Critical Path">✦ CRITICAL</span>`;
-    if (n.thread && S.threads && S.threads.length > 1) ab += `<span class="badge b-gray" style="margin-left:4px; font-size:9px;" title="Thread: ${esc(n.thread)}">${esc(n.thread)}</span>`;
+    if (n._isOutlier) ab += `<span class="tbadge tbadge-outlier">OUTLIER</span>`;
+    if (n._isSlaBreach) ab += `<span class="tbadge tbadge-sla">SLA BREACH</span>`;
+    if (n._cause) ab += `<span class="tbadge tbadge-amber" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 18) + (n._cause.length > 18 ? '…' : ''))}</span>`;
+    if (n.correlationId) ab += `<span class="tbadge tbadge-trace" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by Trace ID">#${esc(n.correlationId)}</span>`;
+    if (n._isCriticalPath) ab += `<span class="tbadge tbadge-critical" title="Part of the Critical Path">✦ CRITICAL</span>`;
+    if (n._isQuietPeriod) ab += `<span class="tbadge tbadge-amber" title="Quiet period gap: ${esc(fmtMs(n._quietGap))}">⧖ GAP</span>`;
 
-    const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};">${esc(n.elementName)}</span>` : '';
-    const payB = n.payload ? `<span class="tpy" style="margin-left:8px; color:var(--t3);">${esc(n.payload)}</span>` : '';
-    const noteB = (S.annotations && S.annotations[n.id]) ? (() => {
+    const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};" title="${esc(n.elementName)}">${esc(n.elementName)}</span>` : '';
+    
+    // Notes
+    let noteB = '';
+    if (S.annotations && S.annotations[n.id]) {
       const txt = getAnnotationText(S.annotations[n.id]);
-      return txt ? `<span class="tnt" data-tip="Note: ${esc(txt)}" style="margin-left:8px; color:var(--amber); display:inline-flex; align-items:center; cursor:help;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px; flex-shrink:0;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> ${esc(txt.slice(0,15))}${txt.length > 15 ? '…' : ''}</span>` : '';
-    })() : '';
+      if (txt) {
+        noteB = `<span class="tbadge tbadge-note tnt" title="Note: ${esc(txt)}">✎ Note</span>`;
+      }
+    }
+    if (noteB) ab += noteB;
+
+    // Tree Spine Guides (Visual Branch Lines)
+    let guideLines = '';
+    const d = n.depth || 0;
+    for (let i = 0; i < d; i++) {
+      const leftPos = (i * 18) + 12;
+      if (i === d - 1) {
+        guideLines += `<span class="tree-guide-branch" style="left:${leftPos}px;"></span>`;
+      } else {
+        guideLines += `<span class="tree-guide-line" style="left:${leftPos}px;"></span>`;
+      }
+    }
     
-    const chev = kids ? `<span class="tchev ${n.expanded ? 'expanded' : ''}" style="display:inline-block; transition:transform 0.15s; cursor:pointer; font-size:9px; margin-right:4px; color:var(--t4);">${n.expanded ? '▼' : '▶'}</span>` : '<span style="display:inline-block; width:13px;"></span>';
-    
-    const indent = n.depth * 16;
+    const chevMargin = d === 0 ? 8 : (d * 18 + 6);
+    const chev = kids 
+      ? `<button class="tchev ${n.expanded ? 'expanded' : ''}" style="margin-left:${chevMargin}px;" aria-label="${n.expanded ? 'Collapse' : 'Expand'}">▼</button>` 
+      : `<span class="tchev-leaf" style="margin-left:${chevMargin}px;"></span>`;
+
+    // Zone 2: Payload Preview Chip
+    let payCol = '';
+    if (n.payload) {
+      payCol = `<div class="tree-payload-col"><span class="tree-payload-preview tpy" title="${esc(n.payload)}">${esc(n.payload)}</span></div>`;
+    } else {
+      payCol = `<div class="tree-payload-col"></div>`;
+    }
+
+    // Zone 3: Telemetry Strip (Sparkbar, Duration, Self Time, Thread, Timestamp)
+    const maxDur = this._maxDuration || 1;
+    const durVal = n.duration != null ? n.duration : 0;
+    const pct = Math.min(100, Math.max(3, Math.round((durVal / maxDur) * 100)));
+    const barColorClass = (n._isSlaBreach || n._isOutlier) ? 'bar-red' : pct > 50 ? 'bar-amber' : 'bar-blue';
+    const sparkbarHtml = n.duration != null ? `
+      <div class="tree-sparkbar" title="Duration: ${fmtMs(durVal)} (${pct}% of max)">
+        <div class="tree-sparkbar-fill ${barColorClass}" style="width:${pct}%;"></div>
+      </div>` : '';
+      
+    const durHtml = dur ? `<span class="tree-metric-dur tdr ${n._isSlaBreach ? 'breach' : ''}" style="color:${n._isSlaBreach ? 'var(--red)' : col};">${esc(dur)}</span>` : '';
+    const selfHtml = (n._sm != null && n.duration != null && n._sm !== n.duration) ? `<span class="tree-metric-self" title="Self execution time">self ${esc(fmtMs(n._sm))}</span>` : '';
+    const thrHtml = (n.thread && S.threads && S.threads.length > 1) ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` : '';
+    const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : '';
+
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
-    
+
     return `
-      <div class="tree-row${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px; display:flex; align-items:center; padding-left:${indent}px; border-bottom:1px solid var(--bdr-d); font-size:12px; white-space:nowrap; overflow:hidden; user-select:none; cursor:pointer;">
-        ${chev}
-        <div class="tico" style="background:${bg}; color:${col}; width:16px; height:16px; border-radius:var(--rounded-sm); display:flex; align-items:center; justify-content:center; font-size:10px; margin-right:6px; flex-shrink:0;">${ico}</div>
-        <div class="tbd" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;">
-          <span class="tnm" style="color:${col}; font-weight:bold;">${esc(n.ruleName)}</span>
+      <div class="tree-row${kbFocusClass}" data-idx="${idx}" style="height:${this._rowHeight}px;" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+        <div class="tree-spine">
+          ${guideLines}
+          ${chev}
+          <div class="tico" style="background:${bg}; color:${col};">${ico}</div>
+          <span class="tnm" style="color:${col};">${esc(n.ruleName)}</span>
           ${elB}
-          ${durB}
-          ${hotB}
-          ${smB}
-          ${tsB}
-          ${ab}
-          ${payB}
-          ${noteB}
+          <div class="tree-status-group">
+            ${ab}
+          </div>
+        </div>
+        ${payCol}
+        <div class="tree-telemetry-col">
+          ${sparkbarHtml}
+          ${durHtml}
+          ${selfHtml}
+          ${thrHtml}
+          ${tsHtml}
         </div>
       </div>
     `;
@@ -10812,7 +11324,7 @@ const TR={
     const n = this._visibleNodes[idx];
     if (!n) return;
     
-    if (e.target.classList.contains('tchev')) {
+    if (e.target.closest('.tchev')) {
       n.expanded = !n.expanded;
       this.updateVisible();
       this.updateLayout();
@@ -25342,9 +25854,18 @@ const OVERDRIVE = (() => {
       const treeContainer = document.getElementById('tree-vscroll');
       const TR_ref = typeof TR !== 'undefined' ? TR : null;
       if (treeContainer && TR_ref?._visibleNodes?.length > 0 && typeof S !== 'undefined' && S.viewMode === 'tree') {
-        const totalH = TR_ref._visibleNodes.length * (TR_ref._rowHeight || 24);
-        MINIMAP.attach(treeContainer, TR_ref._visibleNodes, totalH, TR_ref._rowHeight || 24);
-        MINIMAP.refresh(TR_ref._visibleNodes, totalH);
+        const totalH = TR_ref._visibleNodes.length * (TR_ref._rowHeight || 32);
+        const containerH = treeContainer.clientHeight || 500;
+        const overflows = totalH > containerH;
+        const wantMap = S.treeMinimapEnabled === true || (S.treeMinimapEnabled !== false && overflows);
+        if (wantMap) {
+          MINIMAP.attach(treeContainer, TR_ref._visibleNodes, totalH, TR_ref._rowHeight || 32);
+          MINIMAP.refresh(TR_ref._visibleNodes, totalH);
+        } else {
+          MINIMAP.detach();
+        }
+        const btnMap = document.getElementById('btn-tree-map-toggle');
+        if (btnMap) btnMap.classList.toggle('active', wantMap);
       } else {
         MINIMAP.detach();
       }
@@ -26584,13 +27105,18 @@ UI.svm(S.viewMode);
         const target = e.target.closest('[data-tip]');
         if (!target) return;
         clearTimeout(this.timer);
-        this.timer = setTimeout(() => { this.show(target); }, 120);
+        this.timer = setTimeout(() => {
+          if (target && target.isConnected && target.matches(':hover')) {
+            this.show(target);
+          }
+        }, 120);
       });
       document.addEventListener('mouseout', e => {
         const target = e.target.closest('[data-tip]');
-        if (!target) return;
-        clearTimeout(this.timer);
-        this.hide();
+        if (target && (!e.relatedTarget || !target.contains(e.relatedTarget))) {
+          clearTimeout(this.timer);
+          this.hide();
+        }
       });
       document.addEventListener('mousemove', e => {
         if (this.el && this.el.classList.contains('vis')) {
@@ -26598,6 +27124,19 @@ UI.svm(S.viewMode);
         }
       });
       document.addEventListener('mouseleave', () => {
+        clearTimeout(this.timer);
+        this.hide();
+      });
+      window.addEventListener('scroll', () => {
+        clearTimeout(this.timer);
+        this.hide();
+      }, { capture: true, passive: true });
+      window.addEventListener('blur', () => {
+        clearTimeout(this.timer);
+        this.hide();
+      });
+      document.addEventListener('click', () => {
+        clearTimeout(this.timer);
         this.hide();
       });
       document.addEventListener('keydown', e => {
@@ -26614,9 +27153,13 @@ UI.svm(S.viewMode);
       if (!this.el) return;
       this.el.textContent = target.dataset.tip;
       this.el.classList.add('vis');
+      this.el.setAttribute('aria-hidden', 'false');
     },
     hide() {
-      if (this.el) this.el.classList.remove('vis');
+      if (this.el) {
+        this.el.classList.remove('vis');
+        this.el.setAttribute('aria-hidden', 'true');
+      }
     },
     position(x, y) {
       if (!this.el) return;
@@ -26630,7 +27173,7 @@ UI.svm(S.viewMode);
       this.el.style.top = top + 'px';
     }
   };
-  setTimeout(() => TIP.init(), 100);
+  TIP.init();
 
   // 2. CountUp Animation
   window.countUp = function(el, target, suffix = '') {

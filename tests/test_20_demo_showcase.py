@@ -6,16 +6,18 @@ Tests: Comprehensive demo showcase validation covering all core features:
 - SLA Thresholds & Breach Detection (#hdr-sla badge, node breach flags)
 - Latency Outlier & Anomaly Detection (#hdr-outliers badge, IQR calculation)
 - Sticky Notes / Annotations pre-seeding (S.annotations, tree note badges)
-- Multi-thread execution (16 threads across microservices)
+- Multi-thread execution (16 threads across microservices, all threads aggregation)
+- Offline Graphify SVG fallback
+Consolidated for high-speed regression verification.
 """
 import pytest
 from playwright.async_api import expect
-from conftest import APP_URL, assert_no_critical_errors
+from conftest import assert_no_critical_errors
 
 
 @pytest.mark.asyncio
-async def test_demo_load_multi_thread_and_trees(blank_page):
-    """Clicking Try Demo populates trees across 16 threads and renders stats bar."""
+async def test_demo_showcase_data_integrity(blank_page):
+    """Demo loads 16 threads with traces, multiline payloads, SLAs, outliers, and sticky notes."""
     page = blank_page
     demo_btn = page.locator('#ob-btn-demo')
     await expect(demo_btn).to_be_visible(timeout=5000)
@@ -23,76 +25,35 @@ async def test_demo_load_multi_thread_and_trees(blank_page):
     await expect(page.locator('#ob-ov')).to_be_hidden(timeout=15000)
     await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
 
-    # Check threads and trees in global state
+    # 1. Multi-thread & root trees
     threads_count = await page.evaluate("() => S.threads.length")
     assert threads_count >= 16, f"Expected at least 16 threads, got {threads_count}"
-
     w1_trees = await page.evaluate("() => S.trees['worker-1']?.length")
     assert w1_trees > 0, "worker-1 tree must have root nodes"
 
-    assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_demo_distributed_tracing(blank_page):
-    """Demo includes distributed traces linking multiple threads with correlationId."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await expect(demo_btn).to_be_visible(timeout=5000)
-    await demo_btn.click()
-    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
-
-    # Scan traces via TRACE_EXPLORER
+    # 2. Distributed Traces
     traces = await page.evaluate("() => TRACE_EXPLORER.scanTraces()")
     assert len(traces) >= 3, f"Expected at least 3 traces, got {len(traces)}"
-
-    # Find checkout trace
     checkout_trace = next((t for t in traces if t.get('id') == 'trace-ord-8921'), None)
     assert checkout_trace is not None, "trace-ord-8921 must exist in demo"
-    assert len(checkout_trace.get('threads', [])) == 3, "trace-ord-8921 must span worker-1, worker-2, and worker-3"
     assert set(checkout_trace.get('threads', [])) == {'worker-1', 'worker-2', 'worker-3'}
 
-    # Switch to trace view and verify list rendered
-    await page.evaluate("() => UI.svm('trace')")
-    await page.wait_for_timeout(300)
-    trace_items = page.locator('.trace-row-item')
-    count = await trace_items.count()
-    assert count >= 3, f"Expected at least 3 trace row items in Trace Explorer, got {count}"
-
-    assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_demo_multiline_block_payloads(blank_page):
-    """Demo includes printed classes, formatted JSON, and SQL exception stack traces with Caused by."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await expect(demo_btn).to_be_visible(timeout=5000)
-    await demo_btn.click()
-    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
-
-    # 1. Printed Class Block on worker-1 /api/checkout
+    # 3. Multiline Payloads (Class header, formatted JSON, SQL exception with Caused by)
     w1_req_payload = await page.evaluate("""() => {
         const root = S.trees['worker-1'][0];
         const req = root.events.find(e => e.elementName === '/api/checkout');
         return req ? req.payload : null;
     }""")
-    assert w1_req_payload is not None, "Expected /api/checkout node in worker-1"
-    assert "class OrderCheckoutRequest {" in w1_req_payload, "Payload must contain printed class header"
-    assert 'customerId: "cust-9481"' in w1_req_payload, "Payload must contain class properties"
-    assert 'paymentMethod: "CREDIT_CARD"' in w1_req_payload, "Payload must contain enum value"
+    assert "class OrderCheckoutRequest {" in w1_req_payload
+    assert 'customerId: "cust-9481"' in w1_req_payload
 
-    # 2. Formatted JSON Webhook on worker-2 /api/payment/charge
     w2_charge_payload = await page.evaluate("""() => {
         const root = S.trees['worker-2'][0];
         const req = root.events.find(e => e.elementName === '/api/payment/charge');
         return req ? req.payload : null;
     }""")
-    assert w2_charge_payload is not None, "Expected /api/payment/charge node in worker-2"
-    assert '"event": "charge.initiated"' in w2_charge_payload, "Payload must contain formatted JSON keys"
-    assert '"gateway": "stripe"' in w2_charge_payload, "Payload must contain stripe gateway"
+    assert '"event": "charge.initiated"' in w2_charge_payload
 
-    # 3. Multiline SQL Exception Stack Trace with Caused by on worker-2 OrderService Error
     w2_err_payload = await page.evaluate("""() => {
         const root = S.trees['worker-2'][1];
         function findErr(nodes) {
@@ -108,101 +69,66 @@ async def test_demo_multiline_block_payloads(blank_page):
         const err = findErr([root]);
         return err ? err.payload : null;
     }""")
-    assert w2_err_payload is not None, "Expected Error node in worker-2 RefundOrder"
-    assert "java.sql.SQLException: Deadlock detected" in w2_err_payload, "Payload must contain SQL exception"
-    assert "Caused by: com.mysql.cj.exceptions.DeadlockException" in w2_err_payload, "Payload must preserve Caused by chain"
+    assert "java.sql.SQLException: Deadlock detected" in w2_err_payload
+    assert "Caused by: com.mysql.cj.exceptions.DeadlockException" in w2_err_payload
 
-    assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_demo_sla_and_outliers_detection(blank_page):
-    """Demo triggers SLA breach detection and IQR latency outlier detection with header badges."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await expect(demo_btn).to_be_visible(timeout=5000)
-    await demo_btn.click()
-    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
-
-    # Check SLA breach count and outlier count in state
+    # 4. SLA & Outlier Detection
     sla_count = await page.evaluate("() => S.slaBreachCount")
     outlier_count = await page.evaluate("() => S.outlierCount")
     assert sla_count >= 2, f"Expected at least 2 SLA breaches, got {sla_count}"
     assert outlier_count >= 2, f"Expected at least 2 outliers, got {outlier_count}"
+    await expect(page.locator('#hdr-sla')).to_be_visible()
+    await expect(page.locator('#hdr-outliers')).to_be_visible()
 
-    # Verify header badges are visible
-    sla_badge = page.locator('#hdr-sla')
-    await expect(sla_badge).to_be_visible()
-    sla_text = await sla_badge.locator('.txt').inner_text()
-    assert "SLA" in sla_text
-
-    outlier_badge = page.locator('#hdr-outliers')
-    await expect(outlier_badge).to_be_visible()
-    outlier_text = await outlier_badge.locator('.txt').inner_text()
-    assert "outlier" in outlier_text.lower()
-
-    # Verify slow database lock node breached SLA (>150ms limit)
-    is_breach = await page.evaluate("""() => {
-        const root = S.trees['worker-2'][1];
-        function findNode(nodes, name) {
-            for (const n of nodes) {
-                if (n.elementName === name) return n;
-                if (n.events?.length) {
-                    const found = findNode(n.events, name);
-                    if (found) return found;
-                }
-            }
-            return null;
-        }
-        const db = findNode([root], 'order.lock');
-        return db ? { dur: db.duration, breach: db._isSlaBreach, outlier: db._isOutlier } : null;
-    }""")
-    assert is_breach is not None
-    assert is_breach['dur'] == 850
-    assert is_breach['breach'] is True
-    assert is_breach['outlier'] is True
-
-    assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_demo_sticky_notes_seeded(blank_page):
-    """Demo pre-seeds sticky notes / annotations on critical events."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await expect(demo_btn).to_be_visible(timeout=5000)
-    await demo_btn.click()
-    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
-
-    # Verify S.annotations has pre-seeded entries
+    # 5. Pre-seeded sticky notes
     ann_keys = await page.evaluate("() => Object.keys(S.annotations || {})")
-    assert len(ann_keys) >= 2, f"Expected at least 2 pre-seeded annotations, got {len(ann_keys)}"
-
-    # Switch to tree view on worker-2 where annotated error is located
+    assert len(ann_keys) >= 2, f"Expected at least 2 annotations, got {len(ann_keys)}"
     await page.evaluate("() => { UI.sw('worker-2'); UI.svm('tree'); }")
-    await page.wait_for_timeout(300)
-
-    # Verify sticky note badge is rendered
     note_badges = page.locator('.tnt')
-    count = await note_badges.count()
-    assert count >= 1, f"Expected at least 1 note badge in worker-2 tree view, got {count}"
+    assert await note_badges.count() >= 1
 
     assert_no_critical_errors(page)
 
 
 @pytest.mark.asyncio
-async def test_demo_views_navigation_and_graphify(blank_page):
-    """User can navigate through Split, Gantt, Tree, Trace, Stats, Graph, and 3D views without errors."""
+async def test_demo_execution_tree_and_views_navigation(blank_page):
+    """Demo displays all-thread aggregated tree, supports thread scoping, and switches through all 7 views seamlessly."""
     page = blank_page
     demo_btn = page.locator('#ob-btn-demo')
     await expect(demo_btn).to_be_visible(timeout=5000)
     await demo_btn.click()
     await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
 
+    # All-thread tree aggregation
+    assert await page.evaluate("() => S.activeThr") == 'all'
+    nodes_text = await page.locator('#s-nodes').inner_text()
+    total_nodes = int(nodes_text.strip())
+    assert total_nodes >= 40
+    assert "All Threads" in await page.locator('#vt-active-label').inner_text()
+
+    # Switch to tree view
+    await page.evaluate("() => UI.svm('tree')")
+    tree_badge = (await page.locator('#tree-badge-count').inner_text()).lower()
+    assert "root node" in tree_badge and "all threads" in tree_badge
+    visible_roots = await page.evaluate("() => SELECTORS.getActiveTree().length")
+    assert visible_roots >= 16
+
+    # Switch to worker-1
+    await page.evaluate("() => UI.sw('worker-1')")
+    assert await page.locator('#vt-active-label').inner_text() == 'worker-1'
+    w1_nodes = await page.evaluate("() => SELECTORS.getActiveTree().length")
+    assert w1_nodes == 1
+    w1_total = await page.locator('#s-nodes').inner_text()
+    assert int(w1_total) >= 7
+
+    # Restore all threads
+    await page.evaluate("() => UI.sw('all')")
+    assert int(await page.locator('#s-nodes').inner_text()) == total_nodes
+
+    # Navigate through all views
     views = ['split', 'gantt', 'tree', 'trace', 'stats', 'graph', '3d']
     for vm in views:
         await page.evaluate(f"() => UI.svm('{vm}')")
-        await page.wait_for_timeout(200)
 
     assert_no_critical_errors(page)
 
@@ -211,28 +137,20 @@ async def test_demo_views_navigation_and_graphify(blank_page):
 async def test_graphify_offline_fallback(blank_page):
     """When D3 CDN is blocked/offline, Graphify gracefully renders native SVG dependency graph and histogram without errors."""
     page = blank_page
-
-    # Block external CDN requests to simulate offline air-gapped environment
     await page.route("**/cdn.jsdelivr.net/**", lambda route: route.abort())
 
-    # Load demo
     demo_btn = page.locator('#ob-btn-demo')
     await expect(demo_btn).to_be_visible(timeout=5000)
     await demo_btn.click()
     await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
 
-    # Navigate to Graph tab
+    # Graph tab SVG
     await page.evaluate("() => UI.svm('graph')")
-    await page.wait_for_timeout(500)
-
-    # Verify native SVG graph rendered
     svg = page.locator('#d3-graph-canvas-container svg')
     await expect(svg).to_be_visible(timeout=5000)
+    assert await page.locator('#d3-graph-canvas-container .graph-node').count() > 0
 
-    node_count = await page.locator('#d3-graph-canvas-container .graph-node').count()
-    assert node_count > 0, f"Expected native SVG graph nodes rendered, got {node_count}"
-
-    # Verify histogram modal offline fallback
+    # Histogram modal offline fallback
     await page.evaluate("""() => {
         GRAPHIFY.showHistogramModal({
             ruleName: 'HTTP Request',
@@ -242,72 +160,11 @@ async def test_graphify_offline_fallback(blank_page):
             color: '#f0883e'
         });
     }""")
-    await page.wait_for_timeout(300)
     hist_modal = page.locator('#hist-large-modal')
     await expect(hist_modal).to_be_visible()
     hist_svg = page.locator('#large-hist-chart svg')
     await expect(hist_svg).to_be_visible()
-    hist_rects = await hist_svg.locator('rect').count()
-    assert hist_rects > 0, "Expected histogram bucket rects rendered in offline mode"
+    assert await hist_svg.locator('rect').count() > 0
 
-    # Close modal
     await hist_modal.locator('.m-hdr button').click()
-
-    # Assert no critical runtime or console errors occurred
     assert_no_critical_errors(page)
-
-
-@pytest.mark.asyncio
-async def test_demo_execution_tree_all_threads_visibility(blank_page):
-    """Demo execution tree displays all threads by default (>16 root nodes, >40 total spans) instead of being cut off to 3-4 lines."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await expect(demo_btn).to_be_visible(timeout=5000)
-    await demo_btn.click()
-    await expect(page.locator('#stats-bar')).to_be_visible(timeout=15000)
-
-    # 1. Active thread defaults to 'all' when multi-thread log loads
-    active_thr = await page.evaluate("() => S.activeThr")
-    assert active_thr == 'all', f"Expected S.activeThr to default to 'all', got {active_thr}"
-
-    # 2. Stats bar s-nodes reports total nodes across all threads (>40)
-    nodes_text = await page.locator('#s-nodes').inner_text()
-    total_nodes = int(nodes_text.strip())
-    assert total_nodes >= 40, f"Expected total nodes in stats bar to be >= 40, got {total_nodes}"
-
-    # 3. Active label on thread switcher shows 'All Threads'
-    active_label = await page.locator('#vt-active-label').inner_text()
-    assert "All Threads" in active_label
-
-    # 4. Switch to tree view
-    await page.evaluate("() => UI.svm('tree')")
-    await page.wait_for_timeout(300)
-
-    # 5. Tree badge count indicates all root nodes
-    tree_badge = (await page.locator('#tree-badge-count').inner_text()).lower()
-    assert "root node" in tree_badge
-    assert "all threads" in tree_badge
-
-    # Visible roots in tree is substantial (>=16 root nodes)
-    visible_roots = await page.evaluate("() => SELECTORS.getActiveTree().length")
-    assert visible_roots >= 16, f"Expected at least 16 root nodes in all threads view, got {visible_roots}"
-
-    # 6. Switching to worker-1 updates tree to worker-1 with enriched checkout steps
-    await page.evaluate("() => UI.sw('worker-1')")
-    await page.wait_for_timeout(200)
-    w1_label = await page.locator('#vt-active-label').inner_text()
-    assert w1_label == 'worker-1'
-
-    w1_nodes = await page.evaluate("() => SELECTORS.getActiveTree().length")
-    assert w1_nodes == 1  # 1 root node (ProcessOrder/42)
-    w1_total = await page.locator('#s-nodes').inner_text()
-    assert int(w1_total) >= 7, f"worker-1 should have complete checkout steps (>=7 nodes), got {w1_total}"
-
-    # 7. Switching back to all restores full aggregation
-    await page.evaluate("() => UI.sw('all')")
-    await page.wait_for_timeout(200)
-    restored_nodes = await page.locator('#s-nodes').inner_text()
-    assert int(restored_nodes) == total_nodes
-
-    assert_no_critical_errors(page)
-

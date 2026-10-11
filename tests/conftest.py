@@ -61,71 +61,72 @@ def pytest_configure(config):
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
 @pytest.fixture(scope="session")
-def event_loop_policy():
-    """Use default asyncio event loop policy."""
-    import asyncio
-    return asyncio.DefaultEventLoopPolicy()
-
-
-@pytest.fixture(scope="function")
-async def page_with_data(pytestconfig):
+async def browser_instance():
     """
-    Launches Chromium, navigates to loglens.html, dismisses the onboarding
-    overlay, and injects a standard synthetic dataset into S.trees so every
-    test starts from a consistent, data-loaded state.
-
-    Yields the Playwright Page object. Automatically closes browser on teardown.
+    Launches Chromium once for the entire test session.
+    High-performance browser reuse across all regression tests.
     """
-    console_errors = []
     async with async_playwright() as pw:
-        browser: Browser = await pw.chromium.launch(headless=True)
-        ctx: BrowserContext = await browser.new_context(
-            viewport={'width': 1400, 'height': 900}
+        browser: Browser = await pw.chromium.launch(
+            headless=True,
+            args=['--disable-dev-shm-usage', '--no-sandbox']
         )
-        page: Page = await ctx.new_page()
-
-        # Capture console errors for post-test assertion
-        page.on('console', lambda m: console_errors.append(m.text) if m.type == 'error' else None)
-        page.on('pageerror', lambda e: console_errors.append(f'PAGE ERROR: {e}'))
-
-        await page.goto(APP_URL, wait_until='domcontentloaded')
-        await page.wait_for_timeout(700)
-        await page.evaluate(DISMISS_ONBOARDING_JS)
-        await page.evaluate(DEMO_TREES_JS)
-
-        page._ll_console_errors = console_errors  # attach for test access
-
-        yield page
-
+        yield browser
         await browser.close()
 
 
 @pytest.fixture(scope="function")
-async def blank_page(pytestconfig):
+async def page_with_data(browser_instance):
     """
-    Launches Chromium and navigates to loglens.html WITHOUT injecting demo data.
+    Creates an isolated BrowserContext and Page, navigates to loglens.html,
+    dismisses onboarding, and injects synthetic demo data into S.trees.
+    Context is destroyed after each test, guaranteeing complete test isolation.
+    """
+    console_errors = []
+    ctx: BrowserContext = await browser_instance.new_context(
+        viewport={'width': 1400, 'height': 900}
+    )
+    page: Page = await ctx.new_page()
+
+    page.on('console', lambda m: console_errors.append(m.text) if m.type == 'error' else None)
+    page.on('pageerror', lambda e: console_errors.append(f'PAGE ERROR: {e}'))
+
+    await page.goto(APP_URL, wait_until='domcontentloaded')
+    await page.wait_for_function('() => typeof UI !== "undefined" && !!document.getElementById("res")')
+    await page.evaluate(DISMISS_ONBOARDING_JS)
+    await page.evaluate(DEMO_TREES_JS)
+
+    page._ll_console_errors = console_errors
+
+    yield page
+
+    await ctx.close()
+
+
+@pytest.fixture(scope="function")
+async def blank_page(browser_instance):
+    """
+    Creates an isolated BrowserContext and Page without injected demo data.
     Useful for testing the first-run/empty state experience or raw onboarding flow.
-    Yields the Page. Browser is closed on teardown.
+    Context is destroyed after each test, guaranteeing complete test isolation.
     """
     console_errors = []
-    async with async_playwright() as pw:
-        browser: Browser = await pw.chromium.launch(headless=True)
-        ctx: BrowserContext = await browser.new_context(
-            viewport={'width': 1400, 'height': 900}
-        )
-        page: Page = await ctx.new_page()
+    ctx: BrowserContext = await browser_instance.new_context(
+        viewport={'width': 1400, 'height': 900}
+    )
+    page: Page = await ctx.new_page()
 
-        page.on('console', lambda m: console_errors.append(m.text) if m.type == 'error' else None)
-        page.on('pageerror', lambda e: console_errors.append(f'PAGE ERROR: {e}'))
+    page.on('console', lambda m: console_errors.append(m.text) if m.type == 'error' else None)
+    page.on('pageerror', lambda e: console_errors.append(f'PAGE ERROR: {e}'))
 
-        await page.goto(APP_URL, wait_until='domcontentloaded')
-        await page.wait_for_timeout(700)
+    await page.goto(APP_URL, wait_until='domcontentloaded')
+    await page.wait_for_function('() => typeof UI !== "undefined" && !!document.getElementById("res")')
 
-        page._ll_console_errors = console_errors
+    page._ll_console_errors = console_errors
 
-        yield page
+    yield page
 
-        await browser.close()
+    await ctx.close()
 
 
 # ── Shared helper (importable from tests) ─────────────────────────────────────

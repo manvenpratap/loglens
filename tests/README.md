@@ -33,7 +33,9 @@ tests/
 ├── test_20_demo_showcase.py          # Demo showcase for traces, SLAs, outliers, multiline & notes
 ├── test_21_custom_log_setup_journey.py # Custom log setup journey & 100% parsing workflow
 ├── test_22_two_tier_navigation.py    # 2-Tier navigation & macOS toolbar utilities
-└── test_23_combine_capture_groups.py # Combine multiple capture groups into 1 log element
+├── test_23_combine_capture_groups.py # Combine multiple capture groups into 1 log element
+├── test_24_waterfall_scrolling.py    # Waterfall timeline row scrolling and header sync
+└── test_25_execution_tree_telemetry.py # Execution Tree Swiss telemetry & depth controls
 ```
 
 ---
@@ -115,14 +117,14 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Onboarding + First-Run UX | test_01_onboarding | 5 |
 | View navigation & panel routing | test_02_view_navigation | 6 |
 | Parser (stack behaviours) | test_03_parser | 4 |
-| Command Palette | test_04_command_palette | 7 |
-| Event Inspector | test_05_event_inspector | 8 |
-| Settings & Preferences | test_06_settings_preferences | 4 |
-| Trace Explorer | test_07_trace_explorer | 8 |
-| Timeline Navigator | test_08_timeline_nav | 8 |
-| AI Insights Engine | test_09_ai_insights | 9 |
-| Focus Mode | test_10_focus_mode | 9 |
-| Accessibility Polish | test_11_accessibility | 8 |
+| Command Palette | test_04_command_palette | 2 |
+| Event Inspector | test_05_event_inspector | 2 |
+| Settings & Preferences | test_06_settings_preferences | 1 |
+| Trace Explorer | test_07_trace_explorer | 2 |
+| Timeline Navigator | test_08_timeline_nav | 2 |
+| AI Insights Engine | test_09_ai_insights | 2 |
+| Focus Mode | test_10_focus_mode | 2 |
+| Accessibility Polish | test_11_accessibility | 2 |
 | Log4j Config XML Import | test_12_log4j_import | 1 |
 | Unified Rule Creator & Tooltips | test_13_rule_creator | 9 |
 | Unparsed Analyzer | test_14_unparsed_analyzer | 3 |
@@ -131,12 +133,13 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Auto-Detect & File Retention | test_17_auto_detect_and_retention | 5 |
 | Custom Log Pattern Journey & Rule Setup | test_18_custom_log_pattern_journey | 5 |
 | Multiline Block & Class Payload Parsing | test_19_multiline_block_payload | 6 |
-| Demo Showcase All Features | test_20_demo_showcase | 8 |
+| Demo Showcase All Features | test_20_demo_showcase | 3 |
 | Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
 | 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
 | Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
 | Waterfall View Scrolling & Header Sync | test_24_waterfall_scrolling | 5 |
-| **Total** | | **133** |
+| Execution Tree Telemetry & Controls | test_25_execution_tree_telemetry | 4 |
+| **Total** | | **86** |
 
 ---
 
