@@ -395,6 +395,63 @@ async def test_execution_tree_three_zone_architecture(page_with_data):
 
     assert_no_critical_errors(page)
 @pytest.mark.asyncio
+async def test_execution_tree_column_resizing(page_with_data):
+    """Execution Tree column headers have draggable resizer handles that update column widths, persist in localStorage, and reset on double-click."""
+    page = page_with_data
+    await page.evaluate("() => UI.svm('tree')")
+
+    tree_hdr = page.locator('#tree-hdr')
+    await expect(tree_hdr).to_be_visible()
+
+    # All 7 resizers exist
+    resizers = tree_hdr.locator('.tree-col-resizer')
+    assert await resizers.count() == 7
+
+    col_keys = ['spine', 'payload', 'spark', 'dur', 'self', 'thread', 'ts']
+    for key in col_keys:
+        resizer = tree_hdr.locator(f'.tree-col-resizer[data-col="{key}"]')
+        await expect(resizer).to_be_visible()
+
+    # Initial width of spine
+    initial_w = await page.evaluate("() => document.querySelector('.tree-hdr-spine').getBoundingClientRect().width")
+
+    # Drag spine resizer by +80px
+    spine_resizer = tree_hdr.locator('.tree-col-resizer[data-col="spine"]')
+    box = await spine_resizer.bounding_box()
+    assert box is not None
+
+    start_x = box['x'] + box['width'] / 2
+    start_y = box['y'] + box['height'] / 2
+
+    await page.mouse.move(start_x, start_y)
+    await page.mouse.down()
+    await page.mouse.move(start_x + 80, start_y)
+    await page.mouse.up()
+
+    # Verify CSS custom property updated
+    new_spine_w_str = await page.evaluate("() => getComputedStyle(document.documentElement).getPropertyValue('--tree-spine-w').trim()")
+    new_spine_w = float(new_spine_w_str.replace('px', ''))
+    assert new_spine_w > initial_w
+
+    # Verify row spine also expanded
+    row_spine_w = await page.evaluate("() => document.querySelector('.tree-row .tree-spine').getBoundingClientRect().width")
+    assert abs(row_spine_w - new_spine_w) < 2
+
+    # Verify saved in localStorage
+    stored_w = await page.evaluate("() => localStorage.getItem('ll-tree-col-spine')")
+    assert stored_w is not None and int(stored_w) == int(new_spine_w)
+
+    # Double click to reset
+    await spine_resizer.dblclick()
+    reset_spine_w_str = await page.evaluate("() => getComputedStyle(document.documentElement).getPropertyValue('--tree-spine-w').trim()")
+    assert reset_spine_w_str == '420px'
+
+    # Verify localStorage cleared on reset
+    cleared = await page.evaluate("() => localStorage.getItem('ll-tree-col-spine')")
+    assert cleared is None
+
+    assert_no_critical_errors(page)
+@pytest.mark.asyncio
 async def test_execution_tree_depth_filtering(page_with_data):
     """Depth buttons D1, D2, D3, All collapse and expand nodes to matching levels."""
     page = page_with_data

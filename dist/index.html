@@ -66,6 +66,16 @@
   /* Gradient accent */
   --grad-amber:linear-gradient(135deg,var(--amber),#e07000);
   --grad-surface:linear-gradient(180deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  /* Execution Tree column widths */
+  --tree-spine-w: 420px;
+  --tree-payload-w: auto;
+  --tree-payload-flex: 1 1 auto;
+  --tree-payload-min: 100px;
+  --tree-spark-w: 44px;
+  --tree-dur-w: 68px;
+  --tree-self-w: 78px;
+  --tree-thread-w: 68px;
+  --tree-ts-w: 84px;
 }
 /* ============================================================
    CSS §2 · LIGHT THEME
@@ -2052,35 +2062,40 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: 820px !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-payload-min, 100px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
   padding-right: 14px !important;
   height: 100% !important;
   box-sizing: border-box !important;
 }
 .tree-hdr-spine {
-  flex: 0 0 420px !important;
-  width: 420px !important;
-  min-width: 320px !important;
-  max-width: 440px !important;
+  flex: 0 0 var(--tree-spine-w, 420px) !important;
+  width: var(--tree-spine-w, 420px) !important;
+  min-width: 180px !important;
+  max-width: none !important;
   padding-left: 28px !important;
+  padding-right: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+  position: relative !important;
 }
 .tree-hdr-payload {
-  flex: 1 1 auto !important;
-  min-width: 100px !important;
+  flex: var(--tree-payload-flex, 1 1 auto) !important;
+  width: var(--tree-payload-w, auto) !important;
+  min-width: 80px !important;
   padding: 0 12px !important;
+  padding-right: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+  position: relative !important;
 }
 .tree-hdr-telemetry {
-  flex: 0 0 378px !important;
-  width: 378px !important;
-  min-width: 378px !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2091,34 +2106,78 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   font-family: var(--mono) !important;
 }
 .tree-th-spark {
-  width: 44px !important;
-  min-width: 44px !important;
+  width: var(--tree-spark-w, 44px) !important;
+  min-width: var(--tree-spark-w, 44px) !important;
   text-align: center !important;
   flex-shrink: 0 !important;
+  position: relative !important;
 }
 .tree-th-dur {
-  width: 68px !important;
-  min-width: 68px !important;
+  width: var(--tree-dur-w, 68px) !important;
+  min-width: var(--tree-dur-w, 68px) !important;
   text-align: right !important;
+  padding-right: 4px !important;
   flex-shrink: 0 !important;
+  position: relative !important;
+  box-sizing: border-box !important;
 }
 .tree-th-self {
-  width: 78px !important;
-  min-width: 78px !important;
+  width: var(--tree-self-w, 78px) !important;
+  min-width: var(--tree-self-w, 78px) !important;
   text-align: center !important;
   flex-shrink: 0 !important;
+  position: relative !important;
 }
 .tree-th-thread {
-  width: 68px !important;
-  min-width: 68px !important;
+  width: var(--tree-thread-w, 68px) !important;
+  min-width: var(--tree-thread-w, 68px) !important;
   text-align: center !important;
   flex-shrink: 0 !important;
+  position: relative !important;
 }
 .tree-th-ts {
-  width: 84px !important;
-  min-width: 84px !important;
+  width: var(--tree-ts-w, 84px) !important;
+  min-width: var(--tree-ts-w, 84px) !important;
   text-align: right !important;
+  padding-right: 4px !important;
   flex-shrink: 0 !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Tree Column Header Resizers */
+.tree-col-resizer {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 7px !important;
+  cursor: col-resize !important;
+  z-index: 10 !important;
+  user-select: none !important;
+  touch-action: none !important;
+}
+.tree-col-resizer::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 4px !important;
+  bottom: 4px !important;
+  right: 1px !important;
+  width: 1px !important;
+  background: var(--bdr) !important;
+  opacity: 0.5 !important;
+  transition: opacity 0.15s ease, background 0.15s ease, width 0.15s ease !important;
+}
+.tree-col-resizer:hover::after,
+.tree-col-resizer.resizing::after {
+  opacity: 1 !important;
+  width: 2px !important;
+  background: var(--amber) !important;
+  box-shadow: 0 0 4px var(--amber-g) !important;
+}
+body.tree-col-resizing {
+  cursor: col-resize !important;
+  user-select: none !important;
 }
 
 /* Tree Row Architecture */
@@ -2126,7 +2185,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: 820px !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-payload-min, 100px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-thread-w, 68px) + var(--tree-ts-w, 84px) + 40px) !important;
   box-sizing: border-box !important;
   padding-right: 14px !important;
   border-bottom: 1px solid var(--bdr-d) !important;
@@ -2173,10 +2232,10 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  flex: 0 0 420px !important;
-  width: 420px !important;
-  min-width: 320px !important;
-  max-width: 440px !important;
+  flex: 0 0 var(--tree-spine-w, 420px) !important;
+  width: var(--tree-spine-w, 420px) !important;
+  min-width: 180px !important;
+  max-width: none !important;
   overflow: hidden !important;
   position: relative !important;
   height: 100% !important;
@@ -2343,12 +2402,14 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 
 /* Zone 2: Payload Preview (Center Column — strictly single-line monospace) */
 .tree-payload-col {
-  flex: 1 1 auto !important;
-  min-width: 100px !important;
+  flex: var(--tree-payload-flex, 1 1 auto) !important;
+  width: var(--tree-payload-w, auto) !important;
+  min-width: 80px !important;
   overflow: hidden !important;
   display: inline-flex !important;
   align-items: center !important;
   padding: 0 12px !important;
+  padding-right: 8px !important;
   height: 100% !important;
   box-sizing: border-box !important;
 }
@@ -2379,9 +2440,9 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 
 /* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
 .tree-telemetry-col {
-  flex: 0 0 378px !important;
-  width: 378px !important;
-  min-width: 378px !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2394,8 +2455,8 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   box-sizing: border-box !important;
 }
 .tree-sparkbar {
-  width: 44px !important;
-  min-width: 44px !important;
+  width: var(--tree-spark-w, 44px) !important;
+  min-width: var(--tree-spark-w, 44px) !important;
   height: 5px !important;
   background: var(--bg-3) !important;
   border-radius: var(--rounded-xs, 2px) !important;
@@ -2418,10 +2479,12 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   font-size: 12px !important;
   font-weight: 700 !important;
   color: var(--t1) !important;
-  width: 68px !important;
-  min-width: 68px !important;
+  width: var(--tree-dur-w, 68px) !important;
+  min-width: var(--tree-dur-w, 68px) !important;
   text-align: right !important;
+  padding-right: 4px !important;
   flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 .tree-metric-dur.breach {
   color: var(--red) !important;
@@ -2433,8 +2496,8 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   border: 1px solid var(--bdr-d) !important;
   border-radius: var(--rounded-xs, 2px) !important;
   padding: 1px 4px !important;
-  width: 78px !important;
-  min-width: 78px !important;
+  width: var(--tree-self-w, 78px) !important;
+  min-width: var(--tree-self-w, 78px) !important;
   box-sizing: border-box !important;
   text-align: center !important;
   white-space: nowrap !important;
@@ -2442,8 +2505,8 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tree-metric-self-none {
   display: inline-block !important;
-  width: 78px !important;
-  min-width: 78px !important;
+  width: var(--tree-self-w, 78px) !important;
+  min-width: var(--tree-self-w, 78px) !important;
   flex-shrink: 0 !important;
 }
 .tree-thread-pill {
@@ -2457,21 +2520,29 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   text-transform: uppercase !important;
   letter-spacing: 0.02em !important;
   white-space: nowrap !important;
-  width: 68px !important;
-  min-width: 68px !important;
+  width: var(--tree-thread-w, 68px) !important;
+  min-width: var(--tree-thread-w, 68px) !important;
   box-sizing: border-box !important;
   text-align: center !important;
+  flex-shrink: 0 !important;
+}
+.tree-thread-none {
+  display: inline-block !important;
+  width: var(--tree-thread-w, 68px) !important;
+  min-width: var(--tree-thread-w, 68px) !important;
   flex-shrink: 0 !important;
 }
 .tree-metric-ts {
   font-size: 11px !important;
   color: var(--t4) !important;
-  width: 84px !important;
-  min-width: 84px !important;
+  width: var(--tree-ts-w, 84px) !important;
+  min-width: var(--tree-ts-w, 84px) !important;
   text-align: right !important;
+  padding-right: 4px !important;
   letter-spacing: -0.02em !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
 /* Light / Ivory theme specific contrast polish */
@@ -11254,14 +11325,35 @@ const TR={
         </div>
         <div class="tree-hdr" id="tree-hdr" role="row" aria-label="Tree Column Headers">
           <div class="tree-hdr-inner">
-            <div class="tree-hdr-spine" role="columnheader">Operation &amp; Hierarchy</div>
-            <div class="tree-hdr-payload" role="columnheader">Payload Preview</div>
+            <div class="tree-hdr-spine" role="columnheader" data-col="spine">
+              <span>Operation &amp; Hierarchy</span>
+              <span class="tree-col-resizer" data-col="spine" role="separator" aria-orientation="vertical" title="Drag to resize Operation &amp; Hierarchy, double-click to reset"></span>
+            </div>
+            <div class="tree-hdr-payload" role="columnheader" data-col="payload">
+              <span>Payload Preview</span>
+              <span class="tree-col-resizer" data-col="payload" role="separator" aria-orientation="vertical" title="Drag to resize Payload Preview, double-click to reset"></span>
+            </div>
             <div class="tree-hdr-telemetry">
-              <span class="tree-th-spark" role="columnheader">SLA</span>
-              <span class="tree-th-dur" role="columnheader">Duration</span>
-              <span class="tree-th-self" role="columnheader">Self</span>
-              <span class="tree-th-thread" role="columnheader">Thread</span>
-              <span class="tree-th-ts" role="columnheader">Timestamp</span>
+              <span class="tree-th-spark" role="columnheader" data-col="spark">
+                <span>SLA</span>
+                <span class="tree-col-resizer" data-col="spark" role="separator" aria-orientation="vertical" title="Drag to resize SLA, double-click to reset"></span>
+              </span>
+              <span class="tree-th-dur" role="columnheader" data-col="dur">
+                <span>Duration</span>
+                <span class="tree-col-resizer" data-col="dur" role="separator" aria-orientation="vertical" title="Drag to resize Duration, double-click to reset"></span>
+              </span>
+              <span class="tree-th-self" role="columnheader" data-col="self">
+                <span>Self</span>
+                <span class="tree-col-resizer" data-col="self" role="separator" aria-orientation="vertical" title="Drag to resize Self, double-click to reset"></span>
+              </span>
+              <span class="tree-th-thread" role="columnheader" data-col="thread">
+                <span>Thread</span>
+                <span class="tree-col-resizer" data-col="thread" role="separator" aria-orientation="vertical" title="Drag to resize Thread, double-click to reset"></span>
+              </span>
+              <span class="tree-th-ts" role="columnheader" data-col="ts">
+                <span>Timestamp</span>
+                <span class="tree-col-resizer" data-col="ts" role="separator" aria-orientation="vertical" title="Drag to resize Timestamp, double-click to reset"></span>
+              </span>
             </div>
           </div>
         </div>
@@ -11322,7 +11414,138 @@ const TR={
     this._content.addEventListener('click', (e) => this.handleClick(e));
     this._content.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
     
+    this.initColumnResize(el);
     this.updateLayout();
+  },
+
+  _colConfig: {
+    spine: { var: '--tree-spine-w', default: 420, min: 180, max: 1200, unit: 'px', name: 'Operation & Hierarchy' },
+    payload: { var: '--tree-payload-w', default: null, min: 80, max: 1500, unit: 'px', name: 'Payload Preview', isFlex: true },
+    spark: { var: '--tree-spark-w', default: 44, min: 32, max: 140, unit: 'px', name: 'SLA' },
+    dur: { var: '--tree-dur-w', default: 68, min: 48, max: 180, unit: 'px', name: 'Duration' },
+    self: { var: '--tree-self-w', default: 78, min: 50, max: 180, unit: 'px', name: 'Self' },
+    thread: { var: '--tree-thread-w', default: 68, min: 48, max: 180, unit: 'px', name: 'Thread' },
+    ts: { var: '--tree-ts-w', default: 84, min: 60, max: 200, unit: 'px', name: 'Timestamp' }
+  },
+
+  applyColumnWidths() {
+    for (const [key, cfg] of Object.entries(this._colConfig)) {
+      try {
+        const saved = localStorage.getItem('ll-tree-col-' + key);
+        if (saved != null) {
+          const val = parseInt(saved, 10);
+          if (!isNaN(val) && val >= cfg.min && val <= cfg.max) {
+            document.documentElement.style.setProperty(cfg.var, val + cfg.unit);
+            if (cfg.isFlex) {
+              document.documentElement.style.setProperty('--tree-payload-flex', `0 0 ${val}${cfg.unit}`);
+              document.documentElement.style.setProperty('--tree-payload-min', `${val}${cfg.unit}`);
+            }
+          }
+        }
+      } catch (e) {}
+    }
+  },
+
+  resetColumnWidth(key) {
+    const cfg = this._colConfig[key];
+    if (!cfg) return;
+    try {
+      localStorage.removeItem('ll-tree-col-' + key);
+    } catch (e) {}
+    if (cfg.default != null) {
+      document.documentElement.style.setProperty(cfg.var, cfg.default + cfg.unit);
+    } else {
+      document.documentElement.style.removeProperty(cfg.var);
+    }
+    if (cfg.isFlex) {
+      document.documentElement.style.removeProperty('--tree-payload-flex');
+      document.documentElement.style.removeProperty('--tree-payload-min');
+    }
+    if (typeof toast === 'function') {
+      toast(`Reset ${cfg.name} column width`, 'info');
+    }
+  },
+
+  initColumnResize(el) {
+    this.applyColumnWidths();
+    const resizers = el.querySelectorAll('.tree-col-resizer');
+    resizers.forEach(resizer => {
+      const key = resizer.dataset.col;
+      const cfg = this._colConfig[key];
+      if (!cfg) return;
+
+      let startX = 0;
+      let startW = 0;
+      let isDragging = false;
+      let lastClickTime = 0;
+
+      const onPointerMove = (e) => {
+        if (!isDragging) return;
+        const delta = e.clientX - startX;
+        let newW = Math.round(startW + delta);
+        if (newW < cfg.min) newW = cfg.min;
+        if (newW > cfg.max) newW = cfg.max;
+        document.documentElement.style.setProperty(cfg.var, newW + cfg.unit);
+        if (cfg.isFlex) {
+          document.documentElement.style.setProperty('--tree-payload-flex', `0 0 ${newW}${cfg.unit}`);
+          document.documentElement.style.setProperty('--tree-payload-min', `${newW}${cfg.unit}`);
+        }
+      };
+
+      const onPointerUp = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        resizer.classList.remove('resizing');
+        document.body.classList.remove('tree-col-resizing');
+        try {
+          resizer.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerUp);
+
+        const computed = getComputedStyle(document.documentElement).getPropertyValue(cfg.var);
+        const currentW = parseInt(computed, 10);
+        if (!isNaN(currentW)) {
+          try {
+            localStorage.setItem('ll-tree-col-' + key, currentW);
+          } catch (err) {}
+        }
+      };
+
+      resizer.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        const now = Date.now();
+        if (now - lastClickTime < 350) {
+          lastClickTime = 0;
+          e.preventDefault();
+          e.stopPropagation();
+          this.resetColumnWidth(key);
+          return;
+        }
+        lastClickTime = now;
+        e.preventDefault();
+        e.stopPropagation();
+        startX = e.clientX;
+        const headerCell = resizer.parentElement;
+        startW = headerCell ? headerCell.getBoundingClientRect().width : (cfg.default || 100);
+        isDragging = true;
+        resizer.classList.add('resizing');
+        document.body.classList.add('tree-col-resizing');
+        try {
+          resizer.setPointerCapture(e.pointerId);
+        } catch (err) {}
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+      });
+
+      resizer.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.resetColumnWidth(key);
+      });
+    });
   },
 
   collapseToDepth(targetDepth) {
@@ -11486,7 +11709,7 @@ const TR={
       : `<span class="tree-metric-self-none"></span>`;
     const thrHtml = (n.thread && S.threads && S.threads.length > 1) 
       ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` 
-      : `<span style="display:inline-block; width:68px; flex-shrink:0;"></span>`;
+      : `<span class="tree-thread-none"></span>`;
     const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : '';
 
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
@@ -11566,6 +11789,7 @@ const TR={
     CTX.show(e, n);
   }
 };
+try { TR.applyColumnWidths(); } catch (e) {}
 
 /* ================================================================
    §JS-17 UI CONTROLLER

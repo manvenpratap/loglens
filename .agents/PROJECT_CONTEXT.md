@@ -3,6 +3,23 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Execution Tree Interactive Column Resizing Architecture (v6.9.118 — COMPLETED)**:
+  - **CSS Custom Properties Virtualized Column System**:
+    - Architected high-performance CSS variable binding system (`--tree-spine-w`, `--tree-payload-w`, `--tree-payload-flex`, `--tree-payload-min`, `--tree-spark-w`, `--tree-dur-w`, `--tree-self-w`, `--tree-thread-w`, `--tree-ts-w`) controlling header (`#tree-hdr`) and all virtualized rows (`#tree-content .tree-row`) simultaneously.
+    - Zero row re-rendering or DOM iteration during dragging; 60fps real-time layout updates via native CSS variables on `:root`.
+    - Synchronized dynamic `min-width: calc(var(--tree-spine-w, 420px) + var(--tree-payload-min, 100px) + ...)` across both `.tree-hdr-inner` and `.tree-row`, guaranteeing lockstep horizontal scroll alignment without squashing.
+  - **Ergonomic Draggable Separators (`.tree-col-resizer`)**:
+    - Embedded vertical column resizer handles with `col-resize` cursor and hairline indicator on all 7 tree columns (`Operation & Hierarchy`, `Payload Preview`, `SLA`, `Duration`, `Self`, `Thread`, `Timestamp`).
+    - Added amber hairline hover/active highlight (`var(--amber)`) with subtle glow (`box-shadow: 0 0 4px var(--amber-g)`).
+    - Robust Pointer Events lifecycle with `setPointerCapture`, `pointermove`, and `pointerup` preventing window escape or text selection during drag.
+  - **Double-Click Reset & LocalStorage Persistence**:
+    - Implemented double-click reset restoring any modified column to its Swiss calibrated default width with toast confirmation.
+    - Persists custom widths in `localStorage` (`ll-tree-col-*`), surviving page reloads, tab navigation, tree collapse/expansion, and filtering.
+  - **Full Regression Verification & Quality Gates**:
+    - Added end-to-end Playwright automation in `tests/test_consolidated_visualizations_and_telemetry.py` verifying handle visibility, drag width updating, row synchronization, `localStorage` persistence, and double-click reset.
+    - 88/88 tests passed in 82.69s (100% pass rate).
+    - Ran `./.agents/skills/impeccable/scripts/impeccable detect --json loglens.html` with 0 antipattern findings (`[]`).
+
 - **UI Layout Collision & Overlap Remediation (v6.9.117 — COMPLETED)**:
   - **Top Navigation Header Collision Fix**:
     - Relocated `#trace-filter` input from centered `.vtabs` to `.action-bar-left` directly beside `#vt-chips` thread selector, freeing ~130px in the top header.

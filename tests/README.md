@@ -118,9 +118,9 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
 | Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
 | Waterfall View Scrolling & Header Sync | test_24_waterfall_scrolling | 5 |
-| Execution Tree Telemetry & Controls | test_25_execution_tree_telemetry | 4 |
+| Execution Tree Telemetry, Controls & Column Resizing | test_25_execution_tree_telemetry | 5 |
 | Stat Cards Scope Exclusivity & Graph Navigation Persistence | test_consolidated_navigation_and_shell | 2 |
-| **Total** | | **88** |
+| **Total** | | **89** |
 
 ---
 
