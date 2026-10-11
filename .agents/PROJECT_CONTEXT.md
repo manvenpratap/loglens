@@ -2,6 +2,17 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Rule Editor Extended Telemetry Capture Mappings & Trace View Integration (v6.9.139 — COMPLETED)**:
+  - **Extended Capture Mapping Inputs in Rule Modal (`#mm`)**:
+    - Added dedicated form fields for `duration` (`#cm-du`), `service` (`#cm-sv`), `statusCode` (`#cm-sc`), and `spanId` (`#cm-sp`) in the custom regex section of the Rule Editor modal.
+    - Updated modal pre-population (`UI.openM`), form extraction (`UI.saveM`), and reset routines to seamlessly load and persist these telemetry mappings into `captureMapping`.
+  - **Regex Assistant & Token Builder Synchronization**:
+    - Updated `WIZ.buildPipeSplit` and `WIZ.gen` to automatically identify duration strings (`ms`, `s`, `µs`), status codes (`100`–`599`), service prefixes, and hex span IDs, populating their respective inputs automatically.
+    - Updated `RG.autoSplitPipes` and interactive assistant `fieldMap` to include duration, service, status, and span mappings.
+  - **Automated Regression Verification**:
+    - Added `test_rule_editor_telemetry_capture_fields` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite now passes 107/107 tests (100% pass rate in 99s).
+
 - **Settings Appearance Options & SLA Guardrails Configuration (v6.9.138 — COMPLETED)**:
   - **Comprehensive SVG Iconography & Visual Polish**:
     - Embedded bespoke inline SVG icons across every configuration row in the Settings panel (`#p-gs`): IDB Cache, Web Worker Status, Animation Speed, Font Density, Gantt Bar Height, Search Highlighting, Monospace Font, Tree Spine Guides, Rounded Gantt Bars, High Contrast Borders, Global SLA Limit, Degradation Warning, Outlier Multiplier, and Breached Span Pulse.

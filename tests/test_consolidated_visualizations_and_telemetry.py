@@ -1149,4 +1149,42 @@ async def test_tree_view_multiselection_and_rule_creation(page_with_data):
     assert_no_critical_errors(page)
 
 
+@pytest.mark.asyncio
+async def test_rule_editor_telemetry_capture_fields(blank_page):
+    """Rule editor modal exposes and preserves duration, service, statusCode, and spanId mapping inputs."""
+    page = blank_page
+    # Open Rule Editor modal
+    await page.evaluate("""() => {
+        UI.openM('e');
+        $('e-use-custom-rx').checked = true;
+        UI.syncCustomRxUI();
+    }""")
+    modal = page.locator('#mm')
+    await expect(modal).to_be_visible()
 
+    # Check presence of the 4 new telemetry inputs
+    for field_id in ['cm-du', 'cm-sv', 'cm-sc', 'cm-sp']:
+        inp = page.locator(f'#{field_id}')
+        assert await inp.count() == 1, f"Expected input #{field_id} to exist"
+
+    # Fill and test that custom mapping extracts them
+    await page.fill('#e-name', 'Telemetry Test Rule')
+    await page.fill('#e-rx', r'^(\S+)\s+(\S+)\s+(\d+)\s+(\S+)')
+    await page.fill('#cm-du', '1')
+    await page.fill('#cm-sv', '2')
+    await page.fill('#cm-sc', '3')
+    await page.fill('#cm-sp', '4')
+
+    # Save rule via UI.saveM()
+    await page.evaluate("() => UI.saveM()")
+
+    # Verify rule was added to S.cfg.elementRules with correct captureMapping
+    rule = await page.evaluate("() => S.cfg?.elementRules?.find(r => r.name === 'Telemetry Test Rule')")
+    assert rule is not None
+    cm = rule.get('captureMapping', {})
+    assert cm.get('1') == 'duration'
+    assert cm.get('2') == 'service'
+    assert cm.get('3') == 'statusCode'
+    assert cm.get('4') == 'spanId'
+
+    assert_no_critical_errors(page)

@@ -9873,6 +9873,10 @@ label[for="watch-auto-reload"] {
               <option value="level">⚡ level</option>
               <option value="className">🏛 className</option>
               <option value="methodName">ƒ methodName</option>
+              <option value="duration">⏱ duration</option>
+              <option value="service">☁ service</option>
+              <option value="statusCode">🚥 statusCode</option>
+              <option value="spanId">⚓ spanId</option>
             </select>
             <button id="btn-rg-combine" class="btn btn-xs btn-p" type="button" style="padding:2px 8px; font-size: 12px; font-weight:600;">
               Combine Selected
@@ -9982,6 +9986,10 @@ label[for="watch-auto-reload"] {
             <option value="log4j2">Log4j2 Time: HH:mm:ss.SSS [thread] level logger - </option>
             <option value="json_ts">JSON: {timestamp, level, thread, message…</option>
             <option value="csv">CSV / Pipe-delimited: ts|level|thread|msg</option>
+            <option value="w3c_trace">W3C Distributed Trace: ts [thread] [traceparent] logger - </option>
+            <option value="microservice">Microservice Cloud: ts [service] level [thread] logger took Nms</option>
+            <option value="syslog">Syslog RFC 3164: MMM d HH:mm:ss host service[PID]: msg</option>
+            <option value="http_access">HTTP Access: IP - [ts] "METHOD URI" status size duration</option>
             <option value="iso_bare">ISO timestamp + anything</option>
           </select>
         </div>
@@ -10060,6 +10068,22 @@ label[for="watch-auto-reload"] {
               <div class="f">
                 <label class="fl" for="cm-me">Group #(s) → <span style="color:var(--green)">methodName</span></label>
                 <input class="inp inp-m" id="cm-me" placeholder="e.g. 8"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-du">Group #(s) → <span style="color:var(--cyan)">duration</span></label>
+                <input class="inp inp-m" id="cm-du" placeholder="e.g. 9"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-sv">Group #(s) → <span style="color:var(--blue)">service</span></label>
+                <input class="inp inp-m" id="cm-sv" placeholder="e.g. 10"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-sc">Group #(s) → <span style="color:var(--yellow)">statusCode</span></label>
+                <input class="inp inp-m" id="cm-sc" placeholder="e.g. 11"/>
+              </div>
+              <div class="f">
+                <label class="fl" for="cm-sp">Group #(s) → <span style="color:var(--purple)">spanId</span></label>
+                <input class="inp inp-m" id="cm-sp" placeholder="e.g. 12"/>
               </div>
             </div>
           </div>
@@ -11169,10 +11193,15 @@ const TOKS=[
   {cat:'Timestamps',toks:[
     {n:'Java/Log4j',ex:'2024-01-15 12:34:56.789',s:String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`},
     {n:'ISO 8601',ex:'2024-01-15T12:34:56.789Z',s:String.raw`(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[.,]\d{3}Z?)`},
+    {n:'RFC 3339/Micro',ex:'2024-01-15T12:34:56.123456Z',s:String.raw`(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2}))`},
+    {n:'Syslog (RFC 3164)',ex:'Oct 11 22:14:05',s:String.raw`([A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})`},
+    {n:'Apache/CLF',ex:'10/Oct/2024:13:55:36 +0000',s:String.raw`(\d{2}/[A-Z][a-z]{2}/\d{4}:\d{2}:\d{2}:\d{2}\s+[+-]\d{4})`},
+    {n:'US Date & Time',ex:'01/15/2024 12:34:56.789',s:String.raw`(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}:\d{2}(?:[.,]\d{3})?)`},
     {n:'Time-only',ex:'12:34:56.789',s:String.raw`(\d{2}:\d{2}:\d{2}[.,]\d{3})`},
     {n:'Date-only',ex:'2024-01-15',s:String.raw`(\d{4}-\d{2}-\d{2})`},
-    {n:'Unix ms',ex:'1705315200000',s:String.raw`(\d{13})`},
-    {n:'Epoch s',ex:'1705315200',s:String.raw`(\d{10})`},
+    {n:'Unix ms (13)',ex:'1705315200000',s:String.raw`(\d{13})`},
+    {n:'Epoch s (10)',ex:'1705315200',s:String.raw`(\d{10})`},
+    {n:'Nanoseconds (19)',ex:'1705315200000000000',s:String.raw`(\d{19})`},
   ]},
   {cat:'Thread / Context',toks:[
     {n:'[thread]',ex:'[http-nio-8080]',s:String.raw`\[(\S+)\]`},
@@ -11180,34 +11209,69 @@ const TOKS=[
     {n:'bare word',ex:'thread-name ',s:String.raw`(\S+)\s`},
     {n:'MDC {k=v}',ex:'{reqId=abc123}',s:String.raw`\{[^}]*\}`},
     {n:'Spring [thread]',ex:'[nio-8080-exec-1]',s:String.raw`\[([^\]]+)\]`},
+    {n:'PID (Process ID)',ex:'pid: 12345',s:String.raw`(?:pid:|\s|^\[?)(\d{1,7})\b`},
+    {n:'TID (Hex Thread)',ex:'tid: 0x7fff89a',s:String.raw`(?:tid:|0x)([0-9a-fA-F]+)\b`},
+    {n:'Goroutine/Coroutine',ex:'[goroutine-42]',s:String.raw`\[(?:goroutine|coroutine)[-\s](\d+)\]`},
+    {n:'Docker Container ID',ex:'d4e7b8a10c92',s:String.raw`([0-9a-f]{12,64})`},
+    {n:'Kubernetes Pod',ex:'auth-api-7b8f9-x2k4l',s:String.raw`([a-z0-9-]+-[a-z0-9]{5}-[a-z0-9]{5})`},
   ]},
   {cat:'Log Levels',toks:[
     {n:'5-padded',ex:'INFO  WARN  ERROR',s:String.raw`(?:ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s*`},
     {n:'unpadded',ex:'INFO WARN ERROR',s:String.raw`(?:ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s*`},
+    {n:'Syslog Severity',ex:'EMERG ALERT CRIT',s:String.raw`(?:EMERG|ALERT|CRIT|ERR|ERROR|WARNING|WARN|NOTICE|INFO|DEBUG)`},
+    {n:'Bracketed [LEVEL]',ex:'[ERROR] [INFO]',s:String.raw`\[(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\]`},
+    {n:'Single Letter (klog)',ex:'I1011 14:23:01',s:String.raw`([TDIWEF])`},
     {n:'JSON level',ex:'"level":"INFO"',s:String.raw`"level"\s*:\s*"([^"]+)"`},
+    {n:'ANSI-colored Level',ex:'\x1b[31mERROR\x1b[0m',s:String.raw`(?:\x1b\[[0-9;]*m)?(ERROR|WARN|INFO|DEBUG|TRACE)(?:\x1b\[0m)?`},
   ]},
   {cat:'Identifiers & Values',toks:[
     {n:'word (no space)',ex:'anyToken_123',s:String.raw`(\S+)`},
     {n:'word (alnum)',ex:'OrderService',s:String.raw`(\w+)`},
     {n:'dotted class',ex:'com.example.Svc',s:String.raw`([\w.$-]+(?:\.[\w.$-]+)*)`},
+    {n:'method signature',ex:'processOrder(id, req)',s:String.raw`([a-zA-Z_$][a-zA-Z0-9_$]*\([^)]*\))`},
     {n:'UUID',ex:'550e8400-e29b…',s:String.raw`([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})`},
     {n:'integer',ex:'42',s:String.raw`(\d+)`},
-    {n:'decimal',ex:'3.14',s:String.raw`(\d+\.\d+)`},
+    {n:'decimal / float',ex:'3.14',s:String.raw`(\d+\.\d+)`},
     {n:'quoted string',ex:'"some value"',s:String.raw`"([^"]*)"`},
+    {n:'single-quoted',ex:"'some value'",s:String.raw`'([^']*)'`},
     {n:'key=value',ex:'name=OrderSvc',s:String.raw`\w+=(\S+)`},
-    {n:'Trace/Span ID',ex:'7b8b2a3cd4f1...',s:String.raw`([a-f0-9]{16,32})`},
     {n:'Generic JSON field',ex:'"key":"value"',s:String.raw`"[^"]+"\s*:\s*"([^"]+)"`},
+    {n:'Duration (ms/µs/s)',ex:'42.5ms',s:String.raw`(\d+(?:\.\d+)?(?:ms|µs|us|s|m|ns))`},
+    {n:'Data Size (KB/MB)',ex:'10.5MB',s:String.raw`(\d+(?:\.\d+)?(?:[KMGT]B|bytes|B))`},
+    {n:'Hex Hash (MD5/SHA)',ex:'e3b0c44298fc...',s:String.raw`([0-9a-fA-F]{32,64})`},
     {n:'rest of line',ex:'everything → EOL',s:String.raw`(.+)$`},
+  ]},
+  {cat:'Network & Protocols',toks:[
+    {n:'IPv4 Address',ex:'192.168.1.1',s:String.raw`((?:\d{1,3}\.){3}\d{1,3})`},
+    {n:'IPv6 Address',ex:'2001:0db8::1',s:String.raw`([0-9a-fA-F:]{3,39})`},
+    {n:'HTTP Method',ex:'GET POST PUT',s:String.raw`(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)`},
+    {n:'HTTP Status Code',ex:'200 404 500',s:String.raw`([1-5]\d{2})`},
+    {n:'URI / URL Path',ex:'/api/v1/orders',s:String.raw`(/[a-zA-Z0-9_\-./~%?&=+#]*)`},
+    {n:'Host:Port',ex:'api.internal:8080',s:String.raw`([a-zA-Z0-9.-]+:\d{1,5})`},
+    {n:'Email Address',ex:'user@example.com',s:String.raw`([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)`},
+  ]},
+  {cat:'Distributed Tracing & Cloud',toks:[
+    {n:'W3C Traceparent',ex:'00-4bf92f35...-01',s:String.raw`(00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})`},
+    {n:'W3C Trace ID (32)',ex:'4bf92f3577b34da6...',s:String.raw`([0-9a-f]{32})`},
+    {n:'W3C Span ID (16)',ex:'00f067aa0ba902b7',s:String.raw`([0-9a-f]{16})`},
+    {n:'AWS Request ID',ex:'c6af9ac6-7b61...',s:String.raw`([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})`},
+    {n:'B3 Propagation',ex:'463ac35c...-00f0...',s:String.raw`([0-9a-f]{16,32}-[0-9a-f]{16})`},
+    {n:'Trace/Span ID (16-32)',ex:'7b8b2a3cd4f1...',s:String.raw`([a-f0-9]{16,32})`},
   ]},
   {cat:'Structure & Anchors',toks:[
     {n:'^ start',ex:'beginning of line',s:'^'},
+    {n:'$ end',ex:'end of line',s:'$'},
     {n:'whitespace+',ex:' (1 or more)',s:String.raw`\s+`},
     {n:'whitespace*',ex:' (0 or more)',s:String.raw`\s*`},
+    {n:'word boundary \\b',ex:'boundary',s:String.raw`\b`},
     {n:'any (lazy)',ex:'…anything…',s:String.raw`.*?`},
     {n:'any (greedy)',ex:'…everything…',s:String.raw`.*`},
-    {n:'literal  -',ex:'-',s:'-'},
     {n:'literal  |',ex:'|',s:String.raw`\|`},
+    {n:'literal  -',ex:'-',s:'-'},
     {n:'literal  :',ex:':',s:':'},
+    {n:'literal  ,',ex:',',s:','},
+    {n:'literal  ;',ex:';',s:';'},
+    {n:'literal  \\t (tab)',ex:'tab',s:String.raw`\t`},
     {n:'literal  .',ex:'.',s:String.raw`\.`},
     {n:'literal  [',ex:'[',s:String.raw`\[`},
     {n:'literal  ]',ex:']',s:String.raw`\]`},
@@ -11217,6 +11281,8 @@ const TOKS=[
     {n:'non-cap (?:',ex:'(?:no capture',s:'(?:'},
     {n:'close group )',ex:'close)',s:')'},
     {n:'optional ?',ex:'0 or 1 times',s:'?'},
+    {n:'positive lookahead (?=',ex:'(?=...)',s:String.raw`(?=`},
+    {n:'negative lookahead (?!',ex:'(?!...)',s:String.raw`(?!`},
   ]},
 ];
 
@@ -11226,8 +11292,12 @@ const TMPLS={
   spring:  {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|WARN |INFO |DEBUG|TRACE|FATAL)\s+\d+\s+---\s+\[([^\]]+)\]\s+(\S+)\s+:\s+`,cm:{'1':'timestamp','2':'level','3':'thread','4':'className'}},
   log4j2:  {rx:String.raw`^(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[([^\]]+)\]\s+(ERROR|WARN|INFO|DEBUG|TRACE|FATAL)\s+(\S+)\s+-\s+`,cm:{'1':'timestamp','2':'thread','3':'level','4':'className'}},
   json_ts: {rx:String.raw`^\{"timestamp"\s*:\s*"([^"]+)","level"\s*:\s*"([^"]+)","thread"\s*:\s*"([^"]+)","message"\s*:\s*"`,cm:{'1':'timestamp','2':'level','3':'thread'}},
-  iso_bare:{rx:String.raw`^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})\s+`,cm:{'1':'timestamp'}},
   csv:     {rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\|([^|]+)\|([^|]+)\|`,cm:{'1':'timestamp','2':'level','3':'thread'}},
+  w3c_trace:{rx:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+\[(\S+)\]\s+\[(00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})\]\s+(\S+)\s+-\s+`,cm:{'1':'timestamp','2':'thread','3':'correlationId','4':'elementName'}},
+  microservice:{rx:String.raw`^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[.,]\d{3}Z?)\s+\[([a-zA-Z0-9_-]+)\]\s+(INFO|WARN|ERROR)\s+\[(\S+)\]\s+(\S+)\s+took\s+(\d+(?:\.\d+)?ms)`,cm:{'1':'timestamp','2':'service','3':'level','4':'thread','5':'elementName','6':'duration'}},
+  syslog:  {rx:String.raw`^([A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([a-zA-Z0-9_-]+)(?:\[(\d+)\])?:\s+`,cm:{'1':'timestamp','2':'service','3':'elementName','4':'thread'}},
+  http_access:{rx:String.raw`^((?:\d{1,3}\.){3}\d{1,3})\s+-\s+-\s+\[(\d{2}/[A-Z][a-z]{2}/\d{4}:\d{2}:\d{2}:\d{2}\s+[+-]\d{4})\]\s+"(GET|POST|PUT|DELETE)\s+(\S+)[^"]*"\s+([1-5]\d{2})\s+(\d+)\s+(\d+(?:\.\d+)?ms)`,cm:{'1':'thread','2':'timestamp','3':'elementName','4':'payload','5':'statusCode','6':'className','7':'duration'}},
+  iso_bare:{rx:String.raw`^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})\s+`,cm:{'1':'timestamp'}},
 };
 
 /* Wizard format presets */
@@ -11354,7 +11424,7 @@ const RXB={
     $('tmpl-sel').addEventListener('change',e=>{
       const tmpl=TMPLS[e.target.value];if(!tmpl)return;
       $('e-rx').value=tmpl.rx;
-      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
+      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
       const fg=f=>Object.entries(tmpl.cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
       $('cm-ts').value=fg('timestamp');
       $('cm-th').value=fg('thread');
@@ -11362,6 +11432,12 @@ const RXB={
       $('cm-py').value=fg('payload');
       $('cm-co').value=fg('correlationId');
       $('cm-lv').value=fg('level');
+      $('cm-cl').value=fg('className');
+      $('cm-me').value=fg('methodName');
+      if ($('cm-du')) $('cm-du').value=fg('duration');
+      if ($('cm-sv')) $('cm-sv').value=fg('service');
+      if ($('cm-sc')) $('cm-sc').value=fg('statusCode');
+      if ($('cm-sp')) $('cm-sp').value=fg('spanId');
       this.update();toast('Template applied.','info');
     });
     $('e-rx').addEventListener('input',()=>this.update());
@@ -11386,9 +11462,12 @@ const RXB={
       }
       this.update();
     });
-    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>{
-      $(id).addEventListener('input',()=>this.update());
-      $(id).addEventListener('change',()=>this.update());
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id=>{
+      const el = $(id);
+      if (el) {
+        el.addEventListener('input',()=>this.update());
+        el.addEventListener('change',()=>this.update());
+      }
     });
   },
 
@@ -11400,9 +11479,11 @@ const RXB={
 
   _cm(){
     const cm={};
-    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
+    [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName'],['cm-du','duration'],['cm-sv','service'],['cm-sc','statusCode'],['cm-sp','spanId']]
       .forEach(([id,fn])=>{
-        const raw=$(id).value.trim();
+        const el = $(id);
+        if (!el) return;
+        const raw=el.value.trim();
         if(!raw) return;
         const parts=raw.split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
         parts.forEach(p=>{
@@ -11451,11 +11532,16 @@ const RXB={
         { id: 'cm-co', name: 'correlationId' },
         { id: 'cm-lv', name: 'level' },
         { id: 'cm-cl', name: 'className' },
-        { id: 'cm-me', name: 'methodName' }
+        { id: 'cm-me', name: 'methodName' },
+        { id: 'cm-du', name: 'duration' },
+        { id: 'cm-sv', name: 'service' },
+        { id: 'cm-sc', name: 'statusCode' },
+        { id: 'cm-sp', name: 'spanId' }
       ];
       const mapped = [];
       fields.forEach(f => {
-        const val = $(f.id).value.trim();
+        const el = $(f.id);
+        const val = el ? el.value.trim() : '';
         if (val) {
           const parts = val.split(/[,+\s]+/).map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n) && n > 0);
           if (parts.length === 1) {
@@ -11475,14 +11561,18 @@ const RXB={
         correlationId: { bg: 'var(--purple-g)', fg: 'var(--purple)', border: 'var(--purple-g)' },
         level: { bg: 'var(--yellow-g)', fg: 'var(--yellow)', border: 'var(--yellow-g)' },
         className: { bg: 'var(--amber-g)', fg: 'var(--amber)', border: 'var(--amber-g)' },
-        methodName: { bg: 'var(--green-g)', fg: 'var(--green)', border: 'var(--green-g)' }
+        methodName: { bg: 'var(--green-g)', fg: 'var(--green)', border: 'var(--green-g)' },
+        duration: { bg: 'var(--cyan-g)', fg: 'var(--cyan)', border: 'var(--cyan-g)' },
+        service: { bg: 'var(--blue-g)', fg: 'var(--blue)', border: 'var(--blue-g)' },
+        statusCode: { bg: 'var(--yellow-g)', fg: 'var(--yellow)', border: 'var(--yellow-g)' },
+        spanId: { bg: 'var(--purple-g)', fg: 'var(--purple)', border: 'var(--purple-g)' }
       };
 
       if (mapped.length === 0) {
         pillsContainer.innerHTML = '<span style="color:var(--t4);font-style:italic;">No fields mapped yet</span>';
       } else {
         pillsContainer.innerHTML = mapped.map(m => {
-          const colors = FIELD_COLORS[m.name];
+          const colors = FIELD_COLORS[m.name] || { bg: 'var(--bg-3)', fg: 'var(--t1)', border: 'var(--bdr)' };
           return `<span style="background:${colors.bg}; color:${colors.fg}; border:1px solid ${colors.border}; padding:2px 4px; border-radius:var(--radius-sm);">[${m.grpStr}: ${m.name}]</span>`;
         }).join(' ');
       }
@@ -11510,13 +11600,18 @@ const RXB={
       { id: 'cm-co', label: '🔗 correlationId' },
       { id: 'cm-lv', label: '⚡ level' },
       { id: 'cm-cl', label: '🏛 className' },
-      { id: 'cm-me', label: 'ƒ methodName' }
+      { id: 'cm-me', label: 'ƒ methodName' },
+      { id: 'cm-du', label: '⏱ duration' },
+      { id: 'cm-sv', label: '☁ service' },
+      { id: 'cm-sc', label: '🚥 statusCode' },
+      { id: 'cm-sp', label: '⚓ spanId' }
     ];
     
     const currentMappings = {};
     const fieldExisting = {};
     fields.forEach(f => {
-      const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+      const el = $(f.id);
+      const parts = el ? el.value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean) : [];
       fieldExisting[f.id] = parts;
       if (parts.includes(String(gi))) {
         currentMappings[f.id] = true;
@@ -11568,30 +11663,40 @@ const RXB={
 
         if (action === 'clear') {
           fields.forEach(f => {
-            const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
-            $(f.id).value = parts.filter(p => p !== String(gi)).join(', ');
+            const el = $(f.id);
+            if (!el) return;
+            const parts = el.value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+            el.value = parts.filter(p => p !== String(gi)).join(', ');
           });
           toast(`Cleared mapping for Group ${gi}`, 'info');
         } else if (action === 'combine' && fid) {
-          const parts = $(fid).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
-          if (!parts.includes(String(gi))) parts.push(String(gi));
-          parts.sort((a,b)=>a-b);
-          $(fid).value = parts.join(', ');
-          toast(`Combined Group ${gi} into ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+          const el = $(fid);
+          if (el) {
+            const parts = el.value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+            if (!parts.includes(String(gi))) parts.push(String(gi));
+            parts.sort((a,b)=>a-b);
+            el.value = parts.join(', ');
+            toast(`Combined Group ${gi} into ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+          }
         } else if (fid) {
           fields.forEach(f => {
             if (f.id !== fid) {
-              const parts = $(f.id).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
-              $(f.id).value = parts.filter(p => p !== String(gi)).join(', ');
+              const el = $(f.id);
+              if (!el) return;
+              const parts = el.value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+              el.value = parts.filter(p => p !== String(gi)).join(', ');
             }
           });
-          if (currentMappings[fid]) {
-            const parts = $(fid).value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
-            $(fid).value = parts.filter(p => p !== String(gi)).join(', ');
-            toast(`Unmapped Group ${gi}`, 'info');
-          } else {
-            $(fid).value = String(gi);
-            toast(`Mapped Group ${gi} to ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+          const el = $(fid);
+          if (el) {
+            if (currentMappings[fid]) {
+              const parts = el.value.trim().split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
+              el.value = parts.filter(p => p !== String(gi)).join(', ');
+              toast(`Unmapped Group ${gi}`, 'info');
+            } else {
+              el.value = String(gi);
+              toast(`Mapped Group ${gi} to ${fields.find(f => f.id === fid).label.split(' ')[1]}`, 'success');
+            }
           }
         }
         
@@ -11619,8 +11724,8 @@ const RXB={
 
   _hl(line,rxStr,cm){
     /* Color palette for capture groups */
-    const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72'];
-    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr',level:'⚡ lvl',className:'🏛 class',methodName:'ƒ method'};
+    const C=['var(--blue)','#f0883e','#3fb950','#bc8cff','#f85149','#d29922','#39d353','#ff7b72','#06b6d4','#eab308','#ec4899','#8b5cf6'];
+    const FL={timestamp:'⏱ ts',thread:'🧵 thr',elementName:'🏷 elem',payload:'📦 pay',correlationId:'🔗 corr',level:'⚡ lvl',className:'🏛 class',methodName:'ƒ method',duration:'⏱ dur',service:'☁ svc',statusCode:'🚥 status',spanId:'⚓ span'};
     try{
       let rx,hasIdx=false;
       try{rx=new RegExp(rxStr,'d');hasIdx=true;}catch{try{rx=new RegExp(rxStr);}catch(e){return`<span class="rx-nm">⚠ Regex error: ${esc(e.message)}</span>`;}}
@@ -11716,8 +11821,20 @@ const WIZ={
       if (lvlIdx === -1 && /^(TRACE|DEBUG|INFO|NOTICE|WARN|WARNING|ERROR|SEVERE|FATAL|CRITICAL)$/i.test(p)) {
         lvlIdx = i; cm[colNum] = 'level'; return;
       }
-      if (corrIdx === -1 && (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(p) || /^(?:tx|txn|req|trace|span|corr)[-_]?[a-zA-Z0-9]+/i.test(p))) {
+      if (corrIdx === -1 && (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(p) || /^(?:tx|txn|req|trace|corr)[-_]?[a-zA-Z0-9]+/i.test(p))) {
         corrIdx = i; cm[colNum] = 'correlationId'; return;
+      }
+      if (/^(?:span)[-_]?[a-zA-Z0-9]+$/i.test(p) || /^[0-9a-fA-F]{16}$/i.test(p)) {
+        cm[colNum] = 'spanId'; return;
+      }
+      if (/^\d+(?:\.\d+)?(?:ms|s|µs|us)$/i.test(p)) {
+        cm[colNum] = 'duration'; return;
+      }
+      if (/^[1-5]\d{2}$/.test(p)) {
+        cm[colNum] = 'statusCode'; return;
+      }
+      if (/^(?:srv|svc|app|service)[-_]?[a-zA-Z0-9]+/i.test(p)) {
+        cm[colNum] = 'service'; return;
       }
       if (thrIdx === -1 && ((p.startsWith('[') && p.endsWith(']')) || (S.threads && S.threads.includes(p)) || /^(main|worker|pool|task|exec|nio|thread)[-_0-9]*/i.test(p))) {
         thrIdx = i; cm[colNum] = 'thread'; return;
@@ -11786,7 +11903,7 @@ const WIZ={
         S._wizTs = pipeSplit.ts;
         if (!$('e-use-custom-rx').checked) {
           $('e-rx').value = pipeSplit.rx;
-          ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>$(id).value='');
+          ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
           const fg = f => Object.entries(pipeSplit.cm).filter(([,v]) => v === f).map(([k]) => parseInt(k, 10)).filter(n => !isNaN(n)).sort((a, b) => a - b).join(', ');
           $('cm-ts').value = fg('timestamp');
           $('cm-th').value = fg('thread');
@@ -11796,6 +11913,10 @@ const WIZ={
           $('cm-lv').value = fg('level');
           $('cm-cl').value = fg('className');
           $('cm-me').value = fg('methodName');
+          if ($('cm-du')) $('cm-du').value = fg('duration');
+          if ($('cm-sv')) $('cm-sv').value = fg('service');
+          if ($('cm-sc')) $('cm-sc').value = fg('statusCode');
+          if ($('cm-sp')) $('cm-sp').value = fg('spanId');
         }
         RXB.update();
         return;
@@ -11805,7 +11926,7 @@ const WIZ={
       S._wizRx = '^'; S._wizCm = {}; S._wizTs = '';
       if (!$('e-use-custom-rx').checked) {
         $('e-rx').value = '';
-        ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv'].forEach(id=>$(id).value='');
+        ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
       }
       RXB.update();
       return;
@@ -11834,7 +11955,7 @@ const WIZ={
     // Update advanced UI outputs if custom regex is disabled
     if(!$('e-use-custom-rx').checked){
       $('e-rx').value=rx;
-      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id=>$(id).value='');
+      ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
       const fg=f=>Object.entries(cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
       $('cm-ts').value=fg('timestamp');
       $('cm-th').value=fg('thread');
@@ -11844,6 +11965,10 @@ const WIZ={
       $('cm-lv').value=fg('level');
       $('cm-cl').value=fg('className');
       $('cm-me').value=fg('methodName');
+      if ($('cm-du')) $('cm-du').value=fg('duration');
+      if ($('cm-sv')) $('cm-sv').value=fg('service');
+      if ($('cm-sc')) $('cm-sc').value=fg('statusCode');
+      if ($('cm-sp')) $('cm-sp').value=fg('spanId');
     }
     RXB.update();
   },
@@ -14912,7 +15037,12 @@ const UI={
     const fg=f=>Object.entries(cm).filter(([,v])=>v===f).map(([k])=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b).join(', ');
     $('cm-ts').value=fg('timestamp');$('cm-th').value=fg('thread');$('cm-el').value=fg('elementName');$('cm-py').value=fg('payload');
     $('cm-co').value=fg('correlationId');$('cm-lv').value=fg('level');
-    $('cm-cl').value=fg('className');$('cm-me').value=fg('methodName');$('e-sla').value=rule?.slaThresholdMs||'';
+    $('cm-cl').value=fg('className');$('cm-me').value=fg('methodName');
+    if ($('cm-du')) $('cm-du').value=fg('duration');
+    if ($('cm-sv')) $('cm-sv').value=fg('service');
+    if ($('cm-sc')) $('cm-sc').value=fg('statusCode');
+    if ($('cm-sp')) $('cm-sp').value=fg('spanId');
+    $('e-sla').value=rule?.slaThresholdMs||'';
     
     // Set custom checkbox state
     const isCustom = isN ? false : (rule.isCustom !== false);
@@ -15030,9 +15160,11 @@ const UI={
       rx=$('e-rx').value.trim();if(!rx){toast('Pattern required.','error');return;}
       try{new RegExp(rx);}catch(e){toast('Invalid regex: '+e.message,'error');return;}
       cm={};
-      [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName']]
+      [['cm-ts','timestamp'],['cm-th','thread'],['cm-el','elementName'],['cm-py','payload'],['cm-co','correlationId'],['cm-lv','level'],['cm-cl','className'],['cm-me','methodName'],['cm-du','duration'],['cm-sv','service'],['cm-sc','statusCode'],['cm-sp','spanId']]
         .forEach(([id,fn])=>{
-          const raw=$(id).value.trim();
+          const el = $(id);
+          if (!el) return;
+          const raw=el.value.trim();
           if(!raw) return;
           const parts=raw.split(/[,+\s]+/).map(s=>s.trim()).filter(Boolean);
           parts.forEach(p=>{
@@ -17527,13 +17659,15 @@ const RG = {
     let regex = '^', lastIdx = 0;
 
     // Reset capture mapping fields
-    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me'].forEach(id => {
-      $(id).value = '';
+    ['cm-ts','cm-th','cm-el','cm-py','cm-co','cm-lv','cm-cl','cm-me','cm-du','cm-sv','cm-sc','cm-sp'].forEach(id => {
+      const el = $(id);
+      if (el) el.value = '';
     });
 
     const fieldMap = {
       timestamp: 'cm-ts', thread: 'cm-th', elementName: 'cm-el', payload: 'cm-py',
-      correlationId: 'cm-co', level: 'cm-lv', className: 'cm-cl', methodName: 'cm-me'
+      correlationId: 'cm-co', level: 'cm-lv', className: 'cm-cl', methodName: 'cm-me',
+      duration: 'cm-du', service: 'cm-sv', statusCode: 'cm-sc', spanId: 'cm-sp'
     };
 
     this.selections.forEach((s, idx) => {
