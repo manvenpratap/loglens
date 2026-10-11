@@ -135,7 +135,8 @@ Run slow tests explicitly: `./run_tests.sh -m slow`
 | Custom Log Setup Journey & 100% Parsing | test_21_custom_log_setup_journey | 5 |
 | 2-Tier Navigation & Toolbar Utilities | test_22_two_tier_navigation | 4 |
 | Combine Capture Groups into 1 Element | test_23_combine_capture_groups | 4 |
-| **Total** | | **128** |
+| Waterfall View Scrolling & Header Sync | test_24_waterfall_scrolling | 5 |
+| **Total** | | **133** |
 
 ---
 

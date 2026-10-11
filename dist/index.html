@@ -1175,6 +1175,7 @@ select.inp{cursor:pointer}
   border-bottom:2px solid var(--bdr);
   position:sticky;top:0;z-index:5;
   min-width:100%;
+  overflow-x:hidden;
 }
 .g-ch{
   padding:5px 10px;font-size:9px;font-weight:700;
@@ -1207,6 +1208,7 @@ select.inp{cursor:pointer}
   pointer-events:none;
 }
 .g-rows{overflow-x:auto;overflow-y:auto;max-height:380px;background:var(--bg-0);position:relative;}
+.g-rows:focus{outline:none;}
 .g-row{
   display:flex;flex-direction:row;
   border-bottom:1px solid var(--bdr-d);min-height:30px;
@@ -10545,7 +10547,7 @@ const GR={
         <button class="btn btn-xs btn-g" id="btn-zoom-reset" style="flex-shrink:0;">Reset</button>
       </div>
       <div class="g-hdr"><div class="g-ch">Element</div><div class="g-ch"><div class="g-ax">${ax}</div></div></div>
-      <div class="g-rows">${rh}</div>
+      <div class="g-rows" tabindex="0" role="region" aria-label="Waterfall timeline rows">${rh}</div>
     </div>`;
   },
 };
@@ -11164,13 +11166,14 @@ const UI={
       GR.render(tree,l);TR.render(tree,rp);
       this._res(h,l,rp);
     } else if(vm==='gantt'){
+      r.style.overflowY = 'hidden';
       const d=document.createElement('div');
+      d.style.cssText='flex:1;display:flex;flex-direction:column;min-height:0;';
+      r.appendChild(d);
       if(S.swimlaneMode){
-        r.style.overflowY = 'hidden';
-        d.style.cssText='flex:1;display:flex;flex-direction:column;';r.appendChild(d);
         SWIMLANE.init(d);
       } else {
-        r.appendChild(d);GR.render(tree,d);
+        GR.render(tree,d);
       }
     } else if(vm==='trace'){
       const d=document.createElement('div');
@@ -21697,6 +21700,12 @@ GR.render = function(tree, el) {
   _origGrRender(tree, el);
   
   const rowsCont = el.querySelector('.g-rows');
+  const hdr = el.querySelector('.g-hdr');
+  if (hdr && rowsCont) {
+    rowsCont.addEventListener('scroll', () => {
+      hdr.scrollLeft = rowsCont.scrollLeft;
+    }, { passive: true });
+  }
   
   // Custom tooltips and detail morph delegation — re-wire on every render
   if (rowsCont) {

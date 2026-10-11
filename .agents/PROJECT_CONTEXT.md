@@ -3,6 +3,21 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Waterfall Mode Layout Constraints & Viewport Scrolling (v6.9.108 — COMPLETED)**:
+  - **Root Cause Resolved**:
+    - Previously, when switching to Waterfall (Gantt) mode (`vm === 'gantt'`), `UI.rv` appended an unstyled `<div>` into `#res` without `flex: 1` or `min-height: 0`, and left `#res.style.overflowY = 'auto'`.
+    - Because the parent container had no bounded height constraints, `.gw` (`height: 100%`) expanded to the full content height of all rows (e.g. 1725px+), causing `.g-rows` to expand (`scrollHeight == clientHeight`). As a result, `.g-rows` had zero scroll capacity and vertical scrolling inside the Waterfall table failed completely.
+    - Outer `#res` scrolling caused the `.g-toolbar` and timeline header (`.g-hdr`) to scroll out of view, while the horizontal scrollbar and Timeline Navigator (`.tl-nav-wrap`) were stranded 1500px down below the bottom fold.
+  - **Bounded Flex Layout & Isolated Viewport Scrolling**:
+    - Updated `UI.rv` for `vm === 'gantt'` to set `r.style.overflowY = 'hidden'` and style the container `d` with `flex: 1; display: flex; flex-direction: column; min-height: 0;`, aligning with Split, Tree, Trace, and Swimlane views.
+    - `.gw` now fills the exact available viewport height with pinned `.g-toolbar` and `.g-hdr` at the top, and pinned `.tl-nav-wrap` at the bottom.
+    - `.g-rows` takes all remaining vertical space (`flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto`), enabling smooth mouse wheel, trackpad, and scrollbar scrolling.
+  - **Horizontal Timeline Scroll Synchronization**:
+    - Added `overflow-x: hidden` to `.g-hdr` and an automatic scroll listener in `GR.render` syncing `hdr.scrollLeft = rowsCont.scrollLeft` on all horizontal pan, drag, and zoom events.
+  - **Keyboard Accessibility**:
+    - Added `tabindex="0"`, `role="region"`, and `aria-label="Waterfall timeline rows"` to `.g-rows` so users can scroll via ArrowUp, ArrowDown, PageUp, and PageDown.
+  - **Full Regression Test Suite Passed**: Authored `tests/test_24_waterfall_scrolling.py` (5 tests). Full regression suite passing with **133 passed / 133 total** tests (0 failures).
+
 - **All Threads Execution Tree Aggregation & Multi-Thread Scoping (v6.9.107 — COMPLETED)**:
   - **Root Cause Resolved**:
     - Previously, when loading multi-thread logs (including `demo-springboot.log` with 16 threads and 108 lines), LogLens defaulted `S.activeThr` strictly to `threads[0]` (`worker-1`), which contained only 4 nodes. Split View, Gantt Waterfall, and Execution Tree only rendered the active thread's slice, concealing 95% of parsed events across the other 15 threads. Furthermore, the global stats strip incorrectly reported `Nodes` as only `cnt(trees[threads[0]])` (4 nodes) despite 108 lines being parsed at 100% coverage.
