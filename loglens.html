@@ -2271,7 +2271,7 @@ body.tree-col-resizing {
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
-  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 32px) !important;
+  min-width: calc(var(--tree-spine-w, 420px) + var(--tree-spark-w, 44px) + var(--tree-dur-w, 68px) + var(--tree-self-w, 78px) + var(--tree-ts-w, 84px) + 14px) !important;
   padding-right: 14px !important;
   height: 100% !important;
   box-sizing: border-box !important;
@@ -4818,7 +4818,9 @@ body.focus-mode #res {
 .has-minimap > #tree-vscroll,
 .has-minimap > .vscroll-container { margin-right: 56px; }
 .tw:has(.has-minimap) #tree-hdr,
-#tree-hdr.has-minimap-pad {
+.tw:has(.has-minimap) #tree-filter-bar,
+#tree-hdr.has-minimap-pad,
+#tree-filter-bar.has-minimap-pad {
   margin-right: 56px !important;
 }
 
@@ -27432,6 +27434,8 @@ const OVERDRIVE = (() => {
       parent.classList.add('has-minimap');
       const hdr = document.getElementById('tree-hdr');
       if (hdr) hdr.classList.add('has-minimap-pad');
+      const fb = document.getElementById('tree-filter-bar');
+      if (fb) fb.classList.add('has-minimap-pad');
 
       // Build minimap DOM
       this._wrap = document.createElement('div');
@@ -27646,6 +27650,8 @@ const OVERDRIVE = (() => {
       if (w) { w.parentElement?.classList.remove('has-minimap'); w.remove(); }
       const hdr = document.getElementById('tree-hdr');
       if (hdr) hdr.classList.remove('has-minimap-pad');
+      const fb = document.getElementById('tree-filter-bar');
+      if (fb) fb.classList.remove('has-minimap-pad');
       if (this._tooltip) { this._tooltip.remove(); this._tooltip = null; }
       this._canvas = null; this._ctx = null; this._container = null;
     }
