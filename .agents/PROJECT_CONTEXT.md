@@ -3,6 +3,17 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Thread Span Uniform Background Color & macOS Header Icons Sizing (v6.9.127 — COMPLETED)**:
+  - **Uniform Thread Background Color Across Entire Span**:
+    - Unified the background of `.tree-row` and `.tree-thr-group-row` to use `--thr-bg` consistently for all rows belonging to a thread.
+    - Fixed CSS syntax error in `.tree-row` background property where multiple solid colors were previously specified in comma-separated list.
+    - Updated `:nth-child(even)` to `:not([data-thread]):nth-child(even)` so zebra striping does not override the thread background color on alternate rows.
+    - Added fallback to `parent.thread` in `renderRow` so child/nested spans consistently resolve and render their parent thread's color palette.
+    - Hover and keyboard focus states now blend amber tint over `--thr-bg` using CSS `color-mix`.
+  - **Settings & Help Header Utility Icons Sizing and Boundary Fix**:
+    - Fixed bottom border clipping on `#btn-hdr-cfg` and `#btn-hdr-hlp`: countered `.hdr .vt { border-bottom: none !important; }` by applying `.hdr .hdr-util-btn { border-bottom: 1px solid var(--bdr) !important; }` with matching hover/active states.
+    - Scaled utility button dimensions to 32×32px with 18×18px SVG icons (`width="18" height="18"`) for clear visibility and desktop developer console ergonomics.
+
 - **Dynamic Trace ID Filter Dropdown & Execution Tree Thread Grouping (v6.9.126 — COMPLETED)**:
   - **Dynamic Trace ID Dropdown (`#trace-dropdown`)**:
     - Replaced static text input with an interactive dropdown in `.action-bar-left` styled harmoniously alongside `vt-chips` (`[● TRACE: All Traces (N) ▾]`).

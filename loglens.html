@@ -2438,7 +2438,7 @@ body.tree-col-resizing {
   border-left: 3px solid var(--thr-col, transparent) !important;
   font-family: var(--ui) !important;
   font-size: 12px !important;
-  background: var(--thr-bg, transparent), var(--bg-0) !important;
+  background: var(--thr-bg, var(--bg-0)) !important;
   transition: background 0.12s ease, border-left-color 0.15s ease !important;
   cursor: pointer !important;
   user-select: none !important;
@@ -2455,14 +2455,14 @@ body.tree-col-resizing {
   flex-shrink: 0 !important;
 }
 .tree-thr-group-row {
-  background: linear-gradient(90deg, var(--thr-bg, color-mix(in srgb, var(--blue) 12%, transparent)) 0%, var(--bg-1) 160px, var(--bg-1) 100%) !important;
+  background: var(--thr-bg, var(--bg-1)) !important;
   border-left: 4px solid var(--thr-col, var(--blue)) !important;
   border-top: 1px solid var(--thr-bdr, var(--bdr)) !important;
   border-bottom: 1px solid var(--thr-bdr, var(--bdr)) !important;
   font-weight: 600 !important;
 }
 .tree-thr-group-row:hover {
-  background: linear-gradient(90deg, var(--thr-bg, color-mix(in srgb, var(--blue) 20%, transparent)) 0%, var(--bg-2) 160px, var(--bg-2) 100%) !important;
+  background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-2))) !important;
 }
 .tree-thr-badge {
   font-size: 11px !important;
@@ -2472,11 +2472,11 @@ body.tree-col-resizing {
   padding: 1px 6px !important;
   border-radius: var(--rounded-xs, 2px) !important;
 }
-.tree-row:nth-child(even) {
+.tree-row:not([data-thread]):nth-child(even) {
   background: color-mix(in srgb, var(--bg-1) 45%, var(--bg-0)) !important;
 }
 .tree-row:hover {
-  background: color-mix(in srgb, var(--amber) 7%, var(--bg-1)) !important;
+  background: color-mix(in srgb, var(--amber) 10%, var(--thr-bg, var(--bg-1))) !important;
 }
 .tree-row:hover::before {
   content: "";
@@ -2487,7 +2487,7 @@ body.tree-col-resizing {
   z-index: 2;
 }
 .tree-row.kb-focus {
-  background: color-mix(in srgb, var(--amber) 14%, var(--bg-1)) !important;
+  background: color-mix(in srgb, var(--amber) 16%, var(--thr-bg, var(--bg-1))) !important;
   outline: 1px solid var(--amber) !important;
   outline-offset: -1px;
 }
@@ -6869,9 +6869,10 @@ label[for="watch-auto-reload"] {
   border-left: 1px solid var(--bdr) !important;
   margin-left: 4px !important;
 }
-.hdr-util-btn {
-  width: 28px !important;
-  height: 28px !important;
+.hdr-util-btn,
+.hdr .hdr-util-btn {
+  width: 32px !important;
+  height: 32px !important;
   padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -6879,24 +6880,36 @@ label[for="watch-auto-reload"] {
   border-radius: var(--rounded-md) !important;
   background: var(--bg-1) !important;
   border: 1px solid var(--bdr) !important;
+  border-bottom: 1px solid var(--bdr) !important;
   color: var(--t3) !important;
   cursor: pointer !important;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease !important;
   position: relative !important;
   box-sizing: border-box !important;
 }
-.hdr-util-btn:hover {
+.hdr-util-btn svg,
+.hdr .hdr-util-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0 !important;
+}
+.hdr-util-btn:hover,
+.hdr .hdr-util-btn:hover {
   background: var(--bg-2) !important;
   color: var(--t1) !important;
   border-color: var(--bdr-m, var(--bdr)) !important;
+  border-bottom-color: var(--bdr-m, var(--bdr)) !important;
 }
-.hdr-util-btn:active {
+.hdr-util-btn:active,
+.hdr .hdr-util-btn:active {
   transform: scale(0.94) !important;
 }
-.hdr-util-btn.active {
+.hdr-util-btn.active,
+.hdr .hdr-util-btn.active {
   background: var(--amber-d) !important;
   color: var(--amber) !important;
-  border-color: var(--amber) !important;
+  border: 1px solid var(--amber) !important;
+  border-bottom: 1px solid var(--amber) !important;
 }
 
 /* ── H. EMPTY STATE ─────────────────────────────────────────────── */
@@ -8322,13 +8335,13 @@ label[for="watch-auto-reload"] {
       <!-- macOS Toolbar Utility Icons: Settings & Help -->
       <div class="hdr-util-group" role="toolbar" aria-label="Utilities">
         <button class="vt hdr-util-btn" data-v="cfg" id="btn-hdr-cfg" title="Configuration &amp; Settings (Alt+8)" aria-label="Configuration &amp; Settings">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </button>
         <button class="vt hdr-util-btn" data-v="hlp" id="btn-hdr-hlp" title="Help &amp; Documentation (Alt+0)" aria-label="Help &amp; Documentation">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
             <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -12194,6 +12207,10 @@ const TR={
     if (btnFilterToggle) {
       btnFilterToggle.addEventListener('click', () => {
         this.toggleFilterBar();
+        if (this._showFilterBar) {
+          const target = el.querySelector('#tree-col-filter-op');
+          if (target) target.focus();
+        }
       });
     }
 
@@ -12489,7 +12506,8 @@ const TR={
       `;
     }
 
-    const tCol = this.getThreadColor(n.thread);
+    const thr = n.thread || (n.parent && n.parent.thread) || '';
+    const tCol = this.getThreadColor(thr);
     const col = scol(n.visualStyle?.accentColor || 'var(--t4)');
     const ico = esc(n.visualStyle?.icon || '•');
     const kids = n.hasChildren;
@@ -12584,7 +12602,7 @@ const TR={
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';
 
     return `
-      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" data-thread="${esc(n.thread || '')}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
+      <div class="tree-row${critClass}${kbFocusClass}" data-idx="${idx}" data-thread="${esc(thr)}" style="height:${this._rowHeight}px; --thr-col:${tCol.col}; --thr-bg:${tCol.bg}; --thr-bdr:${tCol.bdr};" role="treeitem" aria-expanded="${kids ? (n.expanded ? 'true' : 'false') : 'undefined'}">
         <div class="tree-spine">
           ${guideLines}
           ${chev}

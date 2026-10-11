@@ -653,9 +653,12 @@ async def test_execution_tree_inline_column_filters(page_with_data):
     assert cleared_nodes == initial_nodes
     assert not await clear_op.is_visible()
 
-    # Clicking header filter icon focuses input
-    header_filter_op = page.locator('.tree-col-filter-btn[data-col="op"]')
-    await header_filter_op.click()
+    # Toggling filter bar via toolbar button focuses first filter input
+    filter_toggle = page.locator('#btn-tree-filter-toggle')
+    await filter_toggle.click()  # close
+    await page.wait_for_timeout(50)
+    await filter_toggle.click()  # reopen & focus
+    await page.wait_for_timeout(50)
     is_focused = await op_input.evaluate("el => el === document.activeElement")
     assert is_focused
 
