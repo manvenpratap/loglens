@@ -18,22 +18,14 @@ async def test_onboarding_overlay_shown_on_load(blank_page):
     ob = blank_page.locator('#ob-ov')
     await expect(ob).to_be_visible(timeout=5000)
 @pytest.mark.asyncio
-async def test_demo_load_dismisses_onboarding(blank_page):
-    """Clicking Try Demo loads data and hides the onboarding overlay."""
+async def test_demo_load_dismisses_onboarding_and_renders_results(blank_page):
+    """Clicking Try Demo loads sample data, hides onboarding, and activates results container."""
     page = blank_page
     demo_btn = page.locator('#ob-btn-demo')
     await expect(demo_btn).to_be_visible(timeout=5000)
     await demo_btn.click()
     await expect(page.locator('#ob-ov')).to_be_hidden(timeout=15000)
     await expect(page.locator('#res .res-split')).to_be_visible(timeout=15000)
-@pytest.mark.asyncio
-async def test_result_container_visible_after_demo(blank_page):
-    """#res container must be visible after demo loads."""
-    page = blank_page
-    demo_btn = page.locator('#ob-btn-demo')
-    await demo_btn.wait_for(state='visible', timeout=5000)
-    await demo_btn.click()
-    await page.wait_for_selector('#res .res-split', state='visible', timeout=15000)
     await expect(page.locator('#res')).to_be_visible()
 @pytest.mark.asyncio
 async def test_empty_state_guide_injected(blank_page):
@@ -326,6 +318,7 @@ async def test_graphify_offline_fallback(blank_page):
     assert await hist_svg.locator('rect').count() > 0
 
     await hist_modal.locator('.m-hdr button').click()
+    await page.unroute("**/cdn.jsdelivr.net/**")
     assert_no_critical_errors(page)
 @pytest.mark.asyncio
 async def test_core_forensic_pills_and_hotkeys(page_with_data):
