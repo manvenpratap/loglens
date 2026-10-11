@@ -3,6 +3,19 @@
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
 
+- **Top View Switcher Mathematical Centering & D3 Execution Tree Telemetry Polish (v6.9.112 — COMPLETED)**:
+  - **Top View Switcher Centering (`.hdr .vtabs.on`)**:
+    - Resolved asymmetrical spacing caused by flexbox auto margins between the 120px logo on the left and the 450px utility group on the right.
+    - Set `.hdr .vtabs.on` to `position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; z-index: 10;`, guaranteeing true viewport pixel centering.
+    - Added `@media (max-width: 1050px)` fallback reverting to auto flex flow on narrow tablets/mobile.
+  - **D2/D3 Depth Level Execution Tree Telemetry Polish (`TR.renderRow`)**:
+    - **Fixed 3-Zone Grid Alignment**: Locked Zone 1 (`.tree-spine`) to a fixed 420px anchor across all depths, guaranteeing that all Zone 2 payload preview chips start at the exact same horizontal coordinate (420px).
+    - **Single-Line Monospace Payload Chip**: Styled `.tree-payload-preview` as a strictly single-line monospace chip (`white-space: nowrap !important; text-overflow: ellipsis !important; line-height: 18px; height: 20px;`), eliminating multi-line word wrap and jagged staircase layouts.
+    - **Swiss Telemetry Column Alignment**: Assigned fixed column widths across Zone 3 sub-columns (44px sparkbar, 60px duration, 66px self-time, 60px thread pill, 76px timestamp) so numbers and labels align like a Swiss bank ledger.
+    - **Badge Noise Suppression**: Outliers suppress redundant SLA badges; `#TraceID` is only displayed on root spans or when correlation ID transitions; `✦ CRIT` is restricted to root or SLA-breaching spans.
+    - **Crisp Branch Guide Lines**: Calibrated guide lines to 15px step increments with 18px vertical branch stems meeting chevrons at exact midpoints.
+  - **Regression Suite Verification**: Updated `tests/test_19_multiline_block_payload.py` to verify tree single-line chip `nowrap` alongside full multi-line `pre-wrap` in Event Inspector. All 86 regression tests passing (100% pass rate).
+
 - **Execution Tree Swiss Telemetry Redesign & 3.5x Test Acceleration (v6.9.111 — COMPLETED)**:
   - **Execution Tree Telemetry Architecture (`TR.renderRow`)**:
     - **Zone 1 (Left — Spine & Identity)**: Implemented `.tree-spine` with SVG-grade vertical branch guide lines (`.tree-guide-line`, `.tree-guide-branch`), micro-chevrons, operation icons (`.tico`), rule name (`.tnm`), element pill (`.tel`), and high-signal badges (`ERR`, `WARN`, `SLA BREACH`, `OUTLIER`, `✦ CRITICAL`, `#TraceID`, `✎ Note`). Suppressed noisy blue `INFO` badges on healthy rows to eliminate visual noise.

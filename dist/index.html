@@ -398,6 +398,7 @@ html,body{
   display:flex;align-items:center;
   padding:0 16px;gap:10px;z-index:200;
   box-shadow:none;
+  position:relative;
 }
 [data-theme=light] .hdr,
 [data-theme=ivory] .hdr,
@@ -674,7 +675,6 @@ html,body{
   background: transparent !important;
   border-bottom: none !important;
   height: 100% !important;
-  margin: 0 auto !important;
   padding: 0 8px !important;
   overflow: visible !important;
   scrollbar-width: none !important;
@@ -687,6 +687,30 @@ html,body{
 }
 .hdr .vtabs.on {
   display: flex !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10 !important;
+  margin: 0 !important;
+}
+@media (max-width: 1050px) {
+  .hdr .vtabs.on {
+    position: static !important;
+    transform: none !important;
+    margin: 0 auto !important;
+  }
+}
+.hdr .logo {
+  position: relative !important;
+  z-index: 20 !important;
+  flex-shrink: 0 !important;
+}
+.hdr .hr {
+  position: relative !important;
+  z-index: 20 !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
 }
 .hdr .vt {
   height: 100%;
@@ -2041,33 +2065,37 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   z-index: 2;
 }
 
-/* Zone 1: Tree Spine & Identity */
+/* Zone 1: Tree Spine & Identity (Fixed Column for Grid Alignment) */
 .tree-spine {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  flex-shrink: 0 !important;
+  flex: 0 0 420px !important;
+  width: 420px !important;
+  min-width: 320px !important;
+  max-width: 440px !important;
+  overflow: hidden !important;
   position: relative !important;
-  min-width: 0 !important;
-  max-width: 62% !important;
   height: 100% !important;
+  box-sizing: border-box !important;
 }
 .tree-guide-line {
   position: absolute !important;
   top: 0 !important;
   bottom: 0 !important;
   width: 1px !important;
-  background: var(--bdr-d) !important;
+  background: var(--bdr-m, var(--bdr)) !important;
+  opacity: 0.85 !important;
   pointer-events: none !important;
 }
 .tree-guide-branch {
   position: absolute !important;
   top: 0 !important;
-  height: 50% !important;
-  width: 9px !important;
-  border-left: 1px solid var(--bdr) !important;
-  border-bottom: 1px solid var(--bdr) !important;
+  height: 18px !important;
+  border-left: 1px solid var(--bdr-m, var(--bdr)) !important;
+  border-bottom: 1px solid var(--bdr-m, var(--bdr)) !important;
   border-bottom-left-radius: 3px !important;
+  opacity: 0.85 !important;
   pointer-events: none !important;
 }
 .tchev {
@@ -2106,7 +2134,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   height: 3px;
   border-radius: 50%;
   background: var(--bdr-h, var(--t4));
-  opacity: 0.5;
+  opacity: 0.6;
 }
 .tico {
   width: 18px !important;
@@ -2121,7 +2149,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tnm {
   font-family: var(--ui) !important;
-  font-size: 12px !important;
+  font-size: 11.5px !important;
   font-weight: 600 !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
@@ -2129,7 +2157,7 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
 }
 .tel {
   font-family: var(--mono) !important;
-  font-size: 11.5px !important;
+  font-size: 11px !important;
   font-weight: 500 !important;
   color: var(--t1) !important;
   white-space: nowrap !important;
@@ -2138,16 +2166,18 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   padding: 1px 5px !important;
   border-radius: 4px !important;
   background: color-mix(in srgb, currentColor 7%, transparent) !important;
-  flex-shrink: 1 !important;
+  flex: 0 1 auto !important;
+  max-width: 140px !important;
 }
 
-/* Status Badges Group */
+/* Status Badges Group (Right-Docked in Spine) */
 .tree-status-group {
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
   flex-shrink: 0 !important;
-  margin-left: 2px !important;
+  margin-left: auto !important;
+  padding-right: 6px !important;
 }
 .tbadge {
   font-family: var(--mono) !important;
@@ -2208,45 +2238,57 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   gap: 3px !important;
 }
 
-/* Zone 2: Payload Preview (Center Column) */
+/* Zone 2: Payload Preview (Center Column — strictly single-line monospace) */
 .tree-payload-col {
-  flex: 1 !important;
-  min-width: 60px !important;
-  max-width: 420px !important;
+  flex: 1 1 auto !important;
+  min-width: 100px !important;
   overflow: hidden !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  padding: 0 10px !important;
+  padding: 0 12px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
 }
 .tree-payload-preview {
+  display: inline-block !important;
   font-family: var(--mono) !important;
   font-size: 11px !important;
   color: var(--t3) !important;
-  white-space: pre-wrap !important;
+  white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   background: color-mix(in srgb, var(--bg-2) 65%, transparent) !important;
   border: 1px solid var(--bdr-d) !important;
   border-radius: 4px !important;
-  padding: 1px 6px !important;
+  padding: 1px 7px !important;
   max-width: 100% !important;
+  line-height: 18px !important;
+  height: 20px !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
   transition: all 0.12s ease !important;
 }
 .tree-payload-preview:hover {
   color: var(--t1) !important;
-  border-color: var(--bdr) !important;
+  border-color: var(--amber) !important;
   background: var(--bg-2) !important;
 }
 
-/* Zone 3: Pinned Telemetry Strip (Right Column) */
+/* Zone 3: Pinned Telemetry Strip (Fixed Sub-Column Alignment) */
 .tree-telemetry-col {
+  flex: 0 0 320px !important;
+  width: 320px !important;
+  min-width: 320px !important;
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
+  justify-content: flex-end !important;
   gap: 8px !important;
   flex-shrink: 0 !important;
   font-family: var(--mono) !important;
+  padding-right: 4px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
 }
 .tree-sparkbar {
   width: 44px !important;
@@ -2272,8 +2314,10 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   font-size: 11px !important;
   font-weight: 700 !important;
   color: var(--t1) !important;
-  min-width: 52px !important;
+  width: 60px !important;
+  min-width: 60px !important;
   text-align: right !important;
+  flex-shrink: 0 !important;
 }
 .tree-metric-dur.breach {
   color: var(--red) !important;
@@ -2285,7 +2329,17 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   border: 1px solid var(--bdr-d) !important;
   border-radius: 3px !important;
   padding: 1px 4px !important;
+  width: 66px !important;
+  min-width: 66px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
   white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.tree-metric-self-none {
+  display: inline-block !important;
+  width: 66px !important;
+  flex-shrink: 0 !important;
 }
 .tree-thread-pill {
   font-size: 9px !important;
@@ -2298,14 +2352,21 @@ details[open]>summary.ts .tchev{transform:rotate(90deg);color:var(--amber)}
   text-transform: uppercase !important;
   letter-spacing: 0.02em !important;
   white-space: nowrap !important;
+  width: 60px !important;
+  min-width: 60px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
 }
 .tree-metric-ts {
   font-size: 10px !important;
   color: var(--t4) !important;
-  min-width: 72px !important;
+  width: 76px !important;
+  min-width: 76px !important;
   text-align: right !important;
   letter-spacing: -0.02em !important;
   white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 /* Light / Ivory theme specific contrast polish */
@@ -11221,8 +11282,9 @@ const TR={
     const dur = n.duration != null ? fmtMs(n.duration) : null;
     const ts = n.timestamp != null ? new Date(n.timestamp).toISOString().slice(11, 23) : '';
     const bg = ibg(col);
+    const d = n.depth || 0;
     
-    // Status Badges (High Signal Only — suppress noise like normal INFO pills)
+    // Status Badges (High Signal Only — suppress redundant child noise)
     let ab = '';
     if (n.level) {
       const lvl = n.level.trim().toUpperCase();
@@ -11232,12 +11294,25 @@ const TR={
         ab += `<span class="tbadge tbadge-amber">WARN</span>`;
       }
     }
-    if (n._isOutlier) ab += `<span class="tbadge tbadge-outlier">OUTLIER</span>`;
-    if (n._isSlaBreach) ab += `<span class="tbadge tbadge-sla">SLA BREACH</span>`;
-    if (n._cause) ab += `<span class="tbadge tbadge-amber" title="Potential Cause: ${esc(n._cause)}">⚠ Cause: ${esc(n._cause.slice(0, 18) + (n._cause.length > 18 ? '…' : ''))}</span>`;
-    if (n.correlationId) ab += `<span class="tbadge tbadge-trace" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by Trace ID">#${esc(n.correlationId)}</span>`;
-    if (n._isCriticalPath) ab += `<span class="tbadge tbadge-critical" title="Part of the Critical Path">✦ CRITICAL</span>`;
-    if (n._isQuietPeriod) ab += `<span class="tbadge tbadge-amber" title="Quiet period gap: ${esc(fmtMs(n._quietGap))}">⧖ GAP</span>`;
+    // Performance: Outlier is primary (>3s); SLA breach (>2s) only shown if not already an outlier
+    if (n._isOutlier) {
+      ab += `<span class="tbadge tbadge-outlier">OUTLIER</span>`;
+    } else if (n._isSlaBreach) {
+      ab += `<span class="tbadge tbadge-sla">SLA BREACH</span>`;
+    }
+    if (n._cause) ab += `<span class="tbadge tbadge-amber" title="Potential Cause: ${esc(n._cause)}">⚠ Cause</span>`;
+    
+    // Trace ID: show on root spans (depth === 0) or when correlationId changes from parent
+    const isRootOrNewTrace = !n.parent || n.correlationId !== n.parent.correlationId;
+    if (n.correlationId && isRootOrNewTrace) {
+      ab += `<span class="tbadge tbadge-trace" data-a="trace-click" data-tc="${esc(n.correlationId)}" title="Click to filter by Trace ID">#${esc(n.correlationId)}</span>`;
+    }
+    if (n._isCriticalPath && (d === 0 || n._isSlaBreach || n._isOutlier)) {
+      ab += `<span class="tbadge tbadge-critical" title="Part of the Critical Path">✦ CRIT</span>`;
+    }
+    if (n._isQuietPeriod && d === 0) {
+      ab += `<span class="tbadge tbadge-amber" title="Quiet period gap: ${esc(fmtMs(n._quietGap))}">⧖ GAP</span>`;
+    }
 
     const elB = n.elementName && n.elementName !== n.ruleName ? `<span class="tel" style="color:${col};" title="${esc(n.elementName)}">${esc(n.elementName)}</span>` : '';
     
@@ -11251,24 +11326,24 @@ const TR={
     }
     if (noteB) ab += noteB;
 
-    // Tree Spine Guides (Visual Branch Lines)
+    // Tree Spine Guides (Visual Branch Lines with calibrated 15px step)
     let guideLines = '';
-    const d = n.depth || 0;
+    const step = 15;
     for (let i = 0; i < d; i++) {
-      const leftPos = (i * 18) + 12;
+      const leftPos = (i * step) + 10;
       if (i === d - 1) {
-        guideLines += `<span class="tree-guide-branch" style="left:${leftPos}px;"></span>`;
+        guideLines += `<span class="tree-guide-branch" style="left:${leftPos}px; width:10px;"></span>`;
       } else {
         guideLines += `<span class="tree-guide-line" style="left:${leftPos}px;"></span>`;
       }
     }
     
-    const chevMargin = d === 0 ? 8 : (d * 18 + 6);
+    const chevMargin = d === 0 ? 8 : (d * step + 4);
     const chev = kids 
       ? `<button class="tchev ${n.expanded ? 'expanded' : ''}" style="margin-left:${chevMargin}px;" aria-label="${n.expanded ? 'Collapse' : 'Expand'}">▼</button>` 
       : `<span class="tchev-leaf" style="margin-left:${chevMargin}px;"></span>`;
 
-    // Zone 2: Payload Preview Chip
+    // Zone 2: Payload Preview Chip (strictly single-line)
     let payCol = '';
     if (n.payload) {
       payCol = `<div class="tree-payload-col"><span class="tree-payload-preview tpy" title="${esc(n.payload)}">${esc(n.payload)}</span></div>`;
@@ -11287,8 +11362,12 @@ const TR={
       </div>` : '';
       
     const durHtml = dur ? `<span class="tree-metric-dur tdr ${n._isSlaBreach ? 'breach' : ''}" style="color:${n._isSlaBreach ? 'var(--red)' : col};">${esc(dur)}</span>` : '';
-    const selfHtml = (n._sm != null && n.duration != null && n._sm !== n.duration) ? `<span class="tree-metric-self" title="Self execution time">self ${esc(fmtMs(n._sm))}</span>` : '';
-    const thrHtml = (n.thread && S.threads && S.threads.length > 1) ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` : '';
+    const selfHtml = (n._sm != null && n.duration != null && n._sm !== n.duration) 
+      ? `<span class="tree-metric-self" title="Self execution time">self ${esc(fmtMs(n._sm))}</span>` 
+      : `<span class="tree-metric-self-none"></span>`;
+    const thrHtml = (n.thread && S.threads && S.threads.length > 1) 
+      ? `<span class="tree-thread-pill" title="Thread">${esc(n.thread)}</span>` 
+      : `<span style="display:inline-block; width:60px; flex-shrink:0;"></span>`;
     const tsHtml = ts ? `<span class="tree-metric-ts">${esc(ts)}</span>` : '';
 
     const kbFocusClass = KBN._idx === idx ? ' kb-focus' : '';

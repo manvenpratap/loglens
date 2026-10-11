@@ -209,9 +209,9 @@ async def test_event_inspector_renders_multiline_payload(blank_page):
     assert "class OrderRequest" in payload_text
     assert "private Long orderId" in payload_text
 
-    # Verify CSS formatting preserves pre-wrap
+    # Verify CSS formatting on tree preview chip is nowrap for fixed-height virtual scrolling
     ws = await tree_payload.first.evaluate("el => window.getComputedStyle(el).whiteSpace")
-    assert ws == "pre-wrap"
+    assert ws == "nowrap"
 
     # Click first tree row to open Event Inspector
     first_row = page.locator('.tree-row').first
@@ -223,6 +223,10 @@ async def test_event_inspector_renders_multiline_payload(blank_page):
     ins_body = await page.locator('#ins-body-content').text_content()
     assert "class OrderRequest" in ins_body
     assert "private Long orderId" in ins_body
+
+    # Verify Event Inspector preserves pre-wrap
+    ins_ws = await page.locator('.ins-payload-pre').first.evaluate("el => window.getComputedStyle(el).whiteSpace")
+    assert ins_ws == "pre-wrap"
 
     assert_no_critical_errors(page)
 
