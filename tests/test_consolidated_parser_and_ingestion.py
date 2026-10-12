@@ -178,11 +178,15 @@ async def test_log4j_import_inline_and_empty_config(blank_page):
     """
     page = blank_page
 
-    # 1. Dismiss onboarding via the skip button to expose the Settings view
+    # 1. Dismiss onboarding via the skip button
     btn_skip = page.locator('#ob-skip')
     await expect(btn_skip).to_be_visible()
     await btn_skip.click()
-    await page.wait_for_timeout(500)
+    await page.wait_for_timeout(300)
+
+    # Navigate to Settings view
+    await page.click('.vt[data-v="cfg"]')
+    await page.wait_for_timeout(300)
 
     # Verify that the Settings panel is visible
     p_cfg = page.locator('#p-cfg')

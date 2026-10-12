@@ -885,3 +885,64 @@ async def test_comprehensive_in_app_help_and_documentation_system(page_with_data
 
     assert_no_critical_errors(page)
 
+
+@pytest.mark.asyncio
+async def test_hero_onboarding_and_open_log_user_journey(blank_page):
+    """
+    Verify the streamlined user journey when starting on hero landing:
+    1. Initial default viewMode is 'split', not 'cfg' (settings).
+    2. Skipping onboarding reveals empty dropzone hero (#emp), not settings page.
+    3. Quickstart text correctly guides users to drop/select log file.
+    4. #fi-log accepts modern formats (.log, .txt, .out, .gz, .jsonl, .csv, .trace, text/*).
+    5. Command palette registers Open Log File with ⌘O shortcut hint.
+    6. Cmd+O / Ctrl+O keyboard shortcut triggers UI.chooseAndParseLog.
+    """
+    page = blank_page
+
+    # 1. Initial default viewMode must be 'split'
+    view_mode = await page.evaluate("() => S.viewMode")
+    assert view_mode == 'split', f"Expected default viewMode to be 'split', got '{view_mode}'"
+
+    # 2. Verify onboarding quickstart text
+    quickstart_text = await page.locator('#ob-ov').text_content()
+    assert "Drop log or select file" in quickstart_text
+    assert "Explore views" in quickstart_text
+
+    # 3. Skipping onboarding reveals #emp (empty state dropzone), not settings
+    skip_btn = page.locator('#ob-skip')
+    await skip_btn.click()
+    await page.wait_for_timeout(300)
+    await expect(page.locator('#emp')).to_be_visible()
+    assert await page.locator('#emp-drop-zone').is_visible()
+
+    # 4. Check accept attribute on #fi-log and #fi-log2
+    fi_log_accept = await page.locator('#fi-log').get_attribute('accept')
+    assert '.jsonl' in fi_log_accept and '.csv' in fi_log_accept and '.trace' in fi_log_accept
+
+    # 5. Open command palette and verify Open Log File command
+    await page.keyboard.press('Control+k')
+    await expect(page.locator('#cmd-palette')).to_be_visible(timeout=3000)
+    await page.locator('#cmd-input').fill('open log')
+    await page.wait_for_timeout(200)
+    open_item = page.locator('.cmd-item', has_text='Open Log File')
+    await expect(open_item).to_be_visible()
+    hint_text = await open_item.locator('.cmd-item-hint').text_content()
+    assert '⌘O' in hint_text or 'Ctrl+O' in hint_text or 'O' in hint_text
+    await page.keyboard.press('Escape')
+    await expect(page.locator('#cmd-palette')).not_to_be_visible(timeout=2000)
+
+    # 6. Verify Ctrl+O keyboard shortcut triggers UI.chooseAndParseLog
+    await page.evaluate("""() => {
+        window.__chooseAndParseLogCalled = false;
+        UI.chooseAndParseLog = () => {
+            window.__chooseAndParseLogCalled = true;
+        };
+    }""")
+    await page.keyboard.press('Control+o')
+    await page.wait_for_timeout(200)
+    called = await page.evaluate("() => window.__chooseAndParseLogCalled")
+    assert called is True, "Expected Control+o to trigger UI.chooseAndParseLog"
+
+    assert_no_critical_errors(page)
+
+

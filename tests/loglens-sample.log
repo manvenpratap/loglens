@@ -1,0 +1,114 @@
+2026-10-11 18:48:13.807 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - TX-BEGIN ProcessOrder/42
+2026-10-11 18:48:13.815 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-REQ /api/checkout method=POST payload=class OrderCheckoutRequest
+    class OrderCheckoutRequest {
+        customerId: "cust-9481"
+        currency: "USD"
+        items: [
+            Item(sku="SKU-8921", qty=2, unitPrice=49.99),
+            Item(sku="SKU-1044", qty=1, unitPrice=19.50)
+        ]
+        paymentMethod: "CREDIT_CARD"
+    }
+2026-10-11 18:48:13.837 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - CACHE-MISS auth.session.cust-9481
+2026-10-11 18:48:13.847 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-START auth.lookup sql=SELECT user,role FROM sessions WHERE token=?
+2026-10-11 18:48:13.902 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-END auth.lookup
+2026-10-11 18:48:13.909 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-REQ /api/payment/charge method=POST target=worker-2
+2026-10-11 18:48:13.917 INFO  [worker-2] [traceId=trace-ord-8921] com.example.Service - TX-BEGIN ProcessPayment/8921
+2026-10-11 18:48:13.927 INFO  [worker-2] [traceId=trace-ord-8921] com.example.Service - HTTP-REQ /api/payment/charge method=POST payload=json
+    {
+        "event": "charge.initiated",
+        "gateway": "stripe",
+        "transactionId": "txn_8921_alpha",
+        "amount": 11948,
+        "status": "processing"
+    }
+2026-10-11 18:48:13.982 INFO  [worker-2] [traceId=trace-ord-8921] com.example.Service - CACHE-HIT stripe.idempotency.txn_8921
+2026-10-11 18:48:14.037 INFO  [worker-2] [traceId=trace-ord-8921] com.example.Service - HTTP-RESP /api/payment/charge
+2026-10-11 18:48:14.042 INFO  [worker-2] [traceId=trace-ord-8921] com.example.Service - TX-END ProcessPayment/8921
+2026-10-11 18:48:14.045 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-RESP /api/payment/charge
+2026-10-11 18:48:14.049 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-REQ /api/inventory/reserve method=POST target=worker-3
+2026-10-11 18:48:14.052 INFO  [worker-3] [traceId=trace-ord-8921] com.example.Service - TX-BEGIN ReserveInventory/8921
+2026-10-11 18:48:14.062 INFO  [worker-3] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-START inv.reserve sql=UPDATE inventory SET reserved=reserved+2 WHERE sku="SKU-8921"
+2026-10-11 18:48:14.102 INFO  [worker-3] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-END inv.reserve
+2026-10-11 18:48:14.112 INFO  [worker-3] [traceId=trace-ord-8921] com.example.Service - TX-END ReserveInventory/8921
+2026-10-11 18:48:14.115 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-RESP /api/inventory/reserve
+2026-10-11 18:48:14.119 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-START order.save sql=INSERT INTO orders (id, status) VALUES (42, "CONFIRMED")
+2026-10-11 18:48:14.125 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - DB-QUERY-END order.save
+2026-10-11 18:48:14.127 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - HTTP-RESP /api/checkout
+2026-10-11 18:48:14.132 INFO  [worker-1] [traceId=trace-ord-8921] com.example.Service - TX-END ProcessOrder/42
+2026-10-11 18:48:14.207 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - TX-BEGIN RefundOrder/99
+2026-10-11 18:48:14.222 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - HTTP-REQ /api/refund method=POST id=99
+2026-10-11 18:48:14.247 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - DB-QUERY-START order.lock sql=SELECT * FROM orders WHERE id=99 FOR UPDATE
+2026-10-11 18:48:15.097 ERROR [worker-2] [traceId=trace-pay-3310] com.example.Service - ERROR OrderService Deadlock encountered while acquiring row lock on orders table id=99
+    java.sql.SQLException: Deadlock detected in InnoDB lock table
+        at com.example.db.ConnectionPool.acquire(ConnectionPool.java:184)
+        at com.example.service.OrderService.lockOrder(OrderService.java:92)
+    Caused by: com.mysql.cj.exceptions.DeadlockException: Lock wait timeout exceeded
+        at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translate(SQLExceptionsMapping.java:122)
+2026-10-11 18:48:15.097 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - DB-QUERY-END order.lock
+2026-10-11 18:48:15.107 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - HTTP-RESP /api/refund
+2026-10-11 18:48:15.112 INFO  [worker-2] [traceId=trace-pay-3310] com.example.Service - TX-END RefundOrder/99
+2026-10-11 18:48:14.257 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - TX-BEGIN InventoryReconcile
+2026-10-11 18:48:14.277 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - HTTP-REQ /api/inventory/reconcile method=POST scope=full
+2026-10-11 18:48:14.337 WARN  [worker-3] [traceId=trace-inv-4091] com.example.Service - WARN InventoryService Reconciliation batch size exceeded recommended threshold (items=14500)
+2026-10-11 18:48:14.407 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - DB-QUERY-START inv.batch_scan sql=SELECT id,sku,count FROM inventory_counts WHERE verified=0
+2026-10-11 18:48:14.467 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - DB-QUERY-END inv.batch_scan
+2026-10-11 18:48:15.677 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - HTTP-RESP /api/inventory/reconcile
+2026-10-11 18:48:15.682 INFO  [worker-3] [traceId=trace-inv-4091] com.example.Service - TX-END InventoryReconcile
+2026-10-11 18:48:14.887 INFO  [worker-4] [traceId=trace-batch-4004] com.example.Service - TX-BEGIN TaskRun/4
+2026-10-11 18:48:14.912 INFO  [worker-4] [traceId=trace-batch-4004] com.example.Service - DB-QUERY-START task.process.4 sql=SELECT * FROM tasks WHERE id=4
+2026-10-11 18:48:14.962 INFO  [worker-4] [traceId=trace-batch-4004] com.example.Service - DB-QUERY-END task.process.4
+2026-10-11 18:48:14.997 INFO  [worker-4] [traceId=trace-batch-4004] com.example.Service - TX-END TaskRun/4
+2026-10-11 18:48:15.007 INFO  [worker-5] [traceId=trace-batch-4005] com.example.Service - TX-BEGIN TaskRun/5
+2026-10-11 18:48:15.032 INFO  [worker-5] [traceId=trace-batch-4005] com.example.Service - DB-QUERY-START task.process.5 sql=SELECT * FROM tasks WHERE id=5
+2026-10-11 18:48:15.082 INFO  [worker-5] [traceId=trace-batch-4005] com.example.Service - DB-QUERY-END task.process.5
+2026-10-11 18:48:15.092 WARN  [worker-5] [traceId=trace-batch-4005] com.example.Service - WARN TaskExecutor Slow execution detected for task 5
+2026-10-11 18:48:15.117 INFO  [worker-5] [traceId=trace-batch-4005] com.example.Service - TX-END TaskRun/5
+2026-10-11 18:48:15.127 INFO  [worker-6] [traceId=trace-batch-4006] com.example.Service - TX-BEGIN TaskRun/6
+2026-10-11 18:48:15.152 INFO  [worker-6] [traceId=trace-batch-4006] com.example.Service - DB-QUERY-START task.process.6 sql=SELECT * FROM tasks WHERE id=6
+2026-10-11 18:48:15.202 INFO  [worker-6] [traceId=trace-batch-4006] com.example.Service - DB-QUERY-END task.process.6
+2026-10-11 18:48:15.237 INFO  [worker-6] [traceId=trace-batch-4006] com.example.Service - TX-END TaskRun/6
+2026-10-11 18:48:15.247 INFO  [worker-7] [traceId=trace-batch-4007] com.example.Service - TX-BEGIN TaskRun/7
+2026-10-11 18:48:15.272 INFO  [worker-7] [traceId=trace-batch-4007] com.example.Service - DB-QUERY-START task.process.7 sql=SELECT * FROM tasks WHERE id=7
+2026-10-11 18:48:15.322 INFO  [worker-7] [traceId=trace-batch-4007] com.example.Service - DB-QUERY-END task.process.7
+2026-10-11 18:48:15.337 ERROR [worker-7] [traceId=trace-batch-4007] com.example.Service - ERROR TaskExecutor Failed to execute task 7
+2026-10-11 18:48:15.357 INFO  [worker-7] [traceId=trace-batch-4007] com.example.Service - TX-END TaskRun/7
+2026-10-11 18:48:15.367 INFO  [worker-8] [traceId=trace-batch-4008] com.example.Service - TX-BEGIN TaskRun/8
+2026-10-11 18:48:15.392 INFO  [worker-8] [traceId=trace-batch-4008] com.example.Service - DB-QUERY-START task.process.8 sql=SELECT * FROM tasks WHERE id=8
+2026-10-11 18:48:15.442 INFO  [worker-8] [traceId=trace-batch-4008] com.example.Service - DB-QUERY-END task.process.8
+2026-10-11 18:48:15.477 INFO  [worker-8] [traceId=trace-batch-4008] com.example.Service - TX-END TaskRun/8
+2026-10-11 18:48:15.487 INFO  [worker-9] [traceId=trace-batch-4009] com.example.Service - TX-BEGIN TaskRun/9
+2026-10-11 18:48:15.512 INFO  [worker-9] [traceId=trace-batch-4009] com.example.Service - DB-QUERY-START task.process.9 sql=SELECT * FROM tasks WHERE id=9
+2026-10-11 18:48:15.562 INFO  [worker-9] [traceId=trace-batch-4009] com.example.Service - DB-QUERY-END task.process.9
+2026-10-11 18:48:15.597 INFO  [worker-9] [traceId=trace-batch-4009] com.example.Service - TX-END TaskRun/9
+2026-10-11 18:48:15.607 INFO  [worker-10] [traceId=trace-batch-4010] com.example.Service - TX-BEGIN TaskRun/10
+2026-10-11 18:48:15.632 INFO  [worker-10] [traceId=trace-batch-4010] com.example.Service - DB-QUERY-START task.process.10 sql=SELECT * FROM tasks WHERE id=10
+2026-10-11 18:48:15.682 INFO  [worker-10] [traceId=trace-batch-4010] com.example.Service - DB-QUERY-END task.process.10
+2026-10-11 18:48:15.692 WARN  [worker-10] [traceId=trace-batch-4010] com.example.Service - WARN TaskExecutor Slow execution detected for task 10
+2026-10-11 18:48:15.717 INFO  [worker-10] [traceId=trace-batch-4010] com.example.Service - TX-END TaskRun/10
+2026-10-11 18:48:15.727 INFO  [worker-11] [traceId=trace-batch-4011] com.example.Service - TX-BEGIN TaskRun/11
+2026-10-11 18:48:15.752 INFO  [worker-11] [traceId=trace-batch-4011] com.example.Service - DB-QUERY-START task.process.11 sql=SELECT * FROM tasks WHERE id=11
+2026-10-11 18:48:15.802 INFO  [worker-11] [traceId=trace-batch-4011] com.example.Service - DB-QUERY-END task.process.11
+2026-10-11 18:48:15.837 INFO  [worker-11] [traceId=trace-batch-4011] com.example.Service - TX-END TaskRun/11
+2026-10-11 18:48:15.847 INFO  [worker-12] [traceId=trace-batch-4012] com.example.Service - TX-BEGIN TaskRun/12
+2026-10-11 18:48:15.872 INFO  [worker-12] [traceId=trace-batch-4012] com.example.Service - DB-QUERY-START task.process.12 sql=SELECT * FROM tasks WHERE id=12
+2026-10-11 18:48:15.922 INFO  [worker-12] [traceId=trace-batch-4012] com.example.Service - DB-QUERY-END task.process.12
+2026-10-11 18:48:15.957 INFO  [worker-12] [traceId=trace-batch-4012] com.example.Service - TX-END TaskRun/12
+2026-10-11 18:48:15.967 INFO  [worker-13] [traceId=trace-batch-4013] com.example.Service - TX-BEGIN TaskRun/13
+2026-10-11 18:48:15.992 INFO  [worker-13] [traceId=trace-batch-4013] com.example.Service - DB-QUERY-START task.process.13 sql=SELECT * FROM tasks WHERE id=13
+2026-10-11 18:48:16.042 INFO  [worker-13] [traceId=trace-batch-4013] com.example.Service - DB-QUERY-END task.process.13
+2026-10-11 18:48:16.077 INFO  [worker-13] [traceId=trace-batch-4013] com.example.Service - TX-END TaskRun/13
+2026-10-11 18:48:16.087 INFO  [worker-14] [traceId=trace-batch-4014] com.example.Service - TX-BEGIN TaskRun/14
+2026-10-11 18:48:16.112 INFO  [worker-14] [traceId=trace-batch-4014] com.example.Service - DB-QUERY-START task.process.14 sql=SELECT * FROM tasks WHERE id=14
+2026-10-11 18:48:16.162 INFO  [worker-14] [traceId=trace-batch-4014] com.example.Service - DB-QUERY-END task.process.14
+2026-10-11 18:48:16.177 ERROR [worker-14] [traceId=trace-batch-4014] com.example.Service - ERROR TaskExecutor Failed to execute task 14
+2026-10-11 18:48:16.197 INFO  [worker-14] [traceId=trace-batch-4014] com.example.Service - TX-END TaskRun/14
+2026-10-11 18:48:16.207 INFO  [worker-15] [traceId=trace-batch-4015] com.example.Service - TX-BEGIN TaskRun/15
+2026-10-11 18:48:16.232 INFO  [worker-15] [traceId=trace-batch-4015] com.example.Service - DB-QUERY-START task.process.15 sql=SELECT * FROM tasks WHERE id=15
+2026-10-11 18:48:16.282 INFO  [worker-15] [traceId=trace-batch-4015] com.example.Service - DB-QUERY-END task.process.15
+2026-10-11 18:48:16.292 WARN  [worker-15] [traceId=trace-batch-4015] com.example.Service - WARN TaskExecutor Slow execution detected for task 15
+2026-10-11 18:48:16.317 INFO  [worker-15] [traceId=trace-batch-4015] com.example.Service - TX-END TaskRun/15
+2026-10-11 18:48:16.327 INFO  [worker-16] [traceId=trace-batch-4016] com.example.Service - TX-BEGIN TaskRun/16
+2026-10-11 18:48:16.352 INFO  [worker-16] [traceId=trace-batch-4016] com.example.Service - DB-QUERY-START task.process.16 sql=SELECT * FROM tasks WHERE id=16
+2026-10-11 18:48:16.402 INFO  [worker-16] [traceId=trace-batch-4016] com.example.Service - DB-QUERY-END task.process.16
+2026-10-11 18:48:16.437 INFO  [worker-16] [traceId=trace-batch-4016] com.example.Service - TX-END TaskRun/16

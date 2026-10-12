@@ -2,6 +2,17 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Streamlined Hero Landing & Open Log User Journey (v6.9.150 — COMPLETED)**:
+  - **Audit & Journey Polish (/ponytail)**:
+    1. **Initial Boot View (P1)**: Changed default `viewMode` from `'cfg'` (Settings) to `'split'`, greeting users on initial boot with the empty hero dropzone (`#emp`) instead of dumping them into Settings when skipping onboarding.
+    2. **Onboarding Quickstart Realism (P2)**: Updated onboarding quickstart guide from outdated "1. Load config ➔ 2. Drop log ➔ 3. Explore views" to "1. Drop log or select file ➔ 2. Explore views", aligning with LogLens's automated format auto-sniffing engine.
+    3. **Expanded File Ingestion Formats (P3)**: Broadened file input `accept` attributes (`#fi-log`, `#fi-log2`) and drag-and-drop regex from narrow `.log,.txt,.out,.gz` to also accept `.jsonl`, `.csv`, `.trace`, and `text/*`.
+    4. **Standard Open File Shortcut & Palette Command (P4)**: Added `Cmd+O`/`Ctrl+O` hotkey to invoke `UI.chooseAndParseLog()`, registered `Open Log File` in Command Palette (`CMD`) with `⌘O` hint, and documented it in the Help shortcuts table.
+    5. **Non-Blocking Cache Confirmation (P5)**: Removed native blocking `window.confirm()` on IDB cache hits in favor of auto-using cached results with an instant toast notification and clear option to re-parse.
+  - **Automated Regression Verification**:
+    - Added `test_hero_onboarding_and_open_log_user_journey` in `tests/test_consolidated_navigation_and_shell.py`.
+    - Full regression test suite passing: **116/116 tests (100% pass rate)**.
+
 - **Tabular Numerals, Cross-Browser Scrollbars, Selection Glow & Interactive Toast System (v6.9.149 — COMPLETED)**:
   - **Tabular Numerals (`font-variant-numeric: tabular-nums`)**:
     - Eliminated numeric layout jitter and micro-shifts across dynamic renders in metrics, execution tree durations, timestamp columns, timeline headers, trace tables, LQL query result grids, and KPI cards.

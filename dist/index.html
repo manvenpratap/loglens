@@ -10514,6 +10514,7 @@ label[for="watch-auto-reload"] {
           <div class="hlp-card-title"><span>⌨️</span> Global Application Shortcuts</div>
           <div>
             <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘K</span><span class="kbd">Ctrl+K</span></div><div class="kb-desc">Open Command Palette (quick search across commands and views)</div></div>
+            <div class="kb-row"><div class="kb-keys"><span class="kbd">⌘O</span><span class="kbd">Ctrl+O</span></div><div class="kb-desc">Open Log File (file picker dialog)</div></div>
             <div class="kb-row"><div class="kb-keys"><span class="kbd">Alt+T</span></div><div class="kb-desc">Toggle Theme (Dark ↔ Light ↔ Ivory)</div></div>
             <div class="kb-row"><div class="kb-keys"><span class="kbd">F</span></div><div class="kb-desc">Toggle Focus Mode (maximize canvas space)</div></div>
             <div class="kb-row"><div class="kb-keys"><span class="kbd">Esc</span></div><div class="kb-desc">Close active modal, Inspector drawer, or clear search filter</div></div>
@@ -11176,11 +11177,9 @@ label[for="watch-auto-reload"] {
     <!-- Quickstart steps -->
     <div style="display:flex; align-items:center; justify-content:center; gap:12px; font-family:var(--mono); font-size: 12px; color:var(--t3); margin-bottom:16px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:var(--rounded-full); padding:6px 16px;">
       <span style="font-weight:700; text-transform:uppercase; color:var(--t2); font-size: 12px; letter-spacing:0.5px;">Quickstart:</span>
-      <span>1. Load config</span>
+      <span>1. Drop log or select file</span>
       <span style="opacity:0.4;">➔</span>
-      <span>2. Drop log</span>
-      <span style="opacity:0.4;">➔</span>
-      <span>3. Explore views</span>
+      <span>2. Explore views</span>
     </div>
 
     <button class="ob-skip" id="ob-skip">Skip (I know what I'm doing)</button>
@@ -11225,8 +11224,8 @@ label[for="watch-auto-reload"] {
 <!-- Quick edit popover -->
 <div id="quick-edit-pop" class="quick-edit-pop hidden" role="dialog" aria-label="Quick edit rule"></div>
 <input type="file" id="fi-cfg" accept=".json" style="display:none"/>
-<input type="file" id="fi-log" accept=".log,.txt,.out,.gz" style="display:none"/>
-<input type="file" id="fi-log2" accept=".log,.txt,.out,.gz" multiple style="display:none"/>
+<input type="file" id="fi-log" accept=".log,.txt,.out,.gz,.jsonl,.csv,.trace,text/*" style="display:none"/>
+<input type="file" id="fi-log2" accept=".log,.txt,.out,.gz,.jsonl,.csv,.trace,text/*" multiple style="display:none"/>
 <input type="file" id="fi-lj"  accept=".xml" style="display:none"/>
 
 <input type="file" id="fi-rule-imp" accept=".json" style="display:none"/>
@@ -11473,7 +11472,7 @@ const S={
   fsOk:typeof window.showOpenFilePicker==='function',
   logFile:null,threads:[],trees:{},activeThr:null,
   worker:null,wUrl:null,parseStart:0,
-  viewMode:'cfg',         // 'cfg'|'hlp'|'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
+  viewMode:'split',        // 'cfg'|'hlp'|'split'|'gantt'|'tree'|'stats'|'graph'|'3d'
   sbCollapsed:false,
   wizKw:[],               // keyword chips
   ljAppenders:[],         // parsed log4j appenders
@@ -16717,7 +16716,7 @@ const DD={
       if(!files.length)return;
       const lls=files.filter(f=>/\.lls$/i.test(f.name));
       if(lls.length){EXP.loadSession(lls[0]);return;}
-      const logs=files.filter(f=>/\.(log|txt|out|gz)$/i.test(f.name));
+      const logs=files.filter(f=>/\.(log|txt|out|gz|jsonl|csv|trace)$/i.test(f.name));
       const jsons=files.filter(f=>/\.json$/i.test(f.name));
       if(jsons.length){FS.imp(jsons[0]);if(jsons.length>1)toast('Only first JSON imported.','warn');}
       if(logs.length){
@@ -21817,18 +21816,14 @@ $('btn-parse').addEventListener('click',async()=>{
   
   const cached=await IDB.get(cacheTarget,S.cfg).catch(()=>null);
   if(cached){
-    const dispName = files.length === 1 ? files[0].name : files.map(f=>f.name).join(', ');
-    const useCache=confirm(`Cached results for "${dispName}" found.\nUse cache? (Cancel to re-parse)`);
-    if(useCache){
-      UI.render(cached.trees,cached.threads,cached.stats);UI.hprog();
-      $('btn-parse').disabled=false;$('btn-abort').disabled=true;UI.ub();
-      S.lastParsedFile = {
-        name: files.length === 1 ? files[0].name : files.map(f=>f.name).join(', '),
-        size: files.reduce((s,f)=>s+f.size,0),
-        lastModified: files[0].lastModified
-      };
-      toast('Loaded from cache.','info');return;
-    }
+    UI.render(cached.trees,cached.threads,cached.stats);UI.hprog();
+    $('btn-parse').disabled=false;$('btn-abort').disabled=true;UI.ub();
+    S.lastParsedFile = {
+      name: files.length === 1 ? files[0].name : files.map(f=>f.name).join(', '),
+      size: files.reduce((s,f)=>s+f.size,0),
+      lastModified: files[0].lastModified
+    };
+    toast('Loaded from cache. Click Parse to re-parse.','info');return;
   }
   try{
     const processedFiles = [];
@@ -24339,6 +24334,7 @@ const CMD = (() => {
     { id:'e-lls',  cat:'Export', name:'Save Session (.lls)',   icon:'▣', action:()=>EXP.lls() },
     // App Actions
     { id:'a-theme',  cat:'App', name:'Toggle Theme',        hint:'Alt+T', icon:'◑', action:()=>Theme.toggle() },
+    { id:'a-open',   cat:'App', name:'Open Log File',       hint:'⌘O',   icon:'📂', action:()=>{ CMD.close(); UI.chooseAndParseLog(); } },
     { id:'a-parse',  cat:'App', name:'Parse Log File',      icon:'▶',    action:()=>{ const btn=$('btn-parse'); if(btn && !btn.disabled) btn.click(); } },
     { id:'a-abort',  cat:'App', name:'Abort Parse',         icon:'■',    action:()=>{ const btn=$('btn-abort'); if(btn && !btn.disabled) btn.click(); } },
     { id:'a-search', cat:'App', name:'Focus Search',        hint:'/',   icon:'⌕', action:()=>{ CMD.close(); $('hdr-search').focus(); } },
@@ -25575,6 +25571,14 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault();
     if (cmdOpen) CMD.close(); else CMD.open();
+    return;
+  }
+
+  // Ctrl+O / Cmd+O — Open Log File
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'o' || e.key === 'O')) {
+    e.preventDefault();
+    if (cmdOpen) CMD.close();
+    UI.chooseAndParseLog();
     return;
   }
 
