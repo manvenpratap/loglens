@@ -11497,41 +11497,47 @@ const DEF_CFG=Object.freeze({
   globalSettings:Object.freeze({
     appName:'LogLens',
     globalTimestampPattern:String.raw`(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[.,]\d{3})`,
-    description:'Default configuration.',
+    description:'Default configuration for LogLens standard format.',
     multilinePayloads:true
   }),
   elementRules:Object.freeze([
     Object.freeze({id:'r_txs',name:'Transaction Begin',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-BEGIN\s+(\S+)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-BEGIN\s+(\S+)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName'}),
      stackBehavior:'push',visualStyle:Object.freeze({accentColor:'var(--blue)',icon:'▶'})}),
     Object.freeze({id:'r_txe',name:'Transaction End',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?TX-END\s+(\S+)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-END\s+(\S+)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName'}),
      stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'var(--blue)',icon:'◀'})}),
     Object.freeze({id:'r_hs',name:'HTTP Request',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'}),
-     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#3fb950',icon:'❖'})}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName','6':'payload'}),
+     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#4f9eff',icon:'❖'}),
+     slaThresholdMs:250}),
     Object.freeze({id:'r_he',name:'HTTP Response',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?HTTP-RESP\s+(\S+)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
-     stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'#3fb950',icon:'↩'})}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-RESP\s+(\S+)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName'}),
+     stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'#4f9eff',icon:'↩'})}),
     Object.freeze({id:'r_dbs',name:'DB Query Start',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName','5':'payload'}),
-     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#f0883e',icon:'▤'})}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName','6':'payload'}),
+     stackBehavior:'push',visualStyle:Object.freeze({accentColor:'#f0883e',icon:'▤'}),
+     slaThresholdMs:150}),
     Object.freeze({id:'r_dbe',name:'DB Query End',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\].*?DB-QUERY-END\s+(\S+)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'elementName'}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-END\s+(\S+)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'elementName'}),
      stackBehavior:'pop',visualStyle:Object.freeze({accentColor:'#f0883e',icon:'✓'})}),
+    Object.freeze({id:'r_cache',name:'Cache Op',
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?CACHE-(HIT|MISS)\s+(\S+)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'payload','6':'elementName'}),
+     stackBehavior:'inline',visualStyle:Object.freeze({accentColor:'#bf5af2',icon:'🗲'})}),
     Object.freeze({id:'r_w',name:'Warning',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'payload'}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(WARN(?:ING)?)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'payload'}),
      stackBehavior:'inline',visualStyle:Object.freeze({accentColor:'#d29922',icon:'⚠'})}),
     Object.freeze({id:'r_e',name:'Error',
-     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[(\S+)\]\s+(.*)`,
-     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'payload'}),
+     regexPattern:String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|FATAL)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
+     captureMapping:Object.freeze({'1':'timestamp','2':'level','3':'thread','4':'correlationId','5':'payload'}),
      stackBehavior:'inline',visualStyle:Object.freeze({accentColor:'#f85149',icon:'✕'})})
   ])
 });;
@@ -19339,13 +19345,22 @@ const SNIFFER={
         const curRules = S.cfg?.elementRules || [];
         const matchRate = this.testRulesMatch(curRules, lines);
         if (curRules.length === 0 || matchRate < 0.35) {
-          const { config, presetName } = this.synthesizeRules(lines, file.name);
-          CFG.load(config);
-          if (S.cfgHandle) {
-            await CFG.pers();
-            toast(`Auto-configured ${presetName}: saved to ${S.cfgHandle.name}.`, 'success');
+          const defMatch = this.testRulesMatch(DEF_CFG?.elementRules, lines);
+          if (defMatch >= 0.25) {
+            const cfg = JSON.parse(JSON.stringify(DEF_CFG));
+            cfg.globalSettings = cfg.globalSettings || {};
+            cfg.globalSettings.appName = file.name.replace(/\.[^.]+$/, '');
+            CFG.load(cfg);
+            toast(`Auto-configured standard format (${Math.round(defMatch * 100)}% match).`, 'info');
           } else {
-            toast(`Auto-configured ${presetName}. Save to file to retain rules.`, 'info');
+            const { config, presetName } = this.synthesizeRules(lines, file.name);
+            CFG.load(config);
+            if (S.cfgHandle) {
+              await CFG.pers();
+              toast(`Auto-configured ${presetName}: saved to ${S.cfgHandle.name}.`, 'success');
+            } else {
+              toast(`Auto-configured ${presetName}. Save to file to retain rules.`, 'info');
+            }
           }
         }
       }
@@ -21823,7 +21838,7 @@ $('btn-parse').addEventListener('click',async()=>{
       size: files.reduce((s,f)=>s+f.size,0),
       lastModified: files[0].lastModified
     };
-    toast('Loaded from cache. Click Parse to re-parse.','info');return;
+    toast('Loaded from cache.','info');return;
   }
   try{
     const processedFiles = [];
@@ -32223,73 +32238,7 @@ document.addEventListener('keydown', e => {
    ================================================================ */
 const ONBOARD = (() => {
   /* ── Sample config — uses the built-in DEF_CFG rule vocabulary ── */
-  const DEMO_CFG = {
-    globalSettings: {
-      appName: 'LogLens Demo',
-      globalTimestampPattern: String.raw`(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})`,
-      description: 'Demo config for the LogLens sample log.',
-      multilinePayloads: true
-    },
-    elementRules: [
-      {
-        id: 'dr_txs', name: 'Transaction Begin',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-BEGIN\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
-        stackBehavior: 'push', visualStyle: { accentColor: 'var(--blue)', icon: '▶' }
-      },
-      {
-        id: 'dr_txe', name: 'Transaction End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?TX-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
-        stackBehavior: 'pop', visualStyle: { accentColor: 'var(--blue)', icon: '◀' }
-      },
-      {
-        id: 'dr_hs', name: 'HTTP Request',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-REQ\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName', '6': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#4f9eff', icon: '❖' },
-        slaThresholdMs: 250
-      },
-      {
-        id: 'dr_he', name: 'HTTP Response',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?HTTP-RESP\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
-        stackBehavior: 'pop', visualStyle: { accentColor: '#4f9eff', icon: '↩' }
-      },
-      {
-        id: 'dr_dbs', name: 'DB Query',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-START\s+(\S+)(?:\s+(.*))?$`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName', '6': 'payload' },
-        stackBehavior: 'push', visualStyle: { accentColor: '#f0883e', icon: '▤' },
-        slaThresholdMs: 150
-      },
-      {
-        id: 'dr_dbe', name: 'DB Query End',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?DB-QUERY-END\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'elementName' },
-        stackBehavior: 'pop', visualStyle: { accentColor: '#f0883e', icon: '✓' }
-      },
-      {
-        id: 'dr_cache', name: 'Cache Op',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(\w+)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?.*?CACHE-(HIT|MISS)\s+(\S+)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload', '6': 'elementName' },
-        stackBehavior: 'inline', visualStyle: { accentColor: '#bf5af2', icon: '🗲' }
-      },
-      {
-        id: 'dr_w', name: 'Warning',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(WARN(?:ING)?)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload' },
-        stackBehavior: 'inline', visualStyle: { accentColor: '#d29922', icon: '⚠' }
-      },
-      {
-        id: 'dr_e', name: 'Error',
-        regexPattern: String.raw`^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.,]\d{3})\s+(ERROR|FATAL)\s+\[([^\]]+)\](?:\s+\[(?:traceId=)?([^\]]+)\])?\s+(.*)`,
-        captureMapping: { '1': 'timestamp', '2': 'level', '3': 'thread', '4': 'correlationId', '5': 'payload' },
-        stackBehavior: 'inline', visualStyle: { accentColor: '#f85149', icon: '✕' },
-        slaThresholdMs: 0
-      }
-    ]
-  };
+  const DEMO_CFG = DEF_CFG;
 
   /* ── Internal helpers ── */
   const _ov = () => document.getElementById('ob-ov');
