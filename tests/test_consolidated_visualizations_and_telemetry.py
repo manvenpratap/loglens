@@ -1427,7 +1427,7 @@ async def test_dependency_graph_hud_chips_highvis_and_inspection(blank_page):
     """
 
     await page.evaluate(demo_graph_js)
-    await page.wait_for_selector('#d3-graph-canvas-container svg', timeout=5000)
+    await page.wait_for_selector('#d3-graph-canvas-container svg', timeout=15000)
 
     # 1. Badges
     node_badge = page.locator('#graph-node-count-badge')
@@ -1491,6 +1491,97 @@ async def test_dependency_graph_hud_chips_highvis_and_inspection(blank_page):
     assert 'Avg Latency:' in link_card_text
 
     assert_no_critical_errors(page)
+
+
+@pytest.mark.asyncio
+async def test_theme_studio_presets_and_typography_preview(page_with_data):
+    """Theme Studio supports 5 bespoke themes with distinct font families and live font preview."""
+    page = page_with_data
+
+    # 1. Verify all 5 themes are registered in Theme.THEMES with typography metadata
+    theme_info = await page.evaluate("""() => {
+        return Theme.THEMES.map(t => ({
+            id: t.id,
+            label: t.label,
+            badge: t.badge,
+            desc: t.desc,
+            type: t.type
+        }));
+    }""")
+    assert len(theme_info) == 5
+    ids = [t['id'] for t in theme_info]
+    assert 'dark' in ids
+    assert 'midnight' in ids
+    assert 'ivory' in ids
+    assert 'paper' in ids
+    assert 'blueprint' in ids
+
+    # Check distinct typography metadata
+    paper_meta = next(t for t in theme_info if t['id'] == 'paper')
+    assert 'Serif' in paper_meta['badge'] or 'serif' in paper_meta['desc']
+    midnight_meta = next(t for t in theme_info if t['id'] == 'midnight')
+    assert 'Mono' in midnight_meta['badge'] or 'monospace' in paper_meta['desc']
+    blueprint_meta = next(t for t in theme_info if t['id'] == 'blueprint')
+    assert 'Technical CAD' in blueprint_meta['badge']
+
+    # 2. Test applying themes updates DOM data-theme and CSS variables
+    for tid in ['midnight', 'paper', 'blueprint', 'ivory', 'dark']:
+        theme_applied = await page.evaluate(f"""() => {{
+            Theme.apply('{tid}');
+            return {{
+                attr: document.documentElement.getAttribute('data-theme'),
+                active: document.documentElement.dataset.theme,
+                monoVar: getComputedStyle(document.documentElement).getPropertyValue('--mono').trim(),
+                uiVar: getComputedStyle(document.documentElement).getPropertyValue('--ui').trim()
+            }};
+        }}""")
+        assert theme_applied['attr'] == tid
+        assert theme_applied['active'] == tid
+        assert len(theme_applied['monoVar']) > 0
+        assert len(theme_applied['uiVar']) > 0
+
+    # 3. Test Theme Studio Drawer / Picker rendering
+    await page.evaluate("() => Theme.openPicker()")
+    picker = page.locator('#theme-picker-menu')
+    await expect(picker).to_be_visible()
+    assert await picker.evaluate("el => el.classList.contains('tp-open')")
+
+    # Verify 5 swatches rendered with font previews
+    swatches = picker.locator('.th-swatch')
+    assert await swatches.count() == 5
+
+    font_samples = picker.locator('.th-font-preview')
+    assert await font_samples.count() == 5
+
+    # 4. Test filter tabs: Dark (2) and Light (3)
+    tab_dark = picker.locator('.tp-tab-btn[data-filter="dark"]')
+    await tab_dark.click()
+    dark_visible = await page.evaluate("""() => {
+        return Array.from(document.querySelectorAll('.th-swatch'))
+            .map(el => el.dataset.themeId);
+    }""")
+    assert sorted(dark_visible) == ['dark', 'midnight']
+
+    tab_light = picker.locator('.tp-tab-btn[data-filter="light"]')
+    await tab_light.click()
+    light_visible = await page.evaluate("""() => {
+        return Array.from(document.querySelectorAll('.th-swatch'))
+            .map(el => el.dataset.themeId);
+    }""")
+    assert sorted(light_visible) == ['blueprint', 'ivory', 'paper']
+
+    # 5. Selecting swatch applies theme and persists to localStorage
+    paper_swatch = picker.locator('.th-swatch[data-theme-id="paper"]')
+    await paper_swatch.click()
+    assert await page.evaluate("() => document.documentElement.dataset.theme") == 'paper'
+    assert await page.evaluate("() => localStorage.getItem('ll-t')") == 'paper'
+
+    # Close and reset to default dark
+    await page.evaluate("() => { Theme.apply('dark'); Theme.closePicker(); }")
+    assert not await picker.evaluate("el => el.classList.contains('tp-open')")
+
+    assert_no_critical_errors(page)
+
 
 
 

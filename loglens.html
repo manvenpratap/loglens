@@ -449,10 +449,10 @@ html,body{
   display:none;position:fixed;
   background:var(--bg-1);border:1px solid var(--bdr-h);
   border-radius:var(--rounded-lg);box-shadow:var(--shd-lg);
-  padding:14px;z-index:99999;
-  width:460px;
+  padding:12px;z-index:99999;
+  width:480px;
   max-width:calc(100vw - 24px);
-  max-height:calc(100vh - 70px);
+  max-height:calc(100vh - 40px);
   overflow-y:auto;
   box-sizing:border-box;
   backdrop-filter:blur(24px) saturate(160%);
@@ -509,9 +509,9 @@ html,body{
 }
 
 .th-swatch{
-  display:flex;flex-direction:column;gap:6px;
+  display:flex;flex-direction:column;gap:5px;
   cursor:pointer;border-radius:var(--rounded-md);
-  padding:9px;
+  padding:8px;
   border:1px solid var(--bdr);
   transition:all .15s ease;
   background:var(--bg-2);
@@ -522,20 +522,31 @@ html,body{
 .th-swatch:hover{border-color:var(--bdr-h);background:var(--bg-3);transform:translateY(-1px);box-shadow:var(--shd-xs);}
 .th-swatch.ts-active{border-color:var(--amber);background:var(--bg-2);box-shadow:0 0 0 1.5px var(--amber), var(--shd-xs);}
 
+/* Theme typography variables for live font preview in theme selector */
+.th-swatch[data-theme-id="dark"]{--swatch-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",Inter,Geist,system-ui,sans-serif;--swatch-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",Inter,Geist,system-ui,sans-serif;}
+.th-swatch[data-theme-id="midnight"]{--swatch-font:"JetBrains Mono","SF Mono","Fira Code",Menlo,Monaco,Consolas,monospace;--swatch-display:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;}
+.th-swatch[data-theme-id="ivory"]{--swatch-font:"Avenir Next","Avenir","Inter","Segoe UI","Helvetica Neue",sans-serif;--swatch-display:"Avenir Next","Avenir",sans-serif;}
+.th-swatch[data-theme-id="paper"]{--swatch-font:Charter,"Bitstream Charter","Palatino Linotype",Palatino,"Georgia",serif;--swatch-display:Charter,"Palatino Linotype",Palatino,"Georgia",serif;}
+.th-swatch[data-theme-id="blueprint"]{--swatch-font:"Trebuchet MS","Lucida Grande","Segoe UI","Franklin Gothic Medium",sans-serif;--swatch-display:"Trebuchet MS","Lucida Grande",sans-serif;}
+
 .th-preview-wrap{
-  width:100%;height:38px;border-radius:var(--rounded-sm);overflow:hidden;
+  width:100%;height:32px;border-radius:var(--rounded-sm);overflow:hidden;
   border:1px solid var(--bdr-d);
   display:flex;position:relative;
 }
 .th-preview-bg{
-  flex:2;height:100%;padding:5px 6px;display:flex;flex-direction:column;justify-content:center;gap:3px;
+  flex:2;height:100%;padding:4px 6px;display:flex;align-items:center;
 }
 .th-preview-mini-card{
-  height:14px;border-radius:3px;border:1px solid var(--bdr);padding:2px 4px;
-  display:flex;align-items:center;
+  height:20px;width:100%;border-radius:3px;border:1px solid var(--bdr);padding:2px 6px;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.th-preview-specimen{
+  font-family:var(--swatch-font,var(--ui));font-size:11px;font-weight:700;line-height:1;
+  letter-spacing:0.02em;
 }
 .th-preview-line{
-  width:60%;height:3px;border-radius:2px;opacity:.85;
+  width:40%;height:3px;border-radius:2px;opacity:.85;flex-shrink:0;
 }
 .th-preview-acc{
   width:26px;height:100%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
@@ -548,19 +559,27 @@ html,body{
   display:flex;justify-content:space-between;align-items:center;gap:4px;
 }
 .th-swatch-name{
-  font-size:12px;font-weight:700;color:var(--t1);font-family:var(--ui);line-height:1.2;
+  font-size:13px;font-weight:700;color:var(--t1);font-family:var(--swatch-display,var(--display));line-height:1.2;
 }
 .th-swatch.ts-active .th-swatch-name{color:var(--amber);}
 .th-badge{
-  font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em;
+  font-size:9px;font-family:var(--swatch-font,var(--mono));text-transform:uppercase;letter-spacing:.04em;
   padding:1px 5px;border-radius:3px;background:var(--bg-3);color:var(--t3);border:1px solid var(--bdr-d);white-space:nowrap;
 }
 .th-desc{
-  font-size:10px;color:var(--t4);line-height:1.35;font-family:var(--ui);
+  font-size:10.5px;color:var(--t4);line-height:1.35;font-family:var(--swatch-font,var(--ui));
   overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
 }
+.th-font-preview{
+  display:flex;align-items:center;padding:3px 6px;margin-top:1px;
+  background:var(--bg-1);border:1px solid var(--bdr-d);border-radius:var(--rounded-sm);
+}
+.th-font-sample{
+  font-family:var(--swatch-font,var(--ui));font-size:10.5px;color:var(--t2);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 .th-active-tag{
-  font-size:9px;font-weight:700;color:var(--amber);display:none;align-items:center;gap:3px;font-family:var(--mono);
+  font-size:9px;font-weight:700;color:var(--amber);display:none;align-items:center;gap:3px;font-family:var(--swatch-font,var(--mono));
 }
 .th-swatch.ts-active .th-active-tag{display:inline-flex;}
 
@@ -11837,9 +11856,9 @@ const Theme={
       </div>
 
       <div class="tp-filter-bar" role="tablist">
-        <button class="tp-tab-btn${this._filterType==='all'?' active':''}" onclick="Theme.setFilter('all')">All (${this.THEMES.length})</button>
-        <button class="tp-tab-btn${this._filterType==='dark'?' active':''}" onclick="Theme.setFilter('dark')">Dark (${darkCount})</button>
-        <button class="tp-tab-btn${this._filterType==='light'?' active':''}" onclick="Theme.setFilter('light')">Light (${lightCount})</button>
+        <button class="tp-tab-btn${this._filterType==='all'?' active':''}" data-filter="all" onclick="Theme.setFilter('all')">All (${this.THEMES.length})</button>
+        <button class="tp-tab-btn${this._filterType==='dark'?' active':''}" data-filter="dark" onclick="Theme.setFilter('dark')">Dark (${darkCount})</button>
+        <button class="tp-tab-btn${this._filterType==='light'?' active':''}" data-filter="light" onclick="Theme.setFilter('light')">Light (${lightCount})</button>
       </div>
 
       <div class="tp-grid" role="listbox" aria-label="Available themes">
@@ -11851,6 +11870,7 @@ const Theme={
             <div class="th-preview-wrap">
               <div class="th-preview-bg" style="background:${m.bg};">
                 <div class="th-preview-mini-card" style="background:${m.bg};border-color:${m.line};">
+                  <span class="th-preview-specimen" style="color:${m.acc};">Aa 12</span>
                   <div class="th-preview-line" style="background:${m.acc};"></div>
                 </div>
               </div>
@@ -11863,6 +11883,9 @@ const Theme={
               <span class="th-badge ${m.type==='light'?'th-badge-light':''}">${m.badge}</span>
             </div>
             <div class="th-desc">${m.desc}</div>
+            <div class="th-font-preview">
+              <span class="th-font-sample">The quick brown fox • 0123</span>
+            </div>
             <div class="th-active-tag">✓ Active</div>
           </div>
         `).join('')}

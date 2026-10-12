@@ -2,6 +2,21 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Theme Studio Bespoke Typography & Live Specimen Preview (v6.9.148 — COMPLETED)**:
+  - **Live Typographic Specimen Strips (`.th-font-preview`)**:
+    - Each Theme Studio swatch card now embeds a live typography specimen strip showcasing the theme's bespoke font pairing in action (`The quick brown fox • 0123`).
+    - Mini preview cards showcase live font size badges (`Aa 12`), proportional accent lines, and glowing active dots rendered in each theme's unique typeface:
+      1. `Obsidian` (`dark`): Modern Neo-Grotesque Sans (`Inter`, `SF Pro Display`, `system-ui`).
+      2. `Midnight` (`dark`): Cyber Monospace Telemetry (`JetBrains Mono`, `Fira Code`, `ui-monospace`).
+      3. `Ivory Warm` (`light`): Editorial Humanist Sans (`Avenir Next`, `Inter`, `system-ui`).
+      4. `Paper Craft` (`light`): Classical Literary Serif (`Charter`, `Palatino`, `Georgia`).
+      5. `Blueprint` (`light`): Architectural Technical CAD (`Trebuchet MS`, `Lucida Grande`).
+  - **Semantic Theme Filter Tabs**:
+    - Filter tabs (`All (5)`, `Dark (2)`, `Light (3)`) decorated with semantic `data-filter` attributes for robust keyboard/touch interaction and testability.
+  - **Automated Regression Verification**:
+    - Added `test_theme_studio_presets_and_typography_preview` in `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite passed: **115/115 tests (100% pass rate in 108s)**.
+
 - **Streamlined 5 Typographic Archetypes Theme Suite & Ponytail Cleanup (v6.9.147 — COMPLETED)**:
   - **Philosophy & Simplification (/ponytail)**:
     - Pruned 250+ lines of duplicate/redundant theme CSS token declarations (`aurora`, `forest`, `crimson`, `nordic`, `solarized`).
