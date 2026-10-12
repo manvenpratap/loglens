@@ -298,6 +298,12 @@ async def test_theme_studio_drawer_filtering_and_theme_switching(page_with_data)
     assert theme_val == 'dark'
     assert theme_type == 'dark'
 
+    # 7. Apply midnight theme and verify calibrated high-contrast borders
+    await page.evaluate("() => Theme.apply('midnight')")
+    assert await page.evaluate("() => document.documentElement.dataset.theme") == 'midnight'
+    bdr_val = await page.evaluate("() => getComputedStyle(document.documentElement).getPropertyValue('--bdr').trim()")
+    assert '29%' in bdr_val or 'oklch' in bdr_val
+
     # Close picker
     await page.evaluate("() => Theme.closePicker()")
     await expect(picker).not_to_have_class(re.compile(r'tp-open'))

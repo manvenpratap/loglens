@@ -2,6 +2,20 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Calibrated High-Contrast Borders for Midnight Theme (v6.9.146 — COMPLETED)**:
+  - **Root Cause & Visual Issue**:
+    - In `[data-theme=midnight]` (OLED Black / Electric Purple), surface backgrounds are deep OLED black (`--bg-0: 4%`, `--bg-1: 7%`, `--bg-2: 10%`, `--bg-3: 13%`).
+    - Previously, `--bdr-d` was set to `oklch(10% 0.014 280)`, which was identical to `--bg-2` (10%) and darker than `--bg-3` (13%), causing card borders, tree row dividers, input boundaries, toolbar pills, and modal edges to be completely invisible.
+    - `--bdr` was only `oklch(16% 0.022 280)` and `--glass-bdr` was `rgba(180,0,255,.14)`, producing muddy, sunken edges with virtually zero contrast on OLED displays.
+  - **Calibrated Design Tokens (`[data-theme=midnight]`)**:
+    - `--bdr-d: oklch(22% 0.034 285)`: Delivers crisp +12% delta over `--bg-2` and +15% over `--bg-1` for delicate, hairline divider clarity in tree rows, timelines, and subtle card borders.
+    - `--bdr: oklch(29% 0.048 285)`: Delivers confident +19% delta over `--bg-2` with an electric violet undertone, defining inputs, buttons, panels, tables, split views, and cards with high precision.
+    - `--bdr-h: oklch(42% 0.070 290)`: Rich electric violet hover and active edge highlight.
+    - `--glass-bdr: rgba(180, 50, 255, 0.28)`: Glowing translucent violet rim on glassmorphic drawers, theme cards, and dropdown overlays.
+  - **Automated Regression Verification**:
+    - Updated `test_theme_studio_drawer_filtering_and_theme_switching` in `tests/test_consolidated_settings_and_accessibility.py` to assert `midnight` theme application and calibrated border tokens.
+    - Full regression test suite passed: **114/114 tests (100% pass rate in 106s)**.
+
 - **Enhanced Transaction Dependency Graph & High-Vis Studio (v6.9.145 — COMPLETED)**:
   - **High-Vis Glowing Connector Toggle (`#graph-btn-highvis`)**:
     - Adds `.graph-high-vis` container class and dynamically toggles high-contrast glowing link lines with white drop-shadows and bright connector markers (`--graph-link: rgba(180, 195, 220, 0.95)`).
