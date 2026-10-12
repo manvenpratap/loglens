@@ -2,6 +2,19 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Tabular Numerals, Cross-Browser Scrollbars, Selection Glow & Interactive Toast System (v6.9.149 — COMPLETED)**:
+  - **Tabular Numerals (`font-variant-numeric: tabular-nums`)**:
+    - Eliminated numeric layout jitter and micro-shifts across dynamic renders in metrics, execution tree durations, timestamp columns, timeline headers, trace tables, LQL query result grids, and KPI cards.
+  - **Cross-Browser Scrollbars & Selection Craft**:
+    - Added standard CSS `scrollbar-width: thin` and `scrollbar-color: var(--bdr) transparent` for seamless Firefox and Safari scrollbar rendering alongside WebKit rules.
+    - Custom `::selection` styling matching current theme accent glow (`--amber-glow`) with high-contrast text (`--t1`).
+    - Styled input/textarea text cursor (`caret-color: var(--amber)`) for refined obsidian terminal feel.
+  - **Interactive Toast Rack with Close Icon & Smooth Exit**:
+    - Enabled pointer events on `.toast` elements with hover lift (`translateY(-2px)`) and tactile active scale states.
+    - Added dedicated close icon (`✕`) and manual dismissal click listener with smooth slide-down exit transition.
+  - **Automated Regression Verification**:
+    - Full regression test suite passed: **115/115 tests (100% pass rate in 113s)**.
+
 - **Theme Studio Bespoke Typography & Live Specimen Preview (v6.9.148 — COMPLETED)**:
   - **Live Typographic Specimen Strips (`.th-font-preview`)**:
     - Each Theme Studio swatch card now embeds a live typography specimen strip showcasing the theme's bespoke font pairing in action (`The quick brown fox • 0123`).

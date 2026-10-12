@@ -373,12 +373,36 @@
 }
 
 /* ============================================================
-   CSS §4 · SCROLLBARS — ultra-refined
+   CSS §4 · SCROLLBARS — ultra-refined & cross-browser
    ============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bdr) transparent;
+}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:var(--rounded-full);transition:background .15s}
 ::-webkit-scrollbar-thumb:hover{background:var(--amber)}
+
+/* ============================================================
+   CSS §4.1 · BROWSER SURFACES & REFINED CRAFT
+   ============================================================ */
+::selection {
+  background: var(--amber-glow, rgba(240, 136, 62, 0.35));
+  color: var(--t1);
+}
+
+input, textarea, [contenteditable="true"] {
+  caret-color: var(--amber);
+}
+
+/* Tabular Numerals — eliminate numeric jitter across dynamic renders */
+.tree-metric-dur, .tree-metric-self, .tree-time, .tl-time, .stat-val, .sc-v, 
+.prog-p, .prog-l, .badge, .th-font-preview, .trace-table-row, .lql-td, 
+.g-time-col, .swim-kpi-val, .ts-mono, .rule-latency, .kpi-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
 
 /* ============================================================
    CSS §5 · SHELL LAYOUT — Obsidian Terminal
@@ -6206,6 +6230,9 @@ body.focus-mode #res {
 
 /* Toast rack */
 #toast-r { bottom: 20px !important; right: 20px !important; gap: 8px !important; pointer-events: none !important; }
+#toast-r .toast { pointer-events: auto !important; cursor: pointer; user-select: none; transition: transform 0.15s ease, opacity 0.15s ease; }
+#toast-r .toast:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.45); }
+#toast-r .toast:active { transform: scale(0.98); }
 .pt.g-toolbar, .tw .pt { padding: 6px 12px !important; min-height: 38px !important; height: 38px !important; box-sizing: border-box !important; white-space: nowrap !important; overflow: hidden !important; }
 
 /* File chips */
@@ -33634,16 +33661,42 @@ UI.svm(S.viewMode);
     el.style.position = 'relative';
     el.style.overflow = 'hidden';
     el.style.borderLeftWidth = '3px';
-    el.textContent = msg;
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'space-between';
+    el.style.gap = '10px';
+    
+    const msgSpan = document.createElement('span');
+    msgSpan.style.flex = '1';
+    msgSpan.textContent = msg;
+    el.appendChild(msgSpan);
+
+    const closeBtn = document.createElement('span');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText = 'opacity:0.6; font-size:10px; cursor:pointer; flex-shrink:0; padding:2px 4px; border-radius:3px; transition:opacity 0.15s ease;';
+    closeBtn.onmouseenter = () => closeBtn.style.opacity = '1';
+    closeBtn.onmouseleave = () => closeBtn.style.opacity = '0.6';
+    el.appendChild(closeBtn);
     
     const progress = document.createElement('div');
     progress.className = 'toast-progress';
-    progress.style.cssText = `position:absolute; bottom:0; left:0; height:2px; width:100%; background:currentColor; opacity:0.4; transition:width ${d}ms linear;`;
+    progress.style.cssText = `position:absolute; bottom:0; left:0; height:2px; width:100%; background:currentColor; opacity:0.35; transition:width ${d}ms linear;`;
     el.appendChild(progress);
     
     el.style.cursor = 'pointer';
     el.title = 'Click to dismiss';
-    el.addEventListener('click', () => { el.remove(); });
+    
+    let isDismissed = false;
+    const dismissToast = () => {
+      if (isDismissed) return;
+      isDismissed = true;
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(8px) scale(0.96)';
+      el.style.transition = 'all 0.18s var(--ease-out)';
+      setTimeout(() => el.remove(), 180);
+    };
+
+    el.addEventListener('click', dismissToast);
     
     const container = $('toast-r');
     if (container) {
@@ -33654,12 +33707,7 @@ UI.svm(S.viewMode);
     }
     
     requestAnimationFrame(() => { progress.style.width = '0%'; });
-    setTimeout(() => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(10px) scale(0.95)';
-      el.style.transition = 'all 0.22s var(--ease-out)';
-      setTimeout(() => el.remove(), 220);
-    }, d);
+    setTimeout(dismissToast, d);
   };
   window.toast = UTILS.toast;
 
