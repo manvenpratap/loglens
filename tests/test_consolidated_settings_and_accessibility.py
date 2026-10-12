@@ -257,33 +257,33 @@ async def test_settings_appearance_and_sla_guardrails_configuration(page_with_da
 
 @pytest.mark.asyncio
 async def test_theme_studio_drawer_filtering_and_theme_switching(page_with_data):
-    """Theme Studio opens, renders 10 themes, tabs filter by All/Dark/Light, and all themes apply cleanly."""
+    """Theme Studio opens, renders 5 distinct archetypal themes, tabs filter by All/Dark/Light, and all themes apply cleanly."""
     page = page_with_data
     # 1. Open Theme Studio
     await page.evaluate("() => Theme.openPicker()")
     picker = page.locator('#theme-picker-menu')
     await expect(picker).to_have_class(re.compile(r'tp-open'))
 
-    # 2. Check total swatch count under 'All' tab
+    # 2. Check total swatch count under 'All' tab (5 distinct archetypal themes)
     swatches = page.locator('.th-swatch')
-    assert await swatches.count() == 10
+    assert await swatches.count() == 5
 
-    # 3. Check filter tabs
+    # 3. Check filter tabs (2 dark, 3 light)
     tab_dark = page.locator('.tp-tab-btn:has-text("Dark")')
     await tab_dark.click()
     dark_swatches = page.locator('.th-swatch')
-    assert await dark_swatches.count() == 5
+    assert await dark_swatches.count() == 2
 
     tab_light = page.locator('.tp-tab-btn:has-text("Light")')
     await tab_light.click()
     light_swatches = page.locator('.th-swatch')
-    assert await light_swatches.count() == 5
+    assert await light_swatches.count() == 3
 
-    # 4. Apply a light theme (nordic)
-    await page.evaluate("() => Theme.apply('nordic')")
+    # 4. Apply a light theme (ivory warm)
+    await page.evaluate("() => Theme.apply('ivory')")
     theme_val = await page.evaluate("() => document.documentElement.dataset.theme")
     theme_type = await page.evaluate("() => document.documentElement.dataset.themeType")
-    assert theme_val == 'nordic'
+    assert theme_val == 'ivory'
     assert theme_type == 'light'
 
     # 5. Apply another light theme (blueprint)

@@ -166,13 +166,12 @@
   --rounded-md: 8px;
   --rounded-lg: 14px;
   --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
+  /* Geometric Swiss Humanist Typography */
+  --ui: "Avenir Next", "Avenir", "Inter", "Segoe UI", "Helvetica Neue", -apple-system, sans-serif;
+  --display: "Avenir Next", "Avenir", "Helvetica Neue", -apple-system, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 }
-/* ============================================================
-   CSS §2a-1 · NORDIC THEME — Polar Daylight / Ice Cobalt
-   ============================================================ */
+/* Backward compatibility alias for nordic */
 [data-theme=nordic]{
   --bg-0: oklch(98.5% 0.003 230);
   --bg-1: #ffffff;
@@ -186,7 +185,7 @@
   --t2: oklch(32% 0.015 240);
   --t3: oklch(46% 0.014 240);
   --t4: oklch(60% 0.012 240);
-  --amber: oklch(56% 0.20 240); /* Arctic Cobalt / Ice Blue */
+  --amber: oklch(56% 0.20 240);
   --amber-g: oklch(56% 0.20 240 / 0.15);
   --amber-d: oklch(56% 0.20 240 / 0.08);
   --blue: oklch(52% 0.22 250);
@@ -212,15 +211,15 @@
   --rounded-md: 10px;
   --rounded-lg: 16px;
   --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, sans-serif;
+  --ui: "Avenir Next", "Avenir", "Inter", "Segoe UI", "Helvetica Neue", -apple-system, sans-serif;
+  --display: "Avenir Next", "Avenir", "Helvetica Neue", -apple-system, sans-serif;
   --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", monospace;
 }
 
 /* ============================================================
-   CSS §2a-2 · PAPER THEME — Monocle Journal / Fine Press Print
+   CSS §2a · PAPER THEME — Literary Editorial Serif
    ============================================================ */
-[data-theme=paper]{
+[data-theme=paper], [data-theme=solarized]{
   --bg-0: oklch(95.5% 0.012 85);
   --bg-1: oklch(98.8% 0.005 85);
   --bg-2: oklch(92.5% 0.015 85);
@@ -259,13 +258,14 @@
   --rounded-md: 6px;
   --rounded-lg: 10px;
   --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, system-ui, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Georgia, serif, system-ui, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "Courier New", monospace;
+  /* Literary Editorial Serif Typography */
+  --ui: Charter, "Bitstream Charter", "Palatino Linotype", Palatino, "Georgia", "Cambria", "Times New Roman", serif;
+  --display: Charter, "Palatino Linotype", Palatino, "Georgia", "Times New Roman", serif;
+  --mono: "Courier New", Courier, "SF Mono", monospace;
 }
 
 /* ============================================================
-   CSS §2a-3 · BLUEPRINT THEME — Technical Drafting Caliper
+   CSS §2b · BLUEPRINT THEME — Technical CAD Drafting
    ============================================================ */
 [data-theme=blueprint]{
   --bg-0: oklch(96.2% 0.014 225);
@@ -306,109 +306,14 @@
   --rounded-md: 4px;
   --rounded-lg: 6px;
   --rounded-full: 99px;
-  --ui: "SF Pro Text", -apple-system, BlinkMacSystemFont, Inter, monospace;
-  --display: "SF Pro Display", -apple-system, BlinkMacSystemFont, Inter, monospace;
-  --mono: "SF Mono", Menlo, Monaco, "Consolas", monospace;
+  /* Technical Drafting Typography */
+  --ui: "Trebuchet MS", "Lucida Grande", "Segoe UI", "Franklin Gothic Medium", sans-serif;
+  --display: "Trebuchet MS", "Lucida Grande", "Franklin Gothic Medium", sans-serif;
+  --mono: "SF Mono", Monaco, "Lucida Console", "Liberation Mono", monospace;
 }
 
 /* ============================================================
-   CSS §2a-4 · SOLARIZED THEME — Low-Glare Laboratory
-   ============================================================ */
-[data-theme=solarized]{
-  --bg-0: #fdf6e3;
-  --bg-1: #ffffff;
-  --bg-2: #eee8d5;
-  --bg-3: #e0dac6;
-  --bg-4: #d3ccb7;
-  --bdr-d: #eee8d5;
-  --bdr: #d3ccb7;
-  --bdr-h: #93a1a1;
-  --t1: #073642;
-  --t2: #586e75;
-  --t3: #657b83;
-  --t4: #839496;
-  --amber: #cb4b16; /* Solarized Orange */
-  --amber-g: rgba(203,75,22,.15);
-  --amber-d: rgba(203,75,22,.08);
-  --blue: #268bd2;
-  --blue-g: rgba(38,139,210,.15);
-  --green: #859900;
-  --green-g: rgba(133,153,0,.15);
-  --red: #dc322f;
-  --red-g: rgba(220,50,47,.15);
-  --yellow: #b58900;
-  --yellow-g: rgba(181,137,0,.15);
-  --purple: #6c71c4;
-  --purple-g: rgba(108,113,196,.15);
-  --cyan: #2aa198;
-  --cyan-g: rgba(42,161,152,.15);
-  --glass: rgba(7,54,66,.04);
-  --glass-bdr: rgba(7,54,66,.10);
-  --bar-t: rgba(7,54,66,.90);
-  --shd: 0 2px 10px rgba(7,54,66,.07),0 1px 3px rgba(7,54,66,.04);
-  --shd-lg: 0 10px 32px rgba(7,54,66,.12),0 3px 10px rgba(7,54,66,.05);
-  --shd-xs: 0 1px 3px rgba(7,54,66,.05);
-  --glow-amber: 0 0 0 1px rgba(203,75,22,.25);
-  --rounded-sm: 5px;
-  --rounded-md: 8px;
-  --rounded-lg: 12px;
-  --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "Consolas", monospace;
-}
-
-/* ============================================================
-   CSS §2b · AURORA THEME — Northern Lights Navy/Cyan
-   ============================================================ */
-[data-theme=aurora]{
-  /* Deep navy-indigo backgrounds — cool, immersive */
-  --bg-0: oklch(11% 0.025 250);
-  --bg-1: oklch(14% 0.028 252);
-  --bg-2: oklch(17% 0.030 254);
-  --bg-3: oklch(21% 0.032 255);
-  --bg-4: oklch(26% 0.033 256);
-  --bdr-d: oklch(18% 0.028 252);
-  --bdr: oklch(24% 0.032 254);
-  --bdr-h: oklch(34% 0.038 255);
-  /* Cool silver-blue text */
-  --t1: oklch(94% 0.008 210);
-  --t2: oklch(82% 0.012 210);
-  --t3: oklch(65% 0.018 215);
-  --t4: oklch(60% 0.015 220);
-  /* Cyan teal as primary accent (replaces amber role) */
-  --amber: oklch(75% 0.14 195);
-  --amber-g: oklch(75% 0.14 195 / 0.14);
-  --amber-d: oklch(75% 0.14 195 / 0.06);
-  --blue: oklch(72% 0.12 250);
-  --blue-g: oklch(72% 0.12 250 / 0.12);
-  --green: oklch(72% 0.16 165);
-  --green-g: oklch(72% 0.16 165 / 0.12);
-  --red: oklch(65% 0.18 25);
-  --red-g: oklch(65% 0.18 25 / 0.12);
-  --yellow: oklch(80% 0.14 85);
-  --yellow-g: oklch(80% 0.14 85 / 0.10);
-  --purple: oklch(72% 0.18 295);
-  --purple-g: oklch(72% 0.18 295 / 0.12);
-  --cyan: oklch(78% 0.13 200);
-  --cyan-g: oklch(78% 0.13 200 / 0.12);
-  --glass:rgba(100,200,255,.05);
-  --glass-bdr:rgba(100,200,255,.10);
-  --bar-t:rgba(220,245,255,.92);
-  --shd:0 4px 20px rgba(0,10,30,.6),0 1px 4px rgba(0,10,30,.4);
-  --shd-lg:0 12px 48px rgba(0,10,30,.7),0 4px 16px rgba(0,10,30,.4);
-  --shd-xs:0 1px 4px rgba(0,10,30,.4);
-  --glow-amber:0 0 0 1px rgba(0,220,200,.25);
-  --rounded-sm: 6px;
-  --rounded-md: 8px;
-  --rounded-lg: 14px;
-  --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
-}
-/* ============================================================
-   CSS §2c · MIDNIGHT THEME — OLED Black / Electric Purple
+   CSS §2c · MIDNIGHT THEME — OLED Black / Cyber Hacker Mono
    ============================================================ */
 [data-theme=midnight]{
   /* Near-pure black — OLED optimized */
@@ -452,107 +357,10 @@
   --rounded-md: 8px;
   --rounded-lg: 14px;
   --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
-}
-/* ============================================================
-   CSS §2d · FOREST THEME — Moss Green / Earthy Warmth
-   ============================================================ */
-[data-theme=forest]{
-  /* Deep earthy green-brown backgrounds */
-  --bg-0: oklch(11% 0.022 135);
-  --bg-1: oklch(14% 0.026 133);
-  --bg-2: oklch(17% 0.028 131);
-  --bg-3: oklch(21% 0.030 130);
-  --bg-4: oklch(26% 0.032 128);
-  --bdr-d: oklch(18% 0.026 132);
-  --bdr: oklch(24% 0.030 130);
-  --bdr-h: oklch(33% 0.036 128);
-  /* Warm sage / cream text */
-  --t1: oklch(93% 0.010 100);
-  --t2: oklch(82% 0.014 105);
-  --t3: oklch(66% 0.018 110);
-  --t4: oklch(60% 0.015 115);
-  /* Emerald green as primary accent */
-  --amber: oklch(72% 0.20 145);
-  --amber-g: oklch(72% 0.20 145 / 0.14);
-  --amber-d: oklch(72% 0.20 145 / 0.06);
-  --blue: oklch(68% 0.14 220);
-  --blue-g: oklch(68% 0.14 220 / 0.12);
-  --green: oklch(74% 0.22 145);
-  --green-g: oklch(74% 0.22 145 / 0.13);
-  --red: oklch(62% 0.18 25);
-  --red-g: oklch(62% 0.18 25 / 0.12);
-  --yellow: oklch(78% 0.16 80);
-  --yellow-g: oklch(78% 0.16 80 / 0.12);
-  --purple: oklch(65% 0.18 290);
-  --purple-g: oklch(65% 0.18 290 / 0.12);
-  --cyan: oklch(74% 0.14 190);
-  --cyan-g: oklch(74% 0.14 190 / 0.12);
-  --glass:rgba(50,160,50,.05);
-  --glass-bdr:rgba(80,200,80,.09);
-  --bar-t:rgba(220,240,220,.92);
-  --shd:0 4px 18px rgba(0,8,0,.55),0 1px 4px rgba(0,8,0,.35);
-  --shd-lg:0 12px 44px rgba(0,8,0,.65),0 4px 14px rgba(0,8,0,.35);
-  --shd-xs:0 1px 4px rgba(0,8,0,.35);
-  --glow-amber:0 0 0 1px rgba(40,180,60,.25);
-  --rounded-sm: 6px;
-  --rounded-md: 8px;
-  --rounded-lg: 14px;
-  --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
-}
-/* ============================================================
-   CSS §2e · CRIMSON THEME — Dark Noir / Crimson Red
-   ============================================================ */
-[data-theme=crimson]{
-  /* Deep coal-black with red warmth */
-  --bg-0: oklch(8% 0.020 20);
-  --bg-1: oklch(11% 0.024 18);
-  --bg-2: oklch(14% 0.027 16);
-  --bg-3: oklch(18% 0.030 15);
-  --bg-4: oklch(23% 0.032 14);
-  --bdr-d: oklch(14% 0.024 18);
-  --bdr: oklch(22% 0.030 16);
-  --bdr-h: oklch(32% 0.038 15);
-  /* Warm near-white / cream text */
-  --t1: oklch(95% 0.007 30);
-  --t2: oklch(84% 0.010 25);
-  --t3: oklch(68% 0.015 20);
-  --t4: oklch(60% 0.013 20);
-  /* Vivid crimson as primary accent */
-  --amber: oklch(62% 0.24 18);
-  --amber-g: oklch(62% 0.24 18 / 0.16);
-  --amber-d: oklch(62% 0.24 18 / 0.07);
-  --blue: oklch(68% 0.14 250);
-  --blue-g: oklch(68% 0.14 250 / 0.13);
-  --green: oklch(66% 0.18 145);
-  --green-g: oklch(66% 0.18 145 / 0.12);
-  --red: oklch(60% 0.26 20);
-  --red-g: oklch(60% 0.26 20 / 0.14);
-  --yellow: oklch(76% 0.16 75);
-  --yellow-g: oklch(76% 0.16 75 / 0.12);
-  --purple: oklch(65% 0.20 330);
-  --purple-g: oklch(65% 0.20 330 / 0.12);
-  --cyan: oklch(70% 0.14 195);
-  --cyan-g: oklch(70% 0.14 195 / 0.12);
-  --glass:rgba(200,20,20,.06);
-  --glass-bdr:rgba(200,20,20,.13);
-  --bar-t:rgba(255,235,230,.93);
-  --shd:0 4px 20px rgba(10,0,0,.70),0 1px 4px rgba(10,0,0,.55);
-  --shd-lg:0 12px 48px rgba(10,0,0,.80),0 4px 16px rgba(10,0,0,.60);
-  --shd-xs:0 1px 4px rgba(10,0,0,.55);
-  --glow-amber:0 0 0 1px rgba(220,20,20,.25);
-  --rounded-sm: 6px;
-  --rounded-md: 8px;
-  --rounded-lg: 14px;
-  --rounded-full: 99px;
-  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", Inter, Geist, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: "SF Mono", Menlo, Monaco, "JetBrains Mono", "Geist Mono", Consolas, "Cascadia Code", monospace;
+  /* Cyber Hacker Monospace Typography */
+  --ui: "JetBrains Mono", "SF Mono", "Fira Code", Menlo, Monaco, Consolas, monospace;
+  --display: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --mono: "JetBrains Mono", "SF Mono", "Fira Code", Menlo, monospace;
 }
 /* ============================================================
    CSS §3 · THEME TRANSITION
@@ -11487,12 +11295,11 @@ const CONSTANTS = {
   },
   THEMES: {
     DARK: 'dark',
-    LIGHT: 'light',
-    IVORY: 'ivory',
-    AURORA: 'aurora',
     MIDNIGHT: 'midnight',
-    FOREST: 'forest',
-    CRIMSON: 'crimson'
+    LIGHT: 'ivory',
+    IVORY: 'ivory',
+    PAPER: 'paper',
+    BLUEPRINT: 'blueprint'
   },
   STORAGE_KEYS: {
     THEME: 'll-t',
@@ -11947,17 +11754,12 @@ const debounce=UTILS.debounce;
 const Theme={
   THEMES:[
     // Dark Themes
-    {id:'dark',      type:'dark',  label:'Obsidian',    badge:'Dark',  desc:'Deep charcoal slate with warm amber glow',           dot:'#d4882a', bg:'#1a1c22', acc:'#d4882a', line:'#373d4d'},
-    {id:'midnight',  type:'dark',  label:'Midnight',    badge:'Dark',  desc:'Abyssal dark space with electric violet telemetry',   dot:'#b000ff', bg:'#050310', acc:'#b000ff', line:'#281944'},
-    {id:'aurora',    type:'dark',  label:'Aurora',      badge:'Dark',  desc:'Sub-zero polar navy with luminous cyan accents',     dot:'#00d4c8', bg:'#0d1020', acc:'#00d4c8', line:'#162b44'},
-    {id:'forest',    type:'dark',  label:'Forest',      badge:'Dark',  desc:'Quiet emerald depth with fresh terminal highlights',  dot:'#3aba5a', bg:'#0d1a0e', acc:'#3aba5a', line:'#1a361c'},
-    {id:'crimson',   type:'dark',  label:'Crimson',     badge:'Dark',  desc:'Carbon obsidian with razor-sharp ruby highlights',    dot:'#d91414', bg:'#150505', acc:'#d91414', line:'#3b1111'},
+    {id:'dark',      type:'dark',  label:'Obsidian',    badge:'Modern Sans',   desc:'Charcoal slate with modern Neo-Grotesque sans typography',   dot:'#d4882a', bg:'#1a1c22', acc:'#d4882a', line:'#373d4d'},
+    {id:'midnight',  type:'dark',  label:'Midnight',    badge:'Cyber Mono',    desc:'Abyssal OLED black with cyber monospace telemetry & electric violet', dot:'#b000ff', bg:'#050310', acc:'#b000ff', line:'#281944'},
     // Light Themes
-    {id:'ivory',     type:'light', label:'Ivory Warm',  badge:'Light', desc:'Warm editorial cream with amber accents',            dot:'#c2620a', bg:'#f5f3ee', acc:'#c2620a', line:'#ded9cb'},
-    {id:'nordic',    type:'light', label:'Nordic Frost',badge:'Light', desc:'Cool scandinavian ice with cobalt precision',        dot:'#0066cc', bg:'#eef2f7', acc:'#0066cc', line:'#cfd9e5'},
-    {id:'paper',     type:'light', label:'Paper Craft', badge:'Light', desc:'Classic book craft with walnut typography',         dot:'#8c5a2b', bg:'#f7f4ed', acc:'#8c5a2b', line:'#dfd8c8'},
-    {id:'blueprint', type:'light', label:'Blueprint',   badge:'Light', desc:'Technical drafting canvas with crisp cyan inks',    dot:'#0070ba', bg:'#f0f5fa', acc:'#0070ba', line:'#d2e1f0'},
-    {id:'solarized', type:'light', label:'Solarized',   badge:'Light', desc:'Precision cream with Ethan Schoonover brass',       dot:'#b58900', bg:'#fdf6e3', acc:'#b58900', line:'#eee8d5'},
+    {id:'ivory',     type:'light', label:'Ivory Warm',  badge:'Humanist Sans', desc:'Warm editorial cream with geometric humanist typography & amber glow', dot:'#c2620a', bg:'#f5f3ee', acc:'#c2620a', line:'#ded9cb'},
+    {id:'paper',     type:'light', label:'Paper Craft', badge:'Literary Serif',desc:'Fine-press parchment with classical literary serif & walnut ink', dot:'#8c5a2b', bg:'#f7f4ed', acc:'#8c5a2b', line:'#dfd8c8'},
+    {id:'blueprint', type:'light', label:'Blueprint',   badge:'Technical CAD', desc:'Architectural drafting canvas with technical typography & cyan ink', dot:'#0070ba', bg:'#f0f5fa', acc:'#0070ba', line:'#d2e1f0'},
   ],
   _pickerOpen:false,
   _closeFn:null,
@@ -11965,8 +11767,7 @@ const Theme={
   _filterType:'all',
   init(){
     let t=localStorage.getItem('ll-t')||'dark';
-    // Legacy 'light' → 'ivory' mapping
-    if(t==='light')t='ivory';
+    if(t==='light'||t==='nordic')t='ivory';
     this.apply(t,false);
   },
   // Kept for keyboard shortcut compatibility (Alt+T): cycles through themes
@@ -11982,6 +11783,15 @@ const Theme={
     this.renderPicker();
   },
   apply(t,anim){
+    const ALIASES = {
+      nordic: 'ivory',
+      aurora: 'dark',
+      forest: 'dark',
+      crimson: 'dark',
+      solarized: 'paper',
+      light: 'ivory'
+    };
+    if (ALIASES[t]) t = ALIASES[t];
     const h=document.documentElement;
     if(anim){h.classList.add('th-anim');setTimeout(()=>h.classList.remove('th-anim'),400);}
     const meta=this.THEMES.find(x=>x.id===t)||this.THEMES[0];

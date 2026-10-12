@@ -2,7 +2,21 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
-- **Calibrated High-Contrast Borders for Midnight Theme (v6.9.146 — COMPLETED)**:
+- **Streamlined 5 Typographic Archetypes Theme Suite & Ponytail Cleanup (v6.9.147 — COMPLETED)**:
+  - **Philosophy & Simplification (/ponytail)**:
+    - Pruned 250+ lines of duplicate/redundant theme CSS token declarations (`aurora`, `forest`, `crimson`, `nordic`, `solarized`).
+    - Replaced the repetitive 10-theme palette list with 5 truly distinct, purposeful aesthetic and typographic archetypes, each with calibrated contrast, unique font pairings, and distinct mood:
+      1. `Obsidian` (`dark`): Deep charcoal slate with modern Neo-Grotesque sans typography (`Inter`, `system-ui`) and warm amber glow.
+      2. `Midnight` (`dark`): Abyssal OLED black (`4%` luminance) with cyber monospace telemetry & electric violet (`ui-monospace`, `JetBrains Mono`).
+      3. `Ivory Warm` (`light`): Warm editorial cream (`#f5f3ee`) with geometric humanist sans typography & amber accents.
+      4. `Paper Craft` (`light`): Fine-press parchment (`#f7f4ed`) with classical literary serif (`Georgia`, `Charter`) & walnut ink typography.
+      5. `Blueprint` (`light`): Architectural drafting canvas (`#f0f5fa`) with technical CAD typography (`ui-monospace`, `Trebuchet MS`) & cyan ink accents.
+  - **Theme Studio UI Polish**:
+    - Filter tabs dynamically adapt to `All (5)`, `Dark (2)`, `Light (3)` with responsive badge indicators (`Modern Sans`, `Cyber Mono`, `Humanist Sans`, `Literary Serif`, `Technical CAD`).
+    - Backward-compatible alias mapping in `Theme.apply()` preserves legacy saved settings (`nordic`, `aurora`, `forest`, etc.).
+  - **Automated Regression Verification**:
+    - Updated `test_theme_studio_drawer_filtering_and_theme_switching` in `tests/test_consolidated_settings_and_accessibility.py`.
+    - Full regression test suite passed: **114/114 tests (100% pass rate in 108s)**.
   - **Root Cause & Visual Issue**:
     - In `[data-theme=midnight]` (OLED Black / Electric Purple), surface backgrounds are deep OLED black (`--bg-0: 4%`, `--bg-1: 7%`, `--bg-2: 10%`, `--bg-3: 13%`).
     - Previously, `--bdr-d` was set to `oklch(10% 0.014 280)`, which was identical to `--bg-2` (10%) and darker than `--bg-3` (13%), causing card borders, tree row dividers, input boundaries, toolbar pills, and modal edges to be completely invisible.
