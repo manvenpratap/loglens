@@ -2,6 +2,22 @@
 
 > **Agent Rule:** Read this file at the start of every session. Update it after every meaningful code change.
 
+- **Enhanced Transaction Dependency Graph & High-Vis Studio (v6.9.145 — COMPLETED)**:
+  - **High-Vis Glowing Connector Toggle (`#graph-btn-highvis`)**:
+    - Adds `.graph-high-vis` container class and dynamically toggles high-contrast glowing link lines with white drop-shadows and bright connector markers (`--graph-link: rgba(180, 195, 220, 0.95)`).
+    - Perfect visibility and contrast in both sleek dark modes and all 5 light themes (Ivory, Nordic, Paper, Blueprint, Solarized).
+  - **Quick Filter HUD Chips (`.graph-hud-chip`)**:
+    - Interactive pill filter buttons mounted directly in the HUD toolbar: `All (${nodes.length})`, `⑂ Cross-Thread (${crossLinksCount})`, and `⚡ Hotspots (${hotspotLinksCount})` for links >150ms.
+    - Clicking chips filters node and link opacities dynamically without resetting layout or physics.
+  - **Direct SVG Diagram Export (`#graph-btn-export-svg`)**:
+    - One-click standalone SVG export serialization downloading `transaction_dependency_graph_<timestamp>.svg` for documentation, presentations, and team reviews.
+  - **Interactive Hover Inspectors for Both Nodes & Connector Links (`#graph-hover-card`)**:
+    - **Node Hover**: Displays node ID, rule name, thread, call count, self-time, in/out call degrees, and direct jump buttons (`▤ Timeline`, `┠ Tree`) wired to `GRAPHIFY.viewIn(mode, id)`.
+    - **Link Hover**: Displays detailed caller ➔ callee connection details, call invocation frequency, average latency in ms, and classification tag (`⑂ Cross-Thread Communication` vs `✔ Direct Call Execution Link`).
+  - **Automated Regression Verification**:
+    - Added `test_dependency_graph_hud_chips_highvis_and_inspection` to `tests/test_consolidated_visualizations_and_telemetry.py`.
+    - Full regression test suite passed: **114/114 tests (100% pass rate in 106s)**.
+
 - **Expanded 10-Theme Studio & Light Themes Suite (v6.9.144 — COMPLETED)**:
   - **Expanded Theme Studio Drawer (`#theme-picker-menu`)**:
     - Upgraded from simple dropdown into an agency-grade modal theme studio with header (`Theme Studio 10 Themes`), category filter tabs (`All (10)`, `Dark (5)`, `Light (5)`), close button, and glassmorphic backdrop.

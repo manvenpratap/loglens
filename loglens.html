@@ -5594,6 +5594,50 @@ body.focus-mode #res {
   box-shadow: var(--shd-lg);
 }
 
+/* High-Vis Connector & HUD Controls */
+:root {
+  --graph-link: rgba(140, 150, 170, 0.55);
+  --graph-link-cross: #ef4444;
+  --graph-link-active: #f59e0b;
+  --graph-link-arrow: #94a3b8;
+}
+[data-theme="light"] {
+  --graph-link: rgba(70, 80, 100, 0.55);
+  --graph-link-cross: #dc2626;
+  --graph-link-active: #d97706;
+  --graph-link-arrow: #64748b;
+}
+.graph-high-vis {
+  --graph-link: rgba(180, 195, 220, 0.95) !important;
+  --graph-link-arrow: #e2e8f0 !important;
+  --graph-link-cross: #f87171 !important;
+  --graph-link-active: #fbbf24 !important;
+}
+.graph-high-vis .graph-connector-line {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.45));
+}
+.graph-hud-chip {
+  padding: 3px 9px;
+  border-radius: var(--rounded-full, 9999px);
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--bdr);
+  background: var(--bg-2);
+  color: var(--t2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.graph-hud-chip:hover {
+  background: var(--bg-3);
+  color: var(--t1);
+}
+.graph-hud-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
 /* Vertical Text Label */
 .diff-divider-text {
   writing-mode: vertical-rl;
@@ -19928,6 +19972,8 @@ const GRAPHIFY={
       source: l.source,
       target: l.target,
       value: l.isCross ? 1 : (l.totalDur / l.count),
+      count: l.count,
+      avgDur: l.count ? (l.totalDur / l.count) : 0,
       isCross: !!l.isCross
     }));
 
@@ -20132,6 +20178,16 @@ const GRAPHIFY={
     }
   },
 
+viewIn(mode, nodeName) {
+    const inp = $('hdr-search');
+    if (inp) {
+      inp.value = nodeName;
+      inp.dispatchEvent(new Event('input'));
+    }
+    UI.svm(mode);
+    toast(`Filtered to ${nodeName} in ${mode === 'gantt' ? 'Timeline' : 'Execution Tree'}`, 'info');
+  },
+
   async render(trees, container) {
     const data = this.buildGraph(trees);
     if (!data.nodes.length) {
@@ -20139,18 +20195,31 @@ const GRAPHIFY={
       return;
     }
 
+    const crossLinksCount = data.links.filter(l => l.isCross).length;
+    const hotspotLinksCount = data.links.filter(l => (l.avgDur || l.value || 0) > 150).length;
+
     container.innerHTML = `<div class="tw">
       <div class="pt" style="display:flex; align-items:center; gap:8px;">
         <span>⧉</span> Transaction Dependency Graph
-        <span class="badge b-gray" id="graph-node-count-badge">${data.nodes.length} Node(s)</span>
-        <span class="badge b-blue" id="graph-link-count-badge">${data.links.length} Link(s)</span>
+        <span class="badge b-gray" id="graph-node-count-badge">${data.nodes.length} Nodes</span>
+        <span class="badge b-blue" id="graph-link-count-badge">${data.links.length} Links</span>
+        ${crossLinksCount ? `<span class="badge b-red" id="graph-cross-count-badge">⑂ ${crossLinksCount} Cross-Thread</span>` : ''}
       </div>
       <div id="d3-graph-canvas-container" style="position:relative; width:100%; height:calc(100vh - 210px); min-height:600px; background:var(--bg-1); border:1px solid var(--bdr); border-radius:6px; overflow:hidden;">
         <!-- HUD Toolbar -->
-        <div class="graph-hud-toolbar" style="position:absolute; top:12px; left:12px; z-index:15; display:flex; align-items:center; gap:8px;">
+        <div class="graph-hud-toolbar" style="position:absolute; top:12px; left:12px; z-index:15; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:3px 8px; gap:6px; box-shadow:var(--shd);">
             <span style="color:var(--t3); font-size: 12px;">🔍</span>
             <input id="graph-search-inp" type="text" placeholder="Search node…" style="background:transparent; border:none; outline:none; color:var(--t1); font-size: 12px; width:130px; font-family:var(--ui);" />
+          </div>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <button class="graph-hud-chip active" id="graph-chip-all" data-filter="all">All (${data.nodes.length})</button>
+            ${crossLinksCount ? `<button class="graph-hud-chip" id="graph-chip-cross" data-filter="cross" title="Filter to cross-thread links">⑂ Cross-Thread (${crossLinksCount})</button>` : ''}
+            ${hotspotLinksCount ? `<button class="graph-hud-chip" id="graph-chip-hotspots" data-filter="hotspots" title="Highlight bottleneck links (>150ms)">⚡ Hotspots (${hotspotLinksCount})</button>` : ''}
+          </div>
+          <div style="display:flex; align-items:center; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shd);">
+            <button id="graph-btn-highvis" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 9px; font-size:11px;" title="Toggle High-Contrast Glow Connectors">☀ High-Vis</button>
+            <button id="graph-btn-export-svg" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 9px; font-size:11px; border-left:1px solid var(--bdr);" title="Export SVG Diagram">⤓ SVG</button>
           </div>
           <div style="display:flex; align-items:center; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shd);">
             <button id="graph-btn-zin" class="btn btn-sm btn-g" style="border:none; border-radius:0; padding:4px 9px; font-size:12px;" title="Zoom In">＋</button>
@@ -20159,8 +20228,8 @@ const GRAPHIFY={
           </div>
         </div>
 
-        <!-- Node Hover Inspect Card -->
-        <div id="graph-hover-card" style="position:absolute; top:12px; right:12px; z-index:15; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:10px 14px; box-shadow:var(--shd-lg); font-family:var(--ui); display:none; max-width:280px; pointer-events:none; transition:opacity 0.15s ease;">
+        <!-- Node & Link Hover Inspect Card -->
+        <div id="graph-hover-card" style="position:absolute; top:12px; right:12px; z-index:15; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:10px 14px; box-shadow:var(--shd-lg); font-family:var(--ui); display:none; max-width:320px; transition:opacity 0.15s ease;">
         </div>
 
         <div id="d3-graph-loading" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg-1); color:var(--t3); font-size:12px; z-index:10;">
@@ -20170,6 +20239,42 @@ const GRAPHIFY={
     </div>`;
 
     const canvasContainer = $('d3-graph-canvas-container');
+
+    // Wire SVG Export
+    $('graph-btn-export-svg')?.addEventListener('click', () => {
+      const svgEl = canvasContainer.querySelector('svg');
+      if (!svgEl) return;
+      const svgStr = new XMLSerializer().serializeToString(svgEl);
+      const b = new Blob([svgStr], {type: 'image/svg+xml'});
+      const u = URL.createObjectURL(b);
+      Object.assign(document.createElement('a'), {href:u, download:`transaction_dependency_graph_${Date.now()}.svg`}).click();
+      URL.revokeObjectURL(u);
+      toast('Dependency Graph exported as SVG.', 'success');
+    });
+
+    // Wire High-Vis Connector Toggle
+    let isHighVis = false;
+    $('graph-btn-highvis')?.addEventListener('click', () => {
+      isHighVis = !isHighVis;
+      canvasContainer.classList.toggle('graph-high-vis', isHighVis);
+      const btn = $('graph-btn-highvis');
+      if (btn) {
+        btn.classList.toggle('btn-p', isHighVis);
+        btn.textContent = isHighVis ? '☀ High-Vis ON' : '☀ High-Vis';
+      }
+      toast(`High-Contrast connectors ${isHighVis ? 'enabled' : 'disabled'}.`, 'info');
+    });
+
+    // Wire Filter Chips
+    const filterChips = canvasContainer.querySelectorAll('.graph-hud-chip');
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const f = chip.dataset.filter;
+        if (window.graphApplyChipFilter) window.graphApplyChipFilter(f);
+      });
+    });
 
     let d3 = null;
     try {
@@ -20202,7 +20307,7 @@ const GRAPHIFY={
 
     legend = document.createElement('div');
     legend.className = 'graph-legend-card';
-    legend.style.cssText = 'position:absolute; bottom:12px; right:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:8px 12px; z-index:15; max-width:230px; font-size: 12px; font-family:var(--ui); display:flex; flex-direction:column; gap:6px; box-shadow:var(--shd-lg); user-select:none;';
+    legend.style.cssText = 'position:absolute; bottom:12px; right:12px; background:var(--bg-2); border:1px solid var(--bdr); border-radius:var(--radius-md); padding:8px 12px; z-index:15; max-width:240px; font-size: 12px; font-family:var(--ui); display:flex; flex-direction:column; gap:6px; box-shadow:var(--shd-lg); user-select:none;';
 
     const ruleCategories = {};
     data.nodes.forEach(n => {
@@ -20231,14 +20336,14 @@ const GRAPHIFY={
           </div>
         `).join('')}
         <div style="height:1px; background:var(--bdr); margin:2px 0;"></div>
-        <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--t3);">
-          <span style="width:14px; height:2px; background:var(--bdr-d); display:inline-block; flex-shrink:0;"></span>
-          <span>Call Link</span>
+        <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--t2);">
+          <span style="width:14px; height:2px; background:var(--graph-link-arrow); display:inline-block; flex-shrink:0; border-radius:1px;"></span>
+          <span style="font-weight:600;">Call Link ▸</span>
         </div>
         ${hasCrossLinks ? `
-          <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--red);">
-            <span style="width:14px; height:2px; border-bottom:1.5px dashed var(--red); display:inline-block; flex-shrink:0;"></span>
-            <span>Cross-Thread</span>
+          <div style="display:flex; align-items:center; gap:6px; padding:1px 4px; color:var(--graph-link-cross);">
+            <span style="width:14px; height:2px; border-bottom:2px dashed var(--graph-link-cross); display:inline-block; flex-shrink:0;"></span>
+            <span style="font-weight:600;">Cross-Thread ▸</span>
           </div>
         ` : ''}
       </div>
@@ -20299,28 +20404,30 @@ const GRAPHIFY={
       .force("collision", d3.forceCollide().radius(d => Math.max(10, Math.min(26, Math.sqrt(d.selfTime || 1) * 0.4)) + 26).strength(0.8));
 
     svg.append("defs").selectAll("marker")
-      .data(["normal", "cross"])
+      .data(["normal", "cross", "active"])
       .join("marker")
       .attr("id", d => `arrow-${d}`)
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 22)
+      .attr("viewBox", "0 -4 8 8")
+      .attr("refX", 7)
       .attr("refY", 0)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
+      .attr("markerWidth", 5.5)
+      .attr("markerHeight", 5.5)
       .attr("orient", "auto")
       .append("path")
-      .attr("fill", d => d === 'cross' ? 'var(--red)' : 'var(--bdr-d)')
-      .attr("d", "M0,-5L10,0L0,5");
+      .attr("fill", d => d === 'cross' ? 'var(--graph-link-cross)' : (d === 'active' ? 'var(--graph-link-active)' : 'var(--graph-link-arrow)'))
+      .attr("d", "M0,-3.5L7,0L0,3.5Z");
 
     const link = g.append("g")
       .selectAll("line")
       .data(data.links)
       .join("line")
-      .attr("stroke", d => d.isCross ? 'var(--red)' : 'var(--bdr-d)')
-      .attr("stroke-width", d => d.isCross ? 1.8 : Math.max(1.2, Math.min(4.5, (d.value || 0) / 150)))
-      .attr("stroke-dasharray", d => d.isCross ? "5,4" : null)
+      .attr("class", "graph-connector-line")
+      .attr("stroke", d => d.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)')
+      .attr("stroke-width", d => d.isCross ? 2 : Math.max(1.6, Math.min(4.2, (d.value || 0) / 120)))
+      .attr("stroke-dasharray", d => d.isCross ? "6,4" : null)
+      .attr("stroke-linecap", "round")
       .attr("marker-end", d => `url(#arrow-${d.isCross ? 'cross' : 'normal'})`)
-      .style("transition", "opacity 0.2s, stroke 0.2s");
+      .style("transition", "opacity 0.2s, stroke 0.2s, stroke-width 0.2s");
 
     const node = g.append("g")
       .selectAll("g")
@@ -20364,11 +20471,17 @@ const GRAPHIFY={
       .style("pointer-events", "none");
 
     simulation.on("tick", () => {
-      link
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y);
+      link.each(function(d) {
+        const r = Math.max(9, Math.min(26, Math.sqrt((d.target.selfTime || 1)) * 0.4));
+        const dx = d.target.x - d.source.x, dy = d.target.y - d.source.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const offset = r + 6;
+        d3.select(this)
+          .attr("x1", d.source.x)
+          .attr("y1", d.source.y)
+          .attr("x2", d.target.x - (dx / dist) * offset)
+          .attr("y2", d.target.y - (dy / dist) * offset);
+      });
       
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
@@ -20378,7 +20491,9 @@ const GRAPHIFY={
       if (!target) {
         node.style("opacity", 1);
         circles.attr("stroke", "var(--bg-1)").attr("stroke-width", 2);
-        link.style("opacity", 1).attr("stroke", d => d.isCross ? 'var(--red)' : 'var(--bdr-d)');
+        link.style("opacity", 1)
+          .attr("stroke", d => d.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)')
+          .attr("marker-end", d => `url(#arrow-${d.isCross ? 'cross' : 'normal'})`);
         const card = $('graph-hover-card');
         if (card) card.style.display = 'none';
         return;
@@ -20405,7 +20520,12 @@ const GRAPHIFY={
         .attr("stroke", l => {
           const s = typeof l.source === 'object' ? l.source.id : l.source;
           const t = typeof l.target === 'object' ? l.target.id : l.target;
-          return (s === target.id || t === target.id) ? 'var(--amber)' : (l.isCross ? 'var(--red)' : 'var(--bdr-d)');
+          return (s === target.id || t === target.id) ? 'var(--graph-link-active)' : (l.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)');
+        })
+        .attr("marker-end", l => {
+          const s = typeof l.source === 'object' ? l.source.id : l.source;
+          const t = typeof l.target === 'object' ? l.target.id : l.target;
+          return (s === target.id || t === target.id) ? 'url(#arrow-active)' : `url(#arrow-${l.isCross ? 'cross' : 'normal'})`;
         });
 
       const card = $('graph-hover-card');
@@ -20420,10 +20540,58 @@ const GRAPHIFY={
           <div style="font-size: 12px; color:var(--t3); margin-top:4px; font-family:var(--mono);">
             Degree: ${target.inDegree || 0} caller(s) → ${target.outDegree || 0} callee(s)
           </div>
+          <div style="display:flex; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid var(--bdr);">
+            <button class="btn btn-xs btn-g" onclick="GRAPHIFY.viewIn('gantt', '${esc(target.id)}')" title="View in Timeline">▤ Timeline</button>
+            <button class="btn btn-xs btn-g" onclick="GRAPHIFY.viewIn('tree', '${esc(target.id)}')" title="View in Tree">┠ Tree</button>
+          </div>
         `;
         card.style.display = 'block';
       }
     };
+
+    // Link hover & inspector
+    const highlightLink = (targetLink) => {
+      if (!targetLink) {
+        highlight(null);
+        return;
+      }
+      const sId = typeof targetLink.source === 'object' ? targetLink.source.id : targetLink.source;
+      const tId = typeof targetLink.target === 'object' ? targetLink.target.id : targetLink.target;
+
+      node.style("opacity", d => (d.id === sId || d.id === tId) ? 1 : 0.14);
+      circles
+        .attr("stroke", d => (d.id === sId || d.id === tId) ? 'var(--amber)' : 'var(--bg-1)')
+        .attr("stroke-width", d => (d.id === sId || d.id === tId) ? 3.5 : 2);
+
+      link
+        .style("opacity", l => l === targetLink ? 1 : 0.08)
+        .attr("stroke", l => l === targetLink ? 'var(--graph-link-active)' : (l.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)'))
+        .attr("stroke-width", l => l === targetLink ? 3.2 : (l.isCross ? 2 : Math.max(1.6, Math.min(4.2, (l.value || 0) / 120))))
+        .attr("marker-end", l => l === targetLink ? 'url(#arrow-active)' : `url(#arrow-${l.isCross ? 'cross' : 'normal'})`);
+
+      const card = $('graph-hover-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="font-weight:700; color:var(--amber); font-size:12px; font-family:var(--mono);">↳ Connection Details</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:4px; font-size:12px; font-family:var(--mono); color:var(--t1);">
+            <span style="font-weight:600;">${esc(sId)}</span>
+            <span style="color:var(--t3);">➔</span>
+            <span style="font-weight:600;">${esc(tId)}</span>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:6px; font-size: 12px; color:var(--t2); font-family:var(--mono);">
+            <span>Calls: <strong>${targetLink.count || 1}</strong></span>
+            <span>Avg Latency: <strong>${fmtMs(targetLink.value || targetLink.avgDur || 0)}</strong></span>
+          </div>
+          <div style="font-size:11px; margin-top:5px; font-weight:600; color:${targetLink.isCross ? 'var(--red)' : 'var(--blue)'};">
+            ${targetLink.isCross ? '⑂ Cross-Thread Communication' : '✔ Direct Call Execution Link'}
+          </div>
+        `;
+        card.style.display = 'block';
+      }
+    };
+
+    link.on("mouseenter", (e, d) => highlightLink(d))
+        .on("mouseleave", () => highlightLink(null));
 
     node.on("mouseenter", (e, d) => highlight(d))
         .on("mouseleave", () => highlight(null));
@@ -20436,6 +20604,24 @@ const GRAPHIFY={
         .attr("stroke", d => d.ruleName === ruleName ? 'var(--amber)' : 'var(--bg-1)')
         .attr("stroke-width", d => d.ruleName === ruleName ? 3 : 2);
       link.style("opacity", 0.08);
+    };
+
+    // Filter chip helper
+    window.graphApplyChipFilter = (filter) => {
+      if (!filter || filter === 'all') {
+        highlight(null);
+        return;
+      }
+      if (filter === 'cross') {
+        node.style("opacity", d => data.links.some(l => l.isCross && ((typeof l.source === 'object' ? l.source.id : l.source) === d.id || (typeof l.target === 'object' ? l.target.id : l.target) === d.id)) ? 1 : 0.12);
+        link.style("opacity", l => l.isCross ? 1 : 0.06);
+        circles.attr("stroke", d => data.links.some(l => l.isCross && ((typeof l.source === 'object' ? l.source.id : l.source) === d.id || (typeof l.target === 'object' ? l.target.id : l.target) === d.id)) ? 'var(--graph-link-cross)' : 'var(--bg-1)');
+      } else if (filter === 'hotspots') {
+        const isHotspot = (l) => (l.value || l.avgDur || 0) > 150;
+        node.style("opacity", d => data.links.some(l => isHotspot(l) && ((typeof l.source === 'object' ? l.source.id : l.source) === d.id || (typeof l.target === 'object' ? l.target.id : l.target) === d.id)) ? 1 : 0.12);
+        link.style("opacity", l => isHotspot(l) ? 1 : 0.06);
+        circles.attr("stroke", d => data.links.some(l => isHotspot(l) && ((typeof l.source === 'object' ? l.source.id : l.source) === d.id || (typeof l.target === 'object' ? l.target.id : l.target) === d.id)) ? 'var(--amber)' : 'var(--bg-1)');
+      }
     };
 
     // Search filter
@@ -20490,6 +20676,8 @@ const GRAPHIFY={
       source: typeof l.source === 'object' ? l.source : (nodeById[l.source] || { x: cx, y: cy }),
       target: typeof l.target === 'object' ? l.target : (nodeById[l.target] || { x: cx, y: cy }),
       value: l.value,
+      count: l.count,
+      avgDur: l.avgDur,
       isCross: !!l.isCross
     }));
 
@@ -20521,8 +20709,8 @@ const GRAPHIFY={
         const f = (dist - targetDist) * 0.05;
         const fx = (dx / dist) * f;
         const fy = (dy / dist) * f;
-        a.vx += fx; a.vy += fy;
-        b.vx -= fx; b.vy -= fy;
+        a.vx -= fx; a.vy -= fy;
+        b.vx += fx; b.vy += fy;
       }
       for (const n of data.nodes) {
         n.vx += (n.clusterX - n.x) * 0.08;
@@ -20547,11 +20735,14 @@ const GRAPHIFY={
 
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     defs.innerHTML = `
-      <marker id="native-arrow-normal" viewBox="0 -5 10 10" refX="22" refY="0" markerWidth="6" markerHeight="6" orient="auto">
-        <path fill="var(--bdr-d)" d="M0,-5L10,0L0,5" />
+      <marker id="native-arrow-normal" viewBox="0 -4 8 8" refX="7" refY="0" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path fill="var(--graph-link-arrow)" d="M0,-3.5L7,0L0,3.5Z" />
       </marker>
-      <marker id="native-arrow-cross" viewBox="0 -5 10 10" refX="22" refY="0" markerWidth="6" markerHeight="6" orient="auto">
-        <path fill="var(--red)" d="M0,-5L10,0L0,5" />
+      <marker id="native-arrow-cross" viewBox="0 -4 8 8" refX="7" refY="0" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path fill="var(--graph-link-cross)" d="M0,-3.5L7,0L0,3.5Z" />
+      </marker>
+      <marker id="native-arrow-active" viewBox="0 -4 8 8" refX="7" refY="0" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path fill="var(--graph-link-active)" d="M0,-3.5L7,0L0,3.5Z" />
       </marker>
     `;
     svg.appendChild(defs);
@@ -20563,16 +20754,25 @@ const GRAPHIFY={
     const linkG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     mainG.appendChild(linkG);
     const linkEls = resolvedLinks.map(l => {
+      const r = Math.max(9, Math.min(26, Math.sqrt(l.target.selfTime || 1) * 0.4));
+      const dx = l.target.x - l.source.x, dy = l.target.y - l.source.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const offset = r + 6;
+      const x2 = l.target.x - (dx / dist) * offset;
+      const y2 = l.target.y - (dy / dist) * offset;
+
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('class', 'graph-connector-line');
       line.setAttribute('x1', l.source.x);
       line.setAttribute('y1', l.source.y);
-      line.setAttribute('x2', l.target.x);
-      line.setAttribute('y2', l.target.y);
-      line.setAttribute('stroke', l.isCross ? 'var(--red)' : 'var(--bdr-d)');
-      line.setAttribute('stroke-width', l.isCross ? '1.8' : Math.max(1.2, Math.min(4.5, (l.value || 0) / 150)));
-      if (l.isCross) line.setAttribute('stroke-dasharray', '5,4');
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+      line.setAttribute('stroke', l.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)');
+      line.setAttribute('stroke-width', l.isCross ? '2' : String(Math.max(1.6, Math.min(4.2, (l.value || 0) / 120))));
+      if (l.isCross) line.setAttribute('stroke-dasharray', '6,4');
+      line.setAttribute('stroke-linecap', 'round');
       line.setAttribute('marker-end', `url(#native-arrow-${l.isCross ? 'cross' : 'normal'})`);
-      line.style.transition = 'opacity 0.2s, stroke 0.2s';
+      line.style.transition = 'opacity 0.2s, stroke 0.2s, stroke-width 0.2s';
       linkG.appendChild(line);
       return { line, link: l };
     });
@@ -20595,7 +20795,9 @@ const GRAPHIFY={
       circle.setAttribute('stroke-width', '2');
 
       const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `${n.id}\nCalls: ${n.count}\nSelf Time: ${fmtMs(n.selfTime)}`;
+      title.textContent = `${n.id}
+Calls: ${n.count}
+Self Time: ${fmtMs(n.selfTime)}`;
       circle.appendChild(title);
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -20630,7 +20832,8 @@ const GRAPHIFY={
         });
         linkEls.forEach(item => {
           item.line.style.opacity = '1';
-          item.line.setAttribute('stroke', item.link.isCross ? 'var(--red)' : 'var(--bdr-d)');
+          item.line.setAttribute('stroke', item.link.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)');
+          item.line.setAttribute('marker-end', `url(#native-arrow-${item.link.isCross ? 'cross' : 'normal'})`);
         });
         const card = $('graph-hover-card');
         if (card) card.style.display = 'none';
@@ -20656,7 +20859,8 @@ const GRAPHIFY={
         const t = typeof item.link.target === 'object' ? item.link.target.id : item.link.target;
         const isConn = (s === target.id || t === target.id);
         item.line.style.opacity = isConn ? '1' : '0.08';
-        item.line.setAttribute('stroke', isConn ? 'var(--amber)' : (item.link.isCross ? 'var(--red)' : 'var(--bdr-d)'));
+        item.line.setAttribute('stroke', isConn ? 'var(--graph-link-active)' : (item.link.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)'));
+        item.line.setAttribute('marker-end', isConn ? 'url(#native-arrow-active)' : `url(#native-arrow-${item.link.isCross ? 'cross' : 'normal'})`);
       });
 
       const card = $('graph-hover-card');
@@ -20671,10 +20875,64 @@ const GRAPHIFY={
           <div style="font-size: 12px; color:var(--t3); margin-top:4px; font-family:var(--mono);">
             Degree: ${target.inDegree || 0} caller(s) → ${target.outDegree || 0} callee(s)
           </div>
+          <div style="display:flex; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid var(--bdr);">
+            <button class="btn btn-xs btn-g" onclick="GRAPHIFY.viewIn('gantt', '${esc(target.id)}')" title="View in Timeline">▤ Timeline</button>
+            <button class="btn btn-xs btn-g" onclick="GRAPHIFY.viewIn('tree', '${esc(target.id)}')" title="View in Tree">┠ Tree</button>
+          </div>
         `;
         card.style.display = 'block';
       }
     };
+
+    // Link hover inspector
+    const highlightLink = (targetItem) => {
+      if (!targetItem) {
+        highlight(null);
+        return;
+      }
+      const sId = typeof targetItem.link.source === 'object' ? targetItem.link.source.id : targetItem.link.source;
+      const tId = typeof targetItem.link.target === 'object' ? targetItem.link.target.id : targetItem.link.target;
+
+      nodeEls.forEach(item => {
+        const isConn = (item.node.id === sId || item.node.id === tId);
+        item.g.style.opacity = isConn ? '1' : '0.14';
+        item.circle.setAttribute('stroke', isConn ? 'var(--amber)' : 'var(--bg-1)');
+        item.circle.setAttribute('stroke-width', isConn ? '3.5' : '2');
+      });
+
+      linkEls.forEach(item => {
+        const isTarget = item === targetItem;
+        item.line.style.opacity = isTarget ? '1' : '0.08';
+        item.line.setAttribute('stroke', isTarget ? 'var(--graph-link-active)' : (item.link.isCross ? 'var(--graph-link-cross)' : 'var(--graph-link)'));
+        item.line.setAttribute('stroke-width', isTarget ? '3.2' : (item.link.isCross ? '2' : String(Math.max(1.6, Math.min(4.2, (item.link.value || 0) / 120)))));
+        item.line.setAttribute('marker-end', isTarget ? 'url(#native-arrow-active)' : `url(#native-arrow-${item.link.isCross ? 'cross' : 'normal'})`);
+      });
+
+      const card = $('graph-hover-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="font-weight:700; color:var(--amber); font-size:12px; font-family:var(--mono);">↳ Connection Details</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:4px; font-size:12px; font-family:var(--mono); color:var(--t1);">
+            <span style="font-weight:600;">${esc(sId)}</span>
+            <span style="color:var(--t3);">➔</span>
+            <span style="font-weight:600;">${esc(tId)}</span>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:6px; font-size: 12px; color:var(--t2); font-family:var(--mono);">
+            <span>Calls: <strong>${targetItem.link.count || 1}</strong></span>
+            <span>Avg Latency: <strong>${fmtMs(targetItem.link.value || targetItem.link.avgDur || 0)}</strong></span>
+          </div>
+          <div style="font-size:11px; margin-top:5px; font-weight:600; color:${targetItem.link.isCross ? 'var(--red)' : 'var(--blue)'};">
+            ${targetItem.link.isCross ? '⑂ Cross-Thread Communication' : '✔ Direct Call Execution Link'}
+          </div>
+        `;
+        card.style.display = 'block';
+      }
+    };
+
+    linkEls.forEach(item => {
+      item.line.addEventListener('mouseenter', () => highlightLink(item));
+      item.line.addEventListener('mouseleave', () => highlightLink(null));
+    });
 
     nodeEls.forEach(item => {
       item.g.addEventListener('mouseenter', () => highlight(item.node));
@@ -20691,6 +20949,30 @@ const GRAPHIFY={
         item.circle.setAttribute('stroke-width', match ? '3' : '2');
       });
       linkEls.forEach(item => { item.line.style.opacity = '0.08'; });
+    };
+
+    // Filter chip helper
+    window.graphApplyChipFilter = (filter) => {
+      if (!filter || filter === 'all') {
+        highlight(null);
+        return;
+      }
+      if (filter === 'cross') {
+        nodeEls.forEach(item => {
+          const isCrossNode = data.links.some(l => l.isCross && ((typeof l.source === 'object' ? l.source.id : l.source) === item.node.id || (typeof l.target === 'object' ? l.target.id : l.target) === item.node.id));
+          item.g.style.opacity = isCrossNode ? '1' : '0.12';
+          item.circle.setAttribute('stroke', isCrossNode ? 'var(--graph-link-cross)' : 'var(--bg-1)');
+        });
+        linkEls.forEach(item => { item.line.style.opacity = item.link.isCross ? '1' : '0.06'; });
+      } else if (filter === 'hotspots') {
+        const isHotspot = (l) => (l.value || l.avgDur || 0) > 150;
+        nodeEls.forEach(item => {
+          const isHotspotNode = data.links.some(l => isHotspot(l) && ((typeof l.source === 'object' ? l.source.id : l.source) === item.node.id || (typeof l.target === 'object' ? l.target.id : l.target) === item.node.id));
+          item.g.style.opacity = isHotspotNode ? '1' : '0.12';
+          item.circle.setAttribute('stroke', isHotspotNode ? 'var(--amber)' : 'var(--bg-1)');
+        });
+        linkEls.forEach(item => { item.line.style.opacity = isHotspot(item.link) ? '1' : '0.06'; });
+      }
     };
 
     // Pan & Zoom support
@@ -20785,8 +21067,12 @@ const GRAPHIFY={
             line.setAttribute('y1', p.y);
           }
           if (link.target === activeDragNode.node || link.target.id === activeDragNode.node.id) {
-            line.setAttribute('x2', p.x);
-            line.setAttribute('y2', p.y);
+            const r = Math.max(9, Math.min(26, Math.sqrt(activeDragNode.node.selfTime || 1) * 0.4));
+            const srcX = parseFloat(line.getAttribute('x1')), srcY = parseFloat(line.getAttribute('y1'));
+            const dx = p.x - srcX, dy = p.y - srcY;
+            const dist = Math.hypot(dx, dy) || 1;
+            line.setAttribute('x2', p.x - (dx / dist) * (r + 6));
+            line.setAttribute('y2', p.y - (dy / dist) * (r + 6));
           }
         });
       } else if (isPanning) {

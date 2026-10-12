@@ -17,11 +17,11 @@ tests/
 ├── test_consolidated_parser_and_ingestion.py        # 14 tests: Web Worker parser, multiline stack traces, Log4j XML, unparsed analyzer
 ├── test_consolidated_rules_and_regex.py             # 31 tests: Rule wizard, regex builder, token palette, group combiner, undo/redo, pipe-delimited auto-splitting
 ├── test_consolidated_settings_and_accessibility.py  # 9 tests: 4-pillar settings, appearance options, Theme Studio & 10 theme switching, SLA guardrails configuration, a11y skip links, focus mode, AI insights
-├── test_consolidated_visualizations_and_telemetry.py# 30 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio, enhanced trace explorer, rule editor telemetry mapping, tree multi-selection & rule creation, enhanced stats dashboard
+├── test_consolidated_visualizations_and_telemetry.py# 31 tests: Execution tree, resizable columns, thread grouping, split view row color sync, swimlane studio, enhanced trace explorer, rule editor telemetry mapping, tree multi-selection & rule creation, enhanced stats dashboard, enhanced dependency graph HUD chips & high-vis inspection
 └── test_stress_and_performance.py                   # 3 tests: Trace Explorer memoized sorting performance, virtual scrolling DOM node ceiling, and 2.5k synthetic dataset ingestion throughput
 ```
 
-**Total: 113 automated regression tests** with 100% pass rate.
+**Total: 114 automated regression tests** with 100% pass rate.
 
 ---
 

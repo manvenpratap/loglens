@@ -1393,3 +1393,104 @@ async def test_lql_query_view_and_analyzer(page_with_data):
     assert_no_critical_errors(page)
 
 
+@pytest.mark.asyncio
+async def test_dependency_graph_hud_chips_highvis_and_inspection(blank_page):
+    """Dependency Graph renders nodes & links with HUD count badges, filter chips, high-vis toggle, and interactive hover inspector."""
+    page = blank_page
+    await page.evaluate(DISMISS_ONBOARDING_JS)
+
+    demo_graph_js = """
+    const _t0 = Date.now() - 10000;
+    const _mkNode = (id, rule, elem, thr, dur, cid, children = []) => ({
+      id, ruleId: 'r1', ruleName: rule, elementName: elem, payload: '{}',
+      thread: thr, timestamp: _t0 + 100, duration: dur, endTimestamp: _t0 + 100 + dur,
+      behavior: 'push', level: dur > 2000 ? 'WARN' : 'INFO', slaBreached: (dur > 2000),
+      correlationId: cid, rawLine: 'log line ' + id, events: children, visualStyle: {}
+    });
+
+    const c1 = _mkNode('n1_1', 'AuthCheck', 'auth.verify', 'worker-1', 45, 'CID-101');
+    const c2 = _mkNode('n1_2', 'InventoryReserve', 'inv.reserve', 'worker-1', 320, 'CID-101');
+    const root1 = _mkNode('n1', 'ProcessOrder', 'ProcessOrder/42', 'worker-1', 500, 'CID-101', [c1, c2]);
+
+    const c3 = _mkNode('n2_1', 'StripeCharge', 'stripe.execute', 'worker-2', 280, 'CID-101');
+    const root2 = _mkNode('n2', 'ProcessPayment', 'ProcessPayment/88', 'worker-2', 400, 'CID-101', [c3]);
+
+    S.trees = { 'worker-1': [root1], 'worker-2': [root2] };
+    S.threads = ['worker-1', 'worker-2'];
+    S.activeThr = 'worker-1';
+    S.ganttZoom = 1;
+    S.stats = { fileSize: 1024, linesProcessed: 10, totalNodes: 5, slaBreaches: 0 };
+    if (typeof UI !== 'undefined' && UI.render) {
+      UI.render(S.trees, S.threads, S.stats);
+      UI.svm('graph');
+    }
+    """
+
+    await page.evaluate(demo_graph_js)
+    await page.wait_for_selector('#d3-graph-canvas-container svg', timeout=5000)
+
+    # 1. Badges
+    node_badge = page.locator('#graph-node-count-badge')
+    await expect(node_badge).to_have_text('5 Nodes')
+    link_badge = page.locator('#graph-link-count-badge')
+    await expect(link_badge).to_have_text('4 Links')
+    cross_badge = page.locator('#graph-cross-count-badge')
+    await expect(cross_badge).to_contain_text('Cross-Thread')
+
+    # 2. HUD Filter Chips
+    chip_all = page.locator('#graph-chip-all')
+    await expect(chip_all).to_be_visible()
+    await expect(chip_all).to_have_text('All (5)')
+
+    chip_cross = page.locator('#graph-chip-cross')
+    await expect(chip_cross).to_be_visible()
+
+    chip_hotspots = page.locator('#graph-chip-hotspots')
+    await expect(chip_hotspots).to_be_visible()
+
+    # Click cross-thread chip
+    await chip_cross.click()
+    assert await chip_cross.evaluate("el => el.classList.contains('active')")
+    assert not await chip_all.evaluate("el => el.classList.contains('active')")
+
+    # Click back to all
+    await chip_all.click()
+    assert await chip_all.evaluate("el => el.classList.contains('active')")
+
+    # 3. High-Vis Connector toggle
+    highvis_btn = page.locator('#graph-btn-highvis')
+    await expect(highvis_btn).to_be_visible()
+    await highvis_btn.click()
+    canvas_container = page.locator('#d3-graph-canvas-container')
+    assert await canvas_container.evaluate("el => el.classList.contains('graph-high-vis')")
+    await expect(highvis_btn).to_have_text('☀ High-Vis ON')
+
+    # 4. SVG Export button
+    svg_export_btn = page.locator('#graph-btn-export-svg')
+    await expect(svg_export_btn).to_be_visible()
+
+    # 5. Hover inspector on node
+    await page.evaluate("""() => {
+        const node = document.querySelector('.graph-node');
+        if (node) node.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    }""")
+    hover_card = page.locator('#graph-hover-card')
+    await expect(hover_card).to_be_visible()
+    card_text = await hover_card.text_content()
+    assert 'Calls:' in card_text
+    assert 'Degree:' in card_text
+
+    # 6. Hover inspector on link
+    await page.evaluate("""() => {
+        const line = document.querySelector('.graph-connector-line');
+        if (line) line.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    }""")
+    await expect(hover_card).to_be_visible()
+    link_card_text = await hover_card.text_content()
+    assert 'Connection Details' in link_card_text
+    assert 'Avg Latency:' in link_card_text
+
+    assert_no_critical_errors(page)
+
+
+
